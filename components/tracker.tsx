@@ -32,9 +32,7 @@ export default function LostPetTracker() {
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
   async function handleSubmit() {
-    console.log("submit", profileInfo);
     const user = auth.user;
-    console.log("user", !!user);
     if (!user) throw new Error("No user on the session!");
 
     const { data, error } = await supabase.from("pets").insert([
@@ -51,9 +49,6 @@ export default function LostPetTracker() {
       },
     ]).select();
 
-    console.log("pet data", data);
-    console.log("error", error)
-
     const { data: data2, error: error2 } = await supabase.from("owner").insert([
       {
         firstName: profileInfo.firstName,
@@ -64,7 +59,6 @@ export default function LostPetTracker() {
         address: profileInfo.address,
       },
     ]).select();
-    console.log("owner data", data2);
   };
 
   return (

@@ -18,16 +18,15 @@ const AuthProvider = (props: Props) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("session data", session)
       setSession(session);
     }).catch((e) => {
-      console.log("authprovider", e)
+      console.log("AuthProvider error", e)
     });
-    supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("auth event", _event)
-      console.log("session", session)
+    const {data: listener} = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
+
+    return () => listener.subscription.unsubscribe()
   }, []);
 
   return (

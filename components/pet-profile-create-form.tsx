@@ -8,7 +8,7 @@ export default function CreatePetProfile({
   profileInfo,
   handleChange,
 }: {
-  profileInfo: any;
+  profileInfo?: any;
   handleChange: (f: string, v: string) => void;
 }) {
   const pickImage = async () => {
@@ -19,8 +19,6 @@ export default function CreatePetProfile({
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       handleChange("photo", result.assets[0].uri);
@@ -33,28 +31,28 @@ export default function CreatePetProfile({
         <Text>Create Pet Profile</Text>
         <TextInput
           label={"Pet Name"}
-          value={profileInfo.name}
+          value={profileInfo?.name}
           onChangeText={(v) => handleChange("name", v)}
         />
         <TextInput
           label={"Species (e.g., Dog, Cat)"}
-          value={profileInfo.species}
+          value={profileInfo?.species}
           onChangeText={(v) => handleChange("species", v)}
         />
         <TextInput
           label={"Breed"}
-          value={profileInfo.breed}
+          value={profileInfo?.breed}
           onChangeText={(v) => handleChange("breed", v)}
         />
         <TextInput
           label={"Age"}
-          value={profileInfo.age}
+          value={profileInfo?.age}
           onChangeText={(v) => handleChange("age", v)}
         />
 
         <RadioButton.Group
           onValueChange={(v) => handleChange("gender", v)}
-          value={profileInfo.gender}
+          value={profileInfo?.gender}
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <Text>Female</Text>
@@ -66,12 +64,12 @@ export default function CreatePetProfile({
         </RadioButton.Group>
         <TextInput
           label={"Colors"}
-          value={profileInfo.colors}
+          value={profileInfo?.colors}
           onChangeText={(v) => handleChange("colors", v)}
         />
         <TextInput
           label={"Distinctive Features"}
-          value={profileInfo.features}
+          value={profileInfo?.features}
           onChangeText={(v) => handleChange("features", v)}
           multiline
         />

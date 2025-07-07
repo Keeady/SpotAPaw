@@ -1,14 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Alert, Image } from "react-native";
+import React from "react";
+import { Image, View } from "react-native";
 import { Card, Divider, Text } from "react-native-paper";
-import { AuthContext } from "./Provider/auth-provider";
-import { supabase } from "./supabase-client";
 
-export default function PetProfile() {
-  const auth = useContext(AuthContext);
-  const user = auth.user;
-    const [loading, setLoading] = useState(true)
-  const [pet, setPet] = useState();
+export function RenderPetProfile(data) {
+  const pet = data.pet;
 
   /*const pet = {
     photo: "https://placedog.net/500",
@@ -20,43 +15,6 @@ export default function PetProfile() {
     features: "Small scar above left eye",
     age: 4,
   };*/
-
-  async function getProfile() {
-    try {
-      setLoading(true)
-      if (!user) throw new Error("No user on the session!");
-      console.log("user", user.id)
-      const { data, error, status } = await supabase
-        .from("pets")
-        .select(`*`)
-        ;
-        console.log("error", error)
-        console.log("status", status)
-      if (error && status !== 406) {
-        console.log("Error", error)
-        throw error;
-      }
-      if (data) { // plural pets
-        console.log("pet", data);
-        setPet(data[0])
-      }
-    } catch (error) {
-      console.log("error", error)
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (user) getProfile()
-  }, [user?.id]);
-
-  if (!pet) {
-    return;
-  }
 
   return (
     <Card>
@@ -94,6 +52,44 @@ export default function PetProfile() {
           <Text variant="labelLarge">Distinctive Features: </Text>{" "}
           {pet.features}
         </Text>
+      </Card.Content>
+    </Card>
+  );
+}
+
+export function RenderShortProfile(data) {
+  const pet = data.pet;
+  return (
+    <Card style={{borderRadius: 20, margin: 5, marginBottom: 20, backgroundColor: "#fff"}}>
+      {pet.photo ? (
+        <Image
+          source={{ uri: pet.photo }}
+          resizeMode="cover"
+          style={{
+            width: "100%",
+            height: 300,
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+          }}
+        />
+      ): (
+        <View  style={{
+            width: "100%",
+            height: 300,
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#ddd"
+          }}>
+          <Text>No photo</Text>
+        </View>
+      )}
+      <Card.Content style={{alignItems: "center",}}>
+        <Text variant="headlineLarge">{pet.name}</Text>
+        <Divider />
+        <Text variant="bodyLarge">{pet.breed}</Text>
+        <Text variant="bodyLarge">{pet.age} years old</Text>
       </Card.Content>
     </Card>
   );

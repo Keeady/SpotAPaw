@@ -1,4 +1,3 @@
-import Home from "@/components/home";
 import Sightings from "@/components/sightings";
 import LostPetTracker from "@/components/tracker";
 

@@ -1,10 +1,10 @@
 import { AuthProvider } from "@/components/Provider/auth-provider";
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
 
-export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <Stack />
-    </AuthProvider>
-  );
+export default function Layout() {
+    return (
+        <AuthProvider>
+            <Slot />
+        </AuthProvider>
+    )
 }
