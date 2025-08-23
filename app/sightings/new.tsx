@@ -1,18 +1,13 @@
 import { getCurrentLocation } from "@/components/get-current-location";
 import DefaultPageHeader from "@/components/header/default-header";
-import HomePageHeader from "@/components/header/homepage-header";
-import SuccessNotification from "@/components/success-notification";
 import { supabase } from "@/components/supabase-client";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import { reverseGeocodeAsync } from "expo-location";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   View,

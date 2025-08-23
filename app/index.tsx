@@ -26,6 +26,15 @@ export default function PublicHome() {
         Report a Pet Sighting
       </Button>
       <Button
+        icon="paw"
+        mode="contained"
+        onPress={() => router.navigate("/sightings/chat")}
+        contentStyle={{ width: "100%" }}
+        style={styles.button}
+      >
+        Chat with AI
+      </Button>
+      <Button
         icon=""
         mode="outlined"
         onPress={() => router.navigate("/(auth)/signin")}
