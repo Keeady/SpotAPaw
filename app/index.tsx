@@ -1,16 +1,12 @@
 import HomePageHeader from "@/components/header/homepage-header";
-import { AuthContext, AuthProvider } from "@/components/Provider/auth-provider";
-import { Link, useRouter } from "expo-router";
+import { AuthContext } from "@/components/Provider/auth-provider";
+import { useRouter } from "expo-router";
 import { useContext } from "react";
-import { View, StyleSheet, Image } from "react-native";
-import { Avatar, Button, Card, Text } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Button } from "react-native-paper";
 
 export default function PublicHome() {
   const router = useRouter();
-  const { user } = useContext(AuthContext);
-  if (user) {
-    router.replace("/(app)/pets");
-  }
 
   return (
     <View style={styles.container}>
@@ -27,13 +23,22 @@ export default function PublicHome() {
       </Button>
       <Button
         icon="paw"
+        mode="outlined"
+        onPress={() => router.navigate("/sightings/list")}
+        contentStyle={{ width: "100%" }}
+        style={styles.button}
+      >
+        View Lost Pet Sightings
+      </Button>
+      {/*<Button
+        icon="paw"
         mode="contained"
         onPress={() => router.navigate("/sightings/chat")}
         contentStyle={{ width: "100%" }}
         style={styles.button}
       >
         Chat with AI
-      </Button>
+      </Button>*/}
       <Button
         icon=""
         mode="outlined"

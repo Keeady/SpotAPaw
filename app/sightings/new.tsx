@@ -5,13 +5,8 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Alert, Image, ScrollView, StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function Sighting() {
@@ -38,7 +33,6 @@ export default function Sighting() {
       quality: 1,
     });
 
-
     if (!result.canceled) {
       setPhoto(result.assets[0].uri);
     }
@@ -51,8 +45,6 @@ export default function Sighting() {
       setEmpty(true);
     }
   }, [location, colors, species, features]);
-
-
 
   async function saveSighting() {
     if (extra_info.trim()) {
@@ -71,14 +63,19 @@ export default function Sighting() {
         location,
         longitude: coords?.longitude,
         latitude: coords?.latitude,
-        last_seen_time: new Date().toLocaleString(),
+        last_seen_time: new Date().toISOString(),
       },
     ]);
+    setLoading(false);
     if (error) {
-      Alert.alert("Error saving sighting info. Please try again");
+      showMessage({
+        message: "Error saving sighting info. Please try again.",
+        type: "warning",
+        icon: "warning",
+      });
+      return;
     }
 
-    setLoading(false);
     router.navigate("/sightings/contact");
   }
 
@@ -158,7 +155,9 @@ export default function Sighting() {
             mode="elevated"
             style={styles.button}
           >
-            <Text>{location ? "Location saved" : "Use My Current Location"}</Text>
+            <Text>
+              {location ? "Location saved" : "Use My Current Location"}
+            </Text>
           </Button>
         </View>
         <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -226,8 +225,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-        marginTop: 5,
-
+    marginTop: 5,
   },
   button: {
     marginTop: 20,

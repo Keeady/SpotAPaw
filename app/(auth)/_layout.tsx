@@ -1,12 +1,14 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { Redirect, Stack } from "expo-router";
-import { useContext } from "react";
+import { Redirect, router, Stack } from "expo-router";
+import { useContext, useEffect } from "react";
 
 export default function AuthLayout() {
-    const auth = useContext(AuthContext);
-  const user = auth.user;
-      if (user) {
-        return <Redirect href={"/(app)/pets"} />
-      }
-    return <Stack screenOptions={{headerShown: false}} />
+  const auth = useContext(AuthContext);
+
+  useEffect(() => {
+    if (auth.user) {
+      return router.replace("/(app)/pets");
+    }
+  }, [auth.user]);
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

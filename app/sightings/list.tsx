@@ -1,4 +1,7 @@
-import { RenderShortProfile, RenderSightingProfile } from "@/components/pet-profile";
+import {
+  RenderShortProfile,
+  RenderSightingProfile,
+} from "@/components/pet-profile";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
@@ -7,52 +10,44 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
-export default function SightingList() {
+export default function SightingAnonList() {
   const [sightings, setSightings] = useState([]);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
-  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-
     setLoading(true);
     supabase
       .from("sightings")
-      .select("*, sighting_contact (sighting_id, name, phone)")
-      //.eq("owner_id", user.id)
+      .select("*")
       .then(({ data }) => {
-        setLoading(false);
         if (data) {
-        setSightings(data);
+          setSightings(data);
         }
       });
-  }, [user?.id]);
+    setLoading(false);
+  }, []);
 
   return (
     <View style={styles.container}>
       <Text variant="titleLarge">Recent Pet Sightings in your area!</Text>
       <FlatList
-              data={sightings}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => router.push(`/pets/${item.id}`)}>
-                  <RenderSightingProfile pet={item} />
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={
-                <Text
-                  style={{ alignSelf: "center", marginBottom: 40, marginTop: 40 }}
-                >
-                  No Pet sightings to display
-                </Text>
-              }
-              //style={{ marginBottom: 20 }}
-            />
+        data={sightings}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => router.push(`/pets/${item.id}`)}>
+            <RenderSightingProfile pet={item} />
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={
+          <Text
+            style={{ alignSelf: "center", marginBottom: 40, marginTop: 40 }}
+          >
+            No Pet sightings to display
+          </Text>
+        }
+        //style={{ marginBottom: 20 }}
+      />
     </View>
   );
 }

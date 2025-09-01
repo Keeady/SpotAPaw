@@ -58,7 +58,6 @@ export default function addPet() {
       .eq("id", id)
       .single()
       .then(({ data, error }) => {
-        console.log(error, data)
         setPet(data);
       });
   }, [id]);

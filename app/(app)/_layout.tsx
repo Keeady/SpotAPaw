@@ -1,12 +1,12 @@
-import { AuthContext, AuthProvider } from "@/components/Provider/auth-provider";
+import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { Redirect, router, Stack, Tabs } from "expo-router";
 import React, { useContext } from "react";
 import { Alert, Image, StyleSheet } from "react-native";
-import { Avatar, Button, Icon } from "react-native-paper";
 import FlashMessage from "react-native-flash-message";
+import { Button, Icon, Text } from "react-native-paper";
 
-export default function RootLayout() {
+export default function AppLayout() {
   const auth = useContext(AuthContext);
   const user = auth.user;
 
@@ -23,22 +23,49 @@ export default function RootLayout() {
   }
   return (
     <>
-
-    <Stack
-      screenOptions={{
-        headerStyle: {height: 10},        
-        title: "",
-        headerRight: () => <Button onPress={handleSignOut}>Sign Out</Button>,
-        headerLeft: () => (
-          <Image
-            source={require("../../assets/images/logosmall.png")}
-            style={styles.logo}
-          />
-        ),
-      }}
+      <Tabs
+        screenOptions={{
+          ///headerStyle: { height: 10 },
+          title: "",
+          headerRight: () => <Button onPress={handleSignOut}>Sign Out</Button>,
+          headerLeft: () => (
+            <Image
+              source={require("../../assets/images/logosmall.png")}
+              style={styles.logo}
+            />
+          ),
+        }}
       >
-        </Stack>
-    <FlashMessage position="bottom" />
+        <Tabs.Screen
+          name="pets"
+          options={{
+            tabBarIcon: ({ size }) => <Icon source={"paw"} size={size} />,
+            title: "Pets",
+            headerTitle: "",
+          }}
+        />
+        <Tabs.Screen
+          name="owner"
+          options={{
+            tabBarIcon: ({ size }) => (
+              <Icon source={"account-box-outline"} size={size} />
+            ),
+            title: "Profile",
+            headerTitle: "",
+          }}
+        />
+        <Tabs.Screen
+          name="sightings"
+          options={{
+            tabBarIcon: ({ size }) => (
+              <Icon source={"eye-check-outline"} size={size} />
+            ),
+            title: "Sightings",
+            headerTitle: "",
+          }}
+        />
+      </Tabs>
+      <FlashMessage position="bottom" />
     </>
   );
 }
@@ -53,5 +80,5 @@ const styles = StyleSheet.create({
     //backgroundColor: "red"
   },
 });
-    /*
-    */
+/*
+ */

@@ -68,7 +68,7 @@ export default function PetProfile() {
   }
 
   async function onPetFound() {
-    const { error } = await supabase
+    const {data, error } = await supabase
       .from("pets")
       .update({
         is_lost: false,
@@ -78,8 +78,8 @@ export default function PetProfile() {
         last_seen_location: null
       })
       .eq("id", id);
+
     if (error) {
-      console.log("error updating ", error);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",

@@ -1,72 +1,79 @@
-import HomePageHeader from "@/components/header/homepage-header";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, TextInput, Text, Snackbar } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 
-export default function EditOwnerInfo() {
+export default function OwnerList() {
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
+  const [id, setId] = useState("");
+  const [email, setEmail] = useState("");
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (!user) {
       return;
     }
+
     setLoading(true);
     supabase
       .from("owner")
       .select("*")
       .eq("owner_id", user.id)
-      .single()
       .then(({ data }) => {
-        console.log(data)
-        setLoading(false);
-        setFirstName(data.firstname);
-        setLastName(data.lastname)
-        setPhone(data.phone)
+        if (data) {
+          setFirstName(data[0].firstname);
+          setLastName(data[0].lastname);
+          setPhone(data[0].phone);
+          setAddress(data[0].address);
+          setId(data[0].id);
+          setEmail(data[0].email);
+        }
       });
+    setLoading(false);
   }, [user?.id]);
 
-  async function saveContact() {
+  async function createContact() {
     if (extra_info.trim() || !user) {
       return;
     }
     setLoading(true);
     const { error } = await supabase
       .from("owner")
-      .update([
+      .upsert([
         {
-          firstName,
-          lastName,
+          firstname: firstName,
+          lastname: lastName,
           phone,
+          address,
+          email,
+          id
         },
-      ])
-      .eq("id", user.id);
+      ]);
 
     if (error) {
-      console.log("error updating ", error);
       showMessage({
-        message: "Error updating owner profile.",
+        message: "Error saving owner profile.",
         type: "warning",
         icon: "warning",
       });
     } else {
       showMessage({
-        message: "Successfully updated owner profile.",
+        message: "Successfully saving owner profile.",
         type: "success",
         icon: "success",
       });
       router.replace(`/(app)/owner`);
     }
   }
+
   return (
     <View style={styles.container}>
       <Text variant="titleLarge">Update your Contact Info!</Text>
@@ -86,7 +93,18 @@ export default function EditOwnerInfo() {
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
-          label="Name"
+          label="Email"
+          left={<TextInput.Icon icon="account-box-outline" />}
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+          placeholder="youremail@email.com"
+          autoCapitalize={"none"}
+          mode="outlined"
+        />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <TextInput
+          label="First Name"
           left={<TextInput.Icon icon="account-box-outline" />}
           onChangeText={(text) => setFirstName(text)}
           value={firstName}
@@ -97,7 +115,7 @@ export default function EditOwnerInfo() {
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
-          label="Name"
+          label="Last Name"
           left={<TextInput.Icon icon="account-box-outline" />}
           onChangeText={(text) => setLastName(text)}
           value={lastName}
@@ -106,14 +124,26 @@ export default function EditOwnerInfo() {
           mode="outlined"
         />
       </View>
+      <View style={styles.verticallySpaced}>
+        <TextInput
+          label="Address"
+          left={<TextInput.Icon icon="account-box-outline" />}
+          onChangeText={(text) => setAddress(text)}
+          value={address}
+          placeholder="Street, City"
+          autoCapitalize={"none"}
+          mode="outlined"
+          multiline={true}
+        />
+      </View>
 
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
           disabled={loading}
-          onPress={() => saveContact()}
+          onPress={() => createContact()}
         >
-          Save Contact
+          {id ? "Save Contact" : "Create Contact"}
         </Button>
       </View>
     </View>
@@ -134,7 +164,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 10,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",

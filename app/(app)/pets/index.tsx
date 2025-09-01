@@ -44,7 +44,7 @@ export default function PetListScreen() {
             No Pet profile to display
           </Text>
         }
-        style={{ marginBottom: 20 }}
+        //style={{ marginBottom: 20 }}
         ListFooterComponent={
           <Button
             mode="contained"
@@ -64,11 +64,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     backgroundColor: "#fff",
-    minHeight: "100%",
-    paddingBottom: 40,
+    //minHeight: "100%",
+    //paddingBottom: 40,
     alignContent: "center",
   },
   button: {
-    marginBottom: 20,
+    //marginBottom: 20,
   },
 });
