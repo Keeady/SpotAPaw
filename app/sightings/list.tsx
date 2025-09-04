@@ -20,11 +20,21 @@ export default function SightingAnonList() {
     supabase
       .from("sightings")
       .select("*")
+      .order("created_at", { ascending: false })
       .then(({ data }) => {
         if (data) {
-          setSightings(data);
+          const latestByPet = Object.values(
+            data.reduce((acc, sighting) => {
+              if (!acc[sighting.pet_id]) {
+                acc[sighting.pet_id] = sighting;
+              }
+              return acc;
+            }, {})
+          );
+          setSightings(latestByPet);
         }
       });
+
     setLoading(false);
   }, []);
 
@@ -33,9 +43,9 @@ export default function SightingAnonList() {
       <Text variant="titleLarge">Recent Pet Sightings in your area!</Text>
       <FlatList
         data={sightings}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.pet_id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => router.push(`/pets/${item.id}`)}>
+          <TouchableOpacity onPress={() => router.push(`/sightings/${item.pet_id}`)}>
             <RenderSightingProfile pet={item} />
           </TouchableOpacity>
         )}

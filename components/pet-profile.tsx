@@ -199,7 +199,7 @@ export function RenderSightingProfile(data) {
             Last Seen: {new Date(pet.last_seen_time).toLocaleString()}
           </Text>
         )}
-        <Text variant="bodyLarge">Last Seen at: {pet.location}</Text>
+        <Text variant="bodyLarge">Last Seen at: {pet.last_seen_location}</Text>
         {reporter && <Text variant="bodyLarge">Reported by {reporter}</Text>}
       </Card.Content>
       <Card.Actions>

@@ -1,12 +1,13 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function OwnerList() {
+  const ownerInfo = useRef(undefined);
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -16,6 +17,20 @@ export default function OwnerList() {
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const { user } = useContext(AuthContext);
+
+  const [disableSubmitBtn, setDisableSubmitBtn] = useState(true);
+
+  useEffect(() => {
+    if (
+      firstName && ownerInfo.current?.firstname !== firstName ||
+      lastName && ownerInfo.current?.lastname !== lastName ||
+      address && ownerInfo.current?.address !== address ||
+      phone && ownerInfo.current?.phone !== phone ||
+      email && ownerInfo.current?.email !== email
+    ) {
+      setDisableSubmitBtn(false);
+    }
+  }, [firstName, lastName, address, phone, email]);
 
   useEffect(() => {
     if (!user) {
@@ -29,6 +44,7 @@ export default function OwnerList() {
       .eq("owner_id", user.id)
       .then(({ data }) => {
         if (data) {
+          ownerInfo.current = data[0];
           setFirstName(data[0].firstname);
           setLastName(data[0].lastname);
           setPhone(data[0].phone);
@@ -45,18 +61,16 @@ export default function OwnerList() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase
-      .from("owner")
-      .upsert([
-        {
-          firstname: firstName,
-          lastname: lastName,
-          phone,
-          address,
-          email,
-          id
-        },
-      ]);
+    const { error } = await supabase.from("owner").upsert([
+      {
+        firstname: firstName,
+        lastname: lastName,
+        phone,
+        address,
+        email,
+        id,
+      },
+    ]);
 
     if (error) {
       showMessage({
@@ -70,7 +84,7 @@ export default function OwnerList() {
         type: "success",
         icon: "success",
       });
-      router.replace(`/(app)/owner`);
+      // router.replace(`/(app)/owner`);
     }
   }
 
@@ -140,7 +154,7 @@ export default function OwnerList() {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
-          disabled={loading}
+          disabled={loading || disableSubmitBtn}
           onPress={() => createContact()}
         >
           {id ? "Save Contact" : "Create Contact"}

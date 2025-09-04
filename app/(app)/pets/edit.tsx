@@ -16,21 +16,23 @@ export default function editPet() {
   const [last_seen_location, setLastSeenLocation] = useState("");
   const [coords, setLastSeenCoords] = useState<Location.LocationObjectCoords>();
   const [last_seen_time, setLastSeenTime] = useState("");
-
+/*
   useEffect(() => {
-    if (profileInfo && last_seen_location) {
+    console.log("last_seen_location", last_seen_location)
+    console.log("last_seen_time", last_seen_time)
+    console.log("coords", coords)
+    if (last_seen_location) {
       setProfileInfo((prev) => ({
         ...prev,
         [last_seen_location]: last_seen_location,
       }));
     }
 
-    if (profileInfo && last_seen_time) {
-          console.log("last_seen_time", last_seen_time)
+    if (last_seen_time) {
 
       setProfileInfo((prev) => ({ ...prev, [last_seen_time]: last_seen_time }));
     }
-  }, [last_seen_location, last_seen_time]);
+  }, [last_seen_location, last_seen_time, setProfileInfo]);*/
 
   useEffect(() => {
     if (!id) {
@@ -43,7 +45,6 @@ export default function editPet() {
       .eq("id", id)
       .single()
       .then(({ data, error }) => {
-        console.log(error, data);
         setPet(data);
         setProfileInfo(data);
       });
@@ -67,16 +68,15 @@ export default function editPet() {
         photo: profileInfo.photo,
         owner_id: user?.id,
         is_lost: !!is_lost,
-        last_seen_time: profileInfo.last_seen_time,
+        last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
         last_seen_location: profileInfo.last_seen_location,
-        last_seen_lat: coords?.latitude,
-        last_seen_long: coords?.longitude,
+        last_seen_lat: profileInfo?.last_seen_lat,
+        last_seen_long: profileInfo.last_seen_long,
       })
       .eq("id", id)
       .select();
 
     if (error) {
-      console.log("error updating ", error);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -89,13 +89,61 @@ export default function editPet() {
         icon: "success",
       });
       if (is_lost) {
-        router.replace(`/(app)/owner`);
+        await handleLostPet();
+        //router.navigate(`/(app)/owner`);
       } else {
       router.replace(`/(app)/pets/${id}`);
 
       }
     }
   };
+
+  const handleLostPet = async () => {
+    if (!profileInfo || !user) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("sightings")
+      .insert({
+        name: profileInfo.name,
+        species: profileInfo.species,
+        breed: profileInfo.breed,
+        gender: profileInfo.gender,
+        colors: profileInfo.colors,
+        features: profileInfo.features,
+        photo: profileInfo.photo,
+        reporter_id: user?.id,
+        last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
+        last_seen_location: profileInfo.last_seen_location,
+        last_seen_lat: profileInfo?.last_seen_lat,
+        last_seen_long: profileInfo.last_seen_long,
+        pet_id: id
+      })
+      .select();
+
+    if (error) {
+            console.log("errpr", error)
+
+      showMessage({
+        message: "Error updating pet sighting.",
+        type: "warning",
+        icon: "warning",
+      });
+    } else {
+      showMessage({
+        message: "Successfully updated pet sighting.",
+        type: "success",
+        icon: "success",
+      });
+      if (is_lost) {
+        router.navigate(`/(app)/owner`);
+      } else {
+      router.replace(`/(app)/pets/${id}`);
+
+      }
+    }
+  }
 
   return EditPetDetails(
     handleSubmit,

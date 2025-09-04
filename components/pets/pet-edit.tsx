@@ -17,9 +17,11 @@ export default function EditPetDetails(
   pet?: Pet,
   is_lost?: boolean
 ) {
-  const handleChange = (fieldName: string, fieldValue: string) => {
+  const handleChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
+
+  console.log("pet", pet)
 
   return (
     <ScrollView
@@ -49,13 +51,13 @@ export default function EditPetDetails(
               <Button
                 icon={"map-marker-radius-outline"}
                 onPress={() =>
-                  getCurrentLocation(setLastSeenLocation, setLastSeenCoords)
+                  getCurrentLocation(handleChange)
                 }
                 mode="elevated"
                 style={styles.button}
               >
                 <Text>
-                  {location ? "Location saved" : "Use My Current Location"}
+                  {pet?.last_seen_location ? "Location saved" : "Use My Current Location"}
                 </Text>
               </Button>
             </View>
@@ -67,7 +69,7 @@ export default function EditPetDetails(
                 dateLabel="Last Seen Date"
                 timeLabel="Last Seen Time"
                 value={pet?.last_seen_time ? new Date(pet?.last_seen_time) : new Date()}
-                onChange={setLastSeenTime}
+                onChange={(v) => handleChange("last_seen_time", v)}
               />
             </View>
           </View>
@@ -101,7 +103,7 @@ export default function EditPetDetails(
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
               label={"Age"}
-              value={pet?.age.toString() || ""}
+              value={pet?.age?.toString() || ""}
               onChangeText={(v) => handleChange("age", v)}
               keyboardType="numeric"
             />

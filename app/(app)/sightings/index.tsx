@@ -25,6 +25,7 @@ export default function SightingList() {
       .from("sightings")
       .select("*, sighting_contact (sighting_id, name, phone)")
       //.eq("owner_id", user.id)
+      .order("sightings.created_at", { ascending: false })
       .then(({ data }) => {
         setLoading(false);
         if (data) {

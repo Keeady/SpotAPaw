@@ -25,7 +25,7 @@ export default function CreatePetDetails(
     >
       <View style={{ flexGrow: 1 }}>
         <View style={styles.title}>
-          <Text variant="titleLarge">Report a Pet Sighting!</Text>
+          <Text variant="titleLarge">Create a Pet Profile!</Text>
           <Text variant="titleSmall">
             Help find and protect your furry friends
           </Text>

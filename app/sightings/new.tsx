@@ -3,13 +3,16 @@ import DefaultPageHeader from "@/components/header/default-header";
 import { supabase } from "@/components/supabase-client";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function Sighting() {
+  const {id } = useLocalSearchParams();
+  console.log("new sighting by id", id);
+  
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState("");
   const [breed, setBreed] = useState("");
