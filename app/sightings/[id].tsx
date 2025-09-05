@@ -1,57 +1,33 @@
-import {
-  RenderShortProfile,
-  RenderSightingProfile,
-} from "@/components/pet-profile";
-import { AuthContext } from "@/components/Provider/auth-provider";
-import { supabase } from "@/components/supabase-client";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { showMessage } from "react-native-flash-message";
-import { Button, Card, Divider, Text } from "react-native-paper";
-import { Alert, Image, StyleSheet, View } from "react-native";
-import { Pet } from "@/model/pet";
 import SightingDetail from "@/components/sightings/sighting-details";
+import { usePetSightings } from "@/components/sightings/use-sighting-details";
 
 export default function SightingProfile() {
-  const { id } = useLocalSearchParams();
-  console.log(id)
+  const { id } = useLocalSearchParams(); // pet id
+  const { loading, error, timeline, summary } = usePetSightings(id);
 
-  const [sightings, setSightings] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [extra_info, setExtraInfo] = useState("");
-
-  useEffect(() => {
-    if (!id) {
-        return;
-    }
-    setLoading(true);
-    supabase
-      .from("sightings")
-      .select("*")
-      .eq("pet_id", id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        console.log(data)
-        if (data) {
-          setSightings(data);
-        }
-      });
-
-    setLoading(false);
+  const onAddTimeline = useCallback((sightingId: string) => {
+    router.navigate(`/sightings/new/?id=${sightingId}&petId=${id}`);
   }, []);
 
-const onAddTimeline = useCallback(() => {
-    console.log("adding timeline")
-    router.navigate(`/sightings/new/?id=${id}`)
-}, []);
+  if (error) {
+    showMessage({
+      message: "Error fetching sighting info. Please try again.",
+      type: "warning",
+      icon: "warning",
+    });
+    return;
+  }
 
-if (!sightings || sightings.length === 0) {
+  if (!timeline || timeline.length === 0 || loading) {
     return null;
-}
+  }
 
-const latest = sightings[0];
-
-return (
-    SightingDetail({sightings, pet: latest, onEdit: onAddTimeline})
-  );
+  return SightingDetail({
+    sightings: timeline,
+    pet: summary,
+    onEdit: onAddTimeline,
+  });
 }

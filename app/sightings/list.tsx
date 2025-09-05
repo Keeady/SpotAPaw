@@ -1,14 +1,9 @@
-import {
-  RenderShortProfile,
-  RenderSightingProfile,
-} from "@/components/pet-profile";
-import { AuthContext } from "@/components/Provider/auth-provider";
+import { RenderSightingProfile } from "@/components/pet-profile";
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Text } from "react-native-paper";
 
 export default function SightingAnonList() {
   const [sightings, setSightings] = useState([]);
@@ -23,11 +18,29 @@ export default function SightingAnonList() {
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         if (data) {
+          // merge data by pet id
+          // create a summary from
           const latestByPet = Object.values(
             data.reduce((acc, sighting) => {
               if (!acc[sighting.pet_id]) {
                 acc[sighting.pet_id] = sighting;
+              } else {
+                const merged = acc[sighting.pet_id];
+                acc[sighting.pet_id] = {
+                  pet_id: sighting.pet_id,
+                  photo: merged.photo ?? sighting.photo,
+                  name: merged.name ?? sighting.name,
+                  colors: merged.colors ?? sighting.colors,
+                  breed: merged.breed ?? sighting.breed,
+                  species: merged.species ?? sighting.species,
+                  gender: merged.gender ?? sighting.gender,
+                  features: merged.features ?? sighting.features,
+                  last_seen_location:
+                    merged.last_seen_location ?? sighting.last_seen_location,
+                  last_seen_time: merged.last_seen_time,
+                };
               }
+
               return acc;
             }, {})
           );
@@ -45,7 +58,9 @@ export default function SightingAnonList() {
         data={sightings}
         keyExtractor={(item) => item.pet_id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => router.push(`/sightings/${item.pet_id}`)}>
+          <TouchableOpacity
+            onPress={() => router.push(`/sightings/${item.pet_id}`)}
+          >
             <RenderSightingProfile pet={item} />
           </TouchableOpacity>
         )}
@@ -56,7 +71,6 @@ export default function SightingAnonList() {
             No Pet sightings to display
           </Text>
         }
-        //style={{ marginBottom: 20 }}
       />
     </View>
   );
@@ -76,7 +90,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 10,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",

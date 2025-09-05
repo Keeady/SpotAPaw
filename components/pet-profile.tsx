@@ -1,6 +1,7 @@
+import { router } from "expo-router";
 import React from "react";
 import { Image, View } from "react-native";
-import { Button, Card, Divider, Text } from "react-native-paper";
+import { Button, Card, Chip, Divider, Text } from "react-native-paper";
 
 export function RenderPetProfile(data) {
   const pet = data.pet;
@@ -144,41 +145,24 @@ export function RenderSightingProfile(data) {
         </View>
       )}
       <Card.Content style={{ alignItems: "left" }}>
-        <View
+        <Chip
           style={{
+            backgroundColor: pet?.name ? "#E6F7E6" : "#FFF4E5",
+            marginTop: -20,
+            marginBottom: 10,
             alignSelf: "flex-start",
             paddingHorizontal: 10,
             paddingVertical: 4,
             borderRadius: 12,
-            marginTop: -20,
-            marginBottom: 10,
-            backgroundColor: pet.name ? "#e6f4ea" : "#eee",
           }}
+          textStyle={{
+            color: pet?.name ? "#2E7D32" : "#D84315",
+            fontWeight: "600",
+          }}
+          mode="outlined"
         >
-          {pet.name ? (
-            <Text
-              variant="titleLarge"
-              style={{
-                //fontSize: 12,
-                //fontWeight: "600",
-                color: "#333",
-              }}
-            >
-              {pet.name}
-            </Text>
-          ) : (
-            <Text
-              variant="titleLarge"
-              style={{
-                //fontSize: 12,
-                //fontWeight: "600",
-                color: "#333",
-              }}
-            >
-              {"Owner Unknown"}
-            </Text>
-          )}
-        </View>
+          {pet?.name || "Unknown"}
+        </Chip>
 
         <Divider />
         <Text variant="titleMedium">{pet.breed}</Text>
@@ -207,7 +191,7 @@ export function RenderSightingProfile(data) {
           <Button
             style={{ marginBottom: 10 }}
             mode="contained"
-            onPress={() => console.log("Pressed")}
+            onPress={() => router.push(`/sightings/${pet.pet_id}`)}
           >
             Add Details
           </Button>

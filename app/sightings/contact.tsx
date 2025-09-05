@@ -1,10 +1,10 @@
-import HomePageHeader from "@/components/header/homepage-header";
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
-import { Button, TextInput, Text, Snackbar } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { Button, TextInput, Text } from "react-native-paper";
 
 export default function SightingContact() {
   const [phone, setPhone] = useState("");
@@ -25,15 +25,27 @@ export default function SightingContact() {
         sighting_id: id,
       },
     ]);
+
     if (error) {
-      Alert.alert("Error saving sighting contact info. Please try again");
+      showMessage({
+        message: "Error saving sighting contact info. Please try again.",
+        type: "warning",
+        icon: "warning",
+      });
+      return;
+    } else {
+      showMessage({
+        message: "Successfully saved contact.",
+        type: "success",
+        icon: "success",
+      });
     }
+
     setLoading(false);
     router.navigate("/");
   }
   return (
     <View style={styles.container}>
-      <HomePageHeader />
       <Text variant="bodyLarge" style={styles.title}>
         Would you like to be contacted by pet owner about this sighting?
       </Text>

@@ -1,11 +1,10 @@
 import { Pet } from "@/model/pet";
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Card, RadioButton, Text, TextInput } from "react-native-paper";
-import * as ImagePicker from "expo-image-picker";
+import React, {  } from "react";
+import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import pickImage from "../image-picker";
 import * as Location from "expo-location";
-import { getCurrentLocation } from "../get-current-location";
+import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
 
 export default function EditPetDetails(
@@ -20,8 +19,6 @@ export default function EditPetDetails(
   const handleChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
-
-  console.log("pet", pet)
 
   return (
     <ScrollView
@@ -51,7 +48,7 @@ export default function EditPetDetails(
               <Button
                 icon={"map-marker-radius-outline"}
                 onPress={() =>
-                  getCurrentLocation(handleChange)
+                  getCurrentLocationV2(handleChange)
                 }
                 mode="elevated"
                 style={styles.button}

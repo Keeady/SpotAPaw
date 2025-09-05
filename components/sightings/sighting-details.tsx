@@ -7,18 +7,7 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
-import {
-  Card,
-  Title,
-  Paragraph,
-  Avatar,
-  Text,
-  Chip,
-  Icon,
-  Divider,
-  Button,
-  IconButton,
-} from "react-native-paper";
+import { Card, Avatar, Text, Divider, IconButton } from "react-native-paper";
 import { formatDistanceToNow } from "date-fns";
 
 export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
@@ -29,10 +18,22 @@ export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
           title={pet?.name || "Unknown"}
           titleVariant="titleLarge"
           right={() => (
-            <View style={{flexDirection: "row"}}>
-              {onEdit && <IconButton icon="pencil-plus" iconColor="blue" onPress={() => onEdit()} />}
-              {onPetFound && <IconButton icon="check-bold" iconColor="green" onPress={() => onPetFound()} />}
-            </ View>
+            <View style={{ flexDirection: "row" }}>
+              {onEdit && (
+                <IconButton
+                  icon="pencil-plus"
+                  iconColor="blue"
+                  onPress={() => onEdit(pet?.id)}
+                />
+              )}
+              {onPetFound && (
+                <IconButton
+                  icon="check-bold"
+                  iconColor="green"
+                  onPress={() => onPetFound()}
+                />
+              )}
+            </View>
           )}
         />
         <Card.Content>
@@ -131,14 +132,10 @@ export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
                       }
                       style={{
                         flexDirection: "row",
-                        //alignItems: "center",
-                        //flexWrap: "wrap",
                       }}
                     >
                       <Text
                         style={{
-                          //flexShrink: 1,
-                          //flexWrap: "wrap",
                           color: sighting.last_seen_location
                             ? "#1E88E5"
                             : "#666", // blue if clickable
@@ -146,7 +143,6 @@ export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
                             ? "underline"
                             : "none",
                         }}
-                        //numberOfLines={2}
                       >
                         {sighting.last_seen_location || "Location not provided"}
                       </Text>
@@ -164,6 +160,25 @@ export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
                   }
                 />
                 <Card.Content>
+                  <View
+                    style={{
+                      marginTop: 6,
+                      marginBottom: 6,
+                      flexDirection: "row",
+                    }}
+                  >
+                    {sighting?.color && <Text>{sighting?.color}, </Text>}
+                    {sighting?.gender && <Text>{sighting?.gender}, </Text>}
+                    {sighting?.breed && <Text>{sighting?.breed}</Text>}
+                  </View>
+                  {sighting.features && (
+                    <Text
+                      variant="bodyMedium"
+                      style={{ marginTop: 6, marginBottom: 6 }}
+                    >
+                      {sighting.features}
+                    </Text>
+                  )}
                   {sighting.note && (
                     <Text
                       variant="bodyMedium"
@@ -172,7 +187,7 @@ export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
                       {sighting.note}
                     </Text>
                   )}
-                  {sighting.reporter_id && (
+                  {sighting.sighting_contact && (
                     <Text style={{ color: "#1E88E5", fontWeight: "600" }}>
                       Contact reporter
                     </Text>

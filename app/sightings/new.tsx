@@ -1,18 +1,17 @@
-import { getCurrentLocation } from "@/components/get-current-location";
+import { getCurrentLocationV1 } from "@/components/get-current-location";
 import DefaultPageHeader from "@/components/header/default-header";
 import { supabase } from "@/components/supabase-client";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function Sighting() {
-  const {id } = useLocalSearchParams();
-  console.log("new sighting by id", id);
-  
+  const { id, petId } = useLocalSearchParams();
+
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState("");
   const [breed, setBreed] = useState("");
@@ -49,27 +48,55 @@ export default function Sighting() {
     }
   }, [location, colors, species, features]);
 
+  useEffect(() => {
+    if (id) {
+      setLoading(true);
+      supabase
+        .from("sightings")
+        .select("*")
+        .eq("id", id)
+        .single()
+        .then(({ data, error }) => {
+          console.log("data", data);
+          console.log("Error", error);
+          setColors(data.colors);
+          setBreed(data.breed);
+          setSpecies(data.species);
+          setGender(data.gender);
+          setFeatures(data.features);
+        });
+    }
+
+    setLoading(false);
+  }, [id]);
+
   async function saveSighting() {
+    console.log("save");
     if (extra_info.trim()) {
       router.navigate("/");
       return;
     }
+
+    const payload = {
+      colors,
+      breed,
+      species,
+      gender,
+      features,
+      photo,
+      last_seen_location: location,
+      last_seen_long: coords?.longitude,
+      last_seen_lat: coords?.latitude,
+      last_seen_time: new Date().toISOString(),
+    };
+
+    if (petId) {
+      payload.pet_id = petId;
+    }
     setLoading(true);
-    const { error } = await supabase.from("sightings").insert([
-      {
-        colors,
-        breed,
-        species,
-        gender,
-        features,
-        photo,
-        location,
-        longitude: coords?.longitude,
-        latitude: coords?.latitude,
-        last_seen_time: new Date().toISOString(),
-      },
-    ]);
+    const { error } = await supabase.from("sightings").insert([payload]);
     setLoading(false);
+    console.log("err", error);
     if (error) {
       showMessage({
         message: "Error saving sighting info. Please try again.",
@@ -77,6 +104,12 @@ export default function Sighting() {
         icon: "warning",
       });
       return;
+    } else {
+      showMessage({
+        message: "Successfully added pet sighting.",
+        type: "success",
+        icon: "success",
+      });
     }
 
     router.navigate("/sightings/contact");
@@ -154,7 +187,7 @@ export default function Sighting() {
           />
           <Button
             icon={"map-marker-radius-outline"}
-            onPress={() => getCurrentLocation(setLocation, setCoords)}
+            onPress={() => getCurrentLocationV1(setLocation, setCoords)}
             mode="elevated"
             style={styles.button}
           >
