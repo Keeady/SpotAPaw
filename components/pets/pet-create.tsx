@@ -1,20 +1,18 @@
 import { Pet } from "@/model/pet";
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Card, RadioButton, Text, TextInput } from "react-native-paper";
-import * as ImagePicker from "expo-image-picker";
+import React, { useState } from "react";
+import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import pickImage from "../image-picker";
-import { supabase } from "../supabase-client";
-import { AuthContext } from "../Provider/auth-provider";
-import DefaultPageHeader from "../header/default-header";
 
-export default function CreatePetDetails(
-  handleSubmit: () => Promise<void>,
-  setProfileInfo: (v: Pet) => void
-) {
-  const [pet, setPet] = useState<Pet | undefined>();
+type CreatePetDetailsProps = {
+  handleSubmit: (petData: Pet) => Promise<void>;
+};
+
+export default function CreatePetDetails({
+  handleSubmit,
+}: CreatePetDetailsProps) {
+  const [pet, setPet] = useState<Pet>();
   const handleChange = (fieldName: string, fieldValue: string) => {
-    setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
     setPet((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
@@ -122,7 +120,7 @@ export default function CreatePetDetails(
             )}
           </View>
 
-          <Button mode="contained" onPress={() => handleSubmit()}>
+          <Button mode="contained" onPress={() => handleSubmit(pet)}>
             Save Pet
           </Button>
         </View>

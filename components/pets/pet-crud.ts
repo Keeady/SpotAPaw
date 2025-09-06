@@ -3,6 +3,7 @@ import { showMessage } from "react-native-flash-message";
 import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
+import { Pet } from "@/model/pet";
 
 export const onConfirmDelete = useCallback((petName: string, petId: string, userId: string) =>
     Alert.alert(
@@ -79,4 +80,39 @@ export const onConfirmDelete = useCallback((petName: string, petId: string, user
       });
     }
     router.replace(`/(app)/pets/${id}`);
+  }
+
+  export async function createNewPet(profileInfo: Pet, userId: string) {
+    if (!profileInfo) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("pets")
+      .insert([
+        {
+          name: profileInfo.name,
+          species: profileInfo.species,
+          breed: profileInfo.breed,
+          age: profileInfo.age,
+          gender: profileInfo.gender,
+          colors: profileInfo.colors,
+          features: profileInfo.features,
+          photo: profileInfo.photo,
+          owner_id: userId,
+        },
+      ])
+      .select();
+
+    if (error) {
+      showMessage({
+        message: "Error creating pet profile. Please try again.",
+        type: "warning",
+        icon: "warning",
+      });
+      return;
+    } else {
+      router.replace(`/(app)/pets`);
+    }
+
   }
