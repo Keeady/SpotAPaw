@@ -102,6 +102,18 @@ export default function editPet() {
       return;
     }
 
+    const { error: error1} = await supabase
+    .from("sighting_pet_owner")
+    .insert([{
+      pet_id: id,
+      owner_id: user?.id
+    }]);
+
+    if (error1) {
+      console.log("error", error1)
+      return;
+    }
+
     const { data, error } = await supabase
       .from("sightings")
       .insert({

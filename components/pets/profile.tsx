@@ -1,8 +1,10 @@
+import { User } from "@supabase/supabase-js";
 import React from "react";
 import { View, Image, StyleSheet } from "react-native";
 import { Card, Text, Chip, Divider, Button } from "react-native-paper";
 
 type PetProfile = {
+  id: string;
   name: string;
   breed?: string;
   gender?: string;
@@ -17,20 +19,21 @@ type PetProfile = {
 
 type PetProfileCardProps = {
   petProfile: PetProfile;
-  onEdit: () => void;
-  onPetFound: () => void;
+  onDeletePet: () => void;
+  onEditPet: () => void;
   onPetLost: () => void;
-  createTwoButtonAlert: () => void;
+  onPetFound: () => void;
 };
 
 const PetProfileCard: React.FC<PetProfileCardProps> = ({
   petProfile,
-  onEdit,
+  onEditPet,
   onPetFound,
   onPetLost,
-  createTwoButtonAlert,
+  onDeletePet,
 }) => {
   const {
+    id,
     name,
     breed,
     gender,
@@ -95,7 +98,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             theme={{ colors: { primary: "blue" } }}
             mode={"text"}
             style={{ backgroundColor: "transparent", marginTop: 15 }}
-            onPress={() => onEdit()}
+            onPress={onEditPet}
             compact={true}
           >
             Edit
@@ -106,7 +109,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             theme={{ colors: { primary: "red" } }}
             mode={"text"}
             style={{ backgroundColor: "transparent", marginTop: 15 }}
-            onPress={() => createTwoButtonAlert()}
+            onPress={onDeletePet}
             compact={true}
           >
             Delete
@@ -118,7 +121,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
               theme={{ colors: { primary: "green" } }}
               mode={"text"}
               style={{ backgroundColor: "transparent", marginTop: 15 }}
-              onPress={() => onPetFound()}
+              onPress={onPetFound}
               compact={true}
             >
               Report Pet Found
@@ -130,7 +133,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
               theme={{ colors: { primary: "purple" } }}
               mode={"text"}
               style={{ backgroundColor: "transparent", marginTop: 15 }}
-              onPress={() => onPetLost()}
+              onPress={onPetLost}
               compact={true}
             >
               Report Lost Pet

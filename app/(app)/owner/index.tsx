@@ -1,13 +1,13 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
-import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
+import { Person } from "@/model/person";
 
 export default function OwnerList() {
-  const ownerInfo = useRef(undefined);
+  const ownerInfo = useRef<Person>(undefined);
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -84,7 +84,6 @@ export default function OwnerList() {
         type: "success",
         icon: "success",
       });
-      // router.replace(`/(app)/owner`);
     }
   }
 

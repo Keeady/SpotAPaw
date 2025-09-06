@@ -2,42 +2,38 @@ import { Button, Card, Divider, Text } from "react-native-paper";
 import { Alert, Image, StyleSheet, View } from "react-native";
 import { Pet } from "@/model/pet";
 import PetProfileCard from "./profile";
+import { User } from "@supabase/supabase-js";
+import { useCallback, useContext } from "react";
+import { AuthContext } from "../Provider/auth-provider";
 
-export default function PetDetails(
-  pet: Pet,
-  onDelete: () => void,
-  onEdit: () => void,
-  onPetLost: () => void,
-  onPetFound: () => void
-) {
+type RenderPetDetailsProps = {
+  pet: Pet;
+  onDeletePet: () => void;
+  onEditPet: () => void;
+  onPetLost: () => void;
+  onPetFound: () => void;
+};
+
+export default function RenderPetDetails({
+  pet,
+  onDeletePet,
+  onEditPet,
+  onPetFound,
+  onPetLost,
+}: RenderPetDetailsProps) {
+    const {user} = useContext(AuthContext);
+
   if (!pet) {
     return <Text>No pet details found</Text>;
   }
 
-  const createTwoButtonAlert = () =>
-    Alert.alert(
-      `Deleting Pet ${pet.name}`,
-      `Are you sure you want to delete ${pet.name}'s profile?`,
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "Yes, please delete", onPress: () => onDelete() },
-      ],
-      {
-        userInterfaceStyle: "dark",
-      }
-    );
-
   return (
     <PetProfileCard
-      petProfile={{...pet, status: pet.is_lost ? "lost" : "safe"}}
-      onEdit={onEdit}
+      petProfile={{ ...pet, status: pet.is_lost ? "lost" : "safe" }}
+      onEditPet={onEditPet}
       onPetFound={onPetFound}
       onPetLost={onPetLost}
-      createTwoButtonAlert={createTwoButtonAlert}
+      onDeletePet={onDeletePet}
     />
   );
 }
