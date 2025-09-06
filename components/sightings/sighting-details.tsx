@@ -7,39 +7,57 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
-import { Card, Avatar, Text, Divider, IconButton } from "react-native-paper";
+import {
+  Card,
+  Avatar,
+  Text,
+  Divider,
+  IconButton,
+  Button,
+  Chip,
+} from "react-native-paper";
 import { formatDistanceToNow } from "date-fns";
+import { AuthContext } from "../Provider/auth-provider";
 
-export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
+export default function SightingDetail({
+  sightings,
+  petSummary,
+  onAddSighting,
+  onEdit,
+  claimPet,
+  claimed,
+  hasOwner,
+}: {
+  claimed: boolean;
+  onEdit?: () => void;
+  onAddSighting: () => void;
+  claimPet?: () => void;
+  hasOwner: boolean;
+}) {
+  console.log("  claimed, hasOwner", claimed, hasOwner);
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
       <Card>
         <Card.Title
-          title={pet?.name || "Unknown"}
+          title={petSummary?.name || "Unknown"}
           titleVariant="titleLarge"
           right={() => (
             <View style={{ flexDirection: "row" }}>
-              {onEdit && (
+              {onAddSighting && (
                 <IconButton
                   icon="pencil-plus"
                   iconColor="blue"
-                  onPress={() => onEdit(pet?.id)}
-                />
-              )}
-              {onPetFound && (
-                <IconButton
-                  icon="check-bold"
-                  iconColor="green"
-                  onPress={() => onPetFound()}
+                  onPress={() => onAddSighting()}
+                  
                 />
               )}
             </View>
           )}
         />
         <Card.Content>
-          {pet?.photo && (
+          {petSummary?.photo && (
             <Image
-              source={{ uri: pet?.photo }}
+              source={{ uri: petSummary?.photo }}
               resizeMode="cover"
               style={{
                 width: "100%",
@@ -51,25 +69,42 @@ export default function SightingDetail({ sightings, pet, onEdit, onPetFound }) {
           <View
             style={{ marginTop: 10, marginBottom: 10, flexDirection: "row" }}
           >
-            {pet?.color && <Text>{pet?.color}, </Text>}
-            {pet?.gender && <Text>{pet?.gender}, </Text>}
-            {pet?.breed && <Text>{pet?.breed}</Text>}
+            {petSummary?.color && <Text>{petSummary?.color}, </Text>}
+            {petSummary?.gender && <Text>{petSummary?.gender}, </Text>}
+            {petSummary?.breed && <Text>{petSummary?.breed}</Text>}
           </View>
-          {pet?.features && (
+          {petSummary?.features && (
             <View
               style={{ marginTop: 10, marginBottom: 10, flexDirection: "row" }}
             >
-              <Text>{pet?.features}</Text>
+              <Text>{petSummary?.features}</Text>
             </View>
           )}
-          {pet?.note && (
+          {petSummary?.note && (
             <View
               style={{ marginTop: 10, marginBottom: 10, flexDirection: "row" }}
             >
-              <Text>{pet?.note}</Text>
+              <Text>{petSummary?.note}</Text>
             </View>
           )}
         </Card.Content>
+        <Card.Actions>
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            {claimed && (
+              <Chip mode="outlined" disabled={claimed}>
+                Owner Pending
+              </Chip>
+            )}
+            {!hasOwner && claimPet && (
+              <Chip mode="flat" onPress={() => claimPet()} style={{backgroundColor: "#6684f3ff"}}>
+                This is my pet.
+              </Chip>
+            )}
+            {onEdit && (
+              <Button onPress={() => onEdit()}>Edit Pet details</Button>
+            )}
+          </View>
+        </Card.Actions>
       </Card>
 
       <Text

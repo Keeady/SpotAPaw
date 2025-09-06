@@ -16,7 +16,7 @@ export default function editPet() {
   const [last_seen_location, setLastSeenLocation] = useState("");
   const [coords, setLastSeenCoords] = useState<Location.LocationObjectCoords>();
   const [last_seen_time, setLastSeenTime] = useState("");
-/*
+  /*
   useEffect(() => {
     console.log("last_seen_location", last_seen_location)
     console.log("last_seen_time", last_seen_time)
@@ -92,8 +92,7 @@ export default function editPet() {
         await handleLostPet();
         //router.navigate(`/(app)/owner`);
       } else {
-      router.replace(`/(app)/pets/${id}`);
-
+        router.replace(`/(app)/pets/${id}`);
       }
     }
   };
@@ -118,12 +117,12 @@ export default function editPet() {
         last_seen_location: profileInfo.last_seen_location,
         last_seen_lat: profileInfo?.last_seen_lat,
         last_seen_long: profileInfo.last_seen_long,
-        pet_id: id
+        pet_id: id,
       })
       .select();
 
     if (error) {
-            console.log("errpr", error)
+      console.log("errpr", error);
 
       showMessage({
         message: "Error updating pet sighting.",
@@ -139,11 +138,10 @@ export default function editPet() {
       if (is_lost) {
         router.navigate(`/(app)/owner`);
       } else {
-      router.replace(`/(app)/pets/${id}`);
-
+        router.replace(`/(app)/pets/${id}`);
       }
     }
-  }
+  };
 
   return EditPetDetails(
     handleSubmit,

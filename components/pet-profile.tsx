@@ -96,10 +96,14 @@ export function RenderShortProfile(data) {
         </View>
       )}
       <Card.Content style={{ alignItems: "center" }}>
-        <Text variant="headlineLarge">{pet.name}</Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{pet.name}</Text>
         <Divider />
-        <Text variant="bodyLarge">{pet.breed}</Text>
-        <Text variant="bodyLarge">{pet.age} years old</Text>
+        <Text style={{ fontSize: 16, color: "#555", marginTop: 2 }}>
+          {pet.breed}
+        </Text>
+        <Text style={{ fontSize: 16, color: "#555", marginTop: 2 }}>
+          {pet.age} years old
+        </Text>
       </Card.Content>
     </Card>
   );
@@ -109,6 +113,7 @@ export function RenderSightingProfile(data) {
   const pet = data.pet;
   const reporter = pet.sighting_contact?.[0]?.name;
   const reporterPhone = pet.sighting_contact?.[0]?.phone;
+  console.log("reporter", reporter, reporterPhone);
   return (
     <Card
       style={{
@@ -195,7 +200,7 @@ export function RenderSightingProfile(data) {
           >
             Add Details
           </Button>
-          {reporter && (
+          {/*reporter && (
             <Button
               style={{ width: "100%" }}
               mode="outlined"
@@ -203,7 +208,7 @@ export function RenderSightingProfile(data) {
             >
               Contact {reporter}
             </Button>
-          )}
+          )*/}
         </View>
       </Card.Actions>
     </Card>

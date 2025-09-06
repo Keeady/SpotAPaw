@@ -6,6 +6,7 @@ export function mergeSightings(sightings) {
   return sightings.reduce((merged, s) => ({
     ...merged,
     id: merged.id ?? s.id,
+    pet_id: merged.pet_id ?? s.pet_id,
     name: merged.name ?? s.name,
     photo: merged.photo ?? s.photo,
     last_seen_location: merged.last_seen_location ?? s.last_seen_location,
@@ -23,6 +24,7 @@ export function usePetSightings(petId:string) {
   const [error, setError] = useState(null);
   const [timeline, setTimeline] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [sightingPetOwner, setSightingPetOwner] = useState(null)
 
   useEffect(() => {
     if (!petId) return;
@@ -33,9 +35,11 @@ export function usePetSightings(petId:string) {
 
       const { data, error } = await supabase
         .from("sightings")
-        .select("*")
+        .select("*, sighting_pet_owner (owner_id)")
         .eq("pet_id", petId)
         .order("created_at", { ascending: false });
+
+        console.log("error", error)
 
       if (error) {
         setError(error);
@@ -43,7 +47,8 @@ export function usePetSightings(petId:string) {
         return;
       }
 
-      setTimeline(data);              // full timeline for display
+      setTimeline(data);
+      setSightingPetOwner(data[0].sighting_pet_owner);
       setSummary(mergeSightings(data)); // merged summary
       setLoading(false);
     }
@@ -51,5 +56,5 @@ export function usePetSightings(petId:string) {
     fetchSightings();
   }, [petId]);
 
-  return { loading, error, timeline, summary };
+  return { loading, error, timeline, summary, sightingPetOwner };
 }
