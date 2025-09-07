@@ -23,6 +23,7 @@ export default function Sighting() {
   const [coords, setCoords] = useState<Location.LocationObjectCoords>();
   const [extra_info, setExtraInfo] = useState("");
   const [empty, setEmpty] = useState(true);
+  const [linked_sighting_id, setLinkedSightingId] = useState();
 
   const router = useRouter();
 
@@ -62,6 +63,8 @@ export default function Sighting() {
           setSpecies(data.species);
           setGender(data.gender);
           setFeatures(data.features);
+          setPhoto(data.photo);
+          setLinkedSightingId(data.linked_sighting_id)
         });
     }
 
@@ -85,9 +88,10 @@ export default function Sighting() {
       last_seen_long: coords?.longitude,
       last_seen_lat: coords?.latitude,
       last_seen_time: new Date().toISOString(),
+      linked_sighting_id: linked_sighting_id ?? id
     };
 
-    if (petId) {
+    if (!petId && petId !== "null") {
       payload.pet_id = petId;
     }
     setLoading(true);

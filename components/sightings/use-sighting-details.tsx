@@ -35,8 +35,8 @@ export function usePetSightings(petId: string, sightingId: string) {
     const { data, error } = await supabase
       .from("sightings")
       .select("*")
-      .eq("id", sightingId)
-      .single();
+      .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
+      .order("created_at", { ascending: false });
 
     if (error) {
       setError(error);
@@ -44,8 +44,8 @@ export function usePetSightings(petId: string, sightingId: string) {
       return;
     }
 
-    setTimeline([data]);
-    setSummary(data);
+    setTimeline(data);
+    setSummary(mergeSightings(data)); // merged summary
     setLoading(false);
   }
 
