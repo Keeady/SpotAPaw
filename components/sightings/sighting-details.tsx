@@ -18,6 +18,23 @@ import {
 } from "react-native-paper";
 import { formatDistanceToNow } from "date-fns";
 import { AuthContext } from "../Provider/auth-provider";
+import { useState } from "react";
+import ImageViewing from "react-native-image-viewing";
+
+function dedupPhotos(sightings) {
+  const seen = new Set();
+  const photos = [];
+
+  sightings.forEach((s) => {
+    console.log("s.photo", s.photo)
+    if (s.photo && !seen.has(s.photo)) {
+      seen.add(s.photo);
+      photos.push(s.photo);
+    }
+  });
+
+  return photos;
+}
 
 export default function SightingDetail({
   sightings,
@@ -34,7 +51,10 @@ export default function SightingDetail({
   claimPet?: () => void;
   hasOwner: boolean;
 }) {
-  console.log("  claimed, hasOwner", claimed, hasOwner);
+  const [isVisible, setIsVisible] = useState(false);
+  const uniquePhotos = dedupPhotos(sightings);
+  const images = uniquePhotos?.map((url) => ({ uri: url })) || [];
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
       <Card>
@@ -48,22 +68,27 @@ export default function SightingDetail({
                   icon="pencil-plus"
                   iconColor="blue"
                   onPress={() => onAddSighting()}
-                  
                 />
               )}
             </View>
           )}
         />
         <Card.Content>
-          {petSummary?.photo && (
-            <Image
-              source={{ uri: petSummary?.photo }}
-              resizeMode="cover"
-              style={{
-                width: "100%",
-                height: 300,
-              }}
-            />
+          {petSummary?.photo ? (
+            <TouchableOpacity onPress={() => setIsVisible(true)}>
+              <Image
+                source={{ uri: petSummary?.photo }}
+                resizeMode="cover"
+                style={{
+                  width: "100%",
+                  height: 300,
+                }}
+              />
+            </TouchableOpacity>
+          ) : (
+            <View style={[styles.image, styles.placeholder]}>
+              <Text style={styles.placeholderText}>No Photo</Text>
+            </View>
           )}
           <Divider />
           <View
@@ -96,7 +121,11 @@ export default function SightingDetail({
               </Chip>
             )}
             {!hasOwner && claimPet && (
-              <Chip mode="flat" onPress={() => claimPet()} style={{backgroundColor: "#6684f3ff"}}>
+              <Chip
+                mode="flat"
+                onPress={() => claimPet()}
+                style={{ backgroundColor: "#6684f3ff" }}
+              >
                 This is my pet.
               </Chip>
             )}
@@ -185,10 +214,12 @@ export default function SightingDetail({
                   }
                   left={(props) =>
                     sighting.photo ? (
-                      <Avatar.Image
-                        size={40}
-                        source={{ uri: sighting.photo }}
-                      />
+                      <TouchableOpacity onPress={() => setIsVisible(true)}>
+                        <Avatar.Image
+                          size={40}
+                          source={{ uri: sighting.photo }}
+                        />
+                      </TouchableOpacity>
                     ) : (
                       <Avatar.Icon {...props} icon="paw" />
                     )
@@ -202,9 +233,15 @@ export default function SightingDetail({
                       flexDirection: "row",
                     }}
                   >
-                    {sighting?.color && <Text>{sighting?.color}, </Text>}
-                    {sighting?.gender && <Text>{sighting?.gender}, </Text>}
-                    {sighting?.breed && <Text>{sighting?.breed}</Text>}
+                    {sighting?.color && (
+                      <Text style={styles.detail}>{sighting?.color}, </Text>
+                    )}
+                    {sighting?.gender && (
+                      <Text style={styles.detail}>{sighting?.gender}, </Text>
+                    )}
+                    {sighting?.breed && (
+                      <Text style={styles.detail}>{sighting?.breed}</Text>
+                    )}
                   </View>
                   {sighting.features && (
                     <Text
@@ -233,6 +270,15 @@ export default function SightingDetail({
           </View>
         );
       })}
+      <View>
+        {/* Fullscreen Viewer */}
+        <ImageViewing
+          images={images}
+          imageIndex={0}
+          visible={isVisible}
+          onRequestClose={() => setIsVisible(false)}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -252,5 +298,56 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#ddd",
     marginTop: 5,
+  },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  fullImage: {
+    width: "90%",
+    height: "70%",
+    borderRadius: 12,
+  },
+  // card styles unused
+  card: {
+    margin: 12,
+    borderRadius: 16,
+    overflow: "hidden",
+    elevation: 3,
+  },
+  image: {
+    width: "100%",
+    height: 180,
+    resizeMode: "cover",
+  },
+  placeholder: {
+    backgroundColor: "#CFD8DC",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  placeholderText: {
+    color: "#546E7A",
+    fontSize: 14,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  detail: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 2,
   },
 });
