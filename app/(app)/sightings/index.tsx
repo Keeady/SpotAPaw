@@ -1,11 +1,10 @@
-import { RenderShortProfile, RenderSightingProfile } from "@/components/pet-profile";
+import { RenderSightingProfile } from "@/components/pet-profile";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Text } from "react-native-paper";
 
 export default function SightingList() {
   const [sightings, setSightings] = useState([]);
@@ -25,14 +24,17 @@ export default function SightingList() {
       .from("sightings")
       .select("*, sighting_contact (sighting_id, name, phone)")
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data }) => {
         setLoading(false);
         if (data) {
+          const sightings = [];
           // merge data by pet id
           // create a summary from
           const latestByPet = Object.values(
             data.reduce((acc, sighting) => {
-              if (!acc[sighting.pet_id]) {
+              if (!sighting.pet_id) {
+                sightings.push(sighting);
+              } else if (!acc[sighting.pet_id]) {
                 acc[sighting.pet_id] = sighting;
               } else {
                 const merged = acc[sighting.pet_id];
@@ -48,14 +50,14 @@ export default function SightingList() {
                   last_seen_location:
                     merged.last_seen_location ?? sighting.last_seen_location,
                   last_seen_time: merged.last_seen_time,
-                  sighting_contact: merged.sighting_contact
+                  sighting_contact: merged.sighting_contact,
                 };
               }
 
               return acc;
             }, {})
           );
-          setSightings(latestByPet);
+          setSightings([...sightings, ...latestByPet]);
         }
       });
   }, []);
@@ -64,22 +66,26 @@ export default function SightingList() {
     <View style={styles.container}>
       <Text variant="titleLarge">Recent Pet Sightings in your area!</Text>
       <FlatList
-              data={sightings}
-              keyExtractor={(item) => item.pet_id}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => router.push(`/sightings/${item.pet_id}`)}>
-                  <RenderSightingProfile pet={item} />
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={
-                <Text
-                  style={{ alignSelf: "center", marginBottom: 40, marginTop: 40 }}
-                >
-                  No Pet sightings to display
-                </Text>
-              }
-              //style={{ marginBottom: 20 }}
-            />
+        data={sightings}
+        keyExtractor={(item) => item.pet_id ?? item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() =>
+              router.push(`/sightings/${item.id}/?petId=${item.pet_id}`)
+            }
+          >
+            <RenderSightingProfile pet={item} />
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={
+          <Text
+            style={{ alignSelf: "center", marginBottom: 40, marginTop: 40 }}
+          >
+            No Pet sightings to display
+          </Text>
+        }
+        //style={{ marginBottom: 20 }}
+      />
     </View>
   );
 }

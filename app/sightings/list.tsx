@@ -16,13 +16,17 @@ export default function SightingAnonList() {
       .from("sightings")
       .select("*")
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        console.log(data, error)
         if (data) {
+          const sightings = [];
           // merge data by pet id
           // create a summary from
           const latestByPet = Object.values(
             data.reduce((acc, sighting) => {
-              if (!acc[sighting.pet_id]) {
+              if (!sighting.pet_id) {
+                sightings.push(sighting);
+              } else if (!acc[sighting.pet_id]) {
                 acc[sighting.pet_id] = sighting;
               } else {
                 const merged = acc[sighting.pet_id];
@@ -44,7 +48,7 @@ export default function SightingAnonList() {
               return acc;
             }, {})
           );
-          setSightings(latestByPet);
+          setSightings([...sightings, ...latestByPet]);
         }
       });
 
@@ -56,10 +60,12 @@ export default function SightingAnonList() {
       <Text variant="titleLarge">Recent Pet Sightings in your area!</Text>
       <FlatList
         data={sightings}
-        keyExtractor={(item) => item.pet_id}
+        keyExtractor={(item) => item.pet_id ?? item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => router.push(`/sightings/${item.pet_id}`)}
+            onPress={() =>
+              router.push(`/sightings/${item.id}/?petId=${item.pet_id}`)
+            }
           >
             <RenderSightingProfile pet={item} />
           </TouchableOpacity>
