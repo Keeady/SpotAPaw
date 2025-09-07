@@ -7,14 +7,20 @@ import * as Location from "expo-location";
 import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
 
-export default function EditPetDetails(
+export default function EditPetSightingDetails(
   handleSubmit: () => Promise<void>,
   setProfileInfo: (v: Pet) => void,
+  setSightingInfo: (v) => void,
   pet?: Pet,
+  sighting?: any,
   is_lost?: boolean
 ) {
-  const handleChange = (fieldName: string, fieldValue: string | number) => {
+  const handleProfileChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
+  };
+
+  const handleSightingChange = (fieldName: string, fieldValue: string | number) => {
+    setSightingInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
   return (
@@ -39,19 +45,19 @@ export default function EditPetDetails(
                 label={"Last Seen Location"}
                 placeholder="Enter Street names, Cross Streets, Signs, Markers"
                 value={pet?.last_seen_location}
-                onChangeText={(v) => handleChange("last_seen_location", v)}
+                onChangeText={(v) => handleSightingChange("last_seen_location", v)}
                 mode={"outlined"}
               />
               <Button
                 icon={"map-marker-radius-outline"}
                 onPress={() =>
-                  getCurrentLocationV2(handleChange)
+                  getCurrentLocationV2(handleSightingChange)
                 }
                 mode="elevated"
                 style={styles.button}
               >
                 <Text>
-                  {pet?.last_seen_location ? "Location saved" : "Use My Current Location"}
+                  {sighting?.last_seen_location ? "Location saved" : "Use My Current Location"}
                 </Text>
               </Button>
             </View>
@@ -62,8 +68,8 @@ export default function EditPetDetails(
               <DatePicker
                 dateLabel="Last Seen Date"
                 timeLabel="Last Seen Time"
-                value={pet?.last_seen_time ? new Date(pet?.last_seen_time) : new Date()}
-                onChange={(v) => handleChange("last_seen_time", v)}
+                value={sighting?.last_seen_time ? new Date(sighting?.last_seen_time) : new Date()}
+                onChange={(v) => handleSightingChange("last_seen_time", v)}
               />
             </View>
           </View>
@@ -76,21 +82,21 @@ export default function EditPetDetails(
             <TextInput
               label={"Pet Name"}
               value={pet?.name}
-              onChangeText={(v) => handleChange("name", v)}
+              onChangeText={(v) => handleProfileChange("name", v)}
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
               label={"Species (e.g., Dog, Cat)"}
               value={pet?.species}
-              onChangeText={(v) => handleChange("species", v)}
+              onChangeText={(v) => handleProfileChange("species", v)}
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
               label={"Breed"}
               value={pet?.breed}
-              onChangeText={(v) => handleChange("breed", v)}
+              onChangeText={(v) => handleProfileChange("breed", v)}
             />
           </View>
 
@@ -98,7 +104,7 @@ export default function EditPetDetails(
             <TextInput
               label={"Age"}
               value={pet?.age?.toString() || ""}
-              onChangeText={(v) => handleChange("age", v)}
+              onChangeText={(v) => handleProfileChange("age", v)}
               keyboardType="numeric"
             />
           </View>
@@ -106,7 +112,7 @@ export default function EditPetDetails(
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Text variant="labelLarge">Gender</Text>
             <RadioButton.Group
-              onValueChange={(v) => handleChange("gender", v)}
+              onValueChange={(v) => handleProfileChange("gender", v)}
               value={pet?.gender || ""}
             >
               <View
@@ -129,7 +135,7 @@ export default function EditPetDetails(
             <TextInput
               label={"Colors"}
               value={pet?.colors}
-              onChangeText={(v) => handleChange("colors", v)}
+              onChangeText={(v) => handleProfileChange("colors", v)}
             />
           </View>
 
@@ -137,7 +143,7 @@ export default function EditPetDetails(
             <TextInput
               label={"Distinctive Features"}
               value={pet?.features}
-              onChangeText={(v) => handleChange("features", v)}
+              onChangeText={(v) => handleProfileChange("features", v)}
               multiline
             />
           </View>
@@ -148,7 +154,7 @@ export default function EditPetDetails(
             <Button
               icon="camera"
               mode="outlined"
-              onPress={() => pickImage(handleChange)}
+              onPress={() => pickImage(handleProfileChange)}
             >
               Choose File
             </Button>

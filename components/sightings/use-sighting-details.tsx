@@ -31,14 +31,12 @@ export function usePetSightings(petId: string, sightingId: string) {
   async function fetchSightingsBySightingId(sightingId: string) {
     setLoading(true);
     setError(null);
-    console.log("sightingId", sightingId);
 
     const { data, error } = await supabase
       .from("sightings")
       .select("*")
       .eq("id", sightingId)
       .single();
-    console.log("fetchSightingsBySightingId error", error);
 
     if (error) {
       setError(error);
@@ -54,7 +52,6 @@ export function usePetSightings(petId: string, sightingId: string) {
   async function fetchSightingsByPetId(petId: string) {
     setLoading(true);
     setError(null);
-    console.log("fetchSightingsByPetId", petId);
     if (!petId) {
       return;
     }
@@ -64,8 +61,6 @@ export function usePetSightings(petId: string, sightingId: string) {
       .select("*")
       .eq("pet_id", petId)
       .order("created_at", { ascending: false });
-
-    console.log("fetchSightingsByPetId error", error);
 
     if (error) {
       setError(error);
@@ -79,7 +74,6 @@ export function usePetSightings(petId: string, sightingId: string) {
   }
 
   useEffect(() => {
-    console.log("petId sightingId", petId, sightingId, petId == null, petId === null, !petId)
     if (!petId || petId === null || petId === "null") {
       fetchSightingsBySightingId(sightingId);
       return;

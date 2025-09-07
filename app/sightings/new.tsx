@@ -57,8 +57,6 @@ export default function Sighting() {
         .eq("id", id)
         .single()
         .then(({ data, error }) => {
-          console.log("data", data);
-          console.log("Error", error);
           setColors(data.colors);
           setBreed(data.breed);
           setSpecies(data.species);
@@ -71,7 +69,6 @@ export default function Sighting() {
   }, [id]);
 
   async function saveSighting() {
-    console.log("save");
     if (extra_info.trim()) {
       router.navigate("/");
       return;
@@ -96,7 +93,6 @@ export default function Sighting() {
     setLoading(true);
     const { error } = await supabase.from("sightings").insert([payload]);
     setLoading(false);
-    console.log("err", error);
     if (error) {
       showMessage({
         message: "Error saving sighting info. Please try again.",

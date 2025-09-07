@@ -17,7 +17,6 @@ export default function SightingAnonList() {
       .select("*")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
-        console.log(data, error)
         if (data) {
           const sightings = [];
           // merge data by pet id

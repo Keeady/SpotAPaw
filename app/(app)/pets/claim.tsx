@@ -1,7 +1,7 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import ClaimSighting from "@/components/sightings/sighting-claim";
 import { supabase } from "@/components/supabase-client";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 
@@ -31,7 +31,6 @@ export default function ClaimLostPet() {
     supabase
       .from("sightings")
       .select("*")
-      .eq("pet_id", petId)
       .eq("id", sightingId)
       .single()
       .then(({ data, error }) => {
@@ -47,7 +46,7 @@ export default function ClaimLostPet() {
         .insert([
           {
             pet_id: selectedPetId,
-            sighting_pet_id: petId,
+            sighting_id: sightingId,
             owner_id: user?.id,
           },
         ])
@@ -59,12 +58,14 @@ export default function ClaimLostPet() {
           type: "warning",
           icon: "warning",
         });
+        return;
       } else {
         showMessage({
           message: "Successfully submitted Claim.",
           type: "success",
           icon: "success",
         });
+        router.navigate(`/(app)/sightings`);
       }
     },
     [user?.id]

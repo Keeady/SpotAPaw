@@ -8,7 +8,6 @@ import { supabase } from "@/components/supabase-client";
 
 export default function SightingProfile() {
   const { id: sightingId, petId } = useLocalSearchParams(); // pet id
-  console.log("Petid: ", petId, "Sighting: ", sightingId);
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState();
 
@@ -21,7 +20,7 @@ export default function SightingProfile() {
       supabase
         .from("pet_claims")
         .select("*")
-        .eq("sighting_pet_id", petId)
+        .eq("sighting_id", sightingId)
         .then(({ data }) => {
           if (data && data.length > 0) {
             setClaimed(true)
@@ -35,10 +34,9 @@ export default function SightingProfile() {
       supabase
         .from("pets")
         .select("*")
-        .eq("pet_id", petId)
+        .eq("id", petId)
         .single()
-        .then(({ data }) => {
-          console.log("pet by id", data)
+        .then(({ data, error }) => {
           if (data) {
             setPetOwner(data.owner_id)
           }
@@ -51,7 +49,6 @@ export default function SightingProfile() {
   }, [summary]);
 
   const onClaimPet = useCallback(() => {
-    console.log("This pet is mine");
     router.navigate(`/pets/claim/?petId=${petId}&sightingId=${sightingId}`);
   }, [summary]);
 
@@ -59,8 +56,8 @@ export default function SightingProfile() {
     if (!petId) {
       return;
     }
-    router.navigate(`/pets/${petId}`);
-  }, []);
+    router.navigate(`/sightings/edit/?petId=${petId}&sightingId=${sightingId}`);
+  }, [petId, sightingId]);
 
   if (error) {
     showMessage({
@@ -75,7 +72,8 @@ export default function SightingProfile() {
     return null;
   }
 
-  console.log("timeline", timeline)
+  const cleanedPetId = petId === "null" ? null : petId;
+
   return (
     <SightingDetail
       sightings={timeline}
@@ -83,8 +81,8 @@ export default function SightingProfile() {
       onAddSighting={onAddSighting}
       onEdit={user && user?.id === petOwner ? onEdit : undefined}
       claimPet={user && !petOwner ? onClaimPet : undefined}
-      claimed={claimed}
-      hasOwner={!!petOwner}
+      claimed={claimed && !cleanedPetId}
+      hasOwner={!!petOwner || !!cleanedPetId}
     />
   );
 }

@@ -39,6 +39,7 @@ export default function SightingList() {
               } else {
                 const merged = acc[sighting.pet_id];
                 acc[sighting.pet_id] = {
+                  id: merged.id ?? sighting.id,
                   pet_id: sighting.pet_id,
                   photo: merged.photo ?? sighting.photo,
                   name: merged.name ?? sighting.name,

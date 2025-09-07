@@ -16,23 +16,6 @@ export default function editPet() {
   const [last_seen_location, setLastSeenLocation] = useState("");
   const [coords, setLastSeenCoords] = useState<Location.LocationObjectCoords>();
   const [last_seen_time, setLastSeenTime] = useState("");
-  /*
-  useEffect(() => {
-    console.log("last_seen_location", last_seen_location)
-    console.log("last_seen_time", last_seen_time)
-    console.log("coords", coords)
-    if (last_seen_location) {
-      setProfileInfo((prev) => ({
-        ...prev,
-        [last_seen_location]: last_seen_location,
-      }));
-    }
-
-    if (last_seen_time) {
-
-      setProfileInfo((prev) => ({ ...prev, [last_seen_time]: last_seen_time }));
-    }
-  }, [last_seen_location, last_seen_time, setProfileInfo]);*/
 
   useEffect(() => {
     if (!id) {
