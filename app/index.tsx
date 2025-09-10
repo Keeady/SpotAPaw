@@ -24,7 +24,7 @@ export default function PublicHome() {
       <Button
         icon="paw"
         mode="outlined"
-        onPress={() => router.navigate("/sightings/list")}
+        onPress={() => router.navigate("/sightings/")}
         contentStyle={{ width: "100%" }}
         style={styles.button}
       >

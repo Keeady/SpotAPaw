@@ -3,6 +3,7 @@ import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { Button, TextInput, Text } from "react-native-paper";
 
 export default function SignUpScreen() {
@@ -12,6 +13,17 @@ export default function SignUpScreen() {
   const router = useRouter();
 
   async function signUpWithEmail() {
+    if (!email || !password) {
+      showMessage({
+        message: "Email and password are required. Please try again.",
+        type: "warning",
+        icon: "warning",
+        autoHide: true,
+        statusBarHeight: 100,
+      });
+      return;
+    }
+
     setLoading(true);
     const {
       data: { session },
@@ -21,10 +33,27 @@ export default function SignUpScreen() {
       password: password,
     });
 
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert("Please check your inbox for email verification!");
+    if (error) {
+      showMessage({
+        message: "An error occured. Please try again.",
+        type: "danger",
+        icon: "danger",
+        autoHide: true,
+        statusBarHeight: 100,
+      });
+    }
+    if (!session) {
+      showMessage({
+        message: "Please check your inbox for email verification!",
+        type: "success",
+        icon: "success",
+        autoHide: true,
+        statusBarHeight: 100,
+      });
+    }
+
     setLoading(false);
+    router.navigate("/");
   }
 
   return (
@@ -83,7 +112,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 10,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",

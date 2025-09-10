@@ -1,31 +1,50 @@
+import { getUserLocation } from "@/components/get-current-location";
 import { RenderSightingProfile } from "@/components/pet-profile";
-import { AuthContext } from "@/components/Provider/auth-provider";
+import SightingPage from "@/components/sightings/sighting-page";
 import { supabase } from "@/components/supabase-client";
+import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
 
-export default function SightingList() {
+export default function SightingAnonList() {
   const [sightings, setSightings] = useState([]);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
-  const { user } = useContext(AuthContext);
+  const radiusKm = 10;
 
   useEffect(() => {
-    if (!user) {
-      return;
+    setLoading(true);
+    /*
+    async function getLocationBox() {
+      const { lat, lng } = await getUserLocation();
+
+      // ~111 km per 1 degree latitude
+      const latDegree = radiusKm / 111;
+      // adjust longitude scaling by latitude
+      const lngDegree = radiusKm / (111 * Math.cos(lat * (Math.PI / 180)));
+
+      const minLat = lat - latDegree;
+      const maxLat = lat + latDegree;
+      const minLng = lng - lngDegree;
+      const maxLng = lng + lngDegree;
+
+      return {minLat, maxLat, minLng, maxLng}
     }
 
-    setLoading(true);
+    getLocationBox()
+    .then(({minLat, maxLat, minLng, maxLng}) => {
+
     supabase
       .from("sightings")
-      .select("*, sighting_contact (sighting_id, name, phone)")
+      .select("*")
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setLoading(false);
+      .gte("last_seen_lat", minLat)
+      .lte("last_seen_lat", maxLat)
+      .gte("last_seen_long", minLng)
+      .lte("last_seen_long", maxLng)
+      .then(({ data, error }) => {
         if (data) {
           const sightings = [];
           // merge data by pet id
@@ -39,7 +58,6 @@ export default function SightingList() {
               } else {
                 const merged = acc[sighting.pet_id];
                 acc[sighting.pet_id] = {
-                  id: merged.id ?? sighting.id,
                   pet_id: sighting.pet_id,
                   photo: merged.photo ?? sighting.photo,
                   name: merged.name ?? sighting.name,
@@ -51,7 +69,6 @@ export default function SightingList() {
                   last_seen_location:
                     merged.last_seen_location ?? sighting.last_seen_location,
                   last_seen_time: merged.last_seen_time,
-                  sighting_contact: merged.sighting_contact,
                 };
               }
 
@@ -61,11 +78,14 @@ export default function SightingList() {
           setSightings([...sightings, ...latestByPet]);
         }
       });
+    })
+    */
+
+    setLoading(false);
   }, []);
 
-  return (
+  const renderer = (sightings: PetSighting[]) => (
     <View style={styles.container}>
-      <Text variant="titleLarge">Recent Pet Sightings in your area!</Text>
       <FlatList
         data={sightings}
         keyExtractor={(item) => item.pet_id ?? item.id}
@@ -85,10 +105,18 @@ export default function SightingList() {
             No Pet sightings to display
           </Text>
         }
-        //style={{ marginBottom: 20 }}
+      />
+      <FAB
+        icon="paw"
+        label="Report"
+        mode="elevated"
+        onPress={() => router.push(`/sightings/new`)}
+        style={{ position: "absolute", bottom: 50, right: 50 }}
       />
     </View>
   );
+
+  return <SightingPage renderer={renderer} />;
 }
 
 const styles = StyleSheet.create({
@@ -105,7 +133,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 10,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",

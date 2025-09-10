@@ -6,13 +6,14 @@ import pickImage from "../image-picker";
 import * as Location from "expo-location";
 import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
+import { PetSighting } from "@/model/sighting";
 
 export default function EditPetSightingDetails(
   handleSubmit: () => Promise<void>,
-  setProfileInfo: (v: Pet) => void,
-  setSightingInfo: (v) => void,
+  setProfileInfo: React.Dispatch<React.SetStateAction<Pet | undefined>>,
+  setSightingInfo: React.Dispatch<React.SetStateAction<PetSighting | undefined>>,
   pet?: Pet,
-  sighting?: any,
+  sighting?: PetSighting,
   is_lost?: boolean
 ) {
   const handleProfileChange = (fieldName: string, fieldValue: string | number) => {
@@ -165,6 +166,15 @@ export default function EditPetSightingDetails(
                 <Text>No Photo</Text>
               </View>
             )}
+          </View>
+
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Notes"}
+              value={pet?.note}
+              onChangeText={(v) => handleProfileChange("note", v)}
+              multiline
+            />
           </View>
 
           <Button mode="contained" onPress={() => handleSubmit()}>

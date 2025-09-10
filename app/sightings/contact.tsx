@@ -1,7 +1,7 @@
 import { supabase } from "@/components/supabase-client";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, TextInput, Text } from "react-native-paper";
@@ -12,11 +12,19 @@ export default function SightingContact() {
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
   const { id } = useLocalSearchParams();
+  const [disableBtn, setDisabledBtn] = useState(true);
+
+  useEffect(() => {
+    if (name && phone) {
+      setDisabledBtn(false)
+    }
+  }, [name, phone])
 
   async function saveSightingContact() {
     if (extra_info.trim()) {
       return;
     }
+
     setLoading(true);
     const { error } = await supabase.from("sighting_contact").insert([
       {
@@ -32,6 +40,7 @@ export default function SightingContact() {
         type: "warning",
         icon: "warning",
       });
+      setLoading(false)
       return;
     } else {
       showMessage({
@@ -42,7 +51,7 @@ export default function SightingContact() {
     }
 
     setLoading(false);
-    router.navigate("/");
+    router.navigate("/sightings");
   }
   return (
     <View style={styles.container}>
@@ -85,7 +94,7 @@ export default function SightingContact() {
         <Text>Do you want to create an account?</Text>
         <Button
           mode="text"
-          disabled={loading}
+          disabled={loading || disableBtn}
           onPress={() => router.push("/(auth)/signup")}
         >
           Register

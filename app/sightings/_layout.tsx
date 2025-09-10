@@ -1,23 +1,26 @@
-import { AuthProvider } from "@/components/Provider/auth-provider";
-import { Slot, Stack } from "expo-router";
-import { Alert, Image, StyleSheet } from "react-native";
+import { Stack } from "expo-router";
+import { Image, StyleSheet } from "react-native";
+import FlashMessage from "react-native-flash-message";
 
 const styles = StyleSheet.create({
   logo: {
     width: 100,
-    //height: 10,
-    //marginBottom: 40,
-    //marginTop: 40,
+    marginLeft: 12,
     resizeMode: "contain",
-    //backgroundColor: "red"
+    height: 50
   },
+  button: {
+    marginRight: 12,
+  }
 });
 
 export default function Layout() {
   return (
+    <>
       <Stack
         screenOptions={{
-          headerTitle: () => (
+          title: "",
+          headerLeft: () => (
             <Image
               source={require("../../assets/images/logosmall.png")}
               style={styles.logo}
@@ -25,5 +28,7 @@ export default function Layout() {
           ),
         }}
       />
+      <FlashMessage position="bottom" />
+    </>
   );
 }

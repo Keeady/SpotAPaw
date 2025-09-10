@@ -1,7 +1,13 @@
 import * as Location from "expo-location";
+import AlertDialog from "./dialog";
+
+export type SightingLocation = {
+    lat: number;
+    lng: number;
+};
 
 export async function getCurrentLocationV2(
-  handleChange: (fieldName: string, fieldValue: string | number) => void,
+  handleChange: (fieldName: string, fieldValue: string | number) => void
 ) {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
@@ -32,6 +38,17 @@ export async function getCurrentLocationV1(
   if (location) {
     const address = await Location.reverseGeocodeAsync(location.coords);
     setLocation(address?.[0].formattedAddress || "");
-    setCoords(location.coords);    
+    setCoords(location.coords);
   }
+}
+
+export async function getUserLocation(): Promise<SightingLocation | undefined> {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== "granted") {
+    AlertDialog({title: "Location Needed", message:"Location permission is required for nearby sightings."});
+    return;
+  }
+
+  const { coords } = await Location.getCurrentPositionAsync({});
+  return { lat: coords.latitude, lng: coords.longitude };
 }

@@ -28,6 +28,7 @@ export default function editPet() {
       .eq("id", id)
       .single()
       .then(({ data, error }) => {
+        console.log("error", error);
         setPet(data);
         setProfileInfo(data);
       });
@@ -130,9 +131,6 @@ export default function editPet() {
   return EditPetDetails(
     handleSubmit,
     setProfileInfo,
-    setLastSeenLocation,
-    setLastSeenCoords,
-    setLastSeenTime,
     profileInfo,
     !!is_lost
   );

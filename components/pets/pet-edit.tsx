@@ -24,7 +24,7 @@ export default function EditPetDetails(
     >
       <View style={{ flexGrow: 1 }}>
         <View style={styles.title}>
-          <Text variant="titleLarge">Report a Pet Sighting!</Text>
+          <Text variant="titleLarge">Update Pet Details!</Text>
           <Text variant="titleSmall">
             Help find and protect your furry friends
           </Text>
@@ -159,6 +159,15 @@ export default function EditPetDetails(
                 <Text>No Photo</Text>
               </View>
             )}
+          </View>
+
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Note"}
+              value={pet?.note}
+              onChangeText={(v) => handleChange("note", v)}
+              multiline
+            />
           </View>
 
           <Button mode="contained" onPress={() => handleSubmit()}>

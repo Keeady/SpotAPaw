@@ -1,8 +1,10 @@
+import AlertDialog from "@/components/dialog";
 import HomePageHeader from "@/components/header/homepage-header";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { Button, TextInput, Text } from "react-native-paper";
 
 export default function SignInScreen() {
@@ -12,13 +14,31 @@ export default function SignInScreen() {
   const router = useRouter();
 
   async function signInWithEmail() {
+    if (!email || !password) {
+      showMessage({
+        message: "Email and password are required. Please try again.",
+        type: "warning",
+        icon: "warning",
+        autoHide: true,
+        statusBarHeight: 100
+      });
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
-    if (error) {Alert.alert(error.message);}
+    if (error) {
+       showMessage({
+        message: "Invalid email or password. Please try again.",
+        type: "danger",
+        icon: "danger",
+        autoHide: true,
+        statusBarHeight: 100
+      });
+    }
     setLoading(false);
   }
 
@@ -36,8 +56,8 @@ export default function SignInScreen() {
           value={email}
           placeholder="email@address.com"
           autoCapitalize={"none"}
-                  mode="outlined"
-/>
+          mode="outlined"
+        />
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
@@ -52,20 +72,24 @@ export default function SignInScreen() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button mode="contained" disabled={loading} onPress={() => signInWithEmail()}>
+        <Button
+          mode="contained"
+          disabled={loading}
+          onPress={() => signInWithEmail()}
+        >
           Sign in
         </Button>
       </View>
-            <View style={styles.secondary}>
-              <Text>Don't have an account?</Text>
-              <Button
-                mode="text"
-                disabled={loading}
-                onPress={() => router.push("/(auth)/signup")}
-              >
-                Register
-              </Button>
-            </View>
+      <View style={styles.secondary}>
+        <Text>Don't have an account?</Text>
+        <Button
+          mode="text"
+          disabled={loading}
+          onPress={() => router.push("/(auth)/signup")}
+        >
+          Register
+        </Button>
+      </View>
     </View>
   );
 }
@@ -81,7 +105,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 10,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",
@@ -97,7 +121,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 16,
   },
-    secondary: {
+  secondary: {
     flex: 1,
     flexDirection: "row",
     alignItems: "baseline",

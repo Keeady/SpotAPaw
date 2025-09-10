@@ -1,22 +1,33 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
+import { AuthContext } from "@/components/Provider/auth-provider";
+import SightingPage from "@/components/sightings/sighting-page";
 import { supabase } from "@/components/supabase-client";
+import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-paper";
 
-export default function SightingAnonList() {
+export default function SightingList() {
   const [sightings, setSightings] = useState([]);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
-
+  const { user } = useContext(AuthContext);
+/*
   useEffect(() => {
+    if (!user) {
+      return;
+    }
+
     setLoading(true);
     supabase
       .from("sightings")
-      .select("*")
+      .select("*, sighting_contact (sighting_id, name, phone)")
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data }) => {
+        setLoading(false);
         if (data) {
           const sightings = [];
           // merge data by pet id
@@ -30,6 +41,7 @@ export default function SightingAnonList() {
               } else {
                 const merged = acc[sighting.pet_id];
                 acc[sighting.pet_id] = {
+                  id: merged.id ?? sighting.id,
                   pet_id: sighting.pet_id,
                   photo: merged.photo ?? sighting.photo,
                   name: merged.name ?? sighting.name,
@@ -41,6 +53,7 @@ export default function SightingAnonList() {
                   last_seen_location:
                     merged.last_seen_location ?? sighting.last_seen_location,
                   last_seen_time: merged.last_seen_time,
+                  sighting_contact: merged.sighting_contact,
                 };
               }
 
@@ -50,20 +63,17 @@ export default function SightingAnonList() {
           setSightings([...sightings, ...latestByPet]);
         }
       });
+  }, []);*/
 
-    setLoading(false);
-  }, []);
-
-  return (
+  const renderer = (sightings: PetSighting[]) => (
     <View style={styles.container}>
-      <Text variant="titleLarge">Recent Pet Sightings in your area!</Text>
       <FlatList
         data={sightings}
         keyExtractor={(item) => item.pet_id ?? item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              router.push(`/sightings/${item.id}/?petId=${item.pet_id}`)
+              router.push(`/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`)
             }
           >
             <RenderSightingProfile pet={item} />
@@ -76,9 +86,12 @@ export default function SightingAnonList() {
             No Pet sightings to display
           </Text>
         }
+        //style={{ marginBottom: 20 }}
       />
     </View>
   );
+
+  return <SightingPage renderer={renderer} />
 }
 
 const styles = StyleSheet.create({

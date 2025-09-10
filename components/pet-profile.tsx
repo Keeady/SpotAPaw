@@ -1,7 +1,8 @@
 import { router } from "expo-router";
-import React from "react";
+import React, { useContext } from "react";
 import { Image, View } from "react-native";
 import { Button, Card, Chip, Divider, Text } from "react-native-paper";
+import { AuthContext } from "./Provider/auth-provider";
 
 export function RenderPetProfile(data) {
   const pet = data.pet;
@@ -63,6 +64,8 @@ export function RenderSightingProfile(data) {
   const reporter = pet.sighting_contact?.[0]?.name;
   const reporterPhone = pet.sighting_contact?.[0]?.phone;
   console.log("reporter", reporter, reporterPhone);
+  const { user } = useContext(AuthContext);
+  const sightingsRoute = user ? "my-sightings" : "sightings";
   return (
     <Card
       style={{
@@ -125,7 +128,7 @@ export function RenderSightingProfile(data) {
 
         {pet.created_at && (
           <Text variant="bodyLarge">
-            Reported missing at: {new Date(pet.created_at).toLocaleString()}
+            Reported missing at: {new Date(pet.created_at).toDateString()}
           </Text>
         )}
         {pet.features && (
@@ -134,22 +137,24 @@ export function RenderSightingProfile(data) {
 
         {pet.last_seen_time && (
           <Text variant="bodyLarge">
-            Last Seen: {new Date(pet.last_seen_time).toLocaleString()}
+            Last Seen: {new Date(pet.last_seen_time).toDateString()}
           </Text>
         )}
         <Text variant="bodyLarge">Last Seen at: {pet.last_seen_location}</Text>
         {reporter && <Text variant="bodyLarge">Reported by {reporter}</Text>}
       </Card.Content>
-      <Card.Actions>
+      {/*<Card.Actions>
         <View style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
           <Button
             style={{ marginBottom: 10 }}
             mode="contained"
-            onPress={() => router.push(`/sightings/${pet.pet_id}`)}
+            onPress={() =>
+              router.push(`/${sightingsRoute}/${pet.id}/?petId=${pet.pet_id}`)
+            }
           >
             Add Details
           </Button>
-          {/*reporter && (
+          {reporter && (
             <Button
               style={{ width: "100%" }}
               mode="outlined"
@@ -157,9 +162,9 @@ export function RenderSightingProfile(data) {
             >
               Contact {reporter}
             </Button>
-          )*/}
+          )}
         </View>
-      </Card.Actions>
+      </Card.Actions>*/}
     </Card>
   );
 }

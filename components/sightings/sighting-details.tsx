@@ -20,13 +20,13 @@ import { formatDistanceToNow } from "date-fns";
 import { AuthContext } from "../Provider/auth-provider";
 import { useState } from "react";
 import ImageViewing from "react-native-image-viewing";
+import { PetSighting } from "@/model/sighting";
 
-function dedupPhotos(sightings) {
+function dedupPhotos(sightings: PetSighting[]) {
   const seen = new Set();
-  const photos = [];
+  const photos: string[] = [];
 
   sightings.forEach((s) => {
-    console.log("s.photo", s.photo)
     if (s.photo && !seen.has(s.photo)) {
       seen.add(s.photo);
       photos.push(s.photo);
@@ -45,6 +45,8 @@ export default function SightingDetail({
   claimed,
   hasOwner,
 }: {
+  sightings: PetSighting[],
+  petSummary: PetSighting,
   claimed: boolean;
   onEdit?: () => void;
   onAddSighting: () => void;
@@ -94,7 +96,7 @@ export default function SightingDetail({
           <View
             style={{ marginTop: 10, marginBottom: 10, flexDirection: "row" }}
           >
-            {petSummary?.color && <Text>{petSummary?.color}, </Text>}
+            {petSummary?.colors && <Text>{petSummary?.colors}, </Text>}
             {petSummary?.gender && <Text>{petSummary?.gender}, </Text>}
             {petSummary?.breed && <Text>{petSummary?.breed}</Text>}
           </View>
@@ -233,8 +235,8 @@ export default function SightingDetail({
                       flexDirection: "row",
                     }}
                   >
-                    {sighting?.color && (
-                      <Text style={styles.detail}>{sighting?.color}, </Text>
+                    {sighting?.colors && (
+                      <Text style={styles.detail}>{sighting?.colors}, </Text>
                     )}
                     {sighting?.gender && (
                       <Text style={styles.detail}>{sighting?.gender}, </Text>

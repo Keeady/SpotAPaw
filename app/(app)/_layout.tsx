@@ -25,9 +25,8 @@ export default function AppLayout() {
     <>
       <Tabs
         screenOptions={{
-          ///headerStyle: { height: 10 },
           title: "",
-          headerRight: () => <Button onPress={handleSignOut}>Sign Out</Button>,
+          headerRight: () => <Button onPress={handleSignOut} style={styles.button}>Sign Out</Button>,
           headerLeft: () => (
             <Image
               source={require("../../assets/images/logosmall.png")}
@@ -41,7 +40,7 @@ export default function AppLayout() {
           options={{
             tabBarIcon: ({ size }) => <Icon source={"paw"} size={size} />,
             title: "Pets",
-            headerTitle: "",
+            headerTitle: "",            
           }}
         />
         <Tabs.Screen
@@ -55,7 +54,7 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
-          name="sightings"
+          name="my-sightings"
           options={{
             tabBarIcon: ({ size }) => (
               <Icon source={"eye-check-outline"} size={size} />
@@ -73,12 +72,10 @@ export default function AppLayout() {
 const styles = StyleSheet.create({
   logo: {
     width: 100,
-    //height: 10,
-    //marginBottom: 40,
-    //marginTop: 40,
+    marginLeft: 12,
     resizeMode: "contain",
-    //backgroundColor: "red"
   },
+  button: {
+    marginRight: 12,
+  }
 });
-/*
- */

@@ -1,6 +1,7 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, router, Stack } from "expo-router";
 import { useContext, useEffect } from "react";
+import FlashMessage from "react-native-flash-message";
 
 export default function AuthLayout() {
   const auth = useContext(AuthContext);
@@ -10,5 +11,10 @@ export default function AuthLayout() {
       return router.replace("/(app)/pets");
     }
   }, [auth.user]);
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false }} />
+      <FlashMessage position="top" />
+    </>
+  );
 }

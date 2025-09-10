@@ -72,6 +72,7 @@ export default function editPetSighting() {
         last_seen_long: sightingInfo.last_seen_long,
         pet_id: petId,
         id: sightingId,
+        note: profileInfo.note
       })
       .eq("id", sightingId)
       .select();
@@ -88,7 +89,7 @@ export default function editPetSighting() {
         type: "success",
         icon: "success",
       });
-      router.replace(`/sightings/${sightingId}/?petId=${petId}`);
+      router.replace(`/my-sightings/${sightingId}/?petId=${petId}`);
     }
   };
 

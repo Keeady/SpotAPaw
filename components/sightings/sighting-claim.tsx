@@ -1,10 +1,18 @@
+import { Pet } from "@/model/pet";
+import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { Text, Card, Button, RadioButton } from "react-native-paper";
 
-export default function ClaimSighting({ sighting, pets, onConfirm }: {onConfirm: () => void}) {
-  const [selectedPet, setSelectedPet] = useState(null);
+type ClaimSightingProps = {
+  sighting: PetSighting;
+  pets: Pet[],
+  onConfirm: (selectedPetId: string, sightingId: string) => void
+}
+
+export default function ClaimSighting({ sighting, pets, onConfirm }: ClaimSightingProps) {
+  const [selectedPetId, setSelectedPetId] = useState<string>("");
 
   if (!sighting) {
     return null;
@@ -51,17 +59,17 @@ export default function ClaimSighting({ sighting, pets, onConfirm }: {onConfirm:
       {/* Pet selection */}
       <Text style={styles.sectionTitle}>Select one of your pets</Text>
       <RadioButton.Group
-        onValueChange={(value) => setSelectedPet(value)}
-        value={selectedPet}
+        onValueChange={(value) => setSelectedPetId(value)}
+        value={selectedPetId}
       >
         {pets.map((pet) => (
           <Card
             key={pet.id}
             style={[
               styles.petCard,
-              selectedPet === pet.id && styles.petCardSelected,
+              selectedPetId === pet.id && styles.petCardSelected,
             ]}
-            onPress={() => setSelectedPet(pet.id)}
+            onPress={() => setSelectedPetId(pet.id)}
           >
             <Card.Title
               title={pet.name}
@@ -79,8 +87,8 @@ export default function ClaimSighting({ sighting, pets, onConfirm }: {onConfirm:
       {/* Confirm */}
       <Button
         mode="contained"
-        onPress={() => onConfirm(selectedPet, sighting.id)}
-        disabled={!selectedPet}
+        onPress={() => onConfirm(selectedPetId, sighting.id)}
+        disabled={!selectedPetId}
         style={styles.confirmButton}
       >
         Confirm Claim
