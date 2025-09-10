@@ -16,7 +16,7 @@ export type PetSighting = {
     reporter_id: string;
     note:string;
     linked_sighting_id?: string;
-    sighting_contact: SightingContact;
+    sighting_contact: SightingContact[];
 }
 
 export type SightingReporter = {

@@ -1,70 +1,12 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
-import { AuthContext } from "@/components/Provider/auth-provider";
 import SightingPage from "@/components/sightings/sighting-page";
-import { supabase } from "@/components/supabase-client";
 import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, {  } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { FAB, Text } from "react-native-paper";
 
 export default function SightingList() {
-  const [sightings, setSightings] = useState([]);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [extra_info, setExtraInfo] = useState("");
-  const { user } = useContext(AuthContext);
-  /*
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    setLoading(true);
-    supabase
-      .from("sightings")
-      .select("*, sighting_contact (sighting_id, name, phone)")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setLoading(false);
-        if (data) {
-          const sightings = [];
-          // merge data by pet id
-          // create a summary from
-          const latestByPet = Object.values(
-            data.reduce((acc, sighting) => {
-              if (!sighting.pet_id) {
-                sightings.push(sighting);
-              } else if (!acc[sighting.pet_id]) {
-                acc[sighting.pet_id] = sighting;
-              } else {
-                const merged = acc[sighting.pet_id];
-                acc[sighting.pet_id] = {
-                  id: merged.id ?? sighting.id,
-                  pet_id: sighting.pet_id,
-                  photo: merged.photo ?? sighting.photo,
-                  name: merged.name ?? sighting.name,
-                  colors: merged.colors ?? sighting.colors,
-                  breed: merged.breed ?? sighting.breed,
-                  species: merged.species ?? sighting.species,
-                  gender: merged.gender ?? sighting.gender,
-                  features: merged.features ?? sighting.features,
-                  last_seen_location:
-                    merged.last_seen_location ?? sighting.last_seen_location,
-                  last_seen_time: merged.last_seen_time,
-                  sighting_contact: merged.sighting_contact,
-                };
-              }
-
-              return acc;
-            }, {})
-          );
-          setSightings([...sightings, ...latestByPet]);
-        }
-      });
-  }, []);*/
-
   const renderer = (sightings: PetSighting[]) => (
     <View style={styles.container}>
       <FlatList

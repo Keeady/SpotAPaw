@@ -172,7 +172,6 @@ export default function SightingDetail({
         </Text>
 
         {sightings.map((sighting, index) => {
-          console.log("contact", sighting.sighting_contact);
           const phone = sighting.sighting_contact?.[0]?.phone;
           const name = sighting.sighting_contact?.[0]?.name;
           const isLatest = index === 0; // assuming sightings sorted DESC by created_at
