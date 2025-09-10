@@ -190,6 +190,7 @@ const processSightings = (
         } else {
           const merged = acc[sighting.pet_id];
           acc[sighting.pet_id] = {
+            id: merged.id,
             pet_id: sighting.pet_id,
             photo: !!merged.photo ? merged.photo : sighting.photo,
             name: merged.name ?? sighting.name,

@@ -47,11 +47,11 @@ export default function SightingProfile() {
 
   const onAddSighting = useCallback(() => {
     router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);
-  }, [summary]);
+  }, [sightingId, petId]);
 
   const onClaimPet = useCallback(() => {
     router.push(`/pets/claim/?petId=${petId}&sightingId=${sightingId}`);
-  }, [summary]);
+  }, [sightingId, petId]);
 
   const onEdit = useCallback(() => {
     if (!petId) {
