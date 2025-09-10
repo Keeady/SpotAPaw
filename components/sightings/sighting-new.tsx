@@ -1,5 +1,4 @@
 import { getCurrentLocationV1 } from "@/components/get-current-location";
-import DefaultPageHeader from "@/components/header/default-header";
 import { supabase } from "@/components/supabase-client";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
@@ -27,7 +26,7 @@ export default function CreateNewSighting() {
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
   const { user } = useContext(AuthContext);
-  const contactRoute = user ? "my-sightings" : "sightings"
+  const contactRoute = user ? "my-sightings" : "sightings";
 
   const router = useRouter();
 
@@ -184,6 +183,15 @@ export default function CreateNewSighting() {
 
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <TextInput
+            label={"Notes"}
+            value={note}
+            onChangeText={setNote}
+            multiline
+          />
+        </View>
+
+        <View style={[styles.verticallySpaced, styles.mt20]}>
+          <TextInput
             label={"Last Seen Location"}
             placeholder="Enter Street names, Cross Streets, Signs, Markers"
             value={location}
@@ -215,14 +223,6 @@ export default function CreateNewSighting() {
               <Text>No Photo</Text>
             </View>
           )}
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Notes"}
-            value={note}
-            onChangeText={setNote}
-            multiline
-          />
         </View>
         <TextInput
           style={{ height: 0, opacity: 0 }}

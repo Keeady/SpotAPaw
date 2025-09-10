@@ -1,9 +1,8 @@
 import { Pet } from "@/model/pet";
-import React, {  } from "react";
+import React from "react";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import pickImage from "../image-picker";
-import * as Location from "expo-location";
 import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
 import { PetSighting } from "@/model/sighting";
@@ -11,16 +10,24 @@ import { PetSighting } from "@/model/sighting";
 export default function EditPetSightingDetails(
   handleSubmit: () => Promise<void>,
   setProfileInfo: React.Dispatch<React.SetStateAction<Pet | undefined>>,
-  setSightingInfo: React.Dispatch<React.SetStateAction<PetSighting | undefined>>,
+  setSightingInfo: React.Dispatch<
+    React.SetStateAction<PetSighting | undefined>
+  >,
   pet?: Pet,
   sighting?: PetSighting,
   is_lost?: boolean
 ) {
-  const handleProfileChange = (fieldName: string, fieldValue: string | number) => {
+  const handleProfileChange = (
+    fieldName: string,
+    fieldValue: string | number
+  ) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
-  const handleSightingChange = (fieldName: string, fieldValue: string | number) => {
+  const handleSightingChange = (
+    fieldName: string,
+    fieldValue: string | number
+  ) => {
     setSightingInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
@@ -39,43 +46,58 @@ export default function EditPetSightingDetails(
         {is_lost && (
           <View>
             <View style={[styles.verticallySpaced, styles.mt20]}>
-              <Text variant="bodyLarge" style={{ alignSelf: "flex-start", fontWeight: "bold" }}>
+              <Text
+                variant="bodyLarge"
+                style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+              >
                 Where was your pet last seen?
               </Text>
               <TextInput
                 label={"Last Seen Location"}
                 placeholder="Enter Street names, Cross Streets, Signs, Markers"
                 value={pet?.last_seen_location}
-                onChangeText={(v) => handleSightingChange("last_seen_location", v)}
+                onChangeText={(v) =>
+                  handleSightingChange("last_seen_location", v)
+                }
                 mode={"outlined"}
               />
               <Button
                 icon={"map-marker-radius-outline"}
-                onPress={() =>
-                  getCurrentLocationV2(handleSightingChange)
-                }
+                onPress={() => getCurrentLocationV2(handleSightingChange)}
                 mode="elevated"
                 style={styles.button}
               >
                 <Text>
-                  {sighting?.last_seen_location ? "Location saved" : "Use My Current Location"}
+                  {sighting?.last_seen_location
+                    ? "Location saved"
+                    : "Use My Current Location"}
                 </Text>
               </Button>
             </View>
             <View style={[styles.verticallySpaced, styles.mt20]}>
-              <Text variant="bodyLarge" style={{ alignSelf: "flex-start", fontWeight: "bold" }}>
+              <Text
+                variant="bodyLarge"
+                style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+              >
                 When was your pet last seen?
               </Text>
               <DatePicker
                 dateLabel="Last Seen Date"
                 timeLabel="Last Seen Time"
-                value={sighting?.last_seen_time ? new Date(sighting?.last_seen_time) : new Date()}
+                value={
+                  sighting?.last_seen_time
+                    ? new Date(sighting?.last_seen_time)
+                    : new Date()
+                }
                 onChange={(v) => handleSightingChange("last_seen_time", v)}
               />
             </View>
           </View>
         )}
-        <Text variant="bodyLarge" style={{ alignSelf: "flex-start", fontWeight: "bold" }}>
+        <Text
+          variant="bodyLarge"
+          style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+        >
           {is_lost ? "Update your Pet Profile" : "Create a Pet Profile"}
         </Text>
         <View>
@@ -149,6 +171,14 @@ export default function EditPetSightingDetails(
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Notes"}
+              value={pet?.note}
+              onChangeText={(v) => handleProfileChange("note", v)}
+              multiline
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
             <Text variant="labelLarge">
               {pet?.photo ? "Update Photo" : "Upload Photo (Optional)"}
             </Text>
@@ -166,15 +196,6 @@ export default function EditPetSightingDetails(
                 <Text>No Photo</Text>
               </View>
             )}
-          </View>
-
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <TextInput
-              label={"Notes"}
-              value={pet?.note}
-              onChangeText={(v) => handleProfileChange("note", v)}
-              multiline
-            />
           </View>
 
           <Button mode="contained" onPress={() => handleSubmit()}>
