@@ -44,18 +44,28 @@ export default function SightingDetail({
   claimPet,
   claimed,
   hasOwner,
+  isOwner,
 }: {
-  sightings: PetSighting[],
-  petSummary: PetSighting,
+  sightings: PetSighting[];
+  petSummary: PetSighting;
   claimed: boolean;
   onEdit?: () => void;
   onAddSighting: () => void;
   claimPet?: () => void;
   hasOwner: boolean;
+  isOwner: boolean;
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
   const images = uniquePhotos?.map((url) => ({ uri: url })) || [];
+
+  const handleCall = (phone: string) => {
+    if (phone) Linking.openURL(`tel:${phone}`);
+  };
+
+  const handleText = (phone: string) => {
+    if (phone) Linking.openURL(`sms:${phone}`);
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
@@ -151,6 +161,9 @@ export default function SightingDetail({
       </Text>
 
       {sightings.map((sighting, index) => {
+        console.log("contact", sighting.sighting_contact);
+        const phone = sighting.sighting_contact?.[0]?.phone;
+        const name = sighting.sighting_contact?.[0]?.name;
         const isLatest = index === 0; // assuming sightings sorted DESC by created_at
         return (
           <View key={sighting.id} style={{ flexDirection: "row" }}>
@@ -261,10 +274,32 @@ export default function SightingDetail({
                       {sighting.note}
                     </Text>
                   )}
-                  {sighting.sighting_contact && (
-                    <Text style={{ color: "#1E88E5", fontWeight: "600" }}>
-                      Contact reporter
-                    </Text>
+                  {isOwner && name && phone && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        gap: 8,
+                      }}
+                    >
+                      <Text style={{ alignSelf: "center" }}>
+                        Reported by {name}
+                      </Text>
+                      <Button
+                        mode="contained"
+                        icon="phone"
+                        onPress={() => handleCall(phone)}
+                      >
+                        Call
+                      </Button>
+                      <Button
+                        mode="outlined"
+                        icon="message-text"
+                        onPress={() => handleText(phone)}
+                      >
+                        Text
+                      </Button>
+                    </View>
                   )}
                 </Card.Content>
               </Card>

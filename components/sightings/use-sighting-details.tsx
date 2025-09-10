@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-client";
 import { PetSighting } from "@/model/sighting";
+import { AuthContext } from "../Provider/auth-provider";
 
 // Helper to merge sightings into summary
 export function mergeSightings(sightings: PetSighting[]) {
@@ -30,6 +31,7 @@ export function usePetSightings(petId: string, sightingId: string) {
   const [error, setError] = useState(null);
   const [timeline, setTimeline] = useState<PetSighting[]>([]);
   const [summary, setSummary] = useState<PetSighting>();
+  const { user } = useContext(AuthContext);
 
   async function fetchSightingsBySightingId(sightingId: string) {
     setLoading(true);
@@ -79,13 +81,70 @@ export function usePetSightings(petId: string, sightingId: string) {
     setLoading(false);
   }
 
-  useEffect(() => {
-    if (!petId || petId === null || petId === "null") {
-      fetchSightingsBySightingId(sightingId);
+    async function fetchSightingsByPetIdForUser(petId: string) {
+    setLoading(true);
+    setError(null);
+    if (!petId) {
       return;
     }
 
-    fetchSightingsByPetId(petId);
+    const { data, error } = await supabase
+      .from("sightings")
+      .select("*, sighting_contact(name, phone)")
+      .eq("pet_id", petId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setError(error);
+      setLoading(false);
+      return;
+    }
+
+    setTimeline(data);
+    setSummary(mergeSightings(data)); // merged summary
+    setLoading(false);
+  }
+
+  async function fetchSightingsBySightingIdForUser(sightingId: string) {
+    setLoading(true);
+    setError(null);
+
+    const { data, error } = await supabase
+      .from("sightings")
+      .select("*, sighting_contact(name, phone)")
+      .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setError(error);
+      setLoading(false);
+      return;
+    }
+
+    if (data) {
+      setTimeline(data);
+      setSummary(mergeSightings(data)); // merged summary
+    }
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    if (user) {
+      if (!petId || petId === null || petId === "null") {
+        fetchSightingsBySightingIdForUser(sightingId);
+        return;
+      }
+
+      fetchSightingsByPetIdForUser(petId);
+    } else {
+      if (!petId || petId === null || petId === "null") {
+        fetchSightingsBySightingId(sightingId);
+        return;
+      }
+
+      fetchSightingsByPetId(petId);
+    }
   }, [petId, sightingId]);
 
   return { loading, error, timeline, summary };

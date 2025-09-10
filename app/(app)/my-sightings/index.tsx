@@ -6,7 +6,7 @@ import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
 
 export default function SightingList() {
   const [sightings, setSightings] = useState([]);
@@ -15,7 +15,7 @@ export default function SightingList() {
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
   const { user } = useContext(AuthContext);
-/*
+  /*
   useEffect(() => {
     if (!user) {
       return;
@@ -73,7 +73,9 @@ export default function SightingList() {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              router.push(`/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`)
+              router.push(
+                `/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`
+              )
             }
           >
             <RenderSightingProfile pet={item} />
@@ -86,12 +88,19 @@ export default function SightingList() {
             No Pet sightings to display
           </Text>
         }
-        //style={{ marginBottom: 20 }}
+        style={{ marginBottom: 20 }}
+      />
+      <FAB
+        icon="paw"
+        label="Report"
+        mode="elevated"
+        onPress={() => router.push(`/sightings/new`)}
+        style={{ position: "absolute", bottom: 50, right: 50 }}
       />
     </View>
   );
 
-  return <SightingPage renderer={renderer} />
+  return <SightingPage renderer={renderer} />;
 }
 
 const styles = StyleSheet.create({

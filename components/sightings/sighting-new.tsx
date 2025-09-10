@@ -99,7 +99,7 @@ export default function CreateNewSighting() {
     if (petId && petId !== "null") {
       payload.pet_id = petId;
     }
-    console.log("payload", payload);
+    //console.log("payload", payload);
     setLoading(true);
     const { error } = await supabase.from("sightings").insert([payload]);
     setLoading(false);

@@ -105,6 +105,7 @@ export default function SightingAnonList() {
             No Pet sightings to display
           </Text>
         }
+        style={{ marginBottom: 20 }}
       />
       <FAB
         icon="paw"

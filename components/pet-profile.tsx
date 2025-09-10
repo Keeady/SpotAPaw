@@ -61,9 +61,6 @@ export function RenderPetProfile(data) {
 
 export function RenderSightingProfile(data) {
   const pet = data.pet;
-  const reporter = pet.sighting_contact?.[0]?.name;
-  const reporterPhone = pet.sighting_contact?.[0]?.phone;
-  console.log("reporter", reporter, reporterPhone);
   const { user } = useContext(AuthContext);
   const sightingsRoute = user ? "my-sightings" : "sightings";
   return (
@@ -141,12 +138,11 @@ export function RenderSightingProfile(data) {
           </Text>
         )}
         <Text variant="bodyLarge">Last Seen at: {pet.last_seen_location}</Text>
-        {reporter && <Text variant="bodyLarge">Reported by {reporter}</Text>}
       </Card.Content>
-      {/*<Card.Actions>
-        <View style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+      {
+        <Card.Actions>
           <Button
-            style={{ marginBottom: 10 }}
+            style={{ marginBottom: 10, width: "100%" }}
             mode="contained"
             onPress={() =>
               router.push(`/${sightingsRoute}/${pet.id}/?petId=${pet.pet_id}`)
@@ -154,17 +150,8 @@ export function RenderSightingProfile(data) {
           >
             Add Details
           </Button>
-          {reporter && (
-            <Button
-              style={{ width: "100%" }}
-              mode="outlined"
-              onPress={() => console.log("Pressed")}
-            >
-              Contact {reporter}
-            </Button>
-          )}
-        </View>
-      </Card.Actions>*/}
+        </Card.Actions>
+      }
     </Card>
   );
 }

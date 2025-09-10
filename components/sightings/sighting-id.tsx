@@ -74,16 +74,18 @@ export default function SightingProfile() {
   }
 
   const cleanedPetId = petId === "null" ? null : petId;
+  const isOwner = user && user?.id === petOwner;
 
   return (
     <SightingDetail
       sightings={timeline}
       petSummary={summary}
       onAddSighting={onAddSighting}
-      onEdit={user && user?.id === petOwner ? onEdit : undefined}
+      onEdit={isOwner ? onEdit : undefined}
       claimPet={user && !petOwner ? onClaimPet : undefined}
       claimed={claimed && !cleanedPetId}
       hasOwner={!!petOwner || !!cleanedPetId}
+      isOwner={isOwner}
     />
   );
 }

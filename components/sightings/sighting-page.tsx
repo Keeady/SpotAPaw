@@ -20,7 +20,6 @@ export default function SightingPage({
   const [filterNearby, setFilterNearby] = useState(false);
   const [location, setLocation] = useState<SightingLocation>();
   const { user } = useContext(AuthContext);
-  const addDetailsRoute = user ? "my-sightings" : "sightings";
 
   // Refetch when filter changes
   useEffect(() => {
@@ -179,30 +178,60 @@ const processSightings = (
   setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
 ) => {
   const sightings = [];
+  const linkedSightingIds = new Set();
   // merge data by pet id
   // create a summary from
   const latestByPet = Object.values(
     data.reduce((acc, sighting) => {
-      if (!sighting.pet_id) {
+      // if we have a pet id, then group by pet id
+      if (sighting.pet_id && sighting.pet_id != "null") {
+        if (!acc[sighting.pet_id]) {
+          acc[sighting.pet_id] = sighting;
+        } else {
+          const merged = acc[sighting.pet_id];
+          acc[sighting.pet_id] = {
+            pet_id: sighting.pet_id,
+            photo: !!merged.photo ? merged.photo : sighting.photo,
+            name: merged.name ?? sighting.name,
+            colors: merged.colors ?? sighting.colors,
+            breed: merged.breed ?? sighting.breed,
+            species: merged.species ?? sighting.species,
+            gender: merged.gender ?? sighting.gender,
+            features: merged.features ?? sighting.features,
+            last_seen_location:
+              merged.last_seen_location ?? sighting.last_seen_location,
+            last_seen_time: merged.last_seen_time,
+            //sighting_contact: merged.sighting_contact,
+          };
+        }
+      }
+      // if we have a linked sighting id, group by that
+      else if (sighting.linked_sighting_id) {
+        if (!acc[sighting.linked_sighting_id]) {
+          acc[sighting.linked_sighting_id] = sighting;
+        } else {
+          const merged = acc[sighting.linked_sighting_id];
+          acc[sighting.linked_sighting_id] = {
+            pet_id: "",
+            photo: !!merged.photo ? merged.photo : sighting.photo,
+            name: merged.name ?? sighting.name,
+            colors: merged.colors ?? sighting.colors,
+            breed: merged.breed ?? sighting.breed,
+            species: merged.species ?? sighting.species,
+            gender: merged.gender ?? sighting.gender,
+            features: merged.features ?? sighting.features,
+            last_seen_location:
+              merged.last_seen_location ?? sighting.last_seen_location,
+            last_seen_time: merged.last_seen_time,
+            // sighting_contact: merged.sighting_contact,
+            id: sighting.linked_sighting_id,
+          };
+        }
+
+        !linkedSightingIds.has(sighting.linked_sighting_id) &&
+          linkedSightingIds.add(sighting.linked_sighting_id);
+      } else if (!linkedSightingIds.has(sighting.id)) {
         sightings.push(sighting);
-      } else if (!acc[sighting.pet_id]) {
-        acc[sighting.pet_id] = sighting;
-      } else {
-        const merged = acc[sighting.pet_id];
-        acc[sighting.pet_id] = {
-          pet_id: sighting.pet_id,
-          photo: merged.photo ?? sighting.photo,
-          name: merged.name ?? sighting.name,
-          colors: merged.colors ?? sighting.colors,
-          breed: merged.breed ?? sighting.breed,
-          species: merged.species ?? sighting.species,
-          gender: merged.gender ?? sighting.gender,
-          features: merged.features ?? sighting.features,
-          last_seen_location:
-            merged.last_seen_location ?? sighting.last_seen_location,
-          last_seen_time: merged.last_seen_time,
-          sighting_contact: merged.sighting_contact,
-        };
       }
 
       return acc;
