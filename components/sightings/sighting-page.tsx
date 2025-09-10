@@ -206,14 +206,16 @@ const processSightings = (
             last_seen_location:
               merged.last_seen_location ?? sighting.last_seen_location,
             last_seen_time: merged.last_seen_time,
-            //sighting_contact: merged.sighting_contact,
           };
         }
       }
       // if we have a linked sighting id, group by that
       else if (sighting.linked_sighting_id) {
         if (!acc[sighting.linked_sighting_id]) {
-          acc[sighting.linked_sighting_id] = sighting;
+          acc[sighting.linked_sighting_id] = {
+            ...sighting,
+            id: sighting.linked_sighting_id,
+          };
         } else {
           const merged = acc[sighting.linked_sighting_id];
           acc[sighting.linked_sighting_id] = {
