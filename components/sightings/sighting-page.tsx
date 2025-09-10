@@ -81,6 +81,7 @@ const fetchSightingsNoLocation = async (
   const { data, error } = await supabase
     .from("sightings")
     .select("*")
+    .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (error) console.error(error);
@@ -98,6 +99,7 @@ const fetchSightingsByUserNoLocation = async (
   const { data, error } = await supabase
     .from("sightings")
     .select("*, sighting_contact (sighting_id, name, phone)")
+    .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (error) console.error(error);
@@ -127,6 +129,7 @@ const fetchSightingsWithLocation = async (
   const { data, error } = await supabase
     .from("sightings")
     .select("*")
+    .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)
@@ -160,6 +163,7 @@ const fetchSightingsByUserWithLocation = async (
   const { data, error } = await supabase
     .from("sightings")
     .select("*, sighting_contact (sighting_id, name, phone)")
+    .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)

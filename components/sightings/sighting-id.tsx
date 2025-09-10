@@ -5,6 +5,7 @@ import SightingDetail from "@/components/sightings/sighting-details";
 import { usePetSightings } from "@/components/sightings/use-sighting-details";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
+import { onPetFound } from "../pets/pet-crud";
 
 export default function SightingProfile() {
   const { id: sightingId, petId } = useLocalSearchParams(); // pet id
@@ -60,6 +61,10 @@ export default function SightingProfile() {
     router.push(`/${sightingsRoute}/edit/?petId=${petId}&sightingId=${sightingId}`);
   }, [petId, sightingId]);
 
+  const handlePetFound = useCallback(() => {
+    onPetFound(petId)
+  }, [petId]);
+
   if (error) {
     showMessage({
       message: "Error fetching sighting info. Please try again.",
@@ -85,7 +90,8 @@ export default function SightingProfile() {
       claimPet={user && !petOwner ? onClaimPet : undefined}
       claimed={claimed && !cleanedPetId}
       hasOwner={!!petOwner || !!cleanedPetId}
-      isOwner={isOwner}
+      isOwner={!!isOwner}
+      onPetFound={isOwner ? handlePetFound : undefined}
     />
   );
 }

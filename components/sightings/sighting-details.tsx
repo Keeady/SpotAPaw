@@ -46,6 +46,7 @@ export default function SightingDetail({
   claimed,
   hasOwner,
   isOwner,
+  onPetFound
 }: {
   sightings: PetSighting[];
   petSummary: PetSighting;
@@ -55,6 +56,7 @@ export default function SightingDetail({
   claimPet?: () => void;
   hasOwner: boolean;
   isOwner: boolean;
+  onPetFound?: () => void
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
@@ -152,6 +154,7 @@ export default function SightingDetail({
                   This is my pet.
                 </Chip>
               )}
+              {onPetFound && <Button onPress={() => onPetFound()}>Pet Found</Button>}
               {onEdit && (
                 <Button onPress={() => onEdit()}>Edit Pet details</Button>
               )}

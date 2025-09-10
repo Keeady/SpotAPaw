@@ -5,7 +5,8 @@ import { useCallback } from "react";
 import { Alert } from "react-native";
 import { Pet } from "@/model/pet";
 
-export const onConfirmDelete = useCallback((petName: string, petId: string, userId: string) =>
+export const onConfirmDelete = useCallback(
+  (petName: string, petId: string, userId: string) =>
     Alert.alert(
       `Deleting Pet ${petName}`,
       `Are you sure you want to delete ${petName}'s profile?`,
@@ -15,56 +16,76 @@ export const onConfirmDelete = useCallback((petName: string, petId: string, user
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "Yes, please delete", onPress: () => onDeletePet(petId, userId) },
+        {
+          text: "Yes, please delete",
+          onPress: () => onDeletePet(petId, userId),
+        },
       ],
       {
         userInterfaceStyle: "dark",
       }
-    ), [onDeletePet]);
+    ),
+  [onDeletePet]
+);
 
-  export async function onDeletePet(id: string, userId: string) {
-    const { error } = await supabase
-      .from("pets")
-      .delete()
-      .eq("id", id)
-      .eq("owner_id", userId)
-      .select();
+export async function onDeletePet(id: string, userId: string) {
+  const { error } = await supabase
+    .from("pets")
+    .delete()
+    .eq("id", id)
+    .eq("owner_id", userId)
+    .select();
 
-    if (error) {
-      showMessage({
-        message: "Error deleting pet profile.",
-        type: "warning",
-        icon: "warning",
-      });
-    } else {
-      showMessage({
-        message: "Successfully deleted pet profile.",
-        type: "success",
-        icon: "success",
-      });
-      router.replace(`/(app)/pets`);
-    }
+  if (error) {
+    showMessage({
+      message: "Error deleting pet profile.",
+      type: "warning",
+      icon: "warning",
+    });
+  } else {
+    showMessage({
+      message: "Successfully deleted pet profile.",
+      type: "success",
+      icon: "success",
+    });
+    router.replace(`/(app)/pets`);
   }
+}
 
-  export function onEditPet(id: string) {
-    router.navigate(`/(app)/pets/edit?id=${id}`);
-  }
+export function onEditPet(id: string) {
+  router.navigate(`/(app)/pets/edit?id=${id}`);
+}
 
-  export function onPetLost(id: string) {
-    router.navigate(`/(app)/pets/edit?id=${id}&is_lost=true`);
-  }
+export function onPetLost(id: string) {
+  router.navigate(`/(app)/pets/edit?id=${id}&is_lost=true`);
+}
 
-  export async function onPetFound(id: string) {
-    const {data, error } = await supabase
-      .from("pets")
+export async function onPetFound(id: string) {
+  const { data, error } = await supabase
+    .from("pets")
+    .update({
+      is_lost: false,
+      last_seen_time: null,
+      last_seen_long: null,
+      last_seen_lat: null,
+      last_seen_location: null,
+    })
+    .eq("id", id);
+
+  if (error) {
+    showMessage({
+      message: "Error updating pet profile.",
+      type: "warning",
+      icon: "warning",
+    });
+    return;
+  } else {
+    const { data, error } = await supabase
+      .from("sightings")
       .update({
-        is_lost: false,
-        last_seen_time: null,
-        last_seen_long: null,
-        last_seen_lat: null,
-        last_seen_location: null
+        is_active: false,
       })
-      .eq("id", id);
+      .eq("pet_id", id);
 
     if (error) {
       showMessage({
@@ -72,6 +93,7 @@ export const onConfirmDelete = useCallback((petName: string, petId: string, user
         type: "warning",
         icon: "warning",
       });
+      return;
     } else {
       showMessage({
         message: "Successfully updated pet profile.",
@@ -79,40 +101,40 @@ export const onConfirmDelete = useCallback((petName: string, petId: string, user
         icon: "success",
       });
     }
-    router.replace(`/(app)/pets/${id}`);
+  }
+  router.navigate(`/(app)/pets/${id}`);
+}
+
+export async function createNewPet(profileInfo: Pet, userId: string) {
+  if (!profileInfo) {
+    return;
   }
 
-  export async function createNewPet(profileInfo: Pet, userId: string) {
-    if (!profileInfo) {
-      return;
-    }
+  const { data, error } = await supabase
+    .from("pets")
+    .insert([
+      {
+        name: profileInfo.name,
+        species: profileInfo.species,
+        breed: profileInfo.breed,
+        age: profileInfo.age,
+        gender: profileInfo.gender,
+        colors: profileInfo.colors,
+        features: profileInfo.features,
+        photo: profileInfo.photo,
+        owner_id: userId,
+      },
+    ])
+    .select();
 
-    const { data, error } = await supabase
-      .from("pets")
-      .insert([
-        {
-          name: profileInfo.name,
-          species: profileInfo.species,
-          breed: profileInfo.breed,
-          age: profileInfo.age,
-          gender: profileInfo.gender,
-          colors: profileInfo.colors,
-          features: profileInfo.features,
-          photo: profileInfo.photo,
-          owner_id: userId,
-        },
-      ])
-      .select();
-
-    if (error) {
-      showMessage({
-        message: "Error creating pet profile. Please try again.",
-        type: "warning",
-        icon: "warning",
-      });
-      return;
-    } else {
-      router.replace(`/(app)/pets`);
-    }
-
+  if (error) {
+    showMessage({
+      message: "Error creating pet profile. Please try again.",
+      type: "warning",
+      icon: "warning",
+    });
+    return;
+  } else {
+    router.replace(`/(app)/pets`);
   }
+}
