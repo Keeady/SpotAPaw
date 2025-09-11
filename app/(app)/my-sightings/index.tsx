@@ -1,5 +1,6 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
 import SightingPage from "@/components/sightings/sighting-page";
+import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
 import React, {  } from "react";
@@ -11,7 +12,7 @@ export default function SightingList() {
     <View style={styles.container}>
       <FlatList
         data={sightings}
-        keyExtractor={(item) => item.pet_id ?? item.id}
+        keyExtractor={(item) => isValidUuid(item.pet_id) ? item.pet_id : item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>

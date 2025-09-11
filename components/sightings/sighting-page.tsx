@@ -7,6 +7,7 @@ import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import { router } from "expo-router";
+import { isValidUuid } from "../util";
 
 const RADIUSKM = 10;
 
@@ -188,7 +189,7 @@ const processSightings = (
   const latestByPet = Object.values(
     data.reduce((acc, sighting) => {
       // if we have a pet id, then group by pet id
-      if (sighting.pet_id && sighting.pet_id != "null") {
+      if (sighting.pet_id && isValidUuid(sighting.pet_id)) {
         if (!acc[sighting.pet_id]) {
           acc[sighting.pet_id] = sighting;
         } else {
@@ -210,7 +211,7 @@ const processSightings = (
         }
       }
       // if we have a linked sighting id, group by that
-      else if (sighting.linked_sighting_id) {
+      else if (sighting.linked_sighting_id && isValidUuid(sighting.linked_sighting_id)) {
         if (!acc[sighting.linked_sighting_id]) {
           acc[sighting.linked_sighting_id] = {
             ...sighting,
@@ -244,5 +245,5 @@ const processSightings = (
       return acc;
     }, {} as PetSighting)
   );
-  setSightings([...sightings, ...latestByPet]);
+  setSightings([...latestByPet, ...sightings]);
 };
