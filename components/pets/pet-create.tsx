@@ -2,7 +2,7 @@ import { Pet } from "@/model/pet";
 import React, { useState } from "react";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
-import pickImage from "../image-picker";
+import { ImagePickerHandler } from "../image-picker";
 
 type CreatePetDetailsProps = {
   handleSubmit: (petData: Pet) => Promise<void>;
@@ -107,7 +107,7 @@ export default function CreatePetDetails({
             <Button
               icon="camera"
               mode="outlined"
-              onPress={() => pickImage(handleChange)}
+              onPress={() => ImagePickerHandler(handleChange)}
             >
               Choose File
             </Button>

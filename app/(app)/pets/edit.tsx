@@ -6,19 +6,18 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import * as Location from "expo-location";
 import { showMessage } from "react-native-flash-message";
+import useUploadPetImageUrl from "@/components/image-upload";
+import { isValidUuid } from "@/components/util";
 
 export default function editPet() {
   const { id, is_lost } = useLocalSearchParams();
-  const [pet, setPet] = useState<Pet | undefined>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
   const router = useRouter();
-  const [last_seen_location, setLastSeenLocation] = useState("");
-  const [coords, setLastSeenCoords] = useState<Location.LocationObjectCoords>();
-  const [last_seen_time, setLastSeenTime] = useState("");
+  const uploadImage = useUploadPetImageUrl();
 
   useEffect(() => {
-    if (!id) {
+    if (!id || !isValidUuid(id)) {
       return;
     }
 
@@ -29,12 +28,11 @@ export default function editPet() {
       .single()
       .then(({ data, error }) => {
         console.log("error", error);
-        setPet(data);
         setProfileInfo(data);
       });
   }, [id]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (photoUrl: string) => {
     if (!profileInfo || !user) {
       return;
     }
@@ -49,7 +47,7 @@ export default function editPet() {
         gender: profileInfo.gender,
         colors: profileInfo.colors,
         features: profileInfo.features,
-        photo: profileInfo.photo,
+        photo: photoUrl,
         note: profileInfo.note,
         owner_id: user?.id,
         is_lost: !!is_lost,
@@ -74,15 +72,23 @@ export default function editPet() {
         icon: "success",
       });
       if (is_lost) {
-        await handleLostPet();
-        //router.navigate(`/(app)/owner`);
+        handleLostPet(photoUrl)
       } else {
         router.replace(`/(app)/pets/${id}`);
       }
     }
   };
 
-  const handleLostPet = async () => {
+  async function savePetInfo() {
+    if (!profileInfo || !user) {
+      return;
+    }
+    if (profileInfo.photo) {
+      await uploadImage(profileInfo.photo, handleSubmit);
+    }
+  }
+
+  const handleLostPet = async (photoUrl: string) => {
     if (!profileInfo || !user) {
       return;
     }
@@ -97,7 +103,7 @@ export default function editPet() {
         gender: profileInfo.gender,
         colors: profileInfo.colors,
         features: profileInfo.features,
-        photo: profileInfo.photo,
+        photo: photoUrl,
         note: profileInfo.note,
         reporter_id: user?.id,
         last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
@@ -131,7 +137,7 @@ export default function editPet() {
   };
 
   return EditPetDetails(
-    handleSubmit,
+    savePetInfo,
     setProfileInfo,
     profileInfo,
     !!is_lost

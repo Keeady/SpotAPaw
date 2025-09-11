@@ -1,20 +1,16 @@
 import * as React from "react";
+import { useContext, useState } from "react";
 import { ScrollView, View } from "react-native";
 import {
   Avatar,
   Button,
   Card,
-  Divider,
-  IconButton,
-  MD3Colors,
-  Text,
-  TextInput,
+  TextInput
 } from "react-native-paper";
+import CreateOwnerProfile from "../components/owner-profile-create-form";
+import { AuthContext } from "../components/Provider/auth-provider";
+import { supabase } from "../components/supabase-client";
 import CreatePetProfile from "./pet-profile-create-form";
-import CreateOwnerProfile from "./owner-profile-create-form";
-import { useContext, useState } from "react";
-import { supabase } from "./supabase-client";
-import { AuthContext } from "./Provider/auth-provider";
 
 const LeftContent = (props) => <Avatar.Icon {...props} icon="paw" />;
 

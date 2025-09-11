@@ -1,3 +1,4 @@
+import useUploadPetImageUrl from "@/components/image-upload";
 import CreatePetDetails from "@/components/pets/pet-create";
 import { createNewPet } from "@/components/pets/pet-crud";
 import { AuthContext } from "@/components/Provider/auth-provider";
@@ -6,10 +7,30 @@ import { useContext } from "react";
 
 export default function addPet() {
   const { user } = useContext(AuthContext);
+  const uploadImage = useUploadPetImageUrl();
 
   if (!user) {
     return;
   }
 
-  return <CreatePetDetails handleSubmit={(data: Pet) => createNewPet(data, user.id)} />
+  async function handleSaveNewPet(pet: Pet, photoUrl: string) {
+    if (!pet || !user) {
+      return;
+    }
+    createNewPet({ ...pet, photo: photoUrl }, user.id);
+  }
+
+  async function saveNewPet(pet: Pet) {
+    if (!pet || !user) {
+      return;
+    }
+
+    if (pet.photo) {
+      await uploadImage(pet.photo, (photoUrl: string) =>
+        handleSaveNewPet(pet, photoUrl)
+      );
+    }
+  }
+
+  return <CreatePetDetails handleSubmit={saveNewPet} />;
 }

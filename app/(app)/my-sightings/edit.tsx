@@ -1,22 +1,23 @@
-import EditPetDetails from "@/components/pets/pet-edit";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { Pet } from "@/model/pet";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
-import * as Location from "expo-location";
 import { showMessage } from "react-native-flash-message";
 import EditPetSightingDetails from "@/components/sightings/sighting-edit";
+import useUploadPetImageUrl from "@/components/image-upload";
+import { PetSighting } from "@/model/sighting";
 
 export default function editPetSighting() {
   const { sightingId, petId } = useLocalSearchParams();
   const [pet, setPet] = useState<Pet | undefined>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
-  const [sightingInfo, setSightingInfo] = useState();
+  const [sightingInfo, setSightingInfo] = useState<PetSighting>();
 
   const router = useRouter();
   const [sighting, setSighting] = useState();
+  const uploadImage = useUploadPetImageUrl();
 
   useEffect(() => {
     if (!petId) {
@@ -30,7 +31,7 @@ export default function editPetSighting() {
       .single()
       .then(({ data, error }) => {
         setPet(data);
-        setProfileInfo(data)
+        setProfileInfo(data);
       });
   }, [petId]);
 
@@ -46,11 +47,11 @@ export default function editPetSighting() {
       .single()
       .then(({ data, error }) => {
         setSighting(data);
-        setSightingInfo(data)
+        setSightingInfo(data);
       });
   }, [sightingId]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (photoUrl: string) => {
     if (!profileInfo || !user || !sightingInfo) {
       return;
     }
@@ -64,7 +65,7 @@ export default function editPetSighting() {
         gender: profileInfo.gender,
         colors: profileInfo.colors,
         features: profileInfo.features,
-        photo: profileInfo.photo,
+        photo: photoUrl,
         reporter_id: user?.id,
         last_seen_time: sightingInfo.last_seen_time || new Date().toISOString(),
         last_seen_location: sightingInfo.last_seen_location,
@@ -72,7 +73,7 @@ export default function editPetSighting() {
         last_seen_long: sightingInfo.last_seen_long,
         pet_id: petId,
         id: sightingId,
-        note: profileInfo.note
+        note: profileInfo.note,
       })
       .eq("id", sightingId)
       .select();
@@ -93,12 +94,21 @@ export default function editPetSighting() {
     }
   };
 
+  async function saveSightingPhoto() {
+    if (!profileInfo || !user || !sightingInfo) {
+      return;
+    }
+    if (profileInfo.photo) {
+      await uploadImage(profileInfo.photo, handleSubmit);
+    }
+  }
+
   return EditPetSightingDetails(
-    handleSubmit,
+    saveSightingPhoto,
     setProfileInfo,
     setSightingInfo,
     pet,
     sighting,
-     true
+    true
   );
 }

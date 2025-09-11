@@ -10,6 +10,7 @@ import { Button, Text, TextInput } from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
 import useUploadPetImageUrl from "../image-upload";
 import { PetSighting } from "@/model/sighting";
+import { pickImage } from "../image-picker";
 
 export default function CreateNewSighting() {
   const { id, petId } = useLocalSearchParams();
@@ -21,7 +22,6 @@ export default function CreateNewSighting() {
   const [gender, setGender] = useState("");
   const [features, setFeatures] = useState("");
   const [photo, setPhoto] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
   const [location, setLocation] = useState("");
   const [coords, setCoords] = useState<Location.LocationObjectCoords>();
   const [extra_info, setExtraInfo] = useState("");
@@ -34,20 +34,6 @@ export default function CreateNewSighting() {
 
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
-
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-    }
-  };
 
   useEffect(() => {
     if (colors && species && features && location) {
@@ -79,22 +65,6 @@ export default function CreateNewSighting() {
     setLoading(false);
   }, [id]);
 
-  useEffect(() => {
-    if (photoUrl && newSightingId) {
-      supabase
-        .from("sightings")
-        .update([
-          {
-            photo: photoUrl,
-          },
-        ])
-        .eq("id", newSightingId)
-        .then(({ error }) => {
-          console.log("error saving image url", error);
-        });
-    }
-  }, [photoUrl, newSightingId]);
-
   const contactRoute = user ? "my-sightings" : "sightings";
 
   async function saveSighting(photo: string) {
@@ -117,7 +87,6 @@ export default function CreateNewSighting() {
       payload.pet_id = petId;
     }
 
-    console.log("payload", payload);
     setLoading(true);
     const { error, data } = await supabase
       .from("sightings")
@@ -250,7 +219,7 @@ export default function CreateNewSighting() {
           <Text variant="labelLarge">
             {photo ? "Change Photo" : "Upload Photo (Optional)"}
           </Text>
-          <Button icon="camera" mode="outlined" onPress={pickImage}>
+          <Button icon="camera" mode="outlined" onPress={() => pickImage(setPhoto)}>
             Choose File
           </Button>
           {photo ? (

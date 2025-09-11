@@ -2,7 +2,7 @@ import { Pet } from "@/model/pet";
 import React from "react";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
-import pickImage from "../image-picker";
+import { ImagePickerHandler } from "../image-picker";
 import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
 import { PetSighting } from "@/model/sighting";
@@ -185,7 +185,7 @@ export default function EditPetSightingDetails(
             <Button
               icon="camera"
               mode="outlined"
-              onPress={() => pickImage(handleProfileChange)}
+              onPress={() => ImagePickerHandler(handleProfileChange)}
             >
               Choose File
             </Button>
