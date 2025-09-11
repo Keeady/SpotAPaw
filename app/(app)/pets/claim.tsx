@@ -65,13 +65,13 @@ export default function ClaimLostPet() {
           type: "success",
           icon: "success",
         });
-        router.navigate(`/(app)/sightings`);
+        router.navigate(`/(app)/my-sightings`);
       }
     },
     [user?.id]
   );
 
-  if (loadingPet || loadingSighting) {
+  if (loadingPet || loadingSighting || !sighting) {
     return null;
   }
   return <ClaimSighting sighting={sighting} pets={pets} onConfirm={onConfirm} />;
