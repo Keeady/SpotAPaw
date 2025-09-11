@@ -3,11 +3,13 @@ import { supabase } from "@/components/supabase-client";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
+import useUploadPetImageUrl from "../image-upload";
+import { PetSighting } from "@/model/sighting";
 
 export default function CreateNewSighting() {
   const { id, petId } = useLocalSearchParams();
@@ -19,6 +21,7 @@ export default function CreateNewSighting() {
   const [gender, setGender] = useState("");
   const [features, setFeatures] = useState("");
   const [photo, setPhoto] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [location, setLocation] = useState("");
   const [coords, setCoords] = useState<Location.LocationObjectCoords>();
   const [extra_info, setExtraInfo] = useState("");
@@ -26,9 +29,11 @@ export default function CreateNewSighting() {
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
   const { user } = useContext(AuthContext);
-  const contactRoute = user ? "my-sightings" : "sightings";
+
+  const [newSightingId, setNewSightingId] = useState("");
 
   const router = useRouter();
+  const uploadImage = useUploadPetImageUrl();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -74,12 +79,25 @@ export default function CreateNewSighting() {
     setLoading(false);
   }, [id]);
 
-  async function saveSighting() {
-    if (extra_info.trim()) {
-      router.navigate("/");
-      return;
+  useEffect(() => {
+    if (photoUrl && newSightingId) {
+      supabase
+        .from("sightings")
+        .update([
+          {
+            photo: photoUrl,
+          },
+        ])
+        .eq("id", newSightingId)
+        .then(({ error }) => {
+          console.log("error saving image url", error);
+        });
     }
+  }, [photoUrl, newSightingId]);
 
+  const contactRoute = user ? "my-sightings" : "sightings";
+
+  async function saveSighting(photo: string) {
     const payload = {
       colors,
       breed,
@@ -93,14 +111,23 @@ export default function CreateNewSighting() {
       last_seen_lat: coords?.latitude,
       last_seen_time: new Date().toISOString(),
       linked_sighting_id: linked_sighting_id ?? id,
-    };
+    } as PetSighting;
 
     if (petId && petId !== "null") {
       payload.pet_id = petId;
     }
-    //console.log("payload", payload);
+
+    console.log("payload", payload);
     setLoading(true);
-    const { error } = await supabase.from("sightings").insert([payload]);
+    const { error, data } = await supabase
+      .from("sightings")
+      .insert([payload])
+      .select("id");
+
+    if (data && data.length > 0) {
+      setNewSightingId(data[0].id);
+    }
+
     setLoading(false);
     if (error) {
       showMessage({
@@ -118,6 +145,17 @@ export default function CreateNewSighting() {
     }
 
     router.navigate(`/${contactRoute}/contact`);
+  }
+
+  async function saveSightingPhoto() {
+    if (extra_info.trim()) {
+      router.navigate("/");
+      return;
+    }
+
+    if (photo) {
+      await uploadImage(photo, saveSighting);
+    }
   }
 
   return (
@@ -189,7 +227,6 @@ export default function CreateNewSighting() {
             multiline
           />
         </View>
-
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <TextInput
             label={"Last Seen Location"}
@@ -233,7 +270,7 @@ export default function CreateNewSighting() {
           <Button
             mode="contained"
             disabled={loading || empty}
-            onPress={() => saveSighting()}
+            onPress={() => saveSightingPhoto()}
           >
             Save
           </Button>
