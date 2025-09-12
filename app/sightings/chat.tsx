@@ -4,7 +4,7 @@ import {GoogleGenerativeAI} from "@google/generative-ai"
 
 export default function Chat() {
   // The client gets the API key from the environment variable `GEMINI_API_KEY`.
-  const genAI = new GoogleGenerativeAI("AIzaSyBS_QNq22VFgz898O-bNqas5nA3nsdsAf0");
+  const genAI = new GoogleGenerativeAI("GEMINI_API_KEY");
   console.log(genAI)
 
   async function main() {
