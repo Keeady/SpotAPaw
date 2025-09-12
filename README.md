@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# SpotAPaw 🐾
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+SpotAPaw is a mobile app built with [Expo](https://expo.dev) and React Native to help users report, track, and find lost pets in their community. Users can create pet profiles, report sightings, and contact pet owners to reunite lost pets with their families.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Pet Profiles:** Register your pets with details like name, breed, age, colors, and distinctive features.
+- **Report Sightings:** Submit sightings of lost pets, including location, time, and photos.
+- **View Sightings:** Browse recent pet sightings and filter by proximity.
+- **Claim Sightings:** Owners can claim sightings related to their pets.
+- **Contact:** Easily reach out to pet owners or sighting reporters.
+- **Authentication:** Secure sign up and sign in for pet owners.
+- **Chat with AI:** Get help extracting structured sighting info via chat. [In Progress]
+
+## Getting Started
+
+1. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Start the app**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Project Structure
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- `app/` — Main app screens and navigation
+- `components/` — Reusable UI components (pet profiles, sightings, dialogs, etc.)
+- `model/` — TypeScript models for pets and sightings
+- `assets/` — Images and fonts
+- `.env` — Environment variables (API keys, etc.)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Technologies
 
-## Get a fresh project
+- React Native
+- Expo
+- Supabase (backend/database)
+- React Native Paper (UI)
+- Date-fns (date utilities)
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Created with ❤️ using [Expo](https://expo.dev)
