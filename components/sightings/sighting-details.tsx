@@ -123,7 +123,7 @@ export default function SightingDetail({
                   flexDirection: "row",
                 }}
               >
-                <Text>{petSummary?.features}</Text>
+                <Text style={{wordWrap: "wrap"}}>{petSummary?.features}</Text>
               </View>
             )}
             {petSummary?.note && (
@@ -134,7 +134,7 @@ export default function SightingDetail({
                   flexDirection: "row",
                 }}
               >
-                <Text>{petSummary?.note}</Text>
+                <Text style={{wordWrap: "wrap"}}>{petSummary?.note}</Text>
               </View>
             )}
           </Card.Content>
@@ -328,6 +328,9 @@ export default function SightingDetail({
             imageIndex={0}
             visible={isVisible}
             onRequestClose={() => setIsVisible(false)}
+            FooterComponent={({imageIndex}) => {
+              return (<Text>{imageIndex}/{images.length}</Text>)
+            }}
           />
         </View>
       </ScrollView>
