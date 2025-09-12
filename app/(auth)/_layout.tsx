@@ -1,9 +1,10 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { Redirect, router, Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useContext, useEffect } from "react";
 import FlashMessage from "react-native-flash-message";
 
 export default function AuthLayout() {
+  const router = useRouter();
   const auth = useContext(AuthContext);
 
   useEffect(() => {

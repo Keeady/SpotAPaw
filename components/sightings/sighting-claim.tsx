@@ -1,6 +1,6 @@
 import { Pet } from "@/model/pet";
 import { PetSighting } from "@/model/sighting";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { Text, Card, Button, RadioButton } from "react-native-paper";
@@ -12,6 +12,8 @@ type ClaimSightingProps = {
 }
 
 export default function ClaimSighting({ sighting, pets, onConfirm }: ClaimSightingProps) {
+    const router = useRouter();
+  
   const [selectedPetId, setSelectedPetId] = useState<string>("");
 
   if (!sighting) {

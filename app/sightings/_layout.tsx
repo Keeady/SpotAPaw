@@ -7,28 +7,25 @@ const styles = StyleSheet.create({
     width: 100,
     marginLeft: 12,
     resizeMode: "contain",
-    height: 50
+    height: 50,
   },
   button: {
     marginRight: 12,
-  }
+  },
 });
 
 export default function Layout() {
   return (
-    <>
-      <Stack
-        screenOptions={{
-          title: "",
-          headerLeft: () => (
-            <Image
-              source={require("../../assets/images/logosmall.png")}
-              style={styles.logo}
-            />
-          ),
-        }}
-      />
-      <FlashMessage position="bottom" />
-    </>
+    <Stack
+      screenOptions={{
+        title: "",
+        headerLeft: () => (
+          <Image
+            source={require("../../assets/images/logosmall.png")}
+            style={styles.logo}
+          />
+        ),
+      }}
+    />
   );
 }

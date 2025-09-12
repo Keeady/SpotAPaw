@@ -15,7 +15,7 @@ export default function PublicHome() {
       <Button
         icon="paw"
         mode="contained"
-        onPress={() => router.navigate("/sightings/new")}
+        onPress={() => router.push("/sightings/new")}
         contentStyle={{ width: "100%" }}
         style={styles.button}
       >
@@ -24,7 +24,7 @@ export default function PublicHome() {
       <Button
         icon="paw"
         mode="outlined"
-        onPress={() => router.navigate("/sightings/")}
+        onPress={() => router.push("/sightings/")}
         contentStyle={{ width: "100%" }}
         style={styles.button}
       >
@@ -42,7 +42,7 @@ export default function PublicHome() {
       <Button
         icon=""
         mode="outlined"
-        onPress={() => router.navigate("/(auth)/signin")}
+        onPress={() => router.push("/(auth)/signin")}
         style={styles.button}
       >
         Sign In
@@ -50,7 +50,7 @@ export default function PublicHome() {
       <Button
         icon=""
         mode="outlined"
-        onPress={() => router.navigate("/(auth)/signup")}
+        onPress={() => router.push("/(auth)/signup")}
         style={styles.button}
       >
         Register

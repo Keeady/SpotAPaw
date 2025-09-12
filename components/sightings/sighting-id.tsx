@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 import SightingDetail from "@/components/sightings/sighting-details";
@@ -8,6 +8,8 @@ import { supabase } from "@/components/supabase-client";
 import { onPetFound } from "../pets/pet-crud";
 
 export default function SightingProfile() {
+    const router = useRouter();
+  
   const { id: sightingId, petId } = useLocalSearchParams(); // pet id
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState();

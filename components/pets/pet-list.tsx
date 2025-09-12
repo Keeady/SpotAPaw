@@ -1,6 +1,6 @@
 import RenderShortProfile from "@/components/pets/short-profile";
 import { Pet } from "@/model/pet";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { FlatList, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
 
@@ -9,6 +9,8 @@ type PetListRendererProp = {
 };
 
 export default function PetListRenderer({ pets }: PetListRendererProp) {
+    const router = useRouter();
+  
   return (
     <View style={styles.container}>
       <FlatList

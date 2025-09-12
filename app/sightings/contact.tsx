@@ -1,5 +1,5 @@
 import { supabase } from "@/components/supabase-client";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -7,6 +7,8 @@ import { showMessage } from "react-native-flash-message";
 import { Button, TextInput, Text } from "react-native-paper";
 
 export default function SightingContact() {
+  const router = useRouter();
+  
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);

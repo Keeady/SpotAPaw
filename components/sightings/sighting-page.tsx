@@ -6,7 +6,6 @@ import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
-import { router } from "expo-router";
 import { isValidUuid } from "../util";
 
 const RADIUSKM = 10;

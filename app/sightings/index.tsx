@@ -2,12 +2,14 @@ import { RenderSightingProfile } from "@/components/pet-profile";
 import SightingPage from "@/components/sightings/sighting-page";
 import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, {  } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { FAB, Text } from "react-native-paper";
 
 export default function SightingAnonList() {
+  const router = useRouter();
+  
   const renderer = (sightings: PetSighting[]) => (
     <View style={styles.container}>
       <FlatList

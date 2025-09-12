@@ -1,6 +1,6 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
-import { Redirect, router, Stack, Tabs } from "expo-router";
+import { Redirect, Stack, Tabs, useRouter } from "expo-router";
 import React, { useContext } from "react";
 import { Alert, Image, StyleSheet } from "react-native";
 import FlashMessage from "react-native-flash-message";
@@ -9,6 +9,7 @@ import { Button, Icon, Text } from "react-native-paper";
 export default function AppLayout() {
   const auth = useContext(AuthContext);
   const user = auth.user;
+  const router = useRouter();
 
   async function handleSignOut() {
     let { error } = await supabase.auth.signOut();

@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useContext } from "react";
 import { Image, View } from "react-native";
 import { Button, Card, Chip, Divider, Text } from "react-native-paper";
@@ -60,6 +60,7 @@ export function RenderPetProfile(data) {
 }
 
 export function RenderSightingProfile(data) {
+  const router = useRouter();
   const pet = data.pet;
   const { user } = useContext(AuthContext);
   const sightingsRoute = user ? "my-sightings" : "sightings";

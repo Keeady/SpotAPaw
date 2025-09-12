@@ -1,11 +1,12 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import ClaimSighting from "@/components/sightings/sighting-claim";
 import { supabase } from "@/components/supabase-client";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 
 export default function ClaimLostPet() {
+  const router = useRouter();
   const { user } = useContext(AuthContext);
   const [pets, setPets] = useState([]);
   const [sighting, setSighting] = useState();
