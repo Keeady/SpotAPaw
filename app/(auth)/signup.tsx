@@ -83,6 +83,7 @@ export default function SignUpScreen() {
           autoCapitalize={"none"}
           right={<TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />}
           mode="outlined"
+          textContentType="password"
         />
       </View>
 

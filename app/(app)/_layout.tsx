@@ -73,7 +73,7 @@ export default function AppLayout() {
 const styles = StyleSheet.create({
   logo: {
     width: 100,
-    marginLeft: 12,
+    marginLeft: 24,
     resizeMode: "contain",
   },
   button: {

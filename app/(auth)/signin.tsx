@@ -69,6 +69,7 @@ export default function SignInScreen() {
           autoCapitalize={"none"}
           mode="outlined"
           right={<TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />}
+          textContentType="password"
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>

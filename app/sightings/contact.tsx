@@ -69,6 +69,7 @@ export default function SightingContact() {
           placeholder="555-555-5555"
           autoCapitalize={"none"}
           mode="outlined"
+          textContentType="telephoneNumber"
         />
       </View>
       <View style={styles.verticallySpaced}>
@@ -80,6 +81,7 @@ export default function SightingContact() {
           placeholder="First & Last Name"
           autoCapitalize={"none"}
           mode="outlined"
+          textContentType="name"
         />
       </View>
 
