@@ -11,6 +11,7 @@ import { AuthContext } from "../Provider/auth-provider";
 import useUploadPetImageUrl from "../image-upload";
 import { PetSighting } from "@/model/sighting";
 import { pickImage } from "../image-picker";
+import { isValidUuid } from "../util";
 
 export default function CreateNewSighting() {
   const { id, petId } = useLocalSearchParams();
@@ -44,7 +45,7 @@ export default function CreateNewSighting() {
   }, [location, colors, species, features]);
 
   useEffect(() => {
-    if (id) {
+    if (id && isValidUuid(id)) {
       setLoading(true);
       supabase
         .from("sightings")
@@ -111,14 +112,14 @@ export default function CreateNewSighting() {
         type: "success",
         icon: "success",
       });
-    }
 
-    router.navigate(`/${contactRoute}/contact`);
+      router.replace(`/${contactRoute}/contact`);
+    }
   }
 
   async function saveSightingPhoto() {
     if (extra_info.trim()) {
-      router.navigate("/");
+      router.replace("/");
       return;
     }
 
