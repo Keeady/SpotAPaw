@@ -12,6 +12,7 @@ export default function SignInScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [isVisible, setVisible] = useState(true);
 
   async function signInWithEmail() {
     if (!email || !password) {
@@ -44,8 +45,6 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
-      <HomePageHeader />
-
       <Text variant="titleLarge">Welcome Back!</Text>
       <Text variant="titleMedium">Find and protect your furry friend</Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -65,10 +64,11 @@ export default function SignInScreen() {
           left={<TextInput.Icon icon="lock" />}
           onChangeText={(text) => setPassword(text)}
           value={password}
-          secureTextEntry={true}
+          secureTextEntry={isVisible}
           placeholder="Password"
           autoCapitalize={"none"}
           mode="outlined"
+          right={<TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />}
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>

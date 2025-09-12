@@ -11,6 +11,7 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [isVisible, setVisible] = useState(true);
 
   async function signUpWithEmail() {
     if (!email || !password) {
@@ -58,7 +59,6 @@ export default function SignUpScreen() {
 
   return (
     <View style={styles.container}>
-      <HomePageHeader />
       <Text variant="titleLarge">Welcome!</Text>
       <Text variant="titleMedium">Find and protect your furry friend</Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -78,10 +78,10 @@ export default function SignUpScreen() {
           left={<TextInput.Icon icon="lock" />}
           onChangeText={(text) => setPassword(text)}
           value={password}
-          secureTextEntry={true}
+          secureTextEntry={isVisible}
           placeholder="Password"
           autoCapitalize={"none"}
-          right={<TextInput.Icon icon="eye" />}
+          right={<TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />}
           mode="outlined"
         />
       </View>
