@@ -1,11 +1,10 @@
 import { Stack } from "expo-router";
 import { Image, StyleSheet } from "react-native";
-import FlashMessage from "react-native-flash-message";
 
 const styles = StyleSheet.create({
   logo: {
     width: 100,
-    marginLeft: 12,
+    marginLeft: 0,
     resizeMode: "contain",
     height: 50,
   },
@@ -18,14 +17,19 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        title: "",
-        headerLeft: () => (
+        headerBackVisible: true,
+        headerBackButtonDisplayMode: "minimal",
+        headerTitle: () => (
           <Image
             source={require("../../assets/images/logosmall.png")}
             style={styles.logo}
           />
         ),
       }}
-    />
+    >
+      <Stack.Screen name={"index"} />
+      <Stack.Screen name={"new"} />
+      <Stack.Screen name={"contact"} />
+    </Stack>
   );
 }
