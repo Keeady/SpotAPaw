@@ -1,9 +1,8 @@
-import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
-import { Redirect, Stack, Tabs, useRouter } from "expo-router";
-import React, { useContext } from "react";
+import { Stack, useRouter } from "expo-router";
+import React from "react";
 import { Alert, Image, StyleSheet } from "react-native";
-import { Button, Icon, Text } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 export default function OwnerLayout() {
   const router = useRouter();

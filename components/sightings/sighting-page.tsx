@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Button, FAB } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { getUserLocation, SightingLocation } from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
@@ -32,7 +32,7 @@ export default function SightingPage({
     } else {
       fetchSightings(filterNearby, location, setLoading, setSightings);
     }
-  }, [filterNearby, location]);
+  }, [filterNearby, location, user]);
 
   return (
     <View className="flex-1 p-4">

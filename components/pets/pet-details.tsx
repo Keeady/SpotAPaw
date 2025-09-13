@@ -1,10 +1,6 @@
-import { Button, Card, Divider, Text } from "react-native-paper";
-import { Alert, Image, StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
 import { Pet } from "@/model/pet";
 import PetProfileCard from "./profile";
-import { User } from "@supabase/supabase-js";
-import { useCallback, useContext } from "react";
-import { AuthContext } from "../Provider/auth-provider";
 
 type RenderPetDetailsProps = {
   pet: Pet;
@@ -21,8 +17,6 @@ export default function RenderPetDetails({
   onPetFound,
   onPetLost,
 }: RenderPetDetailsProps) {
-    const {user} = useContext(AuthContext);
-
   if (!pet) {
     return <Text>No pet details found</Text>;
   }

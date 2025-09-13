@@ -1,8 +1,5 @@
 import React from "react";
-import { ScrollView } from "react-native-gesture-handler";
-import { Button, Card, RadioButton, Text, TextInput } from "react-native-paper";
-import * as ImagePicker from "expo-image-picker";
-import { View } from "react-native";
+import { Button, Card, Text, TextInput } from "react-native-paper";
 
 export default function CreateOwnerProfile({
   profileInfo,

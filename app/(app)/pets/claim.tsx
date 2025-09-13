@@ -13,7 +13,10 @@ export default function ClaimLostPet() {
   const [loadingPet, setLoadingPet] = useState(false);
   const [loadingSighting, setLoadingSighting] = useState(false);
 
-  const { petId, sightingId } = useLocalSearchParams();
+  const { petId, sightingId } = useLocalSearchParams<{
+    petId: string;
+    sightingId: string;
+  }>();
 
   useEffect(() => {
     setLoadingPet(true);
@@ -21,14 +24,14 @@ export default function ClaimLostPet() {
       .from("pets")
       .select("*")
       .eq("owner_id", user?.id)
-      .then(({ data, error }) => {
+      .then(({ data }) => {
         setPets(data);
-        setLoadingPet(false)
+        setLoadingPet(false);
       });
   }, [user?.id]);
 
   useEffect(() => {
-    setLoadingSighting(true)
+    setLoadingSighting(true);
     supabase
       .from("sightings")
       .select("*")
@@ -42,7 +45,7 @@ export default function ClaimLostPet() {
 
   const onConfirm = useCallback(
     async (selectedPetId: string) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("pet_claims")
         .insert([
           {
@@ -69,7 +72,7 @@ export default function ClaimLostPet() {
         router.navigate(`/(app)/my-sightings`);
       }
     },
-    [user?.id]
+    [user?.id, router, sightingId]
   );
 
   if (loadingPet || loadingSighting || !sighting) {

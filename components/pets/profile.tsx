@@ -1,7 +1,6 @@
-import { User } from "@supabase/supabase-js";
 import React from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { Card, Text, Chip, Divider, Button } from "react-native-paper";
+import { Card, Text, Chip, Button } from "react-native-paper";
 
 type PetProfile = {
   id: string;
@@ -33,7 +32,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   onDeletePet,
 }) => {
   const {
-    id,
     name,
     breed,
     gender,

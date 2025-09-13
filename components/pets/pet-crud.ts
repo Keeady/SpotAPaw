@@ -5,28 +5,29 @@ import { useCallback } from "react";
 import { Alert } from "react-native";
 import { Pet } from "@/model/pet";
 
-export const onConfirmDelete = useCallback(
-  (petName: string, petId: string, userId: string) =>
-    Alert.alert(
-      `Deleting Pet ${petName}`,
-      `Are you sure you want to delete ${petName}'s profile?`,
-      [
+export const useConfirmDelete = () =>
+  useCallback(
+    (petName: string, petId: string, userId: string) =>
+      Alert.alert(
+        `Deleting Pet ${petName}`,
+        `Are you sure you want to delete ${petName}'s profile?`,
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "Yes, please delete",
+            onPress: () => onDeletePet(petId, userId),
+          },
+        ],
         {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "Yes, please delete",
-          onPress: () => onDeletePet(petId, userId),
-        },
-      ],
-      {
-        userInterfaceStyle: "dark",
-      }
-    ),
-  [onDeletePet]
-);
+          userInterfaceStyle: "dark",
+        }
+      ),
+    []
+  );
 
 export async function onDeletePet(id: string, userId: string) {
   const { error } = await supabase
@@ -61,7 +62,7 @@ export function onPetLost(id: string) {
 }
 
 export async function onPetFound(id: string) {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("pets")
     .update({
       is_lost: false,
@@ -80,7 +81,7 @@ export async function onPetFound(id: string) {
     });
     return;
   } else {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("sightings")
       .update({
         is_active: false,
@@ -110,7 +111,7 @@ export async function createNewPet(profileInfo: Pet, userId: string) {
     return;
   }
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("pets")
     .insert([
       {

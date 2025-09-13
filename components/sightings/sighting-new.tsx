@@ -1,6 +1,5 @@
 import { getCurrentLocationV1 } from "@/components/get-current-location";
 import { supabase } from "@/components/supabase-client";
-import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
@@ -14,7 +13,7 @@ import { pickImage } from "../image-picker";
 import { isValidUuid } from "../util";
 
 export default function CreateNewSighting() {
-  const { id, petId } = useLocalSearchParams();
+  const { id, petId } = useLocalSearchParams<{ id: string; petId: string }>();
 
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState("");
@@ -30,8 +29,6 @@ export default function CreateNewSighting() {
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
   const { user } = useContext(AuthContext);
-
-  const [newSightingId, setNewSightingId] = useState("");
 
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
@@ -52,7 +49,7 @@ export default function CreateNewSighting() {
         .select("*")
         .eq("id", id)
         .single()
-        .then(({ data, error }) => {
+        .then(({ data }) => {
           setColors(data.colors);
           setBreed(data.breed);
           setSpecies(data.species);
@@ -89,14 +86,10 @@ export default function CreateNewSighting() {
     }
 
     setLoading(true);
-    const { error, data } = await supabase
+    const { error } = await supabase
       .from("sightings")
       .insert([payload])
       .select("id");
-
-    if (data && data.length > 0) {
-      setNewSightingId(data[0].id);
-    }
 
     setLoading(false);
     if (error) {

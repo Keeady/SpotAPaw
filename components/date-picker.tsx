@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function DatePicker({

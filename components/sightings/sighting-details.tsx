@@ -18,7 +18,6 @@ import {
   FAB,
 } from "react-native-paper";
 import { formatDistanceToNow } from "date-fns";
-import { AuthContext } from "../Provider/auth-provider";
 import { useState } from "react";
 import ImageViewing from "react-native-image-viewing";
 import { PetSighting } from "@/model/sighting";

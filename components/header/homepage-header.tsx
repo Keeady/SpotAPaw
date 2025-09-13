@@ -1,7 +1,4 @@
-import { AuthContext, AuthProvider } from "@/components/Provider/auth-provider";
-import { Link, useRouter } from "expo-router";
-import { View, StyleSheet, Image } from "react-native";
-import { Avatar, Button, Card, Text } from "react-native-paper";
+import { StyleSheet, Image } from "react-native";
 
 export default function HomePageHeader() {
   return (

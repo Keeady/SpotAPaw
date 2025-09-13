@@ -1,8 +1,7 @@
 import { Pet } from "@/model/pet";
-import { router } from "expo-router";
 import React from "react";
 import { Image, View } from "react-native";
-import { Button, Card, Chip, Divider, Text } from "react-native-paper";
+import { Card, Divider, Text } from "react-native-paper";
 
 type ShortProfileProp = {
   pet: Pet;

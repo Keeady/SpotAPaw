@@ -8,8 +8,11 @@ import EditPetSightingDetails from "@/components/sightings/sighting-edit";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { PetSighting } from "@/model/sighting";
 
-export default function editPetSighting() {
-  const { sightingId, petId } = useLocalSearchParams();
+export default function EditPetSighting() {
+  const { sightingId, petId } = useLocalSearchParams<{
+    sightingId: string;
+    petId: string;
+  }>();
   const [pet, setPet] = useState<Pet | undefined>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
@@ -56,7 +59,7 @@ export default function editPetSighting() {
       return;
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("sightings")
       .update({
         name: profileInfo.name,

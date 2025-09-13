@@ -1,6 +1,5 @@
 import { supabase } from "@/components/supabase-client";
-import { useRouter } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
@@ -13,14 +12,14 @@ export default function SightingContact() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const [disableBtn, setDisabledBtn] = useState(true);
 
   useEffect(() => {
     if (name && phone) {
-      setDisabledBtn(false)
+      setDisabledBtn(false);
     }
-  }, [name, phone])
+  }, [name, phone]);
 
   async function saveSightingContact() {
     if (extra_info.trim()) {

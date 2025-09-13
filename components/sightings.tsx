@@ -1,13 +1,8 @@
 import * as React from "react";
-import { View } from "react-native";
 import {
   Avatar,
-  Button,
   Card,
-  IconButton,
-  MD3Colors,
   Text,
-  TextInput,
 } from "react-native-paper";
 
 export default function Sightings() {
