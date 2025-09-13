@@ -33,7 +33,7 @@ export default function OwnerList() {
   }, [firstName, lastName, address, phone, email]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.id) {
       return;
     }
 

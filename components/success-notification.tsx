@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Snackbar } from 'react-native-paper';
+import { Snackbar } from 'react-native-paper';
 
 const SuccessNotification = (message: string) => {
   const [visible, setVisible] = React.useState(false);
-
-  const onToggleSnackBar = () => setVisible(!visible);
 
   const onDismissSnackBar = () => setVisible(false);
 

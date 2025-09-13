@@ -42,7 +42,7 @@ export default function ClaimLostPet() {
 
   const onConfirm = useCallback(
     async (selectedPetId: string) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("pet_claims")
         .insert([
           {
@@ -69,7 +69,7 @@ export default function ClaimLostPet() {
         router.navigate(`/(app)/my-sightings`);
       }
     },
-    [user?.id]
+    [user?.id, router, sightingId]
   );
 
   if (loadingPet || loadingSighting || !sighting) {

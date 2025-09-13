@@ -87,7 +87,7 @@ export default function SignInScreen() {
         </Button>
       </View>
       <View style={styles.secondary}>
-        <Text>Don't have an account?</Text>
+        <Text>{"Don't have an account?"}</Text>
         <Button
           mode="text"
           disabled={loading}

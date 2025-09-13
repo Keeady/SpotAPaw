@@ -1,8 +1,7 @@
-import HomePageHeader from "@/components/header/homepage-header";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, TextInput, Text } from "react-native-paper";
 

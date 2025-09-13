@@ -1,13 +1,11 @@
-import PetDetails from "@/components/pets/pet-details";
 import { supabase } from "@/components/supabase-client";
 import { Pet } from "@/model/pet";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Button, Text } from "react-native-paper";
-import { showMessage } from "react-native-flash-message";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { onDeletePet, onPetFound, onPetLost, onEditPet, onConfirmDelete } from "@/components/pets/pet-crud";
+import { onPetFound, onPetLost, onEditPet, useConfirmDelete } from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
 
 export default function PetProfile() {
@@ -16,6 +14,7 @@ export default function PetProfile() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
+  const onConfirmDelete = useConfirmDelete();
 
   useEffect(() => {
     setLoading(true);

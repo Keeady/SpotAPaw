@@ -5,7 +5,7 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { Pet } from "@/model/pet";
 import { useContext } from "react";
 
-export default function addPet() {
+export default function AddPet() {
   const { user } = useContext(AuthContext);
   const uploadImage = useUploadPetImageUrl();
 

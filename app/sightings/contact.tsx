@@ -1,6 +1,5 @@
 import { supabase } from "@/components/supabase-client";
-import { useRouter } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";

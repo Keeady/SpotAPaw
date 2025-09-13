@@ -1,5 +1,4 @@
 import ReportChatScreen from "@/components/chat/report-with-chat";
-import { useEffect } from "react";
 import {GoogleGenerativeAI} from "@google/generative-ai"
 
 export default function Chat() {

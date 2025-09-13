@@ -4,12 +4,11 @@ import { supabase } from "@/components/supabase-client";
 import { Pet } from "@/model/pet";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
-import * as Location from "expo-location";
 import { showMessage } from "react-native-flash-message";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { isValidUuid } from "@/components/util";
 
-export default function editPet() {
+export default function EditPet() {
   const { id, is_lost } = useLocalSearchParams();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
@@ -37,7 +36,7 @@ export default function editPet() {
       return;
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("pets")
       .update({
         name: profileInfo.name,
@@ -94,7 +93,7 @@ export default function editPet() {
     }
 
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("sightings")
       .insert({
         name: profileInfo.name,

@@ -145,7 +145,7 @@ export function usePetSightings(petId: string, sightingId: string) {
 
       fetchSightingsByPetId(petId);
     }
-  }, [petId, sightingId]);
+  }, [petId, sightingId, user]);
 
   return { loading, error, timeline, summary };
 }

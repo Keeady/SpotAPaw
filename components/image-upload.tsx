@@ -1,5 +1,4 @@
-import { useCallback, useContext, useState } from "react";
-import { View, Text, Button } from "react-native";
+import { useCallback, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "./Provider/auth-provider";
 import { supabase } from "./supabase-client";
@@ -9,7 +8,6 @@ export default function useUploadPetImageUrl() {
   const SUPABASE_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
   const BUCKET = "pet_photos";
   const { session } = useContext(AuthContext);
-  // console.log("session", session);
 
   return useCallback(
     async (uri: string, callback: (uri: string) => void) => {
@@ -58,6 +56,6 @@ export default function useUploadPetImageUrl() {
 
       xhr.send(blob);
     },
-    []
+    [SUPABASE_KEY, SUPABASE_URL, session?.access_token]
   );
 }
