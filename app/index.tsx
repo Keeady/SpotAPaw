@@ -1,7 +1,5 @@
 import HomePageHeader from "@/components/header/homepage-header";
-import { AuthContext } from "@/components/Provider/auth-provider";
 import { useRouter } from "expo-router";
-import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 
@@ -30,15 +28,6 @@ export default function PublicHome() {
       >
         View Lost Pet Sightings
       </Button>
-      {/*<Button
-        icon="paw"
-        mode="contained"
-        onPress={() => router.navigate("/sightings/chat")}
-        contentStyle={{ width: "100%" }}
-        style={styles.button}
-      >
-        Chat with AI
-      </Button>*/}
       <Button
         icon=""
         mode="outlined"
@@ -69,7 +58,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: "100%",
-    //height: 100,
     marginBottom: 40,
     marginTop: 40,
     resizeMode: "contain"
