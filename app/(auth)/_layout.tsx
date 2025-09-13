@@ -16,14 +16,6 @@ const styles = StyleSheet.create({
 });
 
 export default function AuthLayout() {
-  const router = useRouter();
-  const auth = useContext(AuthContext);
-
-  useEffect(() => {
-    if (auth.user) {
-      return router.replace("/(app)/pets");
-    }
-  }, [auth.user]);
   return (
     <Stack
       screenOptions={{

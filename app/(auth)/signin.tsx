@@ -1,9 +1,7 @@
-import AlertDialog from "@/components/dialog";
-import HomePageHeader from "@/components/header/homepage-header";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, TextInput, Text } from "react-native-paper";
 
@@ -21,23 +19,28 @@ export default function SignInScreen() {
         type: "warning",
         icon: "warning",
         autoHide: true,
-        statusBarHeight: 100
+        statusBarHeight: 100,
       });
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
+    if (data) {
+      router.replace("/(app)/my-sightings");
+      return;
+    }
+
     if (error) {
-       showMessage({
+      showMessage({
         message: "Invalid email or password. Please try again.",
         type: "danger",
         icon: "danger",
         autoHide: true,
-        statusBarHeight: 100
+        statusBarHeight: 100,
       });
     }
     setLoading(false);
@@ -68,7 +71,9 @@ export default function SignInScreen() {
           placeholder="Password"
           autoCapitalize={"none"}
           mode="outlined"
-          right={<TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />}
+          right={
+            <TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />
+          }
           textContentType="password"
         />
       </View>
