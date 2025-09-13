@@ -46,7 +46,7 @@ export default function SightingDetail({
   claimed,
   hasOwner,
   isOwner,
-  onPetFound
+  onPetFound,
 }: {
   sightings: PetSighting[];
   petSummary: PetSighting;
@@ -56,7 +56,7 @@ export default function SightingDetail({
   claimPet?: () => void;
   hasOwner: boolean;
   isOwner: boolean;
-  onPetFound?: () => void
+  onPetFound?: () => void;
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
@@ -123,7 +123,7 @@ export default function SightingDetail({
                   flexDirection: "row",
                 }}
               >
-                <Text style={{wordWrap: "wrap"}}>{petSummary?.features}</Text>
+                <Text style={{ wordWrap: "wrap" }}>{petSummary?.features}</Text>
               </View>
             )}
             {petSummary?.note && (
@@ -134,7 +134,7 @@ export default function SightingDetail({
                   flexDirection: "row",
                 }}
               >
-                <Text style={{wordWrap: "wrap"}}>{petSummary?.note}</Text>
+                <Text style={{ wordWrap: "wrap" }}>{petSummary?.note}</Text>
               </View>
             )}
           </Card.Content>
@@ -154,7 +154,9 @@ export default function SightingDetail({
                   This is my pet.
                 </Chip>
               )}
-              {onPetFound && <Button onPress={() => onPetFound()}>Pet Found</Button>}
+              {onPetFound && (
+                <Button onPress={() => onPetFound()}>Pet Found</Button>
+              )}
               {onEdit && (
                 <Button onPress={() => onEdit()}>Edit Pet details</Button>
               )}
@@ -328,8 +330,14 @@ export default function SightingDetail({
             imageIndex={0}
             visible={isVisible}
             onRequestClose={() => setIsVisible(false)}
-            FooterComponent={({imageIndex}) => {
-              return (<Text>{imageIndex}/{images.length}</Text>)
+            FooterComponent={({ imageIndex }) => {
+              return (
+                <View style={{ padding: 20, alignItems: "center" }}>
+                  <Text style={{ color: "#fff" }}>
+                    {imageIndex + 1}/{images.length}
+                  </Text>
+                </View>
+              );
             }}
           />
         </View>
