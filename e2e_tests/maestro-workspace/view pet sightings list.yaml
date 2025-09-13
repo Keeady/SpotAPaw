@@ -1,0 +1,11 @@
+appId: com.bcamaria.SpotAPaw
+---
+- launchApp:
+    clearState: true
+- assertVisible: View Lost Pet Sightings
+- tapOn: View Lost Pet Sightings
+- assertVisible: Show Nearby Sightings
+- assertVisible: Add details
+- assertVisible:
+    text: Report
+    enabled: true
