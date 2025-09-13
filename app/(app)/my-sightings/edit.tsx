@@ -9,7 +9,10 @@ import useUploadPetImageUrl from "@/components/image-upload";
 import { PetSighting } from "@/model/sighting";
 
 export default function EditPetSighting() {
-  const { sightingId, petId } = useLocalSearchParams();
+  const { sightingId, petId } = useLocalSearchParams<{
+    sightingId: string;
+    petId: string;
+  }>();
   const [pet, setPet] = useState<Pet | undefined>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();

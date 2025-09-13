@@ -13,7 +13,7 @@ import { pickImage } from "../image-picker";
 import { isValidUuid } from "../util";
 
 export default function CreateNewSighting() {
-  const { id, petId } = useLocalSearchParams();
+  const { id, petId } = useLocalSearchParams<{ id: string; petId: string }>();
 
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState("");

@@ -9,7 +9,7 @@ import { onPetFound, onPetLost, onEditPet, useConfirmDelete } from "@/components
 import RenderPetDetails from "@/components/pets/pet-details";
 
 export default function PetProfile() {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const [pet, setPet] = useState<Pet | undefined>(undefined);
   const router = useRouter();
   const [loading, setLoading] = useState(false);

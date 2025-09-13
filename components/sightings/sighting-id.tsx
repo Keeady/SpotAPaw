@@ -9,16 +9,22 @@ import { onPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
 
 export default function SightingProfile() {
-    const router = useRouter();
-  
-  const { id: sightingId, petId } = useLocalSearchParams(); // pet id
+  const router = useRouter();
+
+  const { id: sightingId, petId } = useLocalSearchParams<{
+    id: string;
+    petId: string;
+  }>(); // pet id
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState();
 
-  const { loading, error, timeline, summary } = usePetSightings(petId, sightingId);
+  const { loading, error, timeline, summary } = usePetSightings(
+    petId,
+    sightingId
+  );
 
   const { user } = useContext(AuthContext);
-    const sightingsRoute = user ? "my-sightings" : "sightings";
+  const sightingsRoute = user ? "my-sightings" : "sightings";
 
   useEffect(() => {
     if (user?.id && sightingId && isValidUuid(sightingId)) {
@@ -28,14 +34,14 @@ export default function SightingProfile() {
         .eq("sighting_id", sightingId)
         .then(({ data }) => {
           if (data && data.length > 0) {
-            setClaimed(true)
+            setClaimed(true);
           }
         });
     }
   }, [user?.id, petId, sightingId]);
 
   useEffect(() => {
-    if (user?.id && petId && isValidUuid(petId) ) {
+    if (user?.id && petId && isValidUuid(petId)) {
       supabase
         .from("pets")
         .select("*")
@@ -43,11 +49,11 @@ export default function SightingProfile() {
         .single()
         .then(({ data }) => {
           if (data) {
-            setPetOwner(data.owner_id)
+            setPetOwner(data.owner_id);
           }
         });
     }
-  }, [petId, user?.id])
+  }, [petId, user?.id]);
 
   const onAddSighting = useCallback(() => {
     router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);
@@ -61,11 +67,13 @@ export default function SightingProfile() {
     if (!petId) {
       return;
     }
-    router.push(`/${sightingsRoute}/edit/?petId=${petId}&sightingId=${sightingId}`);
+    router.push(
+      `/${sightingsRoute}/edit/?petId=${petId}&sightingId=${sightingId}`
+    );
   }, [petId, sightingId, router, sightingsRoute]);
 
   const handlePetFound = useCallback(() => {
-    onPetFound(petId)
+    onPetFound(petId);
   }, [petId]);
 
   if (error) {
