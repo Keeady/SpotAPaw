@@ -16,7 +16,9 @@ export const ImagePickerHandler = async (
   }
 };
 
-export const pickImage = async (setPhoto: (uri: string) => void) => {
+export const pickImage = async (
+  setPhoto: React.Dispatch<React.SetStateAction<string>>
+): Promise<boolean> => {
   // No permissions request is necessary for launching the image library
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -27,5 +29,7 @@ export const pickImage = async (setPhoto: (uri: string) => void) => {
 
   if (!result.canceled) {
     setPhoto(result.assets[0].uri);
+    return true;
   }
+  return false;
 };

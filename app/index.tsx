@@ -1,7 +1,7 @@
 import HomePageHeader from "@/components/header/homepage-header";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, FAB } from "react-native-paper";
 
 export default function PublicHome() {
   const router = useRouter();
@@ -44,6 +44,13 @@ export default function PublicHome() {
       >
         Register
       </Button>
+      <FAB
+        icon="message-outline"
+        label="Report"
+        mode="elevated"
+        onPress={() => router.push(`/sightings/chat`)}
+        style={{ position: "absolute", bottom: 50, right: 50 }}
+      />
     </View>
   );
 }
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 40,
     marginTop: 40,
-    resizeMode: "contain"
+    resizeMode: "contain",
   },
   button: {
     width: "100%",
