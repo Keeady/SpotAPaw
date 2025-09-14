@@ -80,7 +80,7 @@ export default function SignInScreen() {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
-          disabled={loading}
+          disabled={loading || !email || !password}
           onPress={() => signInWithEmail()}
         >
           Sign in
