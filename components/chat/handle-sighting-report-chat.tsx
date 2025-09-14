@@ -1,10 +1,6 @@
 import { GenerativeModel } from "@google/generative-ai";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 
-type SightingChatProps = {
-  chatHistory?: string;
-};
-
 export function getPrompt(
   sighting: any,
   userReply: string,
@@ -58,7 +54,6 @@ export async function sendSignalToGemini(
   setSighting: React.Dispatch<React.SetStateAction<any>>,
   setBotLastReply: React.Dispatch<React.SetStateAction<string>>,
   setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>,
-  askForPhoto: () => Promise<boolean>
 ) {
   let result;
   try {
@@ -149,23 +144,6 @@ export async function sendSignalToGemini(
         user: { _id: 2, name: "Bot" },
       }])
     );
-  }
-
-  // Check if bot suggests photo upload
-  if (/upload photo/i.test(botMessage)) {
-    const photoUploaded = await askForPhoto();
-    if (!!photoUploaded) {
-      dataObject["photo"] = "true"; // mark photo as completed
-      setMessages((prev) =>
-        GiftedChat.append(prev, [{
-          _id: Math.random().toString(),
-          text: "✅ Photo uploaded! Thanks!",
-          createdAt: new Date(),
-          user: { _id: 2, name: "Bot" },
-        }])
-      );
-      setBotLastReply("Photo uploaded, thanks!");
-    }
   }
 
   mergeSightingData(dataObject, setSighting);

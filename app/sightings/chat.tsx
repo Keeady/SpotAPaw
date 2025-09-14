@@ -2,9 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { View, StyleSheet } from "react-native";
-import { IconButton, Text } from "react-native-paper";
+import { Avatar, IconButton, Text } from "react-native-paper";
 import { PetSighting } from "@/model/sighting";
-import { Avatar } from "react-native-paper";
 import {
   getPrompt,
   sendSignalToGemini,
@@ -64,10 +63,9 @@ export default function Chat() {
         setSighting,
         setBotLastReply,
         setIsChatComplete,
-        () => pickImage(setPhotoUrl)
       );
     },
-    [messages]
+    [messages, botLastReply, model, sighting]
   );
 
   useEffect(() => {
@@ -82,10 +80,10 @@ export default function Chat() {
         saveSightingInfo(sighting);
       }
     }
-  }, [isChatComplete]);
+  }, [isChatComplete, photoUrl, sighting, uploadImage]);
 
   const saveSightingInfo = async (sighting: any, url?: string) => {
-    const finalSighting: PetSighting = {
+    const finalSighting = {
       colors: sighting.colors,
       features: sighting.features,
       note: sighting.notes,
