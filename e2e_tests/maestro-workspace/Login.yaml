@@ -1,0 +1,24 @@
+appId: com.bcamaria.SpotAPaw
+---
+- launchApp:
+    clearState: true
+- tapOn: Sign In
+- assertVisible:
+    text: Welcome Back!
+- assertVisible:
+    text: Find and protect your furry friend
+- assertNotVisible:
+    text: Sign in
+    enabled: false
+- tapOn: email@address.com
+- inputRandomEmail
+- tapOn: Password
+- inputRandomText:
+    length: 10
+- assertVisible:
+    text: Sign in
+    enabled: true
+- tapOn: Sign in
+
+
+
