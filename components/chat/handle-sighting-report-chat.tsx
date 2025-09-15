@@ -1,3 +1,4 @@
+import { PetSightingFromChat } from "@/model/sighting";
 import { GenerativeModel } from "@google/generative-ai";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 
@@ -170,7 +171,7 @@ export async function sendSignalToGemini(
 
 function mergeSightingData(
   newData: Record<string, string>,
-  setSighting: React.Dispatch<React.SetStateAction<any>>
+  setSighting: React.Dispatch<React.SetStateAction<PetSightingFromChat>>
 ) {
   setSighting((prev) => ({
     ...prev,

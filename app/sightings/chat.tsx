@@ -3,7 +3,7 @@ import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { View, StyleSheet } from "react-native";
 import { Avatar, IconButton, Text } from "react-native-paper";
-import { PetSighting } from "@/model/sighting";
+import { PetSighting, PetSightingFromChat } from "@/model/sighting";
 import {
   getPrompt,
   sendSignalToGemini,
@@ -19,7 +19,6 @@ export default function Chat() {
     name: "Bot",
     avatar: () => <Avatar.Icon size={24} icon="paw" />,
   };
-  
   const [messages, setMessages] = useState<IMessage[]>([
     {
       _id: 1,
@@ -29,7 +28,7 @@ export default function Chat() {
     },
   ]);
 
-  const [sighting, setSighting] = useState({
+  const [sighting, setSighting] = useState<PetSightingFromChat>({
     species: "",
     colors: "",
     features: "",
@@ -79,7 +78,7 @@ export default function Chat() {
           const convertedDateTime = chrono.parseDate(lastSeenTime, new Date(), {
             forwardDate: false,
           });
-          lastSeenTime = convertedDateTime?.toISOString();
+          lastSeenTime = convertedDateTime?.toISOString() || new Date().toISOString();
         } catch (error) {
           lastSeenTime = new Date().toISOString();
         }
@@ -107,7 +106,7 @@ export default function Chat() {
     }
   }, [isChatComplete, photoUrl, sighting, uploadImage]);
 
-  const saveSightingInfo = async (sighting: any, url?: string) => {
+  const saveSightingInfo = async (sighting: PetSightingFromChat, url?: string) => {
     const finalSighting = {
       colors: sighting.colors,
       features: sighting.features,
