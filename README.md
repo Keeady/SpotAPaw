@@ -10,7 +10,7 @@ SpotAPaw is a mobile app built with [Expo](https://expo.dev) and React Native to
 - **Claim Sightings:** Owners can claim sightings related to their pets.
 - **Contact:** Easily reach out to pet owners or sighting reporters.
 - **Authentication:** Secure sign up and sign in for pet owners.
-- **Chat with AI:** Get help extracting structured sighting info via chat. [In Progress]
+- **Chat with AI:** Get help extracting structured sighting info via chat.
 
 ## Screenshots
 <img width="452" height="893" alt="Screenshot 2025-09-12 at 9 33 51 AM" src="https://github.com/user-attachments/assets/d688697e-71d2-4c4c-98d0-24a36550f474" />
