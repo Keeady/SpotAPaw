@@ -27,8 +27,15 @@ Rules:
 - Ask clarifying questions to get specific details to help locating and identifying the pet.
 - Mark "field": "complete" when you have enough info for a sighting.
 - If answer is No, mark the field value as "unknown".
-- Ask the user to upload a photo of the pet using the camera icon.
-- Ask if the user wants to be contacted by the pet owner for info. Then prompt for name and phone number.
+- Ask the user to upload a photo of the pet using the camera icon. If user does not have a photo, mark photo as "none".
+- If the user provides a location, extract it. If vague, ask for more details.
+- Ask for specific date and time from user then convert it into a precise ISO 8601 datetime string. 
+For reference the user's current time is ${new Date().toLocaleString()} and user's local timezone is ${
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  }.
+- If species is missing, ask what kind of animal it is.
+- If colors or features are missing, ask for distinguishing characteristics.
+- If breed is missing for dogs or cats, ask if they know the breed
 Your prompt: ${botReply}
 User's reply: ${userReply}
     `;
@@ -53,7 +60,7 @@ export async function sendSignalToGemini(
   setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>,
   setSighting: React.Dispatch<React.SetStateAction<any>>,
   setBotLastReply: React.Dispatch<React.SetStateAction<string>>,
-  setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>,
+  setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   let result;
   try {
@@ -61,12 +68,14 @@ export async function sendSignalToGemini(
   } catch (error) {
     console.error("Error generating content:", error);
     setMessages((prev) =>
-      GiftedChat.append(prev, [{
-        _id: Math.random().toString(),
-        text: "❗️ Sorry, there was an error processing your message. Please try again.",
-        createdAt: new Date(),
-        user: { _id: 2, name: "Bot" },
-      }])
+      GiftedChat.append(prev, [
+        {
+          _id: Math.random().toString(),
+          text: "❗️ Sorry, there was an error processing your message. Please try again.",
+          createdAt: new Date(),
+          user: { _id: 2, name: "Bot" },
+        },
+      ])
     );
     return;
   }
@@ -74,12 +83,14 @@ export async function sendSignalToGemini(
   if (!result || !result.response) {
     console.error("No response from model");
     setMessages((prev) =>
-      GiftedChat.append(prev, [{
-        _id: Math.random().toString(),
-        text: "❗️ Sorry, I didn't get a response. Could you please rephrase?",
-        createdAt: new Date(),
-        user: { _id: 2, name: "Bot" },
-      }])
+      GiftedChat.append(prev, [
+        {
+          _id: Math.random().toString(),
+          text: "❗️ Sorry, I didn't get a response. Could you please rephrase?",
+          createdAt: new Date(),
+          user: { _id: 2, name: "Bot" },
+        },
+      ])
     );
     return;
   }
@@ -101,12 +112,14 @@ export async function sendSignalToGemini(
 
   if (!response) {
     setMessages((prev) =>
-      GiftedChat.append(prev, [{
-        _id: Math.random().toString(),
-        text: "❗️ Sorry, I didn't understand that. Could you please rephrase?",
-        createdAt: new Date(),
-        user: { _id: 2, name: "Bot" },
-      }])
+      GiftedChat.append(prev, [
+        {
+          _id: Math.random().toString(),
+          text: "❗️ Sorry, I didn't understand that. Could you please rephrase?",
+          createdAt: new Date(),
+          user: { _id: 2, name: "Bot" },
+        },
+      ])
     );
     return;
   }
@@ -125,26 +138,32 @@ export async function sendSignalToGemini(
 
   // Send bot's message to chat
   setMessages((prev) =>
-    GiftedChat.append(prev, [{
-      _id: Math.random().toString(),
-      text: botMessage,
-      createdAt: new Date(),
-      user: { _id: 2, name: "Bot" },
-    }])
+    GiftedChat.append(prev, [
+      {
+        _id: Math.random().toString(),
+        text: botMessage,
+        createdAt: new Date(),
+        user: { _id: 2, name: "Bot" },
+      },
+    ])
   );
 
   // Check if report is complete
   if (dataObject["complete"] === "true") {
     setChatSessionComplete(true);
     setMessages((prev) =>
-      GiftedChat.append(prev, [{
-        _id: Math.random().toString(),
-        text: "🎉 Thanks! Your sighting report has been saved.",
-        createdAt: new Date(),
-        user: { _id: 2, name: "Bot" },
-      }])
+      GiftedChat.append(prev, [
+        {
+          _id: Math.random().toString(),
+          text: "🎉 Thanks! Your sighting report has been saved.",
+          createdAt: new Date(),
+          user: { _id: 2, name: "Bot" },
+        },
+      ])
     );
   }
+
+  console.log("Extracted data:", dataObject);
 
   mergeSightingData(dataObject, setSighting);
 }

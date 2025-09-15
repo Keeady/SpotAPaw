@@ -11,6 +11,7 @@ import {
 import { pickImage } from "@/components/image-picker";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { supabase } from "@/components/supabase-client";
+import * as chrono from "chrono-node";
 
 export default function Chat() {
   const botUser = {
@@ -56,13 +57,14 @@ export default function Chat() {
         newMessages[0]?.text || "",
         botLastReply || ""
       );
+      console.log("Prompt sent to model:", prompt);
       await sendSignalToGemini(
         model,
         prompt,
         setMessages,
         setSighting,
         setBotLastReply,
-        setIsChatComplete,
+        setIsChatComplete
       );
     },
     [messages, botLastReply, model, sighting]
@@ -70,14 +72,37 @@ export default function Chat() {
 
   useEffect(() => {
     if (isChatComplete) {
-      console.log("Chat complete, final sighting data:", sighting);
-      // Here you can handle the completed sighting, e.g., save to database
+      // Convert time to ISO 8601 format if possible
+      let lastSeenTime = sighting.time;
+      if (lastSeenTime) {
+        try {
+          const convertedDateTime = chrono.parseDate(lastSeenTime, new Date(), {
+            forwardDate: false,
+          });
+          lastSeenTime = convertedDateTime?.toISOString();
+        } catch (error) {
+          lastSeenTime = new Date().toISOString();
+        }
+      }
+
+      let petPhoto = sighting.photo;
+      if (sighting.photo === "none") {
+        petPhoto = ""; // No photo provided
+      }
+
+      const updatedSighting = {
+        ...sighting,
+        time: lastSeenTime || new Date().toISOString(),
+        photo: petPhoto,
+      };
+
+      // Upload image if exists and then save sighting
       if (photoUrl) {
         uploadImage(photoUrl, (url) => {
-          saveSightingInfo(sighting, url);
+          saveSightingInfo(updatedSighting, url);
         });
       } else {
-        saveSightingInfo(sighting);
+        saveSightingInfo(updatedSighting);
       }
     }
   }, [isChatComplete, photoUrl, sighting, uploadImage]);
@@ -109,16 +134,18 @@ export default function Chat() {
     if (!!photoUploaded) {
       setSighting((prev) => ({ ...prev, photo: "true" }));
       setMessages((prev) =>
-        GiftedChat.append(prev, [{
-          _id: Math.random().toString(),
-          text: "✅ Photo uploaded! Thanks! ❤️",
-          createdAt: new Date(),
-          user: botUser,
-        }])
+        GiftedChat.append(prev, [
+          {
+            _id: Math.random().toString(),
+            text: "✅ Photo uploaded! Thanks! ❤️",
+            createdAt: new Date(),
+            user: botUser,
+          },
+        ])
       );
       setBotLastReply("Photo uploaded, thanks!");
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -147,16 +174,9 @@ export default function Chat() {
                 marginLeft: -16,
               }}
             >
-              <IconButton
-                icon={"camera"}
-                size={24}
-                onPress={askForPhoto}
-              />
+              <IconButton icon={"camera"} size={24} onPress={askForPhoto} />
             </View>
           );
-        }}
-        onInputTextChanged={(text) => {
-          console.log("User is typing:", text);
         }}
       />
     </View>
