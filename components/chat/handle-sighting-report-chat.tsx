@@ -1,9 +1,10 @@
+import { Pet } from "@/model/pet";
 import { PetSightingFromChat } from "@/model/sighting";
 import { GenerativeModel } from "@google/generative-ai";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 
 export function getPrompt(
-  sighting: any,
+  sighting: PetSightingFromChat,
   userReply: string,
   botReply: string = ""
 ) {
@@ -59,7 +60,7 @@ export async function sendSignalToGemini(
   model: GenerativeModel,
   prompt: string,
   setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>,
-  setSighting: React.Dispatch<React.SetStateAction<any>>,
+  setSighting: React.Dispatch<React.SetStateAction<PetSightingFromChat>>,
   setBotLastReply: React.Dispatch<React.SetStateAction<string>>,
   setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>
 ) {
