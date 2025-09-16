@@ -32,3 +32,14 @@ export type SightingContact = {
     sighting_id: string;
 }
 
+export type PetSightingFromChat = {
+  species: string;
+  colors: string;
+  features: string;
+  photo: string;
+  notes: string;
+  time: string;
+  location: string;
+  gender: string;
+  breed: string;
+};
