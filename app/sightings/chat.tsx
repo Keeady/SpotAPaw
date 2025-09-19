@@ -12,6 +12,7 @@ import { pickImage } from "@/components/image-picker";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { supabase } from "@/components/supabase-client";
 import * as chrono from "chrono-node";
+import AppConstants from "@/components/constant";
 
 export default function Chat() {
   const botUser = {
@@ -44,7 +45,7 @@ export default function Chat() {
   const [photoUrl, setPhotoUrl] = useState("");
 
   // Initialize the Google Generative AI client
-  const genAI = new GoogleGenerativeAI(process.env.EXPO_PUBLIC_GEN_AI_KEY!);
+  const genAI = new GoogleGenerativeAI(AppConstants.EXPO_GEN_AI_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const uploadImage = useUploadPetImageUrl();
