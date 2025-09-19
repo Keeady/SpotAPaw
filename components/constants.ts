@@ -1,0 +1,9 @@
+import Constants from 'expo-constants';
+
+const AppConstants = {
+    EXPO_GEN_AI_KEY: Constants.expoConfig?.extra?.EXPO_GEN_AI_KEY,
+    EXPO_PUBLIC_SUPABASE_ANON_KEY: Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    EXPO_PUBLIC_SUPABASE_URL: Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL,
+};
+
+export default AppConstants;

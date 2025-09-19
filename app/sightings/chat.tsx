@@ -12,7 +12,7 @@ import { pickImage } from "@/components/image-picker";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { supabase } from "@/components/supabase-client";
 import * as chrono from "chrono-node";
-import AppConstants from "@/components/constant";
+import AppConstants from "@/components/constants";
 
 export default function Chat() {
   const botUser = {

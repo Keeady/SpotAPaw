@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import "react-native-url-polyfill/auto";
-import AppConstants from "./constant";
+import AppConstants from "./constants";
 
 export const supabase = createClient(
   AppConstants.EXPO_PUBLIC_SUPABASE_URL || "",
