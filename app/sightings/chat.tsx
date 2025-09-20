@@ -25,14 +25,7 @@ export default function Chat() {
   const pawPatrolUser = {
     _id: 3,
     name: "Paw Patrol",
-    avatar: () => (
-      <Avatar.Icon
-        size={24}
-        icon="paw"
-        color="#f16508ff"
-        style={{ backgroundColor: "#cff4f6ff" }}
-      />
-    ),
+    avatar: () => <Avatar.Icon size={24} icon="paw" color="#f16508ff" />,
   };
 
   const [messages, setMessages] = useState<IMessage[]>([
