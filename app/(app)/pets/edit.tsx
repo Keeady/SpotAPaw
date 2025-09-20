@@ -84,6 +84,8 @@ export default function EditPet() {
     }
     if (profileInfo.photo) {
       await uploadImage(profileInfo.photo, handleSubmit);
+    } else {
+      await handleSubmit("");
     }
   }
 

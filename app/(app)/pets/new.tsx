@@ -29,6 +29,8 @@ export default function AddPet() {
       await uploadImage(pet.photo, (photoUrl: string) =>
         handleSaveNewPet(pet, photoUrl)
       );
+    } else {
+      await handleSaveNewPet(pet, "");
     }
   }
 

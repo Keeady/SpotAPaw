@@ -1,5 +1,5 @@
 import { Pet } from "@/model/pet";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { getCurrentLocationV2 } from "../get-current-location";
@@ -12,9 +12,15 @@ export default function EditPetDetails(
   pet?: Pet,
   is_lost?: boolean
 ) {
+  const [isDisabled, setDisabled] = React.useState(false);
   const handleChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
+
+  const onSubmit = () => {
+    handleSubmit();
+    setDisabled(true);
+  }
 
   return (
     <ScrollView
@@ -181,7 +187,7 @@ export default function EditPetDetails(
             )}
           </View>
 
-          <Button mode="contained" onPress={() => handleSubmit()}>
+          <Button mode="contained" onPress={() => onSubmit()} disabled={isDisabled}>
             {is_lost ? "Update Pet" : "Save Pet"}
           </Button>
         </View>

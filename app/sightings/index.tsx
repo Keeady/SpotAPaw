@@ -32,6 +32,10 @@ export default function SightingAnonList() {
           </Text>
         }
         style={{ marginBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        pagingEnabled       
       />
       <FAB
         icon="paw"
