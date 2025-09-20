@@ -24,12 +24,15 @@ export default function SignInScreen() {
       return;
     }
     setLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({
+    const {
+      error,
+      data: { session },
+    } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
-    if (data) {
+    if (session) {
       router.replace("/(app)/my-sightings");
       return;
     }
@@ -72,7 +75,7 @@ export default function SignInScreen() {
           autoCapitalize={"none"}
           mode="outlined"
           right={
-            <TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />
+            <TextInput.Icon icon={isVisible ? "eye" : "eye-off"} onPress={() => setVisible(!isVisible)} />
           }
           textContentType="password"
         />
