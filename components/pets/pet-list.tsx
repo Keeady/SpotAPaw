@@ -9,8 +9,7 @@ type PetListRendererProp = {
 };
 
 export default function PetListRenderer({ pets }: PetListRendererProp) {
-    const router = useRouter();
-  
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <FlatList
@@ -36,6 +35,10 @@ export default function PetListRenderer({ pets }: PetListRendererProp) {
             Add a new Pet
           </Button>
         }
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        snapToAlignment="start"
+        decelerationRate="fast"
       />
     </View>
   );
@@ -44,7 +47,7 @@ export default function PetListRenderer({ pets }: PetListRendererProp) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     backgroundColor: "#fff",
     alignContent: "center",
   },

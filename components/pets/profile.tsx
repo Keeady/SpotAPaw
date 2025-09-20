@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, Chip, Button } from "react-native-paper";
 
 type PetProfile = {
@@ -57,6 +57,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   };
 
   return (
+    <ScrollView>
     <Card style={styles.card}>
       {photo ? (
         <Image source={{ uri: photo }} style={styles.image} />
@@ -140,6 +141,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
         </View>
       </Card.Actions>
     </Card>
+    </ScrollView>
   );
 };
 

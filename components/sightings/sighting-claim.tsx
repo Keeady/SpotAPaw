@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { Text, Card, Button, RadioButton } from "react-native-paper";
+import { isValidUuid } from "../util";
 
 type ClaimSightingProps = {
   sighting: PetSighting;
@@ -18,7 +19,22 @@ export default function ClaimSighting({
 }: ClaimSightingProps) {
   const router = useRouter();
 
+  const [disabled, setDisabled] = useState(false);
   const [selectedPetId, setSelectedPetId] = useState<string>("");
+
+  const onSubmit = (selectedPetId: string, sightingId: string) => {
+    if (!selectedPetId || !isValidUuid(selectedPetId)) {
+      setDisabled(false);
+      return;
+    }
+
+    try {
+      setDisabled(true);
+      onConfirm(selectedPetId, sightingId);
+    } catch () {
+      setDisabled(false);
+    }
+  };
 
   if (!sighting) {
     return null;
@@ -100,8 +116,8 @@ export default function ClaimSighting({
         {/* Confirm */}
         <Button
           mode="contained"
-          onPress={() => onConfirm(selectedPetId, sighting.id)}
-          disabled={!selectedPetId}
+          onPress={() => onSubmit(selectedPetId, sighting.id)}
+          disabled={!selectedPetId || disabled}
           style={styles.confirmButton}
         >
           Confirm Claim

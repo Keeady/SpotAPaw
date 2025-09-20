@@ -69,7 +69,7 @@ export default function ClaimLostPet() {
           type: "success",
           icon: "success",
         });
-        router.navigate(`/(app)/my-sightings`);
+        router.replace(`/(app)/my-sightings`);
       }
     },
     [user?.id, router, sightingId]

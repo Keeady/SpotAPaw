@@ -2,10 +2,11 @@ import { useCallback, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "./Provider/auth-provider";
 import { supabase } from "./supabase-client";
+import AppConstant from "./constants";
 
 export default function useUploadPetImageUrl() {
-  const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const SUPABASE_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  const SUPABASE_URL = AppConstant.EXPO_PUBLIC_SUPABASE_URL;
+  const SUPABASE_KEY = AppConstant.EXPO_PUBLIC_SUPABASE_ANON_KEY;
   const BUCKET = "pet_photos";
   const { session } = useContext(AuthContext);
 

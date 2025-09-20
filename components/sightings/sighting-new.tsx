@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
 import useUploadPetImageUrl from "../image-upload";
 import { PetSighting } from "@/model/sighting";
@@ -106,18 +106,20 @@ export default function CreateNewSighting() {
         icon: "success",
       });
 
-      router.replace(`/${contactRoute}/contact`);
+      router.dismissTo(`/${contactRoute}/contact`);
     }
   }
 
   async function saveSightingPhoto() {
     if (extra_info.trim()) {
-      router.replace("/");
+      router.dismissTo("/");
       return;
     }
 
     if (photo) {
       await uploadImage(photo, saveSighting);
+    } else {
+      await saveSighting("");
     }
   }
 
@@ -164,13 +166,22 @@ export default function CreateNewSighting() {
           />
         </View>
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Gender"}
-            placeholder="Gender (Female, Male)"
-            value={gender}
-            onChangeText={setGender}
-            mode={"outlined"}
-          />
+          <Text variant="labelLarge">Gender</Text>
+          <RadioButton.Group onValueChange={setGender} value={gender}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <Text>Female</Text>
+              <RadioButton value="Female" />
+
+              <Text>Male</Text>
+              <RadioButton value="Male" />
+            </View>
+          </RadioButton.Group>
         </View>
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <TextInput
@@ -213,7 +224,11 @@ export default function CreateNewSighting() {
           <Text variant="labelLarge">
             {photo ? "Change Photo" : "Upload Photo (Optional)"}
           </Text>
-          <Button icon="camera" mode="outlined" onPress={() => pickImage(setPhoto)}>
+          <Button
+            icon="camera"
+            mode="outlined"
+            onPress={() => pickImage(setPhoto)}
+          >
             Choose File
           </Button>
           {photo ? (

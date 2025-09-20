@@ -12,8 +12,18 @@ export default function EditPetDetails(
   pet?: Pet,
   is_lost?: boolean
 ) {
+  const [isDisabled, setDisabled] = React.useState(false);
   const handleChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
+  };
+
+  const onSubmit = async () => {
+    try {
+      setDisabled(true);
+      await handleSubmit();
+    } catch () {
+      setDisabled(false);
+    }
   };
 
   return (
@@ -181,7 +191,11 @@ export default function EditPetDetails(
             )}
           </View>
 
-          <Button mode="contained" onPress={() => handleSubmit()}>
+          <Button
+            mode="contained"
+            onPress={() => onSubmit()}
+            disabled={isDisabled}
+          >
             {is_lost ? "Update Pet" : "Save Pet"}
           </Button>
         </View>

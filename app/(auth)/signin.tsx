@@ -10,7 +10,7 @@ export default function SignInScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [isVisible, setVisible] = useState(true);
+  const [isHidden, setHidden] = useState(true);
 
   async function signInWithEmail() {
     if (!email || !password) {
@@ -24,13 +24,16 @@ export default function SignInScreen() {
       return;
     }
     setLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({
+    const {
+      error,
+      data: { session },
+    } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
-    if (data) {
-      router.replace("/(app)/my-sightings");
+    if (session) {
+      router.dismissTo("/(app)/pets");
       return;
     }
 
@@ -67,12 +70,12 @@ export default function SignInScreen() {
           left={<TextInput.Icon icon="lock" />}
           onChangeText={(text) => setPassword(text)}
           value={password}
-          secureTextEntry={isVisible}
+          secureTextEntry={isHidden}
           placeholder="Password"
           autoCapitalize={"none"}
           mode="outlined"
           right={
-            <TextInput.Icon icon="eye" onPress={() => setVisible(!isVisible)} />
+            <TextInput.Icon icon={isHidden ? "eye" : "eye-off"} onPress={() => setHidden(!isHidden)} />
           }
           textContentType="password"
         />

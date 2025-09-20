@@ -93,7 +93,7 @@ export default function EditPetSighting() {
         type: "success",
         icon: "success",
       });
-      router.replace(`/my-sightings/${sightingId}/?petId=${petId}`);
+      router.dismissTo(`/my-sightings`);
     }
   };
 
@@ -103,6 +103,8 @@ export default function EditPetSighting() {
     }
     if (profileInfo.photo) {
       await uploadImage(profileInfo.photo, handleSubmit);
+    } else {
+      await handleSubmit("");
     }
   }
 
