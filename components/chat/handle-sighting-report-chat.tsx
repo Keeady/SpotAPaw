@@ -1,12 +1,13 @@
-import { Pet } from "@/model/pet";
 import { PetSightingFromChat } from "@/model/sighting";
 import { GenerativeModel } from "@google/generative-ai";
+import { JSX } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 
 export function getPrompt(
   sighting: PetSightingFromChat,
   userReply: string,
-  botReply: string = ""
+  botReply: string = "",
+  offenseCounter: number = 0
 ) {
   return `
 You are a conversational assistant helping collect pet sighting reports from a user. 
@@ -18,11 +19,14 @@ Always respond ONLY with valid JSON matching this schema:
 {
   "message": "string - the next question or phrase to show the user",
   "data": [
-    { "field": "species | colors | time | features | location | photo | notes | gender | breed | complete", "value": "string or null" }
+    { "field": "species | colors | time | features | location | photo | notes | gender | breed | complete | offenseCounter", "value": "string or number or null" }
   ]
 }
 
 Rules:
+- If user message contains offensive or inappropriate content, increment offenseCounter value.
+- If user uses chat other than reporting a pet sighting, increment the offense counter.
+- If offense counter exceeds 2, mark the conversation as flagged with complete and end the chat.
 - "data" is an array of fields and values extracted from the user's last reply.
 - If the reply mentions multiple fields, include them all in the array.
 - "message" must be the next natural question or phrase guiding the user.
@@ -40,6 +44,7 @@ For reference the user's current time is ${new Date().toLocaleString()} and user
 - If breed is missing for dogs or cats, ask if they know the breed
 Your prompt: ${botReply}
 User's reply: ${userReply}
+User's last offense count: ${offenseCounter}
     `;
 }
 
@@ -57,12 +62,15 @@ export function formatChatHistory(
 }
 
 export async function sendSignalToGemini(
+  pawPatrolUser: { _id: number; name: string; avatar: () => JSX.Element },
+  botUser: { _id: number; name: string; avatar: () => JSX.Element },
   model: GenerativeModel,
   prompt: string,
   setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>,
   setSighting: React.Dispatch<React.SetStateAction<PetSightingFromChat>>,
   setBotLastReply: React.Dispatch<React.SetStateAction<string>>,
-  setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>
+  setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsChatFlagged: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   let result;
   try {
@@ -75,7 +83,7 @@ export async function sendSignalToGemini(
           _id: Math.random().toString(),
           text: "❗️ Sorry, there was an error processing your message. Please try again.",
           createdAt: new Date(),
-          user: { _id: 2, name: "Bot" },
+          user: pawPatrolUser,
         },
       ])
     );
@@ -90,7 +98,7 @@ export async function sendSignalToGemini(
           _id: Math.random().toString(),
           text: "❗️ Sorry, I didn't get a response. Could you please rephrase?",
           createdAt: new Date(),
-          user: { _id: 2, name: "Bot" },
+          user: pawPatrolUser,
         },
       ])
     );
@@ -119,7 +127,7 @@ export async function sendSignalToGemini(
           _id: Math.random().toString(),
           text: "❗️ Sorry, I didn't understand that. Could you please rephrase?",
           createdAt: new Date(),
-          user: { _id: 2, name: "Bot" },
+          user: pawPatrolUser,
         },
       ])
     );
@@ -145,10 +153,25 @@ export async function sendSignalToGemini(
         _id: Math.random().toString(),
         text: botMessage,
         createdAt: new Date(),
-        user: { _id: 2, name: "Bot" },
+        user: botUser,
       },
     ])
   );
+
+  if (dataObject["offenseCounter"]) {
+    const offenseCounter = parseInt(dataObject["offenseCounter"], 10);
+    setIsChatFlagged(offenseCounter > 2);
+    setMessages((prev) =>
+      GiftedChat.append(prev, [
+        {
+          _id: Math.random().toString(),
+          text: "⚠️ Your message was flagged by our content filter. Please try to keep the conversation appropriate and respectful.",
+          createdAt: new Date(),
+          user: pawPatrolUser,
+        },
+      ])
+    );
+  }
 
   // Check if report is complete
   if (dataObject["complete"] === "true") {
@@ -159,14 +182,11 @@ export async function sendSignalToGemini(
           _id: Math.random().toString(),
           text: "🎉 Thanks! Your sighting report has been saved.",
           createdAt: new Date(),
-          user: { _id: 2, name: "Bot" },
+          user: pawPatrolUser,
         },
       ])
     );
   }
-
-  console.log("Extracted data:", dataObject);
-
   mergeSightingData(dataObject, setSighting);
 }
 

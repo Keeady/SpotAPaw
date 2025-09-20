@@ -15,17 +15,32 @@ import * as chrono from "chrono-node";
 import AppConstants from "@/components/constants";
 
 export default function Chat() {
+  const offenseCounter = React.useRef(0);
   const botUser = {
     _id: 2,
     name: "Bot",
-    avatar: () => <Avatar.Icon size={24} icon="paw" />,
+    avatar: () => <Avatar.Icon size={24} icon="robot-excited-outline" />,
   };
+
+  const pawPatrolUser = {
+    _id: 3,
+    name: "Paw Patrol",
+    avatar: () => (
+      <Avatar.Icon
+        size={24}
+        icon="paw"
+        color="#f16508ff"
+        style={{ backgroundColor: "#cff4f6ff" }}
+      />
+    ),
+  };
+
   const [messages, setMessages] = useState<IMessage[]>([
     {
       _id: 1,
       text: "👋 Hi! I can help you report a pet sighting. What kind of pet did you see?",
       createdAt: new Date(),
-      user: botUser,
+      user: pawPatrolUser,
     },
   ]);
 
@@ -42,6 +57,7 @@ export default function Chat() {
   });
   const [botLastReply, setBotLastReply] = useState("");
   const [isChatComplete, setIsChatComplete] = useState(false);
+  const [isChatFlagged, setIsChatFlagged] = useState(false);
   const [photoUrl, setPhotoUrl] = useState("");
 
   // Initialize the Google Generative AI client
@@ -55,16 +71,20 @@ export default function Chat() {
       let prompt = getPrompt(
         sighting,
         newMessages[0]?.text || "",
-        botLastReply || ""
+        botLastReply || "",
+        offenseCounter.current
       );
       console.log("Prompt sent to model:", prompt);
       await sendSignalToGemini(
+        pawPatrolUser,
+        botUser,
         model,
         prompt,
         setMessages,
         setSighting,
         setBotLastReply,
-        setIsChatComplete
+        setIsChatComplete,
+        setIsChatFlagged
       );
     },
     [messages, botLastReply, model, sighting]
@@ -79,7 +99,8 @@ export default function Chat() {
           const convertedDateTime = chrono.parseDate(lastSeenTime, new Date(), {
             forwardDate: false,
           });
-          lastSeenTime = convertedDateTime?.toISOString() || new Date().toISOString();
+          lastSeenTime =
+            convertedDateTime?.toISOString() || new Date().toISOString();
         } catch (error) {
           lastSeenTime = new Date().toISOString();
         }
@@ -107,7 +128,10 @@ export default function Chat() {
     }
   }, [isChatComplete, photoUrl, sighting, uploadImage]);
 
-  const saveSightingInfo = async (sighting: PetSightingFromChat, url?: string) => {
+  const saveSightingInfo = async (
+    sighting: PetSightingFromChat,
+    url?: string
+  ) => {
     const finalSighting = {
       colors: sighting.colors,
       features: sighting.features,
@@ -139,7 +163,7 @@ export default function Chat() {
             _id: Math.random().toString(),
             text: "✅ Photo uploaded! Thanks! ❤️",
             createdAt: new Date(),
-            user: botUser,
+            user: pawPatrolUser,
           },
         ])
       );
@@ -162,8 +186,14 @@ export default function Chat() {
           _id: 1,
           avatar: () => <Avatar.Icon size={24} icon="account" />,
         }}
-        disableComposer={isChatComplete}
-        placeholder={isChatComplete ? "Chat complete!" : "Type your message..."}
+        disableComposer={isChatComplete || isChatFlagged}
+        placeholder={
+          isChatFlagged
+            ? "Chat Unavailable!"
+            : isChatComplete
+            ? "Chat complete!"
+            : "Type your message..."
+        }
         renderActions={(props) => {
           if (isChatComplete) return null;
           return (
