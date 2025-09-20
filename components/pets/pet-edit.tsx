@@ -17,10 +17,14 @@ export default function EditPetDetails(
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
-  const onSubmit = () => {
-    handleSubmit();
-    setDisabled(true);
-  }
+  const onSubmit = async () => {
+    try {
+      setDisabled(true);
+      await handleSubmit();
+    } catch (error) {
+      setDisabled(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -187,7 +191,11 @@ export default function EditPetDetails(
             )}
           </View>
 
-          <Button mode="contained" onPress={() => onSubmit()} disabled={isDisabled}>
+          <Button
+            mode="contained"
+            onPress={() => onSubmit()}
+            disabled={isDisabled}
+          >
             {is_lost ? "Update Pet" : "Save Pet"}
           </Button>
         </View>
