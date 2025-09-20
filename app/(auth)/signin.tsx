@@ -33,7 +33,7 @@ export default function SignInScreen() {
     });
 
     if (session) {
-      router.replace("/(app)/my-sightings");
+      router.dismissTo("/(app)/pets");
       return;
     }
 

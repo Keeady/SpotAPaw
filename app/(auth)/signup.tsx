@@ -80,7 +80,7 @@ export default function SignUpScreen() {
           secureTextEntry={isVisible}
           placeholder="Password"
           autoCapitalize={"none"}
-          right={<TextInput.Icon icon={isVisible ? "eye" : "eye-off"} onPress={() => setVisible(!isVisible)} />}
+          right={<TextInput.Icon icon={!isVisible ? "eye" : "eye-off"} onPress={() => setVisible(!isVisible)} />}
           mode="outlined"
           textContentType="password"
         />

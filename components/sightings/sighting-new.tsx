@@ -106,13 +106,13 @@ export default function CreateNewSighting() {
         icon: "success",
       });
 
-      router.replace(`/${contactRoute}/contact`);
+      router.dismissTo(`/${contactRoute}/contact`);
     }
   }
 
   async function saveSightingPhoto() {
     if (extra_info.trim()) {
-      router.replace("/");
+      router.dismissTo("/");
       return;
     }
 

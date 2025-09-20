@@ -93,7 +93,7 @@ export default function EditPetSighting() {
         type: "success",
         icon: "success",
       });
-      router.replace(`/my-sightings/${sightingId}/?petId=${petId}`);
+      router.dismissTo(`/my-sightings`);
     }
   };
 

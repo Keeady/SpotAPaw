@@ -43,7 +43,7 @@ export default function OwnerList() {
       .select("*")
       .eq("owner_id", user.id)
       .then(({ data }) => {
-        if (data) {
+        if (data && data.length > 0) {
           ownerInfo.current = data[0];
           setFirstName(data[0].firstname);
           setLastName(data[0].lastname);

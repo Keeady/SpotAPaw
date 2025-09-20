@@ -73,7 +73,7 @@ export default function EditPet() {
       if (is_lost) {
         handleLostPet(photoUrl)
       } else {
-        router.replace(`/(app)/pets/${id}`);
+        router.dismissTo(`/(app)/pets`);
       }
     }
   };
@@ -116,7 +116,7 @@ export default function EditPet() {
       .select();
 
     if (error) {
-      console.log("errpr", error);
+      console.log("error", error);
 
       showMessage({
         message: "Error updating pet sighting.",
@@ -130,9 +130,9 @@ export default function EditPet() {
         icon: "success",
       });
       if (is_lost) {
-        router.navigate(`/(app)/owner`);
+        router.dismissTo(`/(app)/pets`);
       } else {
-        router.replace(`/(app)/pets/${id}`);
+        router.dismissTo(`/(app)/pets`);
       }
     }
   };
