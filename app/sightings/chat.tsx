@@ -3,7 +3,7 @@ import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { View, StyleSheet } from "react-native";
 import { Avatar, IconButton, Text } from "react-native-paper";
-import { PetSighting, PetSightingFromChat } from "@/model/sighting";
+import { PetSightingFromChat } from "@/model/sighting";
 import {
   getPrompt,
   sendSignalToGemini,
@@ -80,7 +80,7 @@ export default function Chat() {
         setIsChatFlagged
       );
     },
-    [messages, botLastReply, model, sighting]
+    [messages, botLastReply, model, sighting, botUser, pawPatrolUser]
   );
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function Chat() {
           });
           lastSeenTime =
             convertedDateTime?.toISOString() || new Date().toISOString();
-        } catch (error) {
+        } catch () {
           lastSeenTime = new Date().toISOString();
         }
       }

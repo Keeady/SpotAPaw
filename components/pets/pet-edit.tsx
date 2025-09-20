@@ -1,5 +1,5 @@
 import { Pet } from "@/model/pet";
-import React, { useEffect } from "react";
+import React from "react";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { getCurrentLocationV2 } from "../get-current-location";
@@ -21,7 +21,7 @@ export default function EditPetDetails(
     try {
       setDisabled(true);
       await handleSubmit();
-    } catch (error) {
+    } catch () {
       setDisabled(false);
     }
   };
