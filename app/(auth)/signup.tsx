@@ -10,7 +10,7 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [isVisible, setVisible] = useState(true);
+  const [isHidden, setHidden] = useState(true);
 
   async function signUpWithEmail() {
     if (!email || !password) {
@@ -77,10 +77,10 @@ export default function SignUpScreen() {
           left={<TextInput.Icon icon="lock" />}
           onChangeText={(text) => setPassword(text)}
           value={password}
-          secureTextEntry={isVisible}
+          secureTextEntry={isHidden}
           placeholder="Password"
           autoCapitalize={"none"}
-          right={<TextInput.Icon icon={!isVisible ? "eye" : "eye-off"} onPress={() => setVisible(!isVisible)} />}
+          right={<TextInput.Icon icon={isHidden ? "eye" : "eye-off"} onPress={() => setHidden(!isHidden)} />}
           mode="outlined"
           textContentType="password"
         />
