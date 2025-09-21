@@ -21,7 +21,7 @@ export default function EditPetDetails(
     try {
       setDisabled(true);
       await handleSubmit();
-    } catch () {
+    } catch {
       setDisabled(false);
     }
   };
