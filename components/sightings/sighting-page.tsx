@@ -84,8 +84,9 @@ const fetchSightingsNoLocation = async (
     .eq("is_active", true)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -102,8 +103,9 @@ const fetchSightingsByUserNoLocation = async (
     .eq("is_active", true)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -136,8 +138,9 @@ const fetchSightingsWithLocation = async (
     .lte("last_seen_long", maxLng)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -170,8 +173,9 @@ const fetchSightingsByUserWithLocation = async (
     .lte("last_seen_long", maxLng)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -210,7 +214,10 @@ const processSightings = (
         }
       }
       // if we have a linked sighting id, group by that
-      else if (sighting.linked_sighting_id && isValidUuid(sighting.linked_sighting_id)) {
+      else if (
+        sighting.linked_sighting_id &&
+        isValidUuid(sighting.linked_sighting_id)
+      ) {
         if (!acc[sighting.linked_sighting_id]) {
           acc[sighting.linked_sighting_id] = {
             ...sighting,
