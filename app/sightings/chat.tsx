@@ -94,7 +94,7 @@ export default function Chat() {
           });
           lastSeenTime =
             convertedDateTime?.toISOString() || new Date().toISOString();
-        } catch () {
+        } catch {
           lastSeenTime = new Date().toISOString();
         }
       }
