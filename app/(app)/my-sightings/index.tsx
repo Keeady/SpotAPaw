@@ -16,6 +16,7 @@ export default function SightingList() {
         keyExtractor={(item) => isValidUuid(item.pet_id) ? item.pet_id : item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() =>
               router.push(
                 `/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`

@@ -8,7 +8,7 @@ import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import { isValidUuid } from "../util";
 
-const RADIUSKM = 10;
+const RADIUSKM = 20;
 
 export default function SightingPage({
   renderer,
@@ -17,7 +17,7 @@ export default function SightingPage({
 }) {
   const [sightings, setSightings] = useState<PetSighting[]>([]);
   const [loading, setLoading] = useState(false);
-  const [filterNearby, setFilterNearby] = useState(false);
+  const [filterNearby, setFilterNearby] = useState(true);
   const [location, setLocation] = useState<SightingLocation>();
   const { user } = useContext(AuthContext);
 
@@ -35,12 +35,33 @@ export default function SightingPage({
   }, [filterNearby, location, user]);
 
   return (
-    <View className="flex-1 p-4">
-      <Button onPress={() => setFilterNearby(!filterNearby)}>
-        {filterNearby ? "Show All Recent Sightings" : "Show Nearby Sightings"}
-      </Button>
-
-      {loading ? <ActivityIndicator size="large" /> : renderer(sightings)}
+    <View style={{ flex: 1, padding: 5 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <Button
+          mode="text"
+          onPress={() => setFilterNearby(!filterNearby)}
+          disabled={loading}
+        >
+          {filterNearby
+            ? loading
+              ? "Loading Nearby Sightings..."
+              : "Show All Recent Sightings"
+            : loading
+            ? "Loading All Recent Sightings..."
+            : "Show Nearby Sightings"}
+        </Button>
+        {loading ? <ActivityIndicator size="small" /> : ""}
+      </View>
+      <View style={{ flex: 1, backgroundColor: "white" }}>
+        {loading ? null : renderer(sightings)}
+      </View>
     </View>
   );
 }
@@ -84,8 +105,9 @@ const fetchSightingsNoLocation = async (
     .eq("is_active", true)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -102,8 +124,9 @@ const fetchSightingsByUserNoLocation = async (
     .eq("is_active", true)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -136,8 +159,9 @@ const fetchSightingsWithLocation = async (
     .lte("last_seen_long", maxLng)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -170,8 +194,9 @@ const fetchSightingsByUserWithLocation = async (
     .lte("last_seen_long", maxLng)
     .order("created_at", { ascending: false });
 
-  if (error) console.error(error);
-  else {
+  if (error) {
+    return;
+  } else {
     processSightings(data || [], setSightings);
     setLoading(false);
   }
@@ -210,7 +235,10 @@ const processSightings = (
         }
       }
       // if we have a linked sighting id, group by that
-      else if (sighting.linked_sighting_id && isValidUuid(sighting.linked_sighting_id)) {
+      else if (
+        sighting.linked_sighting_id &&
+        isValidUuid(sighting.linked_sighting_id)
+      ) {
         if (!acc[sighting.linked_sighting_id]) {
           acc[sighting.linked_sighting_id] = {
             ...sighting,

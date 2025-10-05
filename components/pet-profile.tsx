@@ -7,17 +7,6 @@ import { AuthContext } from "./Provider/auth-provider";
 export function RenderPetProfile(data) {
   const pet = data.pet;
 
-  /*const pet = {
-    photo: "https://placedog.net/500",
-    name: "Luna",
-    species: "Dog",
-    breed: "Unknown",
-    gender: "Female",
-    colors: "Golden",
-    features: "Small scar above left eye",
-    age: 4,
-  };*/
-
   return (
     <Card>
       {pet.photo && (

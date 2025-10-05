@@ -31,7 +31,7 @@ export default function ClaimSighting({
     try {
       setDisabled(true);
       onConfirm(selectedPetId, sightingId);
-    } catch () {
+    } catch {
       setDisabled(false);
     }
   };

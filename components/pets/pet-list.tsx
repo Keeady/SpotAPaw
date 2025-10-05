@@ -16,7 +16,7 @@ export default function PetListRenderer({ pets }: PetListRendererProp) {
         data={pets}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => router.push(`/pets/${item.id}`)}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => router.push(`/pets/${item.id}`)}>
             <RenderShortProfile pet={item} />
           </TouchableOpacity>
         )}
