@@ -1,7 +1,7 @@
 import HomePageHeader from "@/components/header/homepage-header";
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Button, FAB } from "react-native-paper";
+import { Button, FAB, Text } from "react-native-paper";
 
 export default function PublicHome() {
   const router = useRouter();
@@ -46,6 +46,26 @@ export default function PublicHome() {
           style={styles.button}
         >
           Register
+        </Button>
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: 16,
+          marginHorizontal: 24,
+          alignContent: "center",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <Text variant="bodyMedium" style={{textAlign: "center"}}>By using this app, you agree to our</Text>
+        <Button mode="text" onPress={() => router.push("/privacy")} compact>
+          <Text variant="bodyMedium" style={{textDecorationLine: "underline"}}>Privacy Policy</Text>
+        </Button>
+        <Text variant="bodyMedium" style={{textAlign: "center"}}>and</Text>
+        <Button mode="text" onPress={() => router.push("/terms")} compact>
+          <Text variant="bodyMedium" style={{textDecorationLine: "underline"}}>Terms of Service</Text>
         </Button>
       </View>
       <FAB
