@@ -21,6 +21,8 @@ export default function Layout() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
+        <Stack.Screen name="terms" options={{ headerShown: false }} />
+        <Stack.Screen name="privacy" options={{ headerShown: false }} />
       </Stack>
       <FlashMessage position="bottom" duration={5000} />
     </AuthProvider>
