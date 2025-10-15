@@ -3,46 +3,59 @@ import SightingPage from "@/components/sightings/sighting-page";
 import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
-import React, {  } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { FAB, Text } from "react-native-paper";
+import React, { useCallback } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { FAB } from "react-native-paper";
+import { EmptySighting } from "@/components/sightings/empty-sighting";
 
 export default function SightingList() {
-  const router = useRouter()
-  const renderer = (sightings: PetSighting[]) => (
-    <View style={styles.container}>
-      <FlatList
-        data={sightings}
-        keyExtractor={(item) => isValidUuid(item.pet_id) ? item.pet_id : item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() =>
-              router.push(
-                `/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`
-              )
-            }
-          >
-            <RenderSightingProfile pet={item} />
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          <Text
-            style={{ alignSelf: "center", marginBottom: 40, marginTop: 40 }}
-          >
-            No Pet sightings to display
-          </Text>
-        }
-        style={{ marginBottom: 20 }}
-      />
-      <FAB
-        icon="paw"
-        label="Report"
-        mode="elevated"
-        onPress={() => router.push(`/sightings/new`)}
-        style={{ position: "absolute", bottom: 50, right: 50 }}
-      />
-    </View>
+  const router = useRouter();
+  const { height } = useWindowDimensions();
+  const renderer = useCallback(
+    (sightings: PetSighting[], onEndReached: () => void, error: string) => (
+      <View style={styles.container}>
+        <FlatList
+          data={sightings}
+          keyExtractor={(item) =>
+            isValidUuid(item.pet_id) ? item.pet_id : item.id
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() =>
+                router.push(
+                  `/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`
+                )
+              }
+            >
+              <RenderSightingProfile pet={item} />
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={<EmptySighting height={height} error={error} />}
+          style={{ marginBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          pagingEnabled
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.5}
+        />
+        <FAB
+          icon="paw"
+          label="Report"
+          mode="elevated"
+          onPress={() => router.push(`/sightings/new`)}
+          style={{ position: "absolute", bottom: 50, right: 50 }}
+        />
+      </View>
+    ),
+    [router]
   );
 
   return <SightingPage renderer={renderer} />;
