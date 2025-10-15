@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Button } from "react-native-paper";
 import { getUserLocation, SightingLocation } from "../get-current-location";
@@ -7,32 +7,66 @@ import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import { isValidUuid } from "../util";
+import {
+  MAX_SIGHTINGS,
+  SIGHTING_OFFSET,
+  SIGHTING_RADIUSKM,
+} from "../constants";
 
-const RADIUSKM = 20;
+type SightingPageProps = {
+  renderer: (
+    sightings: PetSighting[],
+    onEndReached: () => void,
+    error: string
+  ) => JSX.Element;
+};
 
-export default function SightingPage({
-  renderer,
-}: {
-  renderer: (sightings: PetSighting[]) => JSX.Element;
-}) {
+export default function SightingPage({ renderer }: SightingPageProps) {
   const [sightings, setSightings] = useState<PetSighting[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [filterNearby, setFilterNearby] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<SightingLocation>();
   const { user } = useContext(AuthContext);
+  const [pagination, setPagination] = useState({
+    start: 0,
+    end: MAX_SIGHTINGS,
+  });
+  const [error, setError] = useState("");
 
   // Refetch when filter changes
   useEffect(() => {
-    if (filterNearby && !location) {
-      getUserLocation().then((location) => {
-        setLocation(location);
-      }); // ask for location if not yet set
+    if (!location) {
+      getUserLocation()
+        .then((location) => {
+          setLocation(location);
+        })
+        .catch(() => {
+          setError("Location access is needed to show nearby sightings.");
+        }); // ask for location if not yet set
     } else if (user) {
-      fetchSightingsByUser(filterNearby, location, setLoading, setSightings);
+      fetchSightingsByUser(location, pagination, onFetchComplete);
     } else {
-      fetchSightings(filterNearby, location, setLoading, setSightings);
+      fetchSightings(location, pagination, onFetchComplete);
     }
-  }, [filterNearby, location, user]);
+  }, [location, user, pagination]);
+
+  const onEndReached = useCallback(() => {
+    setPagination((prev) => ({
+      start: prev.end,
+      end: prev.end + SIGHTING_OFFSET,
+    }));
+  }, []);
+
+  const onFetchComplete = useCallback(
+    (newSightings: PetSighting[], error: string | null) => {
+      if (error) {
+        setError(error);
+      } else if (newSightings.length > 0) {
+        processSightings(sightings, newSightings, setSightings);
+      }
+      setLoading(false);
+    },
+    [sightings]
+  );
 
   return (
     <View style={{ flex: 1, padding: 5 }}>
@@ -44,104 +78,52 @@ export default function SightingPage({
           gap: 10,
         }}
       >
-        <Button
-          mode="text"
-          onPress={() => setFilterNearby(!filterNearby)}
-          disabled={loading}
-        >
-          {filterNearby
-            ? loading
-              ? "Loading Nearby Sightings..."
-              : "Show All Recent Sightings"
-            : loading
-            ? "Loading All Recent Sightings..."
-            : "Show Nearby Sightings"}
+        <Button mode="text" disabled={true}>
+          {loading ? "Loading Nearby Sightings..." : "Showing Nearby Sightings"}
         </Button>
         {loading ? <ActivityIndicator size="small" /> : ""}
       </View>
       <View style={{ flex: 1, backgroundColor: "white" }}>
-        {loading ? null : renderer(sightings)}
+        {loading ? null : renderer(sightings, onEndReached, error)}
       </View>
     </View>
   );
 }
 
 const fetchSightings = async (
-  filterNearby: boolean,
   location: SightingLocation | undefined,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
+  pagination: { start: number; end: number },
+  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
 ) => {
-  setLoading(true);
-  if (filterNearby && location) {
-    fetchSightingsWithLocation(location, setSightings, setLoading);
-  } else {
-    fetchSightingsNoLocation(setSightings, setLoading);
+  if (!location) {
+    return;
   }
+
+  fetchSightingsWithLocation(location, pagination, onFetchComplete);
 };
 
 const fetchSightingsByUser = async (
-  filterNearby: boolean,
   location: SightingLocation | undefined,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
+  pagination: { start: number; end: number },
+  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
 ) => {
-  setLoading(true);
-  if (filterNearby && location) {
-    fetchSightingsByUserWithLocation(location, setSightings, setLoading);
-  } else {
-    fetchSightingsByUserNoLocation(setSightings, setLoading);
-  }
-};
-
-const fetchSightingsNoLocation = async (
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  // Default: fetch all sightings
-  const { data, error } = await supabase
-    .from("sightings")
-    .select("*")
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  if (error) {
+  if (!location) {
     return;
-  } else {
-    processSightings(data || [], setSightings);
-    setLoading(false);
   }
-};
 
-const fetchSightingsByUserNoLocation = async (
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  // Default: fetch all sightings
-  const { data, error } = await supabase
-    .from("sightings")
-    .select("*, sighting_contact (sighting_id, name, phone)")
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    return;
-  } else {
-    processSightings(data || [], setSightings);
-    setLoading(false);
-  }
+  fetchSightingsByUserWithLocation(location, pagination, onFetchComplete);
 };
 
 const fetchSightingsWithLocation = async (
   location: SightingLocation,
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  pagination: { start: number; end: number },
+  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
 ) => {
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
-  const latDegree = RADIUSKM / 111;
+  const latDegree = SIGHTING_RADIUSKM / 111;
   // adjust longitude scaling by latitude
-  const lngDegree = RADIUSKM / (111 * Math.cos(lat * (Math.PI / 180)));
+  const lngDegree = SIGHTING_RADIUSKM / (111 * Math.cos(lat * (Math.PI / 180)));
 
   const minLat = lat - latDegree;
   const maxLat = lat + latDegree;
@@ -157,26 +139,26 @@ const fetchSightingsWithLocation = async (
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)
     .lte("last_seen_long", maxLng)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(pagination.start, pagination.end);
 
   if (error) {
-    return;
+    onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
-    processSightings(data || [], setSightings);
-    setLoading(false);
+    onFetchComplete(data || [], null);
   }
 };
 
 const fetchSightingsByUserWithLocation = async (
   location: SightingLocation,
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  pagination: { start: number; end: number },
+  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
 ) => {
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
-  const latDegree = RADIUSKM / 111;
+  const latDegree = SIGHTING_RADIUSKM / 111;
   // adjust longitude scaling by latitude
-  const lngDegree = RADIUSKM / (111 * Math.cos(lat * (Math.PI / 180)));
+  const lngDegree = SIGHTING_RADIUSKM / (111 * Math.cos(lat * (Math.PI / 180)));
 
   const minLat = lat - latDegree;
   const maxLat = lat + latDegree;
@@ -192,26 +174,26 @@ const fetchSightingsByUserWithLocation = async (
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)
     .lte("last_seen_long", maxLng)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(pagination.start, pagination.end);
 
   if (error) {
-    return;
+    onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
-    processSightings(data || [], setSightings);
-    setLoading(false);
+    onFetchComplete(data || [], null);
   }
 };
 
 const processSightings = (
+  prevData: PetSighting[],
   data: PetSighting[],
   setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
 ) => {
-  const sightings = [];
-  const linkedSightingIds = new Set();
-  // merge data by pet id
-  // create a summary from
-  const latestByPet = Object.values(
-    data.reduce((acc, sighting) => {
+  const sightingData: PetSighting[] = [...prevData, ...data];
+  
+  // Merge sightings by pet_id or linked_sighting_id or sighting id
+  const mergedSightings = Object.values(
+    sightingData.reduce((acc, sighting) => {
       // if we have a pet id, then group by pet id
       if (sighting.pet_id && isValidUuid(sighting.pet_id)) {
         if (!acc[sighting.pet_id]) {
@@ -262,15 +244,14 @@ const processSightings = (
             id: sighting.linked_sighting_id,
           };
         }
-
-        !linkedSightingIds.has(sighting.linked_sighting_id) &&
-          linkedSightingIds.add(sighting.linked_sighting_id);
-      } else if (!linkedSightingIds.has(sighting.id)) {
-        sightings.push(sighting);
+      } 
+      // otherwise, start a new grouping by this id
+      else if (isValidUuid(sighting.id) && !acc[sighting.id]) {
+        acc[sighting.id] = sighting;
       }
 
       return acc;
     }, {} as PetSighting)
   );
-  setSightings([...latestByPet, ...sightings]);
+  setSightings(mergedSightings);
 };
