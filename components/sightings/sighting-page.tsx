@@ -190,7 +190,7 @@ const processSightings = (
   setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
 ) => {
   const sightingData: PetSighting[] = prevData.concat(data);
-  
+
   // Merge sightings by pet_id or linked_sighting_id or sighting id
   const mergedSightings = Object.values(
     sightingData.reduce((acc, sighting) => {
@@ -244,7 +244,7 @@ const processSightings = (
             id: sighting.linked_sighting_id,
           };
         }
-      } 
+      }
       // otherwise, start a new grouping by this id
       else if (isValidUuid(sighting.id) && !acc[sighting.id]) {
         acc[sighting.id] = sighting;
