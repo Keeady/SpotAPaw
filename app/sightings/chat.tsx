@@ -67,7 +67,7 @@ export default function Chat() {
         botLastReply || "",
         offenseCounter.current
       );
-      console.log("Prompt sent to model:", prompt);
+
       await sendSignalToGemini(
         pawPatrolUser,
         botUser,
@@ -80,7 +80,7 @@ export default function Chat() {
         setIsChatFlagged
       );
     },
-    [messages, botLastReply, model, sighting, botUser, pawPatrolUser]
+    [botLastReply, model, sighting, botUser, pawPatrolUser]
   );
 
   useEffect(() => {
