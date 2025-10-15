@@ -54,7 +54,7 @@ export default function SightingAnonList() {
         />
       </View>
     ),
-    [router]
+    [router, height]
   );
 
   return <SightingPage renderer={renderer} />;

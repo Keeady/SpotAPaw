@@ -189,7 +189,7 @@ const processSightings = (
   data: PetSighting[],
   setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
 ) => {
-  const sightingData: PetSighting[] = [...prevData, ...data];
+  const sightingData: PetSighting[] = prevData.concat(data);
   
   // Merge sightings by pet_id or linked_sighting_id or sighting id
   const mergedSightings = Object.values(
