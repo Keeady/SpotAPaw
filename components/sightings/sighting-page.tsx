@@ -1,29 +1,47 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { use, useCallback, useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Button } from "react-native-paper";
 import { getUserLocation, SightingLocation } from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
-import { isValidUuid } from "../util";
 import {
   MAX_SIGHTINGS,
   SIGHTING_OFFSET,
   SIGHTING_RADIUSKM,
 } from "../constants";
+import { useRouter } from "expo-router";
+import { RenderSightingProfile } from "@/components/pet-profile";
+
+import { isValidUuid } from "@/components/util";
+
+import { EmptySighting } from "@/components/sightings/empty-sighting";
 
 type SightingPageProps = {
+  rendererItem: (item: PetSighting) => JSX.Element;
   renderer: (
     sightings: PetSighting[],
     onEndReached: () => void,
-    error: string
+    error: string,
+    onLocationRequestDenied: () => void,
+    enableFromSettings: boolean,
+    setEnableFromSettings: React.Dispatch<React.SetStateAction<boolean>>
   ) => JSX.Element;
 };
 
-export default function SightingPage({ renderer }: SightingPageProps) {
+export default function SightingPage({
+  rendererItem,
+  renderer,
+}: SightingPageProps) {
   const [sightings, setSightings] = useState<PetSighting[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState<SightingLocation>();
   const { user } = useContext(AuthContext);
   const [pagination, setPagination] = useState({
@@ -31,42 +49,83 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     end: MAX_SIGHTINGS,
   });
   const [error, setError] = useState("");
+  const [enableFromSettings, setEnableFromSettings] = useState(false);
+  const { height } = useWindowDimensions();
+
+  useEffect(() => {
+    getUserLocation()
+      .then((location) => {
+        console.log("User location:", location);
+        setLocation(location);
+      })
+      .catch(() => {
+        setError("Location access is needed to show nearby sightings.");
+      });
+  }, []);
 
   // Refetch when filter changes
   useEffect(() => {
     if (!location) {
-      getUserLocation()
-        .then((location) => {
-          setLocation(location);
-        })
-        .catch(() => {
-          setError("Location access is needed to show nearby sightings.");
-        }); // ask for location if not yet set
-    } else if (user) {
+      return;
+    }
+    console.log("Fetching sightings for location:", location, pagination.start);
+    reFetchSightings();
+  }, [location, user]);
+
+  const reFetchSightings = useCallback(() => {
+    console.log("Loading: ", loading, "location:", location);
+    if (loading || !location) {
+      return;
+    }
+
+    if (user) {
+      setLoading(true);
       fetchSightingsByUser(location, pagination, onFetchComplete);
     } else {
+      setLoading(true);
       fetchSightings(location, pagination, onFetchComplete);
     }
-  }, [location, user, pagination]);
-
-  const onEndReached = useCallback(() => {
-    setPagination((prev) => ({
-      start: prev.end,
-      end: prev.end + SIGHTING_OFFSET,
-    }));
-  }, []);
+  }, [loading, location, pagination, user]);
 
   const onFetchComplete = useCallback(
     (newSightings: PetSighting[], error: string | null) => {
+      console.log("Fetch complete. New sightings:", newSightings.length);
       if (error) {
         setError(error);
+        //setEnablePagination(false);
       } else if (newSightings.length > 0) {
-        processSightings(sightings, newSightings, setSightings);
+        processSightings(newSightings, setSightings);
+        //setEnablePagination(true);
+        setPagination((prev) => ({
+          start: prev.end,
+          end: prev.end + SIGHTING_OFFSET,
+        }));
+      } else {
+        //setEnablePagination(false);
       }
       setLoading(false);
     },
-    [sightings]
+    []
   );
+
+  const onLocationRequestDenied = useCallback(() => {
+    getUserLocation()
+      .then((location) => {
+        console.log("Asking User location:", location);
+        setLocation(location);
+        setError("");
+        setEnableFromSettings(false);
+      })
+      .catch(() => {
+        setError("Location access is needed to show nearby sightings.");
+        setEnableFromSettings(false);
+      });
+  }, [setEnableFromSettings, setLocation, setError]);
+
+  const onEndReached = useCallback(() => {
+    console.log("End reached. Fetching more sightings...");
+    reFetchSightings();
+  }, [reFetchSightings]);
 
   return (
     <View style={{ flex: 1, padding: 5 }}>
@@ -84,7 +143,29 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         {loading ? <ActivityIndicator size="small" /> : ""}
       </View>
       <View style={{ flex: 1, backgroundColor: "white" }}>
-        {loading ? null : renderer(sightings, onEndReached, error)}
+        <FlatList
+          data={sightings}
+          keyExtractor={(item) =>
+            isValidUuid(item.pet_id) ? item.pet_id : item.id
+          }
+          renderItem={({ item }) => rendererItem(item)}
+          ListEmptyComponent={
+            <EmptySighting
+              height={height}
+              error={error}
+              enableFromSettings={enableFromSettings}
+              setEnableFromSettings={setEnableFromSettings}
+              reloadPage={onLocationRequestDenied}
+            />
+          }
+          style={{ marginBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          pagingEnabled
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.5}
+        />
       </View>
     </View>
   );
@@ -185,15 +266,12 @@ const fetchSightingsByUserWithLocation = async (
 };
 
 const processSightings = (
-  prevData: PetSighting[],
   data: PetSighting[],
   setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
 ) => {
-  const sightingData: PetSighting[] = prevData.concat(data);
-
   // Merge sightings by pet_id or linked_sighting_id or sighting id
   const mergedSightings = Object.values(
-    sightingData.reduce((acc, sighting) => {
+    data.reduce((acc, sighting) => {
       // if we have a pet id, then group by pet id
       if (sighting.pet_id && isValidUuid(sighting.pet_id)) {
         if (!acc[sighting.pet_id]) {
@@ -253,5 +331,5 @@ const processSightings = (
       return acc;
     }, {} as PetSighting)
   );
-  setSightings(mergedSightings);
+  setSightings((prev) => [...prev, ...mergedSightings]);
 };
