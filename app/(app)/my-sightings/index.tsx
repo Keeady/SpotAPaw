@@ -18,7 +18,14 @@ export default function SightingList() {
   const router = useRouter();
   const { height } = useWindowDimensions();
   const renderer = useCallback(
-    (sightings: PetSighting[], onEndReached: () => void, error: string) => (
+    (
+      sightings: PetSighting[],
+      onEndReached: () => void,
+      error: string,
+      onLocationRequestDenied: () => void,
+      enableFromSettings: boolean,
+      setEnableFromSettings: React.Dispatch<React.SetStateAction<boolean>>
+    ) => (
       <View style={styles.container}>
         <FlatList
           data={sightings}
@@ -37,7 +44,15 @@ export default function SightingList() {
               <RenderSightingProfile pet={item} />
             </TouchableOpacity>
           )}
-          ListEmptyComponent={<EmptySighting height={height} error={error} />}
+          ListEmptyComponent={
+            <EmptySighting
+              height={height}
+              error={error}
+              enableFromSettings={enableFromSettings}
+              setEnableFromSettings={setEnableFromSettings}
+              reloadPage={onLocationRequestDenied}
+            />
+          }
           style={{ marginBottom: 20 }}
           showsVerticalScrollIndicator={false}
           snapToAlignment="start"

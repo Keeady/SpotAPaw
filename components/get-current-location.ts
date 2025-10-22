@@ -1,5 +1,4 @@
 import * as Location from "expo-location";
-import AlertDialog from "./dialog";
 
 export type SightingLocation = {
     lat: number;
@@ -43,10 +42,10 @@ export async function getCurrentLocationV1(
 }
 
 export async function getUserLocation(): Promise<SightingLocation | undefined> {
-  let { status } = await Location.requestForegroundPermissionsAsync();
+  let { status, canAskAgain } = await Location.requestForegroundPermissionsAsync();
+  console.log("Location permission status:", status, canAskAgain);
   if (status !== "granted") {
-    AlertDialog({title: "Location Needed", message:"Location permission is required for nearby sightings."});
-    return;
+    throw new Error("Location permission not granted");
   }
 
   const { coords } = await Location.getCurrentPositionAsync({});
