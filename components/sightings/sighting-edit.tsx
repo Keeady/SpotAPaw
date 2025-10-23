@@ -1,11 +1,12 @@
 import { Pet } from "@/model/pet";
-import React from "react";
+import React, { useState } from "react";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { ImagePickerHandler } from "../image-picker";
 import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
 import { PetSighting } from "@/model/sighting";
+import { router } from "expo-router";
 
 export default function EditPetSightingDetails(
   handleSubmit: () => Promise<void>,
@@ -17,6 +18,8 @@ export default function EditPetSightingDetails(
   sighting?: PetSighting,
   is_lost?: boolean
 ) {
+  const [extra_info, setExtraInfo] = useState("");
+
   const handleProfileChange = (
     fieldName: string,
     fieldValue: string | number
@@ -198,7 +201,21 @@ export default function EditPetSightingDetails(
             )}
           </View>
 
-          <Button mode="contained" onPress={() => handleSubmit()}>
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
+
+          <Button
+            mode="contained"
+            onPress={() => {
+              if (extra_info) {
+                return router.dismissTo("/");
+              }
+              handleSubmit();
+            }}
+          >
             {is_lost ? "Update Pet" : "Save Pet"}
           </Button>
         </View>

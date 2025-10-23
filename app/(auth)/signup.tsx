@@ -11,8 +11,13 @@ export default function SignUpScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [isHidden, setHidden] = useState(true);
+  const [extra_info, setExtraInfo] = useState("");
 
   async function signUpWithEmail() {
+    if (extra_info.trim()) {
+      return;
+    }
+    
     if (!email || !password) {
       showMessage({
         message: "Email and password are required. Please try again.",
@@ -86,6 +91,11 @@ export default function SignUpScreen() {
         />
       </View>
 
+        <TextInput
+          style={{ height: 0, opacity: 0 }}
+          value={extra_info}
+          onChangeText={setExtraInfo}
+        />
       <View style={styles.verticallySpaced}>
         <Button
           mode="contained"

@@ -5,6 +5,7 @@ import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
 import { ImagePickerHandler } from "../image-picker";
+import { router } from "expo-router";
 
 export default function EditPetDetails(
   handleSubmit: () => Promise<void>,
@@ -16,6 +17,7 @@ export default function EditPetDetails(
   const handleChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
+  const [extra_info, setExtraInfo] = React.useState("");
 
   const onSubmit = async () => {
     try {
@@ -191,9 +193,20 @@ export default function EditPetDetails(
             )}
           </View>
 
+        <TextInput
+          style={{ height: 0, opacity: 0 }}
+          value={extra_info}
+          onChangeText={setExtraInfo}
+        />
           <Button
             mode="contained"
-            onPress={() => onSubmit()}
+            onPress={() => {
+              if (extra_info) {
+                return router.dismissTo("/");
+              }
+
+              onSubmit()
+            }}
             disabled={isDisabled}
           >
             {is_lost ? "Update Pet" : "Save Pet"}
