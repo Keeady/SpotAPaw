@@ -1,39 +1,109 @@
 import React from "react";
-import { View } from "react-native";
-import { Icon, Text } from "react-native-paper";
+import { Linking, View } from "react-native";
+import { Button, Icon, Text } from "react-native-paper";
 import { ShowHappyDogAnimation } from "@/components/animate";
 
 type EmptySightingProps = {
-  height: number;
   error: string;
+  enableFromSettings: boolean;
+  setEnableFromSettings: (enabled: boolean) => void;
+  reloadPage: () => void;
 };
 
-export const EmptySighting = ({ height, error }: EmptySightingProps) => (
+export const EmptySighting = ({
+  error,
+  enableFromSettings,
+  setEnableFromSettings,
+  reloadPage,
+}: EmptySightingProps) => (
   <View
     style={{
-      flex: 1,
-      justifyContent: "center",
+      alignContent: "center",
       alignItems: "center",
       flexDirection: "column",
       gap: 20,
-      height: height * 0.5,
+      flex: 1,
+      paddingTop: 100,
     }}
   >
-    <ShowHappyDogAnimation />
+    <View>
+      <ShowHappyDogAnimation />
+    </View>
+
     {error ? (
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <Icon source="alert-circle-outline" size={24} color="red" />
-        <Text variant="bodyLarge" style={{ color: "red" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          flexWrap: "wrap",
+          flex: 1,
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+          gap: 8,
+        }}
+      >
+        <Icon source="alert-circle-outline" size={32} color="red" />
+        <Text
+          variant="bodyLarge"
+          style={{
+            flex: 1,
+            color: "red",
+            flexWrap: "wrap",
+          }}
+        >
           {error}
         </Text>
       </View>
     ) : (
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <Icon source="paw-outline" size={24} color="green" />
-        <Text variant="bodyLarge">
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          flexWrap: "wrap",
+          flex: 1,
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+          gap: 8,
+        }}
+      >
+        <Icon source="paw-outline" size={32} color="green" />
+        <Text
+          variant="bodyLarge"
+          style={{
+            flex: 1,
+            flexWrap: "wrap",
+            color: "green",
+          }}
+        >
           No pet sightings to display in your area
         </Text>
       </View>
+    )}
+
+    {!enableFromSettings && (
+      <Button
+        mode="contained"
+        onPress={() => {
+          Linking.openSettings();
+          setEnableFromSettings(true);
+        }}
+        compact={true}
+        style={{ paddingHorizontal: 10, marginTop: 10 }}
+      >
+        Enable Location Access
+      </Button>
+    )}
+    {enableFromSettings && (
+      <Button
+        mode="contained"
+        onPress={() => {
+          reloadPage();
+        }}
+        compact={true}
+        style={{ paddingHorizontal: 10, marginTop: 10 }}
+      >
+        Reload
+      </Button>
     )}
   </View>
 );

@@ -3,7 +3,7 @@ import SightingPage from "@/components/sightings/sighting-page";
 import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
-import React, { useCallback } from "react";
+import React, { JSX, useCallback } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -12,31 +12,39 @@ import {
   View,
 } from "react-native";
 import { FAB } from "react-native-paper";
-import { EmptySighting } from "@/components/sightings/empty-sighting";
 
 export default function SightingAnonList() {
   const router = useRouter();
   const { height } = useWindowDimensions();
 
+  const rendererItem = useCallback(
+    ({ item }: { item: PetSighting }) => (
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() =>
+          router.push(`/sightings/${item.id}/?petId=${item.pet_id}`)
+        }
+      >
+        <RenderSightingProfile pet={item} />
+      </TouchableOpacity>
+    ),
+    [router]
+  );
+
   const renderer = useCallback(
-    (sightings: PetSighting[], onEndReached: () => void, error: string) => (
+    (
+      sightings: PetSighting[],
+      onEndReached: () => void,
+      ListEmptyComponent: () => JSX.Element
+    ) => (
       <View style={styles.container}>
         <FlatList
           data={sightings}
           keyExtractor={(item) =>
             isValidUuid(item.pet_id) ? item.pet_id : item.id
           }
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() =>
-                router.push(`/sightings/${item.id}/?petId=${item.pet_id}`)
-              }
-            >
-              <RenderSightingProfile pet={item} />
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={<EmptySighting height={height} error={error} />}
+          renderItem={rendererItem}
+          ListEmptyComponent={ListEmptyComponent}
           style={{ marginBottom: 20 }}
           showsVerticalScrollIndicator={false}
           snapToAlignment="start"
@@ -75,8 +83,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 10,
-    paddingHorizontal: 24,
-    alignItems: "center",
     backgroundColor: "#fff",
     minHeight: "100%",
   },
