@@ -66,12 +66,14 @@ export const EmptySighting = ({
         }}
       >
         <Icon source="paw-outline" size={24} color="green" />
-        <Text variant="bodyLarge"
+        <Text
+          variant="bodyLarge"
           style={{
             flex: 1,
             flexWrap: "wrap",
             textAlign: "center",
-          }}>
+          }}
+        >
           No pet sightings to display in your area
         </Text>
       </View>

@@ -98,7 +98,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setError("Location access is needed to show nearby sightings.");
         setEnableFromSettings(false);
       });
-  }, [setEnableFromSettings, setLocation, setError]);
+  }, [loadSightings]);
 
   const ListEmptyComponent = useCallback(() => {
     return (
@@ -131,7 +131,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         </Button>
         {loading ? <ActivityIndicator size="small" /> : ""}
       </View>
-      <View style={{ flex: 1, backgroundColor: "red" }}>
+      <View style={{ flex: 1 }}>
         {loading ? null : renderer(sightings, onEndReached, ListEmptyComponent)}
       </View>
     </View>

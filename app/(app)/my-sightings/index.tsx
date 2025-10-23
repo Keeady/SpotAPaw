@@ -4,12 +4,7 @@ import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { FAB } from "react-native-paper";
 
 export default function SightingList() {
