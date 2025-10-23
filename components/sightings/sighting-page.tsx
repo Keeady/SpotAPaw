@@ -12,12 +12,13 @@ import {
   SIGHTING_OFFSET,
   SIGHTING_RADIUSKM,
 } from "../constants";
+import { EmptySighting } from "@/components/sightings/empty-sighting";
 
 type SightingPageProps = {
   renderer: (
     sightings: PetSighting[],
     onEndReached: () => void,
-    error: string
+    ListEmptyComponent: () => JSX.Element
   ) => JSX.Element;
 };
 
@@ -31,23 +32,39 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     end: MAX_SIGHTINGS,
   });
   const [error, setError] = useState("");
+  const [enableFromSettings, setEnableFromSettings] = useState(false);
+
+  useEffect(() => {
+    getUserLocation()
+      .then((location) => {
+        setLocation(location);
+      })
+      .catch(() => {
+        setError("Location access is needed to show nearby sightings.");
+        setLoading(false);
+      });
+  }, []);
 
   // Refetch when filter changes
   useEffect(() => {
     if (!location) {
-      getUserLocation()
-        .then((location) => {
-          setLocation(location);
-        })
-        .catch(() => {
-          setError("Location access is needed to show nearby sightings.");
-        }); // ask for location if not yet set
+      return;
     } else if (user) {
       fetchSightingsByUser(location, pagination, onFetchComplete);
     } else {
       fetchSightings(location, pagination, onFetchComplete);
     }
   }, [location, user, pagination]);
+
+  const loadSightings = useCallback((location: SightingLocation | undefined) => {
+    if (!location) {
+      return;
+    } else if (user) {
+      fetchSightingsByUser(location, pagination, onFetchComplete);
+    } else {
+      fetchSightings(location, pagination, onFetchComplete);
+    }
+  }, [user, pagination]);
 
   const onEndReached = useCallback(() => {
     setPagination((prev) => ({
@@ -68,6 +85,37 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     [sightings]
   );
 
+  const onLocationRequestDenied = useCallback(() => {
+    getUserLocation()
+      .then((location) => {
+        setLocation(location);
+        setError("");
+        setEnableFromSettings(false);
+        setLoading(true);
+        loadSightings(location);
+      })
+      .catch(() => {
+        setError("Location access is needed to show nearby sightings.");
+        setEnableFromSettings(false);
+      });
+  }, [setEnableFromSettings, setLocation, setError]);
+
+  const ListEmptyComponent = useCallback(() => {
+    return (
+      <EmptySighting
+        error={error}
+        enableFromSettings={enableFromSettings}
+        setEnableFromSettings={setEnableFromSettings}
+        reloadPage={onLocationRequestDenied}
+      />
+    );
+  }, [
+    error,
+    enableFromSettings,
+    setEnableFromSettings,
+    onLocationRequestDenied,
+  ]);
+
   return (
     <View style={{ flex: 1, padding: 5 }}>
       <View
@@ -83,8 +131,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         </Button>
         {loading ? <ActivityIndicator size="small" /> : ""}
       </View>
-      <View style={{ flex: 1, backgroundColor: "white" }}>
-        {loading ? null : renderer(sightings, onEndReached, error)}
+      <View style={{ flex: 1, backgroundColor: "red" }}>
+        {loading ? null : renderer(sightings, onEndReached, ListEmptyComponent)}
       </View>
     </View>
   );
