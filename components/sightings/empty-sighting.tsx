@@ -39,16 +39,16 @@ export const EmptySighting = ({
           flex: 1,
           paddingHorizontal: 8,
           paddingVertical: 4,
+          gap: 8,
         }}
       >
-        <Icon source="alert-circle-outline" size={24} color="red" />
+        <Icon source="alert-circle-outline" size={32} color="red" />
         <Text
           variant="bodyLarge"
           style={{
             flex: 1,
             color: "red",
             flexWrap: "wrap",
-            textAlign: "center",
           }}
         >
           {error}
@@ -63,15 +63,16 @@ export const EmptySighting = ({
           flex: 1,
           paddingHorizontal: 8,
           paddingVertical: 4,
+          gap: 8,
         }}
       >
-        <Icon source="paw-outline" size={24} color="green" />
+        <Icon source="paw-outline" size={32} color="green" />
         <Text
           variant="bodyLarge"
           style={{
             flex: 1,
             flexWrap: "wrap",
-            textAlign: "center",
+            color: "green",
           }}
         >
           No pet sightings to display in your area
