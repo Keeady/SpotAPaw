@@ -51,20 +51,6 @@ const onDeleteAccount = async (userId: string) => {
       icon: "warning",
     });
   } else {
-    const { error: petError } = await supabase
-      .from("pets")
-      .delete()
-      .eq("owner_id", userId);
-
-    if (petError) {
-      showMessage({
-        message: "Error deleting pets associated with the account.",
-        type: "warning",
-        icon: "warning",
-      });
-      return;
-    }
-
     showMessage({
       message: "Successfully deleted account and all associated pets.",
       type: "success",
