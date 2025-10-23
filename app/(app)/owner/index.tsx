@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 import { Person } from "@/model/person";
+import { useConfirmDelete } from "@/components/account/delete";
 
 export default function OwnerList() {
   const ownerInfo = useRef<Person>(undefined);
@@ -17,6 +18,7 @@ export default function OwnerList() {
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const { user } = useContext(AuthContext);
+  const onConfirmDelete = useConfirmDelete();
 
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(true);
 
@@ -157,6 +159,17 @@ export default function OwnerList() {
           onPress={() => createContact()}
         >
           {id ? "Save Contact" : "Create Contact"}
+        </Button>
+      </View>
+
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Button
+          mode="outlined"
+          disabled={loading}
+          onPress={async () => onConfirmDelete(user?.id || "")}
+          style={{ borderColor: "red" }}
+        >
+          Delete Account
         </Button>
       </View>
     </View>
