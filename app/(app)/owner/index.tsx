@@ -24,11 +24,11 @@ export default function OwnerList() {
 
   useEffect(() => {
     if (
-      firstName && ownerInfo.current?.firstname !== firstName ||
-      lastName && ownerInfo.current?.lastname !== lastName ||
-      address && ownerInfo.current?.address !== address ||
-      phone && ownerInfo.current?.phone !== phone ||
-      email && ownerInfo.current?.email !== email
+      (firstName && ownerInfo.current?.firstname !== firstName) ||
+      (lastName && ownerInfo.current?.lastname !== lastName) ||
+      (address && ownerInfo.current?.address !== address) ||
+      (phone && ownerInfo.current?.phone !== phone) ||
+      (email && ownerInfo.current?.email !== email)
     ) {
       setDisableSubmitBtn(false);
     }
@@ -162,16 +162,18 @@ export default function OwnerList() {
         </Button>
       </View>
 
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          mode="outlined"
-          disabled={loading}
-          onPress={async () => onConfirmDelete(user?.id || "")}
-          style={{ borderColor: "red" }}
-        >
-          Delete Account
-        </Button>
-      </View>
+      {user && (
+        <View style={[styles.verticallySpaced, styles.mt20]}>
+          <Button
+            mode="outlined"
+            disabled={loading}
+            onPress={async () => onConfirmDelete(user.id)}
+            style={{ borderColor: "red" }}
+          >
+            Delete Account
+          </Button>
+        </View>
+      )}
     </View>
   );
 }
