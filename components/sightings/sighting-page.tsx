@@ -56,15 +56,21 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     }
   }, [location, user, pagination]);
 
-  const loadSightings = useCallback((location: SightingLocation | undefined) => {
-    if (!location) {
-      return;
-    } else if (user) {
-      fetchSightingsByUser(location, pagination, onFetchComplete);
-    } else {
-      fetchSightings(location, pagination, onFetchComplete);
-    }
-  }, [user, pagination]);
+  const reLoadSightings = useCallback(
+    (
+      location: SightingLocation | undefined,
+      pagination: { start: number; end: number }
+    ) => {
+      if (!location) {
+        return;
+      } else if (user) {
+        fetchSightingsByUser(location, pagination, onFetchComplete);
+      } else {
+        fetchSightings(location, pagination, onFetchComplete);
+      }
+    },
+    [user]
+  );
 
   const onEndReached = useCallback(() => {
     setPagination((prev) => ({
@@ -92,13 +98,13 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setError("");
         setEnableFromSettings(false);
         setLoading(true);
-        loadSightings(location);
+        reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
       })
       .catch(() => {
         setError("Location access is needed to show nearby sightings.");
         setEnableFromSettings(false);
       });
-  }, [loadSightings]);
+  }, [reLoadSightings]);
 
   const ListEmptyComponent = useCallback(() => {
     return (
