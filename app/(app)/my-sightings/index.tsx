@@ -11,7 +11,7 @@ export default function SightingList() {
   const router = useRouter();
 
   const rendererItem = useCallback(
-    (item: PetSighting) => (
+    ({ item }: { item: PetSighting }) => (
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() =>
@@ -36,7 +36,7 @@ export default function SightingList() {
           keyExtractor={(item) =>
             isValidUuid(item.pet_id) ? item.pet_id : item.id
           }
-          renderItem={({ item }) => rendererItem(item)}
+          renderItem={rendererItem}
           ListEmptyComponent={ListEmptyComponent}
           style={{ marginBottom: 20 }}
           showsVerticalScrollIndicator={false}
