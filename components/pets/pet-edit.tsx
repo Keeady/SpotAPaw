@@ -1,9 +1,10 @@
 import { Pet } from "@/model/pet";
+import { router } from "expo-router";
 import React from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
-import { View, StyleSheet, Image, ScrollView } from "react-native";
-import { getCurrentLocationV2 } from "../get-current-location";
 import DatePicker from "../date-picker";
+import { getCurrentLocationV2 } from "../get-current-location";
 import { ImagePickerHandler } from "../image-picker";
 
 export default function EditPetDetails(
@@ -16,6 +17,7 @@ export default function EditPetDetails(
   const handleChange = (fieldName: string, fieldValue: string | number) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
+  const [extra_info, setExtraInfo] = React.useState("");
 
   const onSubmit = async () => {
     try {
@@ -191,9 +193,20 @@ export default function EditPetDetails(
             )}
           </View>
 
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
           <Button
             mode="contained"
-            onPress={() => onSubmit()}
+            onPress={() => {
+              if (extra_info) {
+                return router.dismissTo("/");
+              }
+
+              onSubmit();
+            }}
             disabled={isDisabled}
           >
             {is_lost ? "Update Pet" : "Save Pet"}

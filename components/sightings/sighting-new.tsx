@@ -1,5 +1,6 @@
 import { getCurrentLocationV1 } from "@/components/get-current-location";
 import { supabase } from "@/components/supabase-client";
+import { PetSighting } from "@/model/sighting";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
@@ -7,9 +8,8 @@ import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
-import useUploadPetImageUrl from "../image-upload";
-import { PetSighting } from "@/model/sighting";
 import { pickImage } from "../image-picker";
+import useUploadPetImageUrl from "../image-upload";
 import { isValidUuid } from "../util";
 
 export default function CreateNewSighting() {

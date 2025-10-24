@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
@@ -11,8 +11,13 @@ export default function SignInScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [isHidden, setHidden] = useState(true);
+  const [extra_info, setExtraInfo] = useState("");
 
   async function signInWithEmail() {
+    if (extra_info.trim()) {
+      return;
+    }
+
     if (!email || !password) {
       showMessage({
         message: "Email and password are required. Please try again.",
@@ -75,11 +80,19 @@ export default function SignInScreen() {
           autoCapitalize={"none"}
           mode="outlined"
           right={
-            <TextInput.Icon icon={isHidden ? "eye" : "eye-off"} onPress={() => setHidden(!isHidden)} />
+            <TextInput.Icon
+              icon={isHidden ? "eye" : "eye-off"}
+              onPress={() => setHidden(!isHidden)}
+            />
           }
           textContentType="password"
         />
       </View>
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
