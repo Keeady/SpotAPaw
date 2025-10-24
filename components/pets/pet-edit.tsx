@@ -1,11 +1,11 @@
 import { Pet } from "@/model/pet";
-import React from "react";
-import { Button, RadioButton, Text, TextInput } from "react-native-paper";
-import { View, StyleSheet, Image, ScrollView } from "react-native";
-import { getCurrentLocationV2 } from "../get-current-location";
-import DatePicker from "../date-picker";
-import { ImagePickerHandler } from "../image-picker";
 import { router } from "expo-router";
+import React from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Button, RadioButton, Text, TextInput } from "react-native-paper";
+import DatePicker from "../date-picker";
+import { getCurrentLocationV2 } from "../get-current-location";
+import { ImagePickerHandler } from "../image-picker";
 
 export default function EditPetDetails(
   handleSubmit: () => Promise<void>,
@@ -193,11 +193,11 @@ export default function EditPetDetails(
             )}
           </View>
 
-        <TextInput
-          style={{ height: 0, opacity: 0 }}
-          value={extra_info}
-          onChangeText={setExtraInfo}
-        />
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
           <Button
             mode="contained"
             onPress={() => {
@@ -205,7 +205,7 @@ export default function EditPetDetails(
                 return router.dismissTo("/");
               }
 
-              onSubmit()
+              onSubmit();
             }}
             disabled={isDisabled}
           >

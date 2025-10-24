@@ -1,12 +1,12 @@
 import { Pet } from "@/model/pet";
-import React, { useState } from "react";
-import { Button, RadioButton, Text, TextInput } from "react-native-paper";
-import { View, StyleSheet, Image, ScrollView } from "react-native";
-import { ImagePickerHandler } from "../image-picker";
-import { getCurrentLocationV2 } from "../get-current-location";
-import DatePicker from "../date-picker";
 import { PetSighting } from "@/model/sighting";
 import { router } from "expo-router";
+import React, { useState } from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Button, RadioButton, Text, TextInput } from "react-native-paper";
+import DatePicker from "../date-picker";
+import { getCurrentLocationV2 } from "../get-current-location";
+import { ImagePickerHandler } from "../image-picker";
 
 export default function EditPetSightingDetails(
   handleSubmit: () => Promise<void>,

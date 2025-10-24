@@ -3,11 +3,11 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SightingContact() {
   const router = useRouter();
-  
+
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ export default function SightingContact() {
         type: "warning",
         icon: "warning",
       });
-      setLoading(false)
+      setLoading(false);
       return;
     } else {
       showMessage({
@@ -84,11 +84,11 @@ export default function SightingContact() {
         />
       </View>
 
-        <TextInput
-          style={{ height: 0, opacity: 0 }}
-          value={extra_info}
-          onChangeText={setExtraInfo}
-        />
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
 
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
