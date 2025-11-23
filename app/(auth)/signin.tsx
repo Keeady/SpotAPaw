@@ -112,6 +112,11 @@ export default function SignInScreen() {
           Register
         </Button>
       </View>
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
     </View>
   );
 }

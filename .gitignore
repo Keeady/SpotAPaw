@@ -42,3 +42,5 @@ android
 ios
 old.android
 old.ios
+
+*.pdf

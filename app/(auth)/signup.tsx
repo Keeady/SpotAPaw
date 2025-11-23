@@ -36,6 +36,9 @@ export default function SignUpScreen() {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        emailRedirectTo: "spotapaw://auth/verify",
+      },
     });
 
     if (error) {
@@ -127,7 +130,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 80,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",

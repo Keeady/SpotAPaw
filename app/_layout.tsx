@@ -1,9 +1,40 @@
 import { AuthProvider } from "@/components/Provider/auth-provider";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import FlashMessage from "react-native-flash-message";
-import { Image, StyleSheet } from "react-native";
+import { Image, Linking, StyleSheet } from "react-native";
+import { useEffect } from "react";
+import { supabase } from "@/components/supabase-client";
 
 export default function Layout() {
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log("Layout");
+    const handleRedirect = async (url: string) => {
+      // Let Supabase verify the confirmation link
+      await supabase.auth.exchangeCodeForSession(url);
+
+      // Then send user to the login screen (no auto-login)
+      router.replace("/(auth)/signin");
+    };
+
+    // Listener for when app is already open
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      if (url && url.indexOf("auth/verify") > -1) {
+        handleRedirect(url);
+      }
+    });
+
+    // Handle app opening from a cold start
+    Linking.getInitialURL().then((url) => {
+      if (url && url.indexOf("auth/verify") > -1) {
+        handleRedirect(url);
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
   return (
     <AuthProvider>
       <Stack
