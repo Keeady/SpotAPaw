@@ -8,18 +8,16 @@ export type SightingLocation = {
 export async function getCurrentLocationV2(
   handleChange: (fieldName: string, fieldValue: string | number) => void
 ) {
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== "granted") {
-    // setErrorMsg('Permission to access location was denied');
-    return;
-  }
+  const granted = await getUserLocationPermission();
 
-  const location = await Location.getLastKnownPositionAsync({});
-  if (location) {
-    const address = await Location.reverseGeocodeAsync(location.coords);
-    handleChange("last_seen_location", address?.[0].formattedAddress || "");
-    handleChange("last_seen_long", location.coords.longitude);
-    handleChange("last_seen_lat", location.coords.latitude);
+  if (granted) {
+    const location = await getUserLocationFast();
+    if (location) {
+      const address = await Location.reverseGeocodeAsync(location.coords);
+      handleChange("last_seen_location", address?.[0].formattedAddress || "");
+      handleChange("last_seen_long", location.coords.longitude);
+      handleChange("last_seen_lat", location.coords.latitude);
+    }
   }
 }
 
@@ -27,17 +25,15 @@ export async function getCurrentLocationV1(
   setLocation: (a: string) => void,
   setCoords: (c: Location.LocationObjectCoords) => void
 ) {
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== "granted") {
-    // setErrorMsg('Permission to access location was denied');
-    return;
-  }
+  const granted = await getUserLocationPermission();
 
-  const location = await Location.getLastKnownPositionAsync({});
-  if (location) {
-    const address = await Location.reverseGeocodeAsync(location.coords);
-    setLocation(address?.[0].formattedAddress || "");
-    setCoords(location.coords);
+  if (granted) {
+    const location = await getUserLocationFast();
+    if (location) {
+      const address = await Location.reverseGeocodeAsync(location.coords);
+      setLocation(address?.[0].formattedAddress || "");
+      setCoords(location.coords);
+    }
   }
 }
 
@@ -48,7 +44,7 @@ export async function getCurrentUserLocationV3(): Promise<
 
   if (granted) {
     const location = await getUserLocationFast();
-    return location;
+    return { lat: location.coords.latitude, lng: location.coords.longitude };
   }
 }
 
@@ -81,7 +77,7 @@ const getUserLocationPermission = async () => {
   }
 };
 
-const getUserLocationFast = async (): Promise<SightingLocation> => {
+const getUserLocationFast = async (): Promise<Location.LocationObject> => {
   try {
     // Race between current and last known
     const location = await Promise.race([
@@ -97,7 +93,7 @@ const getUserLocationFast = async (): Promise<SightingLocation> => {
       }),
     ]);
 
-    return { lat: location.coords.latitude, lng: location.coords.longitude };
+    return location;
   } catch (error) {
     throw new Error("Unable to get user location");
   }
