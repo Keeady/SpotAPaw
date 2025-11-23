@@ -1,7 +1,8 @@
 import { Pet } from "@/model/pet";
+import { router } from "expo-router";
 import React, { useState } from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Button, RadioButton, Text, TextInput } from "react-native-paper";
-import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { ImagePickerHandler } from "../image-picker";
 
 type CreatePetDetailsProps = {
@@ -15,6 +16,7 @@ export default function CreatePetDetails({
   const handleChange = (fieldName: string, fieldValue: string) => {
     setPet((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
+  const [extra_info, setExtraInfo] = useState("");
 
   return (
     <ScrollView
@@ -120,7 +122,21 @@ export default function CreatePetDetails({
             )}
           </View>
 
-          <Button mode="contained" onPress={() => handleSubmit(pet)}>
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
+          <Button
+            mode="contained"
+            onPress={() => {
+              if (extra_info) {
+                return router.dismissTo("/");
+              }
+
+              handleSubmit(pet);
+            }}
+          >
             Save Pet
           </Button>
         </View>

@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
@@ -11,8 +11,13 @@ export default function SignUpScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [isHidden, setHidden] = useState(true);
+  const [extra_info, setExtraInfo] = useState("");
 
   async function signUpWithEmail() {
+    if (extra_info.trim()) {
+      return;
+    }
+
     if (!email || !password) {
       showMessage({
         message: "Email and password are required. Please try again.",
@@ -31,6 +36,9 @@ export default function SignUpScreen() {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        emailRedirectTo: "spotapaw://auth/verify",
+      },
     });
 
     if (error) {
@@ -80,12 +88,22 @@ export default function SignUpScreen() {
           secureTextEntry={isHidden}
           placeholder="Password"
           autoCapitalize={"none"}
-          right={<TextInput.Icon icon={isHidden ? "eye" : "eye-off"} onPress={() => setHidden(!isHidden)} />}
+          right={
+            <TextInput.Icon
+              icon={isHidden ? "eye" : "eye-off"}
+              onPress={() => setHidden(!isHidden)}
+            />
+          }
           mode="outlined"
           textContentType="password"
         />
       </View>
 
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
       <View style={styles.verticallySpaced}>
         <Button
           mode="contained"
@@ -112,7 +130,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 80,
     paddingHorizontal: 24,
     alignItems: "center",
     backgroundColor: "#fff",

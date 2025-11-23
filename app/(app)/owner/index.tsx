@@ -1,11 +1,11 @@
+import { useConfirmDelete } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
+import { Person } from "@/model/person";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
-import { Person } from "@/model/person";
-import { useConfirmDelete } from "@/components/account/delete";
 
 export default function OwnerList() {
   const ownerInfo = useRef<Person>(undefined);
@@ -151,6 +151,12 @@ export default function OwnerList() {
           multiline={true}
         />
       </View>
+
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
 
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
