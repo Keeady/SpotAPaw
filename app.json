@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bcamaria.SpotAPaw"
+      "bundleIdentifier": "com.bcamaria.SpotAPaw",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to your location."
+      }
     },
     "android": {
       "permissions": [
@@ -42,7 +45,7 @@
       ],[
       "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Allow SpotAPaw to use your location."
         }
       ]
     ],
