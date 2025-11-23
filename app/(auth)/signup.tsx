@@ -98,6 +98,12 @@ export default function SignUpScreen() {
           textContentType="password"
         />
       </View>
+
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
       <View style={styles.verticallySpaced}>
         <Button
           mode="contained"

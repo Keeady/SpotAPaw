@@ -25,10 +25,7 @@ SpotAPaw is a mobile app built with [Expo](https://expo.dev) and React Native to
 
 <img width="400" height="800" alt="Screenshot 2025-09-12 at 9 39 20 AM" src="https://github.com/user-attachments/assets/b9785381-1c0b-48a1-9469-877bc35fb5ff" />
 
-<img width="400" height="800" alt="Screenshot 2025-09-12 at 9 31 25 AM" src="https://github.com/user-attachments/assets/9143ded8-35d8-41b7-bfb5-5d8997590744" />
-
 <img width="400" height="800" alt="Screenshot 2025-09-12 at 9 31 02 AM" src="https://github.com/user-attachments/assets/a62e0c59-a32e-4223-98e8-7bd4c187f600" />
-<img width="400" height="800" alt="Screenshot 2025-09-12 at 9 41 05 AM" src="https://github.com/user-attachments/assets/65beea2b-2771-4903-b109-6d7738b91af0" />
 
 
 ## Getting Started
