@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Button } from "react-native-paper";
-import { getUserLocation, SightingLocation } from "../get-current-location";
+import { getCurrentUserLocationV3, SightingLocation } from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
@@ -35,9 +35,11 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const [enableFromSettings, setEnableFromSettings] = useState(false);
 
   useEffect(() => {
-    getUserLocation()
+    getCurrentUserLocationV3()
       .then((location) => {
+        if (location) {
         setLocation(location);
+        }
       })
       .catch(() => {
         setError("Location access is needed to show nearby sightings.");
@@ -92,7 +94,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   );
 
   const onLocationRequestDenied = useCallback(() => {
-    getUserLocation()
+    getCurrentUserLocationV3()
       .then((location) => {
         setLocation(location);
         setError("");
@@ -110,6 +112,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     return (
       <EmptySighting
         error={error}
+        hasLocation={!!location}
         enableFromSettings={enableFromSettings}
         setEnableFromSettings={setEnableFromSettings}
         reloadPage={onLocationRequestDenied}
@@ -120,6 +123,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     enableFromSettings,
     setEnableFromSettings,
     onLocationRequestDenied,
+    location
   ]);
 
   return (
