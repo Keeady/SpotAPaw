@@ -16,10 +16,7 @@
       }
     },
     "android": {
-      "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
-      ],
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -42,8 +39,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],[
-      "expo-location",
+      ],
+      [
+        "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow SpotAPaw to use your location."
         }

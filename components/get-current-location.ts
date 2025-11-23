@@ -44,7 +44,9 @@ export async function getCurrentUserLocationV3(): Promise<
 
   if (granted) {
     const location = await getUserLocationFast();
-    return { lat: location.coords.latitude, lng: location.coords.longitude };
+    if (location) {
+      return { lat: location.coords.latitude, lng: location.coords.longitude };
+    }
   }
 }
 

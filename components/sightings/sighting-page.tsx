@@ -1,7 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Button } from "react-native-paper";
-import { getCurrentUserLocationV3, SightingLocation } from "../get-current-location";
+import {
+  getCurrentUserLocationV3,
+  SightingLocation,
+} from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
@@ -38,7 +41,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     getCurrentUserLocationV3()
       .then((location) => {
         if (location) {
-        setLocation(location);
+          setLocation(location);
         }
       })
       .catch(() => {
@@ -96,7 +99,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const onLocationRequestDenied = useCallback(() => {
     getCurrentUserLocationV3()
       .then((location) => {
-        setLocation(location);
+        if (location) {
+          setLocation(location);
+        }
         setError("");
         setEnableFromSettings(false);
         setLoading(true);
@@ -123,7 +128,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     enableFromSettings,
     setEnableFromSettings,
     onLocationRequestDenied,
-    location
+    location,
   ]);
 
   return (
