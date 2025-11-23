@@ -8,6 +8,7 @@ type EmptySightingProps = {
   enableFromSettings: boolean;
   setEnableFromSettings: (enabled: boolean) => void;
   reloadPage: () => void;
+  hasLocation: boolean;
 };
 
 export const EmptySighting = ({
@@ -15,6 +16,7 @@ export const EmptySighting = ({
   enableFromSettings,
   setEnableFromSettings,
   reloadPage,
+  hasLocation,
 }: EmptySightingProps) => (
   <View
     style={{
@@ -80,7 +82,7 @@ export const EmptySighting = ({
       </View>
     )}
 
-    {!enableFromSettings && (
+    {!enableFromSettings && !hasLocation && (
       <Button
         mode="contained"
         onPress={() => {
