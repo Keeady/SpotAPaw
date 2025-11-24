@@ -2,24 +2,25 @@ import { PetSightingFromChat } from "@/model/sighting";
 import { GenerativeModel } from "@google/generative-ai";
 import { JSX } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
+import { getCurrentUserLocationV3, SightingLocation } from "../get-current-location";
 
 export function getPrompt(
-  sighting: PetSightingFromChat,
+  sighting: string,
   userReply: string,
   botReply: string = "",
   offenseCounter: number = 0
 ) {
   return `
 You are a conversational assistant helping collect pet sighting reports from a user. 
-So far this is the data we have: ${JSON.stringify(sighting)}.
+So far this is the data we have: ${sighting}.
 Ask the next missing piece of info in a friendly way. 
-The fields we want are: species, colors, features, photo, notes, time, location, gender, breed.
+The fields we want are: species, colors, features, photo, notes, time, location, gender, breed, name.
 If user says something that matches a field, update it.
 Always respond ONLY with valid JSON matching this schema:
 {
   "message": "string - the next question or phrase to show the user",
   "data": [
-    { "field": "species | colors | time | features | location | photo | notes | gender | breed | complete | offenseCounter", "value": "string or number or null" }
+    { "field": "species | colors | time | features | location | useCurrentLocation | photo | notes | gender | breed | name | complete | offenseCounter", "value": "string or number or null" }
   ]
 }
 
@@ -32,20 +33,21 @@ Rules:
 - "message" must be the next natural question or phrase guiding the user.
 - Ask clarifying questions to get specific details to help locating and identifying the pet.
 - Mark "field": "complete" when you have enough info for a sighting.
-- If answer is No, mark the field value as "unknown".
-- Ask the user to upload a photo of the pet using the camera icon. If user does not have a photo, mark photo as "none".
-- If the user provides a location, extract it. If vague, ask for more details.
-- Ask for specific date and time from user then convert it into a precise ISO 8601 datetime string. 
+- If user doesn't know or doesn't have the answer, mark the field value as "unknown".
+- If photo is not marked "true", Ask the user to upload a photo of the pet using the camera icon.
+- Location: Ask for precise location, nearby streets or cross streets, and closest landmarks.
+- Ask for specific date and time from user then convert it into a precise ISO 8601 datetime string.
 For reference the user's current time is ${new Date().toLocaleString()} and user's local timezone is ${
     Intl.DateTimeFormat().resolvedOptions().timeZone
   }.
 - If species is missing, ask what kind of animal it is.
-- If colors or features are missing, ask for distinguishing characteristics.
+- For colors: Extract all color words mentioned and format as comma-separated values (e.g., "brown,white,black"). Ask for distinguishing colors if not provided.
+- If features are missing, ask for distinguishing characteristics.
 - If breed is missing for dogs or cats, ask if they know the breed
 Your prompt: ${botReply}
 User's reply: ${userReply}
 User's last offense count: ${offenseCounter}
-    `;
+`;
 }
 
 export function formatChatHistory(
@@ -70,7 +72,8 @@ export async function sendSignalToGemini(
   setSighting: React.Dispatch<React.SetStateAction<PetSightingFromChat>>,
   setBotLastReply: React.Dispatch<React.SetStateAction<string>>,
   setChatSessionComplete: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsChatFlagged: React.Dispatch<React.SetStateAction<boolean>>
+  setIsChatFlagged: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowLocationRequest: React.Dispatch<React.SetStateAction<Boolean>>
 ) {
   let result;
   try {
@@ -145,6 +148,7 @@ export async function sendSignalToGemini(
     },
     {}
   );
+    console.log(dataObject)
 
   // Send bot's message to chat
   setMessages((prev) =>
@@ -173,9 +177,19 @@ export async function sendSignalToGemini(
     );
   }
 
+  if (dataObject["showLocationRequest"] === "true") {
+    setShowLocationRequest(true);
+    dataObject["showLocationRequest"] = "complete"
+  }
+
   // Check if report is complete
   if (dataObject["complete"] === "true") {
     setChatSessionComplete(true);
+
+    // ask for location data before closing the chat
+    // write a message that says
+
+
     setMessages((prev) =>
       GiftedChat.append(prev, [
         {

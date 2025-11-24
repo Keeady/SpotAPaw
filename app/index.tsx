@@ -72,7 +72,7 @@ export default function PublicHome() {
         icon="message-outline"
         label="Report"
         mode="elevated"
-        onPress={() => router.push(`/sightings/chat`)}
+        onPress={() => router.push("/sightings/chat-bot")}
         style={{ position: "absolute", bottom: 50, right: 50 }}
       />
     </View>

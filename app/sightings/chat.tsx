@@ -13,8 +13,14 @@ import useUploadPetImageUrl from "@/components/image-upload";
 import { supabase } from "@/components/supabase-client";
 import * as chrono from "chrono-node";
 import AppConstants from "@/components/constants";
+import { useRouter } from "expo-router";
+import {
+  getCurrentUserLocationV3,
+  SightingLocation,
+} from "@/components/get-current-location";
 
 export default function Chat() {
+  const router = useRouter();
   const offenseCounter = React.useRef(0);
   const botUser = {
     _id: 2,
@@ -52,6 +58,9 @@ export default function Chat() {
   const [isChatComplete, setIsChatComplete] = useState(false);
   const [isChatFlagged, setIsChatFlagged] = useState(false);
   const [photoUrl, setPhotoUrl] = useState("");
+  const [location, setLocation] = useState<SightingLocation | undefined>();
+  const [showLocationRequest, setShowLocationRequest] =
+    useState<Boolean>(false);
 
   // Initialize the Google Generative AI client
   const genAI = new GoogleGenerativeAI(AppConstants.EXPO_GEN_AI_KEY);
@@ -62,7 +71,7 @@ export default function Chat() {
     async (newMessages: IMessage[] = []) => {
       setMessages((prev) => GiftedChat.append(prev, newMessages));
       let prompt = getPrompt(
-        sighting,
+        JSON.stringify(sighting) || "",
         newMessages[0]?.text || "",
         botLastReply || "",
         offenseCounter.current
@@ -77,65 +86,84 @@ export default function Chat() {
         setSighting,
         setBotLastReply,
         setIsChatComplete,
-        setIsChatFlagged
+        setIsChatFlagged,
+        setShowLocationRequest
       );
+
+      console.log("sighting", sighting);
     },
     [botLastReply, model, sighting, botUser, pawPatrolUser]
   );
 
   useEffect(() => {
-    if (isChatComplete) {
-      // Convert time to ISO 8601 format if possible
-      let lastSeenTime = sighting.time;
-      if (lastSeenTime) {
-        try {
-          const convertedDateTime = chrono.parseDate(lastSeenTime, new Date(), {
-            forwardDate: false,
-          });
-          lastSeenTime =
-            convertedDateTime?.toISOString() || new Date().toISOString();
-        } catch {
-          lastSeenTime = new Date().toISOString();
-        }
-      }
+    getCurrentUserLocationV3()
+    .then(location => {
+      setLocation(location);
+      console.log(location)
+    })
+  }, []);
 
-      let petPhoto = sighting.photo;
-      if (sighting.photo === "none") {
-        petPhoto = ""; // No photo provided
-      }
-
-      const updatedSighting = {
-        ...sighting,
-        time: lastSeenTime || new Date().toISOString(),
-        photo: petPhoto,
-      };
-
-      // Upload image if exists and then save sighting
-      if (photoUrl) {
-        uploadImage(photoUrl, (url) => {
-          saveSightingInfo(updatedSighting, url);
+  const onComplete = useCallback(() => {
+    // Convert time to ISO 8601 format if possible
+    let lastSeenTime = sighting.time;
+    if (lastSeenTime) {
+      try {
+        const convertedDateTime = chrono.parseDate(lastSeenTime, new Date(), {
+          forwardDate: false,
         });
-      } else {
-        saveSightingInfo(updatedSighting);
+        lastSeenTime =
+          convertedDateTime?.toISOString() || new Date().toISOString();
+      } catch {
+        lastSeenTime = new Date().toISOString();
       }
     }
-  }, [isChatComplete, photoUrl, sighting, uploadImage]);
+
+    let petPhoto = sighting.photo;
+    if (sighting.photo === "none") {
+      petPhoto = ""; // No photo provided
+    }
+
+    const updatedSighting = {
+      ...sighting,
+      time: lastSeenTime || new Date().toISOString(),
+      photo: petPhoto,
+    };
+
+    // Upload image if exists and then save sighting
+    if (photoUrl) {
+      uploadImage(photoUrl, (url) => {
+        saveSightingInfo(updatedSighting, url);
+      });
+    } else {
+      saveSightingInfo(updatedSighting);
+    }
+
+    router.navigate("/");
+  }, [photoUrl, sighting, uploadImage]);
+
+  useEffect(() => {
+    if (isChatComplete) {
+      onComplete();
+    }
+  }, [isChatComplete]);
 
   const saveSightingInfo = async (
     sighting: PetSightingFromChat,
     url?: string
   ) => {
     const finalSighting = {
-      colors: sighting.colors,
-      features: sighting.features,
-      note: sighting.notes,
-      species: sighting.species,
+      colors: sighting.colors === "uknown" ? "" : sighting.colors,
+      features: sighting.features === "uknown" ? "" : sighting.features,
+      note: sighting.notes === "unknown" ? "" : sighting.notes,
+      species: sighting.species === "unknown" ? "" : sighting.species,
       last_seen_time: sighting.time,
       last_seen_location: sighting.location,
+      last_seen_lat: location?.lat,
+      last_seen_long: location?.lng,
       photo: url || "",
-      name: "",
-      breed: sighting.breed,
-      gender: sighting.gender,
+      name: sighting.name === "uknown" ? "" : sighting.name,
+      breed: sighting.breed === "uknown" ? "" : sighting.breed,
+      gender: sighting.gender === "uknown" ? "" : sighting.gender,
     };
     // Save the final sighting data here
     const { error } = await supabase.from("sightings").insert([finalSighting]);
@@ -162,6 +190,13 @@ export default function Chat() {
       );
       setBotLastReply("Photo uploaded, thanks!");
     }
+  };
+
+  const askForLocation = async () => {
+    getCurrentUserLocationV3().then((location) => {
+
+      setLocation(location);
+    });
   };
 
   return (
@@ -195,6 +230,7 @@ export default function Chat() {
                 flexDirection: "row",
                 alignItems: "flex-start",
                 marginLeft: -16,
+                gap: 1,
               }}
             >
               <IconButton icon={"camera"} size={24} onPress={askForPhoto} />

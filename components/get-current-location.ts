@@ -74,7 +74,8 @@ const getUserLocationPermission = async () => {
     }
 
     return requestGrantOfUserLocation();
-  } catch {
+  } catch (e){
+    console.log(e)
     throw new Error("Existing Location permission not available");
   }
 };
@@ -95,6 +96,7 @@ const getUserLocationFast = async (): Promise<Location.LocationObject> => {
       }),
     ]);
 
+    console.log("location", location);
     return location;
   } catch (error) {
     throw new Error("Unable to get user location");

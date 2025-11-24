@@ -42,4 +42,6 @@ export type PetSightingFromChat = {
   location: string;
   gender: string;
   breed: string;
+  lat: string;
+  long: string;
 };

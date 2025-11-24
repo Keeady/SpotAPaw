@@ -13,6 +13,9 @@
       "bundleIdentifier": "com.bcamaria.SpotAPaw",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location."
+      },
+      "config": {
+        "googleMapsApiKey":  "process.env.GOOGLE_MAPS_API_KEY",
       }
     },
     "android": {
@@ -22,7 +25,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.bcamaria.SpotAPaw"
+      "package": "com.bcamaria.SpotAPaw",
+      "config": {
+        "googleMaps": {
+          "apiKey": "process.env.GOOGLE_MAPS_API_KEY"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
