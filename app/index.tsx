@@ -1,10 +1,21 @@
 import HomePageHeader from "@/components/header/homepage-header";
-import { useRouter } from "expo-router";
+import { AuthContext } from "@/components/Provider/auth-provider";
+import { Redirect, useRouter } from "expo-router";
+import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, FAB, Text } from "react-native-paper";
 
 export default function PublicHome() {
   const router = useRouter();
+  const {user, loading} = useContext(AuthContext);
+
+  if (loading) {
+    return null;
+  }
+
+  if (user) {
+    return <Redirect href={"/(app)/pets"} />;
+  }
 
   return (
     <View style={styles.container}>

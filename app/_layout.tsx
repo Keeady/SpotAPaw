@@ -9,7 +9,6 @@ export default function Layout() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Layout");
     const handleRedirect = async (url: string) => {
       // Let Supabase verify the confirmation link
       await supabase.auth.exchangeCodeForSession(url);
