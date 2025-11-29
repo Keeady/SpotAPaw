@@ -4,6 +4,7 @@ import FlashMessage from "react-native-flash-message";
 import { Image, Linking, StyleSheet } from "react-native";
 import { useEffect } from "react";
 import { supabase } from "@/components/supabase-client";
+import { MD3LightTheme, PaperProvider } from "react-native-paper";
 
 export default function Layout() {
   const router = useRouter();
@@ -35,27 +36,29 @@ export default function Layout() {
   }, []);
 
   return (
-    <AuthProvider>
-      <Stack
-        screenOptions={{
-          headerShown: true,
-          headerBackVisible: true,
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: () => (
-            <Image
-              source={require("../assets/images/logosmall.png")}
-              style={styles.logo}
-            />
-          ),
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        <Stack.Screen name="terms" options={{ headerShown: false }} />
-        <Stack.Screen name="privacy" options={{ headerShown: false }} />
-      </Stack>
-      <FlashMessage position="bottom" duration={5000} />
-    </AuthProvider>
+    <PaperProvider theme={MD3LightTheme}>
+      <AuthProvider>
+        <Stack
+          screenOptions={{
+            headerShown: true,
+            headerBackVisible: true,
+            headerBackButtonDisplayMode: "minimal",
+            headerTitle: () => (
+              <Image
+                source={require("../assets/images/logosmall.png")}
+                style={styles.logo}
+              />
+            ),
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          <Stack.Screen name="terms" options={{ headerShown: false }} />
+          <Stack.Screen name="privacy" options={{ headerShown: false }} />
+        </Stack>
+        <FlashMessage position="bottom" duration={5000} />
+      </AuthProvider>
+    </PaperProvider>
   );
 }
 

@@ -53,13 +53,6 @@ export default function SightingAnonList() {
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}
         />
-        <FAB
-          icon="paw"
-          label="Report"
-          mode="elevated"
-          onPress={() => router.push(`/sightings/new`)}
-          style={{ position: "absolute", bottom: 100, right: 50 }}
-        />
       </View>
     ),
     [router, height]

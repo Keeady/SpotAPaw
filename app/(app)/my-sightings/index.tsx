@@ -5,7 +5,6 @@ import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { FAB } from "react-native-paper";
 
 export default function SightingList() {
   const router = useRouter();
@@ -45,13 +44,6 @@ export default function SightingList() {
           pagingEnabled
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}
-        />
-        <FAB
-          icon="paw"
-          label="Report"
-          mode="elevated"
-          onPress={() => router.push(`/sightings/new`)}
-          style={{ position: "absolute", bottom: 50, right: 50 }}
         />
       </View>
     ),

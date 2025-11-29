@@ -3,11 +3,12 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, useRouter } from "expo-router";
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, FAB, Text } from "react-native-paper";
+import { Button, FAB, Text, useTheme } from "react-native-paper";
 
 export default function PublicHome() {
+  const theme = useTheme();
   const router = useRouter();
-  const {user, loading} = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
 
   if (loading) {
     return null;
@@ -70,13 +71,27 @@ export default function PublicHome() {
           flexWrap: "wrap",
         }}
       >
-        <Text variant="bodyMedium" style={{textAlign: "center"}}>By using this app, you agree to our</Text>
+        <Text variant="bodyMedium" style={{ textAlign: "center" }}>
+          By using this app, you agree to our
+        </Text>
         <Button mode="text" onPress={() => router.push("/privacy")} compact>
-          <Text variant="bodyMedium" style={{textDecorationLine: "underline"}}>Privacy Policy</Text>
+          <Text
+            variant="bodyMedium"
+            style={{ textDecorationLine: "underline" }}
+          >
+            Privacy Policy
+          </Text>
         </Button>
-        <Text variant="bodyMedium" style={{textAlign: "center"}}>and</Text>
+        <Text variant="bodyMedium" style={{ textAlign: "center" }}>
+          and
+        </Text>
         <Button mode="text" onPress={() => router.push("/terms")} compact>
-          <Text variant="bodyMedium" style={{textDecorationLine: "underline"}}>Terms of Service</Text>
+          <Text
+            variant="bodyMedium"
+            style={{ textDecorationLine: "underline" }}
+          >
+            Terms of Service
+          </Text>
         </Button>
       </View>
       <FAB
@@ -84,7 +99,14 @@ export default function PublicHome() {
         label="Report"
         mode="elevated"
         onPress={() => router.push("/sightings/chat-bot")}
-        style={{ position: "absolute", bottom: 50, right: 50 }}
+        style={{
+          position: "absolute",
+          bottom: 50,
+          right: 50,
+          backgroundColor: theme.colors.primary,
+        }}
+        color={theme.colors.onPrimary}
+        theme={theme}
       />
     </View>
   );

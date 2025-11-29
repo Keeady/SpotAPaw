@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Portal } from "react-native-paper";
 import {
   getCurrentUserLocationV3,
   SightingLocation,
@@ -16,6 +16,9 @@ import {
   SIGHTING_RADIUSKM,
 } from "../constants";
 import { EmptySighting } from "@/components/sightings/empty-sighting";
+import React from "react";
+import ReportLostPetFab from "./report-fab";
+import { useRouter } from "expo-router";
 
 type SightingPageProps = {
   renderer: (
@@ -26,6 +29,7 @@ type SightingPageProps = {
 };
 
 export default function SightingPage({ renderer }: SightingPageProps) {
+  const router = useRouter();
   const [sightings, setSightings] = useState<PetSighting[]>([]);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<SightingLocation>();
@@ -44,7 +48,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
           setLocation(location);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log("Error", err);
         setError("Location access is needed to show nearby sightings.");
         setLoading(false);
       });
@@ -131,25 +136,38 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     location,
   ]);
 
+  const sightingsRoute = user ? "my-sightings" : "sightings";
+
   return (
-    <View style={{ flex: 1, padding: 5 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <Button mode="text" disabled={true}>
-          {loading ? "Loading Nearby Sightings..." : "Showing Nearby Sightings"}
-        </Button>
-        {loading ? <ActivityIndicator size="small" /> : ""}
-      </View>
+    <Portal.Host>
       <View style={{ flex: 1 }}>
-        {loading ? null : renderer(sightings, onEndReached, ListEmptyComponent)}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Button mode="text" disabled={true}>
+            {loading
+              ? "Loading Nearby Sightings..."
+              : "Showing Nearby Sightings"}
+          </Button>
+          {loading ? <ActivityIndicator size="small" /> : ""}
+        </View>
+        <View style={{ flex: 1 }}>
+          {loading
+            ? null
+            : renderer(sightings, onEndReached, ListEmptyComponent)}
+        </View>
+
+        <ReportLostPetFab
+          onChatbotPress={() => router.navigate(`/${sightingsRoute}/chat-bot`)}
+          onFormPress={() => router.navigate(`/${sightingsRoute}/new`)}
+        />
       </View>
-    </View>
+    </Portal.Host>
   );
 }
 
