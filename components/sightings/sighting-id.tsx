@@ -60,7 +60,7 @@ export default function SightingProfile() {
   }, [sightingId, petId, router, sightingsRoute]);
 
   const onChatSighting = useCallback(() => {
-    router.push(`/${sightingsRoute}/chat-bot/?id=${sightingId}&petId=${petId}`);
+    router.push(`/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}`);
   }, [sightingId, petId, router, sightingsRoute]);
 
   const onClaimPet = useCallback(() => {
