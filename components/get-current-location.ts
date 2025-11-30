@@ -74,8 +74,8 @@ const getUserLocationPermission = async () => {
     }
 
     return requestGrantOfUserLocation();
-  } catch (e){
-    console.log(e)
+  } catch (e) {
+    console.log(e);
     throw new Error("Existing Location permission not available");
   }
 };
@@ -83,17 +83,21 @@ const getUserLocationPermission = async () => {
 const getUserLocationFast = async (): Promise<Location.LocationObject> => {
   try {
     // Race between current and last known
-    const location = await Promise.race([
+    const location = await Promise.any([
       Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       }),
       Location.getLastKnownPositionAsync({
         maxAge: 300000,
         requiredAccuracy: 100,
-      }).then((loc) => {
-        if (!loc) throw new Error("No cached location");
-        return loc;
-      }),
+      })
+        .then((loc) => {
+          if (!loc) throw new Error("No cached location");
+          return loc;
+        })
+        .catch(() => {
+          throw new Error("Error getting location");
+        }),
     ]);
 
     console.log("location", location);
