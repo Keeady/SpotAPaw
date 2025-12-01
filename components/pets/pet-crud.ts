@@ -66,10 +66,6 @@ export async function onPetFound(id: string) {
     .from("pets")
     .update({
       is_lost: false,
-      last_seen_time: null,
-      last_seen_long: null,
-      last_seen_lat: null,
-      last_seen_location: null,
     })
     .eq("id", id);
 
