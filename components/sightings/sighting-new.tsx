@@ -93,7 +93,7 @@ export default function CreateNewSighting() {
     }
 
     setLoading(true);
-    const { error } = await supabase
+    const { error, data } = await supabase
       .from("sightings")
       .insert([payload])
       .select("id");
@@ -107,13 +107,18 @@ export default function CreateNewSighting() {
       });
       return;
     } else {
+      const sightingId = id ?? data[0]["id"];
       showMessage({
         message: "Successfully added pet sighting.",
         type: "success",
         icon: "success",
       });
 
-      router.dismissTo(`/${contactRoute}/contact`);
+      if (user) {
+        router.navigate(`/owner`);
+      } else {
+        router.navigate(`/sightings/contact/?sightingId=${sightingId}`);
+      }
     }
   }
 

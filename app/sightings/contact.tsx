@@ -1,19 +1,23 @@
+import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SightingContact() {
   const router = useRouter();
+  const { user } = useContext(AuthContext);
 
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { sightingId } = useLocalSearchParams<{ sightingId: string }>();
   const [disableBtn, setDisabledBtn] = useState(true);
+
+  const sightingsRoute = user ? "my-sightings" : "sightings";
 
   useEffect(() => {
     if (name && phone) {
@@ -31,7 +35,7 @@ export default function SightingContact() {
       {
         name,
         phone,
-        sighting_id: id,
+        sighting_id: sightingId,
       },
     ]);
 
@@ -52,7 +56,8 @@ export default function SightingContact() {
     }
 
     setLoading(false);
-    router.navigate("/sightings");
+
+    router.dismissTo(`/${sightingsRoute}`);
   }
   return (
     <View style={styles.container}>
@@ -84,12 +89,6 @@ export default function SightingContact() {
         />
       </View>
 
-      <TextInput
-        style={{ height: 0, opacity: 0 }}
-        value={extra_info}
-        onChangeText={setExtraInfo}
-      />
-
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
@@ -109,6 +108,12 @@ export default function SightingContact() {
           Register
         </Button>
       </View>
+
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
     </View>
   );
 }
