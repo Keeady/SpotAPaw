@@ -27,22 +27,7 @@ export const saveChatBotSighting = async (
     last_seen_location: report.lastSeenLocation,
     last_seen_time: convertTime(report.lastSeenTime || ""),
     pet_id: isValidUuid(report.petId) ? report.petId : null,
-    note: JSON.stringify({
-      notes: report.notes || "",
-      collar:
-        report.hasCollar === "yes_collar"
-          ? `Yes, ${report.collarDescription}`
-          : "No",
-      harness:
-        report.hasCollar === "yes_harness"
-          ? `Yes, ${report.collarDescription}`
-          : "No",
-      tags:
-        report.hasCollar === "yes_tags"
-          ? `Yes, ${report.collarDescription}`
-          : "No",
-      behavior: report.petBehavior,
-    }),
+    note: saveNotes(report),
     reporter_phone: report.contactPhone,
     reporter_name: report.contactName,
     linked_sighting_id: isValidUuid(report.linkedSightingId)
@@ -104,4 +89,32 @@ function convertTime(time: string) {
   }
 
   return lastSeenTime;
+}
+
+function saveNotes(report: PetReportData) {
+  let notes = report.notes || "";
+
+  if (report.hasCollar === "yes_collar") {
+    notes = notes.concat("\n")
+    notes = notes.concat(`has a collar on - ${report.collarDescription}`);
+  }
+  
+  if (report.hasCollar === "yes_harness") {
+    notes = notes.concat("\n")
+    notes = notes.concat(`has a harness on - ${report.collarDescription}`);
+  }
+
+  if (report.hasCollar === "yes_tags") {
+    notes = notes.concat("\n")
+    notes = notes.concat(`has a tag on - ${report.collarDescription}`);
+  }
+
+  if (report.petBehavior) {
+    notes = notes.concat("\n")
+    notes = notes.concat(`Pet behavior: ${report.petBehavior}`)
+  }
+
+  console.log(notes);
+
+  return notes;
 }

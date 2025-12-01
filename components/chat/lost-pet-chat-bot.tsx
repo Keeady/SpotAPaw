@@ -714,8 +714,8 @@ const LostPetChatbot = () => {
 
       case "complete":
         if (response.startsWith("view_report")) {
-          const reportId = response.replace("view_", "");
-          router.navigate(`/${sightingsRoute}/${reportId}`);
+          const reportId = response.replace("view_report-", "");
+          router.replace(`/${sightingsRoute}/${reportId}`);
           return;
         } else if (response === "done") {
           resetChat();
