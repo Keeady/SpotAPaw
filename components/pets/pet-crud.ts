@@ -49,7 +49,7 @@ export async function onDeletePet(id: string, userId: string) {
       type: "success",
       icon: "success",
     });
-    router.dismissTo(`/(app)/pets`);
+    router.replace(`/(app)/pets`);
   }
 }
 
@@ -132,6 +132,6 @@ export async function createNewPet(profileInfo: Pet, userId: string) {
     });
     return;
   } else {
-    router.dismissTo(`/(app)/pets`);
+    router.replace(`/(app)/pets`);
   }
 }

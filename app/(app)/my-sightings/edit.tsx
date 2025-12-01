@@ -93,7 +93,7 @@ export default function EditPetSighting() {
         type: "success",
         icon: "success",
       });
-      router.dismissTo(`/my-sightings`);
+      router.replace(`/my-sightings`);
     }
   };
 

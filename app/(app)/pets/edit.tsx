@@ -74,7 +74,7 @@ export default function EditPet() {
       if (isLost) {
         handleLostPet(photoUrl);
       } else {
-        router.dismissTo(`/(app)/pets`);
+        router.replace(`/(app)/pets`);
       }
     }
   };
@@ -130,9 +130,9 @@ export default function EditPet() {
         icon: "success",
       });
       if (isLost) {
-        router.dismissTo(`/(app)/pets`);
+        router.replace(`/(app)/pets`);
       } else {
-        router.dismissTo(`/(app)/pets`);
+        router.replace(`/(app)/pets`);
       }
     }
   };
