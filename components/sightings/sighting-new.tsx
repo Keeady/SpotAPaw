@@ -70,8 +70,6 @@ export default function CreateNewSighting() {
     setLoading(false);
   }, [id]);
 
-  const contactRoute = user ? "my-sightings" : "sightings";
-
   async function saveSighting(photo: string) {
     const payload = {
       colors,
@@ -115,7 +113,7 @@ export default function CreateNewSighting() {
       });
 
       if (user) {
-        router.navigate(`/owner`);
+        router.navigate(`/owner?sightingId=${sightingId}`);
       } else {
         router.navigate(`/sightings/contact/?sightingId=${sightingId}`);
       }

@@ -2,6 +2,7 @@ import { useConfirmDelete } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { Person } from "@/model/person";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
@@ -9,6 +10,7 @@ import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function OwnerList() {
   const theme = useTheme();
+  const router = useRouter();
 
   const ownerInfo = useRef<Person>(undefined);
   const [phone, setPhone] = useState("");
@@ -23,6 +25,8 @@ export default function OwnerList() {
   const onConfirmDelete = useConfirmDelete();
 
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(true);
+
+  const { sightingId } = useLocalSearchParams<{ sightingId: string }>();
 
   useEffect(() => {
     if (user) {
@@ -103,6 +107,8 @@ export default function OwnerList() {
     }
 
     const { error, data } = result;
+    setLoading(false);
+
     if (error) {
       showMessage({
         message: "Error saving owner profile.",
@@ -118,8 +124,11 @@ export default function OwnerList() {
         type: "success",
         icon: "success",
       });
+
+      if (sightingId) {
+        router.replace(`/my-sightings`)
+      }
     }
-    setLoading(false);
   }
 
   return (
