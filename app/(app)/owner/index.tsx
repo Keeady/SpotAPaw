@@ -3,11 +3,13 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { Person } from "@/model/person";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function OwnerList() {
+  const theme = useTheme();
+
   const ownerInfo = useRef<Person>(undefined);
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -21,6 +23,12 @@ export default function OwnerList() {
   const onConfirmDelete = useConfirmDelete();
 
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (
@@ -63,17 +71,38 @@ export default function OwnerList() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("owner").upsert([
-      {
-        firstname: firstName,
-        lastname: lastName,
-        phone,
-        address,
-        email,
-        id,
-      },
-    ]);
+    let result;
+    if (id) {
+      result = await supabase
+        .from("owner")
+        .update([
+          {
+            firstname: firstName,
+            lastname: lastName,
+            phone,
+            address,
+            email,
+            id,
+          },
+        ])
+        .eq("id", id)
+        .select();
+    } else {
+      result = await supabase
+        .from("owner")
+        .insert([
+          {
+            firstname: firstName,
+            lastname: lastName,
+            phone,
+            address,
+            email,
+          },
+        ])
+        .select();
+    }
 
+    const { error, data } = result;
     if (error) {
       showMessage({
         message: "Error saving owner profile.",
@@ -81,105 +110,113 @@ export default function OwnerList() {
         icon: "warning",
       });
     } else {
+      if (data && !id) {
+        setId(data[0].id);
+      }
       showMessage({
         message: "Successfully saving owner profile.",
         type: "success",
         icon: "success",
       });
     }
+    setLoading(false);
   }
 
   return (
     <View style={styles.container}>
-      <Text variant="titleLarge">Update your Contact Info!</Text>
-      <Text variant="bodyLarge" style={styles.title}>
-        Help people reach out to find your furry friend
-      </Text>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <TextInput
-          label="Phone Number"
-          left={<TextInput.Icon icon="phone" />}
-          onChangeText={(text) => setPhone(text)}
-          value={phone}
-          placeholder="555-555-5555"
-          autoCapitalize={"none"}
-          mode="outlined"
-        />
+      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+        <Text style={styles.headerTitle}>Update your Contact Info!</Text>
+        <Text style={styles.headerSubtitle}>
+          Help people reach out to find your furry friend
+        </Text>
       </View>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          label="Email"
-          left={<TextInput.Icon icon="account-box-outline" />}
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          placeholder="youremail@email.com"
-          autoCapitalize={"none"}
-          mode="outlined"
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          label="First Name"
-          left={<TextInput.Icon icon="account-box-outline" />}
-          onChangeText={(text) => setFirstName(text)}
-          value={firstName}
-          placeholder="First Name"
-          autoCapitalize={"none"}
-          mode="outlined"
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          label="Last Name"
-          left={<TextInput.Icon icon="account-box-outline" />}
-          onChangeText={(text) => setLastName(text)}
-          value={lastName}
-          placeholder="Last Name"
-          autoCapitalize={"none"}
-          mode="outlined"
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <TextInput
-          label="Address"
-          left={<TextInput.Icon icon="account-box-outline" />}
-          onChangeText={(text) => setAddress(text)}
-          value={address}
-          placeholder="Street, City"
-          autoCapitalize={"none"}
-          mode="outlined"
-          multiline={true}
-        />
-      </View>
+      <View style={styles.content}>
+        <View style={[styles.verticallySpaced, styles.mt20]}>
+          <TextInput
+            label="Phone Number"
+            left={<TextInput.Icon icon="phone" />}
+            onChangeText={(text) => setPhone(text)}
+            value={phone}
+            placeholder="555-555-5555"
+            autoCapitalize={"none"}
+            mode="outlined"
+          />
+        </View>
+        <View style={styles.verticallySpaced}>
+          <TextInput
+            label="Email"
+            left={<TextInput.Icon icon="account-box-outline" />}
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+            placeholder="youremail@email.com"
+            autoCapitalize={"none"}
+            mode="outlined"
+          />
+        </View>
+        <View style={styles.verticallySpaced}>
+          <TextInput
+            label="First Name"
+            left={<TextInput.Icon icon="account-box-outline" />}
+            onChangeText={(text) => setFirstName(text)}
+            value={firstName}
+            placeholder="First Name"
+            autoCapitalize={"none"}
+            mode="outlined"
+          />
+        </View>
+        <View style={styles.verticallySpaced}>
+          <TextInput
+            label="Last Name"
+            left={<TextInput.Icon icon="account-box-outline" />}
+            onChangeText={(text) => setLastName(text)}
+            value={lastName}
+            placeholder="Last Name"
+            autoCapitalize={"none"}
+            mode="outlined"
+          />
+        </View>
+        <View style={styles.verticallySpaced}>
+          <TextInput
+            label="Address"
+            left={<TextInput.Icon icon="account-box-outline" />}
+            onChangeText={(text) => setAddress(text)}
+            value={address}
+            placeholder="Street, City"
+            autoCapitalize={"none"}
+            mode="outlined"
+            multiline={true}
+          />
+        </View>
 
-      <TextInput
-        style={{ height: 0, opacity: 0 }}
-        value={extra_info}
-        onChangeText={setExtraInfo}
-      />
-
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          mode="contained"
-          disabled={loading || disableSubmitBtn}
-          onPress={() => createContact()}
-        >
-          {id ? "Save Contact" : "Create Contact"}
-        </Button>
-      </View>
-
-      {user && (
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <Button
-            mode="outlined"
-            disabled={loading}
-            onPress={async () => onConfirmDelete(user.id)}
-            style={{ borderColor: "red" }}
+            mode="contained"
+            disabled={loading || disableSubmitBtn}
+            onPress={() => createContact()}
           >
-            Delete Account
+            {id ? "Save Contact" : "Create Contact"}
           </Button>
         </View>
-      )}
+
+        {user && (
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Button
+              mode="outlined"
+              disabled={loading}
+              onPress={async () => onConfirmDelete(user.id)}
+              style={{ borderColor: "red" }}
+            >
+              Delete Account
+            </Button>
+          </View>
+        )}
+
+        <TextInput
+          style={{ height: 0, opacity: 0 }}
+          value={extra_info}
+          onChangeText={setExtraInfo}
+        />
+      </View>
     </View>
   );
 }
@@ -199,8 +236,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 10,
-    paddingHorizontal: 24,
-    alignItems: "center",
+    // paddingHorizontal: 24,
+    // alignItems: "center",
     backgroundColor: "#fff",
     minHeight: "100%",
   },
@@ -221,5 +258,25 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
     paddingTop: 4,
     paddingBottom: 4,
+  },
+  content: {
+    paddingHorizontal: 24,
+    alignItems: "center",
+  },
+  header: {
+    backgroundColor: "#714ea9ff",
+    paddingVertical: 16,
+    paddingTop: Platform.OS === "ios" ? 50 : 16,
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: "#BBDEFB",
+    marginTop: 4,
   },
 });
