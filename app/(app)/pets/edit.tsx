@@ -9,11 +9,15 @@ import useUploadPetImageUrl from "@/components/image-upload";
 import { isValidUuid } from "@/components/util";
 
 export default function EditPet() {
-  const { id, is_lost } = useLocalSearchParams();
+  const { id, is_lost } = useLocalSearchParams<{
+    id: string;
+    is_lost: string;
+  }>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
+  const isLost = Boolean(is_lost);
 
   useEffect(() => {
     if (!id || !isValidUuid(id)) {
@@ -49,16 +53,13 @@ export default function EditPet() {
         photo: photoUrl,
         note: profileInfo.note,
         owner_id: user?.id,
-        is_lost: !!is_lost,
-        last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
-        last_seen_location: profileInfo.last_seen_location,
-        last_seen_lat: profileInfo?.last_seen_lat,
-        last_seen_long: profileInfo.last_seen_long,
+        is_lost: isLost,
       })
       .eq("id", id)
       .select();
 
     if (error) {
+      console.log(error);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -70,8 +71,8 @@ export default function EditPet() {
         type: "success",
         icon: "success",
       });
-      if (is_lost) {
-        handleLostPet(photoUrl)
+      if (isLost) {
+        handleLostPet(photoUrl);
       } else {
         router.dismissTo(`/(app)/pets`);
       }
@@ -93,7 +94,6 @@ export default function EditPet() {
     if (!profileInfo || !user) {
       return;
     }
-
 
     const { error } = await supabase
       .from("sightings")
@@ -129,7 +129,7 @@ export default function EditPet() {
         type: "success",
         icon: "success",
       });
-      if (is_lost) {
+      if (isLost) {
         router.dismissTo(`/(app)/pets`);
       } else {
         router.dismissTo(`/(app)/pets`);
@@ -137,10 +137,5 @@ export default function EditPet() {
     }
   };
 
-  return EditPetDetails(
-    savePetInfo,
-    setProfileInfo,
-    profileInfo,
-    !!is_lost
-  );
+  return EditPetDetails(savePetInfo, setProfileInfo, profileInfo, !!isLost);
 }
