@@ -1,0 +1,22 @@
+export type PetReportData = {
+  petId: string | null;
+  petType: string | null;
+  petName: string | null;
+  breed: string | null;
+  color: string | null;
+  size: string | null;
+  lastSeenLocationLng?: number | null;
+  lastSeenLocationLat?: number | null;
+  lastSeenLocation: string | null;
+  lastSeenTime: string | null;
+  distinctiveFeatures: string | null;
+  photo: string | null;
+  contactName: string | null;
+  contactPhone: string | null;
+  petBehavior: string | null;
+  hasCollar: string | null;
+  gender: string | null;
+  notes: string | null;
+  collarDescription: string | null;
+  linkedSightingId: string | null;
+};
