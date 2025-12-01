@@ -130,7 +130,7 @@ export default function EditPet() {
         icon: "success",
       });
       if (isLost) {
-        router.replace(`/(app)/pets`);
+        router.replace(`/(app)/my-sightings`);
       } else {
         router.replace(`/(app)/pets`);
       }
