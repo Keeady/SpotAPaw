@@ -34,14 +34,18 @@ export const saveChatBotSighting = async (
       : null,
   };
 
-  // Upload image if exists and then save sighting
-  if (report.photo) {
-    uploadImage(report.photo, (url) => {
-      finalSighting.photo = url || "";
+  try {
+    // Upload image if exists and then save sighting
+    if (report.photo) {
+      uploadImage(report.photo, (url) => {
+        finalSighting.photo = url || "";
+        saveSightingInfo(finalSighting, callback);
+      });
+    } else {
       saveSightingInfo(finalSighting, callback);
-    });
-  } else {
-    saveSightingInfo(finalSighting, callback);
+    }
+  } catch {
+    callback({ error: "Error saving report. Please try again.", reportId: "" });
   }
 };
 

@@ -29,11 +29,17 @@ export async function getLastSeenLocation(report: PetReportData) {
     report.lastSeenLocationLat &&
     report.lastSeenLocationLng
   ) {
-    const address = await Location.reverseGeocodeAsync({
-      longitude: report.lastSeenLocationLng,
-      latitude: report.lastSeenLocationLat,
-    });
-    return address?.[0].formattedAddress || "";
+    try {
+      const address = await Location.reverseGeocodeAsync({
+        longitude: report.lastSeenLocationLng,
+        latitude: report.lastSeenLocationLat,
+      });
+      return address?.[0].formattedAddress || "";
+    } catch {
+      return `${report.lastSeenLocationLat.toFixed(
+        6
+      )},${report.lastSeenLocationLng.toFixed(6)}`;
+    }
   }
 
   return report.lastSeenLocation;

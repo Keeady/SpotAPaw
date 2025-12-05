@@ -23,7 +23,6 @@ import MapView, {
   PROVIDER_GOOGLE,
 } from "react-native-maps";
 import { getCurrentUserLocationV3 } from "../get-current-location";
-import { Constants } from "./constants";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { saveChatBotSighting } from "../sightings/sightings-crud";
 import { PetReportData } from "../sightings/sighting-interface";
@@ -70,7 +69,6 @@ const LostPetChatbot = () => {
   const theme = useTheme();
   const primaryColor = theme.colors.primary;
   const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
-
   const [messages, setMessages] = useState<ChatBotMessage[]>([]);
   const [input, setInput] = useState("");
   const [reportData, setReportData] = useState<PetReportData>({
@@ -497,7 +495,9 @@ const LostPetChatbot = () => {
               ? " Note: Since the pet seems defensive, please keep a safe distance."
               : "";
 
-          addBotMessage(`${behaviorWarning}`);
+          if (behaviorWarning) {
+            addBotMessage(`${behaviorWarning}`);
+          }
         }, 500);
         break;
 
@@ -537,7 +537,7 @@ const LostPetChatbot = () => {
       case "size":
         setReportData((prev) => ({ ...prev, size: response }));
         setCurrentStep("photo");
-        setTimeout(() => {       
+        setTimeout(() => {
           addBotMessage(
             "A clear photo will greatly help in finding your pet. Do you have a recent photo you can upload?",
             [{ text: "No photo available", value: "no_photo" }],
@@ -598,7 +598,7 @@ const LostPetChatbot = () => {
         } else {
           setCurrentStep("gender");
           setTimeout(() => {
-            addBotMessage("What gender is your pet (Female/Male)?", [
+            addBotMessage("Whatis the gender of your pet?", [
               { text: "Female", value: "female" },
               { text: "Male", value: "male" },
               { text: "Not sure", value: "" },
@@ -803,7 +803,13 @@ const LostPetChatbot = () => {
         processResponse("location_shared");
       } catch (error) {
         addBotMessage(
-          "Unable to get your location. Please type the address instead."
+          "Unable to get your location. Please enable location or type the address instead.",
+          [{ text: "I'll type it", value: "will_type" }],
+          {
+            label: "Enable location sharing",
+            icon: "map-marker",
+            action: "enableLocation",
+          }
         );
       }
     } else if (action === "closeMap") {
@@ -845,6 +851,25 @@ const LostPetChatbot = () => {
         }
         setSelectedLocation(null);
       }
+    } else if (action === "enableLocation") {
+      getCurrentUserLocationV3(true)
+        .then((location) => {
+          if (location) {
+            setMapRegion({
+              latitude: location?.lat,
+              longitude: location?.lng,
+              latitudeDelta: 0.05,
+              longitudeDelta: 0.05,
+            });
+          }
+        })
+        .catch((err) => {
+          console.log("Error", err);
+          addBotMessage(
+            "Unable to get your location. Please type the address instead.",
+            [{ text: "I'll type it", value: "will_type" }]
+          );
+        });
     }
   };
 
@@ -970,7 +995,10 @@ const LostPetChatbot = () => {
                     onPress={() =>
                       handleActionButton(msg.actionButton?.action || "")
                     }
-                    style={styles.actionButton}
+                    style={[
+                      styles.actionButton,
+                      { backgroundColor: theme.colors.tertiary },
+                    ]}
                   >
                     {msg.actionButton.label}
                   </Button>
