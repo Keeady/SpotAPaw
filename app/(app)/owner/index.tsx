@@ -31,6 +31,19 @@ export default function OwnerList() {
   useEffect(() => {
     if (user) {
       setEmail(user.email || "");
+      if (user.user_metadata) {
+        if (user.user_metadata["firstName"]) {
+          setFirstName(user.user_metadata["firstName"])
+        }
+
+        if (user.user_metadata["lastName"]) {
+          setLastName(user.user_metadata["lastName"])
+        }
+
+        if (user.user_metadata["phone"]) {
+          setPhone(user.user_metadata["phone"])
+        }
+      }
     }
   }, [user]);
 
