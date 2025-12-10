@@ -239,26 +239,27 @@ export default function CreateNewSighting() {
             </Button>
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text variant="labelLarge">
-              {photo ? "Change Photo" : "Upload Photo (Optional)"}
-            </Text>
-            <Button
-              icon="camera"
-              mode="outlined"
-              onPress={() => pickImage(setPhoto)}
-            >
-              Choose File
-            </Button>
             {photo ? (
               <Image source={{ uri: photo }} style={styles.preview} />
             ) : (
               <View style={styles.emptyPreview}>
-                <Text>No Photo</Text>
+                <Text>Add Photo</Text>
               </View>
             )}
+
+            <Button
+              icon="camera"
+              mode="elevated"
+              onPress={() => pickImage(setPhoto)}
+              style={{ marginTop: 10 }}
+            >
+              {photo ? "Change Photo" : "Upload Photo"}
+            </Button>
           </View>
 
-          <View style={[styles.verticallySpaced, styles.mt20]}>
+          <View
+            style={[styles.verticallySpaced, styles.mt20, { marginTop: 20 }]}
+          >
             <Button
               mode="contained"
               disabled={loading || empty}
@@ -330,6 +331,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#714ea9ff",
     padding: 16,
     paddingTop: Platform.OS === "ios" ? 50 : 16,
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 20,
