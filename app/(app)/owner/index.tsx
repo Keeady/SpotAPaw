@@ -1,6 +1,7 @@
 import { useConfirmDelete } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
+import { isValidUuid } from "@/components/util";
 import { Person } from "@/model/person";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -89,7 +90,7 @@ export default function OwnerList() {
     }
     setLoading(true);
     let result;
-    if (id) {
+    if (id && isValidUuid(id)) {
       result = await supabase
         .from("owner")
         .update([

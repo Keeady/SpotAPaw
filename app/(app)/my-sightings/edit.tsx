@@ -7,6 +7,7 @@ import { showMessage } from "react-native-flash-message";
 import EditPetSightingDetails from "@/components/sightings/sighting-edit";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { PetSighting } from "@/model/sighting";
+import { isValidUuid } from "@/components/util";
 
 export default function EditPetSighting() {
   const { sightingId, petId } = useLocalSearchParams<{
@@ -56,6 +57,10 @@ export default function EditPetSighting() {
 
   const handleSubmit = async (photoUrl: string) => {
     if (!profileInfo || !user || !sightingInfo) {
+      return;
+    }
+
+    if (!isValidUuid(petId) || !isValidUuid(sightingId)) {
       return;
     }
 

@@ -64,6 +64,7 @@ export default function CreateNewSighting() {
           setFeatures(data.features);
           setNote(data.note);
           setLinkedSightingId(data.linked_sighting_id);
+          setPhoto(data.photo)
         });
     }
 
@@ -71,6 +72,7 @@ export default function CreateNewSighting() {
   }, [id]);
 
   async function saveSighting(photo: string) {
+    const sightingId = isValidUuid(id) ? id : ""
     const payload = {
       colors,
       breed,
@@ -83,10 +85,10 @@ export default function CreateNewSighting() {
       last_seen_long: coords?.longitude,
       last_seen_lat: coords?.latitude,
       last_seen_time: new Date().toISOString(),
-      linked_sighting_id: linked_sighting_id ?? id,
+      linked_sighting_id: linked_sighting_id ?? sightingId,
     } as PetSighting;
 
-    if (petId && petId !== "null") {
+    if (petId && isValidUuid(petId)) {
       payload.pet_id = petId;
     }
 

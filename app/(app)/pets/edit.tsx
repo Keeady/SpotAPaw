@@ -91,7 +91,7 @@ export default function EditPet() {
   }
 
   const handleLostPet = async (photoUrl: string) => {
-    if (!profileInfo || !user) {
+    if (!profileInfo || !user || !isValidUuid(id)) {
       return;
     }
 

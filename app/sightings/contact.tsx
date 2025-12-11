@@ -1,5 +1,6 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
+import { isValidUuid } from "@/components/util";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -26,7 +27,7 @@ export default function SightingContact() {
   }, [name, phone]);
 
   async function saveSightingContact() {
-    if (extra_info.trim()) {
+    if (extra_info.trim() || !isValidUuid(sightingId)) {
       return;
     }
 
