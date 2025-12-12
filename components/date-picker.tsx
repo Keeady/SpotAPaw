@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
 export default function DatePicker({
   dateLabel,
@@ -41,10 +43,20 @@ export default function DatePicker({
 
   return (
     <View style={styles.wrapper}>
-      <Button icon={"calendar"} mode={"contained"} onPress={() => setShowDate(true)} style={styles.button}>
+      <Button
+        icon={"calendar"}
+        mode={"contained"}
+        onPress={() => setShowDate(true)}
+        style={styles.button}
+      >
         Date: {d.toLocaleDateString()}
       </Button>
-      <Button icon={"clock"} mode={"contained"} onPress={() => setShowTime(true)} style={styles.button}>
+      <Button
+        icon={"clock"}
+        mode={"contained"}
+        onPress={() => setShowTime(true)}
+        style={styles.button}
+      >
         Time: {d.toLocaleTimeString()}
       </Button>
       {showDate && (
@@ -72,6 +84,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   button: {
-    marginBottom: 8
-  }
+    marginBottom: 8,
+  },
 });
