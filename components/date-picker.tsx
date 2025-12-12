@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 
 export default function DatePicker({
   dateLabel,
@@ -12,29 +12,29 @@ export default function DatePicker({
   dateLabel: string;
   timeLabel: string;
   value: Date;
-  onChange: (date: string) => void;
+  onChange: (date: Date) => void;
 }) {
   const [showTime, setShowTime] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const [d, setDate] = useState(value);
-  const onDateChange = (_event, selectedDate) => {
+  const onDateChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDate(false);
     if (selectedDate) {
       const newDate = new Date(selectedDate);
       newDate.setHours(value.getHours());
       newDate.setMinutes(value.getMinutes());
-      onChange(newDate.toLocaleString());
+      onChange(newDate);
       setDate(newDate);
     }
   };
 
-  const onTimeChange = (_event, selectedTime) => {
+  const onTimeChange = (_event: DateTimePickerEvent, selectedTime?: Date) => {
     setShowTime(false);
     if (selectedTime) {
       const newDate = new Date(value);
       newDate.setHours(selectedTime.getHours());
       newDate.setMinutes(selectedTime.getMinutes());
-      onChange(newDate.toLocaleString());
+      onChange(newDate);
       setDate(newDate);
     }
   };
