@@ -13,24 +13,23 @@
       "bundleIdentifier": "com.bcamaria.SpotAPaw",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location."
-      },
-      "config": {
-        "googleMapsApiKey":  "process.env.GOOGLE_MAPS_API_KEY",
       }
     },
     "android": {
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "CAMERA_ROLL",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.bcamaria.SpotAPaw",
-      "config": {
-        "googleMaps": {
-          "apiKey": "process.env.GOOGLE_MAPS_API_KEY"
-        }
-      }
+      "package": "com.bcamaria.SpotAPaw"
     },
     "web": {
       "bundler": "metro",
@@ -52,6 +51,13 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow SpotAPaw to use your location."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow SpotAPaw to access your photos to upload pet images.",
+          "cameraPermission": "Allow SpotAPaw to use your camera to take pet photos."
         }
       ]
     ],
