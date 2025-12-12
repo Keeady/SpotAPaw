@@ -47,3 +47,16 @@ export async function getLastSeenLocation(report: PetReportData) {
 
   return report.lastSeenLocation;
 }
+
+export function getIconByAnimalSpecies(species: string) {
+  switch(species.toLowerCase()) {
+    case "dog":
+      return "dog";
+    case "cat":
+      return "cat";
+    case "rabbit":
+      return "rabbit";
+    default:
+      return "paw";
+  }
+}

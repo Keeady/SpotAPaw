@@ -1,8 +1,7 @@
-import { useRouter } from "expo-router";
-import React, { useContext } from "react";
-import { Image, View } from "react-native";
-import { Button, Card, Chip, Divider, Text } from "react-native-paper";
-import { AuthContext } from "./Provider/auth-provider";
+import React from "react";
+import { Image, View, StyleSheet } from "react-native";
+import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
+import { getIconByAnimalSpecies } from "./util";
 
 export function RenderPetProfile(data) {
   const pet = data.pet;
@@ -49,16 +48,14 @@ export function RenderPetProfile(data) {
 }
 
 export function RenderSightingProfile(data) {
-  const router = useRouter();
+  const theme = useTheme();
   const pet = data.pet;
-  const { user } = useContext(AuthContext);
-  const sightingsRoute = user ? "my-sightings" : "sightings";
   return (
     <Card
       style={{
         borderRadius: 20,
         margin: 5,
-        marginBottom: 20,
+        marginBottom: 10,
         backgroundColor: "#fff",
       }}
     >
@@ -89,59 +86,110 @@ export function RenderSightingProfile(data) {
         </View>
       )}
       <Card.Content style={{ alignItems: "left" }}>
-        <Chip
-          style={{
-            backgroundColor: pet?.name ? "#E6F7E6" : "#FFF4E5",
-            marginTop: -20,
-            marginBottom: 10,
-            alignSelf: "flex-start",
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderRadius: 12,
-          }}
-          textStyle={{
-            color: pet?.name ? "#2E7D32" : "#D84315",
-            fontWeight: "600",
-          }}
-          mode="outlined"
-        >
-          {pet?.name || "Unknown"}
-        </Chip>
+        <View style={styles.header}>
+          <Text variant="labelMedium" style={{ alignSelf: "center" }}>
+            {"Name"}:
+          </Text>
+          <Chip
+            style={{
+              backgroundColor: pet?.name ? "#E6F7E6" : "#FFF4E5",
+              marginVertical: 10,
+              alignSelf: "flex-start",
+              paddingHorizontal: 10,
+              paddingVertical: 2,
+              borderRadius: 12,
+            }}
+            textStyle={{
+              color: pet?.name ? "#2E7D32" : "#D84315",
+              fontWeight: "600",
+            }}
+            mode="outlined"
+          >
+            {pet?.name || "Unknown"}
+          </Chip>
+        </View>
 
         <Divider />
-        <Text variant="titleMedium">{pet.breed}</Text>
-        {pet.colors && <Text variant="bodyLarge">{pet.colors}</Text>}
-        {pet.gender && <Text variant="bodyLarge">{pet.gender}</Text>}
-
-        {pet.created_at && (
-          <Text variant="bodyLarge">
-            Reported missing at: {new Date(pet.created_at).toDateString()}
+        <View style={styles.line}>
+          <View style={styles.header}>
+            <Icon
+              source={getIconByAnimalSpecies(pet.species) || ""}
+              size={25}
+              color={theme.colors.primary}
+            />
+            <Text variant="labelMedium">{"Type"}:</Text>
+          </View>
+          <Text variant="bodyLarge" style={styles.title}>
+            {pet.species}
           </Text>
-        )}
-        {pet.features && (
-          <Text variant="bodyLarge">Features: {pet.features}</Text>
-        )}
+        </View>
+
+        <Divider />
+
+        <View style={styles.line}>
+          <View style={styles.header}>
+            <Icon source={"tag"} size={25} color={theme.colors.primary} />
+            <Text variant="labelMedium">{"Breed"}:</Text>
+          </View>
+          <Text variant="bodyLarge" style={styles.title}>
+            {pet.breed}
+          </Text>
+        </View>
+
+        <Divider />
 
         {pet.last_seen_time && (
-          <Text variant="bodyLarge">
-            Last Seen: {new Date(pet.last_seen_time).toDateString()}
-          </Text>
+          <View style={styles.line}>
+            <View style={styles.header}>
+              <Icon
+                source={"map-marker"}
+                size={25}
+                color={theme.colors.primary}
+              />
+              <Text variant="labelMedium">{"Last Seen"}:</Text>
+            </View>
+            <Text variant="bodyLarge" style={styles.title}>
+              {new Date(pet.last_seen_time).toLocaleDateString()} -{" "}
+              {new Date(pet.last_seen_time).toLocaleTimeString()}
+            </Text>
+            <Text variant="bodyLarge" style={styles.title}>
+              {pet.last_seen_location}
+            </Text>
+          </View>
         )}
-        <Text variant="bodyLarge">Last Seen at: {pet.last_seen_location}</Text>
+
+        <Divider />
+
+        {pet.features && (
+          <View style={styles.line}>
+            <View style={styles.header}>
+              <Icon
+                source={"note-multiple"}
+                size={25}
+                color={theme.colors.primary}
+              />
+              <Text variant="labelMedium">{"Features"}:</Text>
+            </View>
+            <Text variant="bodyLarge" style={styles.title}>
+              {pet.colors}
+              {pet.gender ? `, ${pet.gender}` : ""}
+              {pet.age ? `, ${pet.age} years old` : ""}
+            </Text>
+            <Divider />
+            <Text variant="bodyLarge" style={styles.title}>
+              {pet.features}
+            </Text>
+          </View>
+        )}
       </Card.Content>
-      {
-        <Card.Actions>
-          <Button
-            style={{ marginBottom: 10, width: "100%" }}
-            mode="contained"
-            onPress={() =>
-              router.push(`/${sightingsRoute}/${pet.id}/?petId=${pet.pet_id}`)
-            }
-          >
-            Add Details
-          </Button>
-        </Card.Actions>
-      }
     </Card>
   );
 }
+
+const styles = StyleSheet.create({
+  line: {
+    paddingVertical: 5,
+  },
+  header: { flexDirection: "row", alignContent: "center", gap: 5 },
+  title: { paddingHorizontal: 25 },
+});

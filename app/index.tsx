@@ -101,7 +101,7 @@ export default function PublicHome() {
         onPress={() => router.push("/sightings/chat-bot")}
         style={{
           position: "absolute",
-          bottom: 50,
+          bottom: 20,
           right: 50,
           backgroundColor: theme.colors.primary,
         }}
