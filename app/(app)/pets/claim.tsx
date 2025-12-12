@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import ClaimSighting from "@/components/sightings/sighting-claim";
 import { supabase } from "@/components/supabase-client";
@@ -61,6 +62,7 @@ export default function ClaimLostPet() {
         .select();
 
       if (error) {
+        log(error.message);
         showMessage({
           message: "Error updating pet sighting.",
           type: "warning",

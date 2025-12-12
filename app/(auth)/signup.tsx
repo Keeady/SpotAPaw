@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -58,6 +59,7 @@ export default function SignUpScreen() {
     });
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "An error occured. Please try again.",
         type: "danger",

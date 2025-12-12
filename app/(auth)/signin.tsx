@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -44,6 +45,7 @@ export default function SignInScreen() {
     }
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Invalid email or password. Please try again.",
         type: "danger",

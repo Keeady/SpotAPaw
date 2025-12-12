@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
 import { Pet } from "@/model/pet";
+import { log } from "../logs";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -38,6 +39,7 @@ export async function onDeletePet(id: string, userId: string) {
     .select();
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error deleting pet profile.",
       type: "warning",
@@ -70,6 +72,7 @@ export async function onPetFound(id: string) {
     .eq("id", id);
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error updating pet profile.",
       type: "warning",
@@ -85,6 +88,7 @@ export async function onPetFound(id: string) {
       .eq("pet_id", id);
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -99,7 +103,7 @@ export async function onPetFound(id: string) {
       });
     }
   }
-  router.navigate(`/(app)/pets/${id}`);
+  router.replace(`/(app)/pets/${id}`);
 }
 
 export async function createNewPet(profileInfo: Pet, userId: string) {
@@ -125,6 +129,7 @@ export async function createNewPet(profileInfo: Pet, userId: string) {
     .select();
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error creating pet profile. Please try again.",
       type: "warning",

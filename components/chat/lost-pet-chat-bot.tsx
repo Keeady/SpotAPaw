@@ -33,6 +33,7 @@ import {
 } from "../image-picker";
 import useUploadPetImageUrl from "../image-upload";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { log } from "../logs";
 
 type ChatBotActionButton = {
   label: string;
@@ -733,6 +734,7 @@ const LostPetChatbot = () => {
             if (result) {
               const { error, reportId } = result;
               if (error) {
+                log(error);
                 setTimeout(() => {
                   addBotMessage(`${error}`, [
                     { text: "Try Again", value: "try_again" },
@@ -771,7 +773,8 @@ const LostPetChatbot = () => {
                 }
               }
             }
-          }
+          },
+          user?.id
         );
         break;
       default:
@@ -852,7 +855,7 @@ const LostPetChatbot = () => {
         setSelectedLocation(null);
       }
     } else if (action === "enableLocation") {
-      getCurrentUserLocationV3(true)
+      getCurrentUserLocationV3()
         .then((location) => {
           if (location) {
             setMapRegion({
@@ -1058,6 +1061,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#714ea9ff",
     padding: 16,
     paddingTop: Platform.OS === "ios" ? 50 : 16,
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 20,

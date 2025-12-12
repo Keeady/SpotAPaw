@@ -17,6 +17,7 @@ import { AuthContext } from "../Provider/auth-provider";
 import { pickImage } from "../image-picker";
 import useUploadPetImageUrl from "../image-upload";
 import { isValidUuid } from "../util";
+import { log } from "../logs";
 
 export default function CreateNewSighting() {
   const theme = useTheme();
@@ -64,7 +65,7 @@ export default function CreateNewSighting() {
           setFeatures(data.features);
           setNote(data.note);
           setLinkedSightingId(data.linked_sighting_id);
-          setPhoto(data.photo)
+          setPhoto(data.photo);
         });
     }
 
@@ -72,7 +73,7 @@ export default function CreateNewSighting() {
   }, [id]);
 
   async function saveSighting(photo: string) {
-    const sightingId = isValidUuid(id) ? id : ""
+    const sightingId = isValidUuid(id) ? id : null;
     const payload = {
       colors,
       breed,
@@ -100,6 +101,7 @@ export default function CreateNewSighting() {
 
     setLoading(false);
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error saving sighting info. Please try again.",
         type: "warning",

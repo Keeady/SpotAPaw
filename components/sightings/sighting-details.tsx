@@ -217,7 +217,7 @@ export default function SightingDetail({
                   <Card style={{ elevation: isLatest ? 4 : 1 }}>
                     <Card.Title
                       title={formatDistanceToNow(
-                        new Date(sighting.created_at),
+                        new Date(sighting.last_seen_time),
                         {
                           addSuffix: true,
                         }

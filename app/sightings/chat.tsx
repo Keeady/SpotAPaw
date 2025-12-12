@@ -18,6 +18,7 @@ import {
   getCurrentUserLocationV3,
   SightingLocation,
 } from "@/components/get-current-location";
+import { log } from "@/components/logs";
 
 export default function Chat() {
   const router = useRouter();
@@ -96,11 +97,10 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    getCurrentUserLocationV3()
-    .then(location => {
+    getCurrentUserLocationV3().then((location) => {
       setLocation(location);
-      console.log(location)
-    })
+      console.log(location);
+    });
   }, []);
 
   const onComplete = useCallback(() => {
@@ -168,6 +168,7 @@ export default function Chat() {
     // Save the final sighting data here
     const { error } = await supabase.from("sightings").insert([finalSighting]);
     if (error) {
+      log(error.message);
       console.error("Error saving sighting:", error);
     } else {
       console.log("Sighting saved successfully!");
@@ -194,7 +195,6 @@ export default function Chat() {
 
   const askForLocation = async () => {
     getCurrentUserLocationV3().then((location) => {
-
       setLocation(location);
     });
   };

@@ -7,6 +7,7 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { onPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
+import { log } from "../logs";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -60,7 +61,9 @@ export default function SightingProfile() {
   }, [sightingId, petId, router, sightingsRoute]);
 
   const onChatSighting = useCallback(() => {
-    router.push(`/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}`);
+    router.push(
+      `/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}`
+    );
   }, [sightingId, petId, router, sightingsRoute]);
 
   const onClaimPet = useCallback(() => {
@@ -81,6 +84,7 @@ export default function SightingProfile() {
   }, [petId]);
 
   if (error) {
+    log(error);
     showMessage({
       message: "Error fetching sighting info. Please try again.",
       type: "warning",

@@ -1,4 +1,5 @@
 import { useConfirmDelete } from "@/components/account/delete";
+import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
@@ -34,15 +35,15 @@ export default function OwnerList() {
       setEmail(user.email || "");
       if (user.user_metadata) {
         if (user.user_metadata["firstName"]) {
-          setFirstName(user.user_metadata["firstName"])
+          setFirstName(user.user_metadata["firstName"]);
         }
 
         if (user.user_metadata["lastName"]) {
-          setLastName(user.user_metadata["lastName"])
+          setLastName(user.user_metadata["lastName"]);
         }
 
         if (user.user_metadata["phone"]) {
-          setPhone(user.user_metadata["phone"])
+          setPhone(user.user_metadata["phone"]);
         }
       }
     }
@@ -124,6 +125,7 @@ export default function OwnerList() {
     setLoading(false);
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error saving owner profile.",
         type: "warning",
@@ -140,7 +142,7 @@ export default function OwnerList() {
       });
 
       if (sightingId) {
-        router.replace(`/my-sightings`)
+        router.replace(`/my-sightings`);
       }
     }
   }

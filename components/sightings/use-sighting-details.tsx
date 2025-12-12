@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-client";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
+import { log } from "../logs";
 
 // Helper to merge sightings into summary
 export function mergeSightings(sightings: PetSighting[]) {
@@ -41,9 +42,10 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("sightings")
       .select("*")
       .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
-      .order("created_at", { ascending: false });
+      .order("last_seen_time", { ascending: false });
 
     if (error) {
+      log(error.message);
       setError(error);
       setLoading(false);
       return;
@@ -68,9 +70,10 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("sightings")
       .select("*")
       .eq("pet_id", petId)
-      .order("created_at", { ascending: false });
+      .order("last_seen_time", { ascending: false });
 
     if (error) {
+      log(error.message);
       setError(error);
       setLoading(false);
       return;
@@ -81,7 +84,7 @@ export function usePetSightings(petId: string, sightingId: string) {
     setLoading(false);
   }
 
-    async function fetchSightingsByPetIdForUser(petId: string) {
+  async function fetchSightingsByPetIdForUser(petId: string) {
     setLoading(true);
     setError(null);
     if (!petId) {
@@ -92,9 +95,10 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("sightings")
       .select("*, sighting_contact(name, phone)")
       .eq("pet_id", petId)
-      .order("created_at", { ascending: false });
+      .order("last_seen_time", { ascending: false });
 
     if (error) {
+      log(error.message);
       setError(error);
       setLoading(false);
       return;
@@ -113,9 +117,10 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("sightings")
       .select("*, sighting_contact(name, phone)")
       .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
-      .order("created_at", { ascending: false });
+      .order("last_seen_time", { ascending: false });
 
     if (error) {
+      log(error.message);
       setError(error);
       setLoading(false);
       return;

@@ -19,6 +19,7 @@ import { EmptySighting } from "@/components/sightings/empty-sighting";
 import React from "react";
 import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
+import { log } from "../logs";
 
 type SightingPageProps = {
   renderer: (
@@ -92,6 +93,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const onFetchComplete = useCallback(
     (newSightings: PetSighting[], error: string | null) => {
       if (error) {
+        log(error);
         setError(error);
       } else if (newSightings.length > 0) {
         processSightings(sightings, newSightings, setSightings);
@@ -224,6 +226,7 @@ const fetchSightingsWithLocation = async (
     .range(pagination.start, pagination.end);
 
   if (error) {
+    log(error.message);
     onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
     onFetchComplete(data || [], null);
@@ -259,6 +262,7 @@ const fetchSightingsByUserWithLocation = async (
     .range(pagination.start, pagination.end);
 
   if (error) {
+    log(error.message);
     onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
     onFetchComplete(data || [], null);

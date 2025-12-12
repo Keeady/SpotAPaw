@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { Stack, useRouter } from "expo-router";
 import React from "react";
@@ -9,8 +10,10 @@ export default function SightingsLayout() {
 
   async function handleSignOut() {
     let { error } = await supabase.auth.signOut();
-    if (error) Alert.alert(error.message);
-    else {
+    if (error) {
+      log(error.message);
+      Alert.alert(error.message);
+    } else {
       router.navigate("/");
     }
   }

@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { supabase } from "../supabase-client";
 import { showMessage } from "react-native-flash-message";
 import { handleSignOut, isValidUuid } from "../util";
+import { log } from "../logs";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -44,6 +45,7 @@ const onDeleteAccount = async (userId: string) => {
     .eq("owner_id", userId);
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error deleting account.",
       type: "warning",
@@ -56,6 +58,6 @@ const onDeleteAccount = async (userId: string) => {
       icon: "success",
     });
 
-    handleSignOut()
+    handleSignOut();
   }
 };

@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
@@ -41,6 +42,7 @@ export default function SightingContact() {
     ]);
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error saving sighting contact info. Please try again.",
         type: "warning",

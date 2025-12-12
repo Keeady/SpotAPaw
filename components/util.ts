@@ -3,6 +3,7 @@ import { supabase } from "./supabase-client";
 import { router } from "expo-router";
 import { PetReportData } from "./sightings/sighting-interface";
 import * as Location from "expo-location";
+import { log } from "./logs";
 
 export const isValidUuid = (id: string | null) => {
   return (
@@ -17,8 +18,10 @@ export const isValidUuid = (id: string | null) => {
 
 export async function handleSignOut() {
   let { error } = await supabase.auth.signOut();
-  if (error) Alert.alert(error.message);
-  else {
+  if (error) {
+    log(error.message);
+    Alert.alert(error.message);
+  } else {
     router.navigate("/");
   }
 }

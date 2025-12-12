@@ -2,6 +2,7 @@ import { supabase } from "../supabase-client";
 import { PetReportData } from "./sighting-interface";
 import * as chrono from "chrono-node";
 import { getLastSeenLocation, isValidUuid } from "../util";
+import { log } from "../logs";
 
 type ChatBotSightingResult = {
   error: string;
@@ -10,8 +11,12 @@ type ChatBotSightingResult = {
 
 export const saveChatBotSighting = async (
   report: PetReportData,
-  uploadImage: (uri: string, callback: (uri: string) => void) => Promise<void>,
-  callback: (result: ChatBotSightingResult) => void
+  uploadImage: (
+    uri: string,
+    callback: (uri: string, error?: string) => void
+  ) => Promise<void>,
+  callback: (result: ChatBotSightingResult) => void,
+  userId?: string
 ) => {
   const finalSighting = {
     name: report.petName,
@@ -29,6 +34,7 @@ export const saveChatBotSighting = async (
     note: saveNotes(report),
     reporter_phone: report.contactPhone,
     reporter_name: report.contactName,
+    reporter_id: userId,
     linked_sighting_id: isValidUuid(report.linkedSightingId)
       ? report.linkedSightingId
       : null,
@@ -37,7 +43,15 @@ export const saveChatBotSighting = async (
   try {
     // Upload image if exists and then save sighting
     if (report.photo) {
-      uploadImage(report.photo, (url) => {
+      uploadImage(report.photo, (url, error) => {
+        if (error) {
+          log(error);
+          callback({
+            error: "Error saving photo. Please try again.",
+            reportId: "",
+          });
+          return;
+        }
         finalSighting.photo = url || "";
         saveSightingInfo(finalSighting, callback);
       });
@@ -62,6 +76,7 @@ async function saveSightingInfo(
     .select();
 
   if (error) {
+    log(error.message);
     console.error("Error saving sighting:", error);
     errorMsg = "Error saving report. Please try again.";
   }

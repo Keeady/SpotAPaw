@@ -8,6 +8,7 @@ import EditPetSightingDetails from "@/components/sightings/sighting-edit";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { PetSighting } from "@/model/sighting";
 import { isValidUuid } from "@/components/util";
+import { log } from "@/components/logs";
 
 export default function EditPetSighting() {
   const { sightingId, petId } = useLocalSearchParams<{
@@ -87,6 +88,7 @@ export default function EditPetSighting() {
       .select();
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error updating pet sighting.",
         type: "warning",

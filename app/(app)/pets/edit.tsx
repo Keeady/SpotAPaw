@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { isValidUuid } from "@/components/util";
+import { log } from "@/components/logs";
 
 export default function EditPet() {
   const { id, is_lost } = useLocalSearchParams<{
@@ -59,7 +60,7 @@ export default function EditPet() {
       .select();
 
     if (error) {
-      console.log(error);
+      log(error.message);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -116,7 +117,7 @@ export default function EditPet() {
       .select();
 
     if (error) {
-      console.log("error", error);
+      log(error.message);
 
       showMessage({
         message: "Error updating pet sighting.",
