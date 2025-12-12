@@ -1,8 +1,10 @@
+import "react-native-get-random-values";
 import { useCallback, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "./Provider/auth-provider";
 import { supabase } from "./supabase-client";
 import AppConstant from "./constants";
+import { log } from "./logs";
 
 export default function useUploadPetImageUrl() {
   const SUPABASE_URL = AppConstant.EXPO_PUBLIC_SUPABASE_URL;
@@ -11,51 +13,52 @@ export default function useUploadPetImageUrl() {
   const { session } = useContext(AuthContext);
 
   return useCallback(
-    async (uri: string, callback: (uri: string) => void) => {
+    async (uri: string, callback: (uri: string, error?: string) => void) => {
       if (!uri) return;
 
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const filePath = `sightings/${uuidv4()}.jpg`;
+      try {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const filePath = `sightings/${uuidv4()}.jpg`;
 
-      const xhr = new XMLHttpRequest();
-      xhr.open(
-        "POST",
-        `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`
-      );
+        const xhr = new XMLHttpRequest();
+        xhr.open(
+          "POST",
+          `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`
+        );
 
-      xhr.setRequestHeader("apikey", SUPABASE_KEY);
-      xhr.setRequestHeader(
-        "Authorization",
-        `Bearer ${session?.access_token ?? SUPABASE_KEY}`
-      );
-      xhr.setRequestHeader("Content-Type", "image/jpg");
+        xhr.setRequestHeader("apikey", SUPABASE_KEY);
+        xhr.setRequestHeader(
+          "Authorization",
+          `Bearer ${session?.access_token ?? SUPABASE_KEY}`
+        );
+        xhr.setRequestHeader("Content-Type", "image/jpg");
 
-      xhr.upload.onprogress = (event) => {
-        console.log("Upload happening");
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          console.log("Upload success:", xhr.responseText);
-          // Get a public URL back
-          const { data } = supabase.storage
-            .from("pet_photos")
-            .getPublicUrl(filePath);
-          console.log("data", data);
-          if (data.publicUrl) {
-            callback(data.publicUrl);
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            // Get a public URL back
+            const { data } = supabase.storage
+              .from("pet_photos")
+              .getPublicUrl(filePath);
+            console.log("data", data);
+            if (data.publicUrl) {
+              callback(data.publicUrl);
+            }
+          } else {
+            log(`Upload error ${xhr.responseText}`);
           }
-        } else {
-          console.error("Upload error:", xhr.responseText);
-        }
-      };
+        };
 
-      xhr.onerror = () => {
-        console.error("Upload failed");
-      };
+        xhr.onerror = () => {
+          log(`Upload failed ${xhr.responseText}`);
+          callback("", "Error saving photo");
+        };
 
-      xhr.send(blob);
+        xhr.send(blob);
+      } catch (e) {
+        callback("", `Error saving photo ${e}`);
+        log(`Error saving photo ${e}`);
+      }
     },
     [SUPABASE_KEY, SUPABASE_URL, session?.access_token]
   );
