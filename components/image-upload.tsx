@@ -40,7 +40,6 @@ export default function useUploadPetImageUrl() {
             const { data } = supabase.storage
               .from("pet_photos")
               .getPublicUrl(filePath);
-            console.log("data", data);
             if (data.publicUrl) {
               callback(data.publicUrl);
             }

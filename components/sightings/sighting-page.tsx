@@ -50,7 +50,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         }
       })
       .catch((err) => {
-        console.log("Error", err);
+        log(`getCurrentUserLocationV3 ${err}`);
         setError("Location access is needed to show nearby sightings.");
         setLoading(false);
       });

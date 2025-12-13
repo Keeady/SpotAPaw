@@ -77,7 +77,6 @@ async function saveSightingInfo(
 
   if (error) {
     log(error.message);
-    console.error("Error saving sighting:", error);
     errorMsg = "Error saving report. Please try again.";
   }
 

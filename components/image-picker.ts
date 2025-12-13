@@ -1,5 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { Alert, Linking } from "react-native";
+import { log } from "./logs";
 
 export const ImagePickerHandler = async (
   handleChange: (f: string, v: string) => void
@@ -10,9 +11,12 @@ export const ImagePickerHandler = async (
     allowsEditing: true,
     aspect: [4, 3],
     quality: 1,
+  }).catch((err) => {
+    log(`launchImageLibraryAsync: ${err}`);
+    return;
   });
 
-  if (!result.canceled) {
+  if (result && !result.canceled) {
     handleChange("photo", result.assets[0].uri);
   }
 };
@@ -26,6 +30,8 @@ export const pickImage = async (
     allowsEditing: true,
     aspect: [4, 3],
     quality: 0.8,
+  }).catch((err) => {
+    log(`pickImage: ${err}`);
   });
 
   if (!result || !result.assets || result.canceled) {
@@ -50,7 +56,7 @@ export const takePhoto = async (
     quality: 0.8,
     cameraType: ImagePicker.CameraType.back,
   }).catch((err) => {
-    console.log("takePhoto err", err);
+    log(`takePhoto: ${err}`);
   });
 
   if (!result || !result.assets || result.canceled) {

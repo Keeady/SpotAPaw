@@ -31,7 +31,9 @@ export default function EditPet() {
       .eq("id", id)
       .single()
       .then(({ data, error }) => {
-        console.log("error", error);
+        if (error) {
+          log(error?.message || "");
+        }
         setProfileInfo(data);
       });
   }, [id]);

@@ -15,7 +15,6 @@ export const useConfirmDelete = () =>
         [
           {
             text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
             style: "cancel",
           },
           {

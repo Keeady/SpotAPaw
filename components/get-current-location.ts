@@ -1,5 +1,6 @@
 import * as Location from "expo-location";
 import { Alert, Linking } from "react-native";
+import { log } from "./logs";
 
 export type SightingLocation = {
   lat: number;
@@ -21,7 +22,8 @@ export async function getCurrentLocationV2(
         handleChange("last_seen_lat", location.coords.latitude);
       }
     }
-  } catch {
+  } catch (e) {
+    log(`getCurrentLocationV2: ${e}`);
     Alert.alert(
       "Location Permission Required",
       "Please enable location or type the address instead.",
@@ -48,7 +50,8 @@ export async function getCurrentLocationV1(
         setCoords(location.coords);
       }
     }
-  } catch {
+  } catch (e) {
+    log(`getCurrentLocationV1: ${e}`);
     Alert.alert(
       "Location Permission Required",
       "Please enable location or type the address instead.",
@@ -76,6 +79,7 @@ export async function getCurrentUserLocationV3(): Promise<
 async function requestGrantOfUserLocation(): Promise<boolean> {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
+    log(`requestGrantOfUserLocation: Location permission not granted`);
     throw new Error("Location permission not granted");
   }
 
@@ -93,12 +97,13 @@ const getUserLocationPermission = async () => {
     }
 
     if (existingStatus === "denied" && !canAskAgain) {
+      log("getUserLocationPermission: Cannot Ask Location permission again");
       throw new Error("Cannot Ask Location permission again");
     }
 
     return requestGrantOfUserLocation();
   } catch (e) {
-    console.log(e);
+    log(`getUserLocationPermission: ${e}`);
     throw new Error("Existing Location permission not available");
   }
 };
@@ -115,17 +120,21 @@ const getUserLocationFast = async (): Promise<Location.LocationObject> => {
         requiredAccuracy: 100,
       })
         .then((loc) => {
-          if (!loc) throw new Error("No cached location");
+          if (!loc) {
+            log(`getUserLocationFast: No cached location`);
+            throw new Error("No cached location");
+          }
           return loc;
         })
-        .catch(() => {
+        .catch((e) => {
+          log(`getUserLocationFast: ${e}`);
           throw new Error("Error getting location");
         }),
     ]);
 
-    console.log("location", location);
     return location;
   } catch (error) {
+    log(`getUserLocationFast: ${error}`);
     throw new Error("Unable to get user location");
   }
 };

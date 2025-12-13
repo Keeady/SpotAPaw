@@ -1,6 +1,7 @@
 import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-client";
+import { log } from "../logs";
 type ContextProps = {
   user: null | User;
   session: Session | null;
@@ -22,7 +23,7 @@ const AuthProvider = (props: Props) => {
       setSession(session);
       setLoading(false);
     }).catch((e) => {
-      console.log("AuthProvider error", e);
+      log(`AuthProvider ${e}`);
       setLoading(false);
     });
     const {data: listener} = supabase.auth.onAuthStateChange((_event, session) => {

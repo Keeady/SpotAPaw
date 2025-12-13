@@ -149,11 +149,15 @@ const LostPetChatbot = () => {
           });
         }
       })
-      .catch(() => {
-        console.log("error getting location");
+      .catch((e) => {
+        log(`requestPermissions: ${e}`);
       });
-    await requestCameraPermission();
-    await requestMediaLibraryPermission();
+    await requestCameraPermission().catch((e) => {
+      log(`requestPermissions: ${e}`);
+    });
+    await requestMediaLibraryPermission().catch((e) => {
+      log(`requestPermissions: ${e}`);
+    });
   };
 
   const addBotMessage = (
@@ -865,7 +869,7 @@ const LostPetChatbot = () => {
           }
         })
         .catch((err) => {
-          console.log("Error", err);
+          log(`getCurrentUserLocationV3: ${err}`);
           addBotMessage(
             "Unable to get your location. Please type the address instead.",
             [{ text: "I'll type it", value: "will_type" }]
