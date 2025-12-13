@@ -292,7 +292,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    // paddingHorizontal: 24,
     backgroundColor: "#fff",
     minHeight: "100%",
     paddingBottom: 40,

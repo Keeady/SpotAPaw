@@ -1,4 +1,3 @@
-// LostPetChatbot.js
 import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   View,
@@ -58,7 +57,6 @@ type ChatBotMessage = {
 const LostPetChatbot = () => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
-  // console.log("User", user?.user_metadata);
   const sightingsRoute = user ? "my-sightings" : "sightings";
   const { sightingId: linkedSightingId, petId } = useLocalSearchParams<{
     sightingId: string;

@@ -261,14 +261,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 10,
-    // paddingHorizontal: 24,
-    // alignItems: "center",
     backgroundColor: "#fff",
     minHeight: "100%",
   },
   logo: {
     width: "100%",
-    //height: 100,
     marginBottom: 40,
     marginTop: 40,
     resizeMode: "contain",

@@ -13,7 +13,6 @@ export function RenderPetProfile(data) {
           source={{ uri: pet.photo }}
           resizeMode="cover"
           style={{
-            //width: 200,
             height: 200,
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
