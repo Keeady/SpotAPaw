@@ -102,7 +102,7 @@ export default function EditPetSightingDetails(
                       ? new Date(sighting?.last_seen_time)
                       : new Date()
                   }
-                  onChange={(v) => handleSightingChange("last_seen_time", v)}
+                  onChange={(v) => handleSightingChange("last_seen_time", v.toISOString())}
                 />
               </View>
             </>

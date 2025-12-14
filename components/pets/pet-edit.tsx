@@ -94,7 +94,7 @@ export default function EditPetDetails(
                       ? new Date(pet?.last_seen_time)
                       : new Date()
                   }
-                  onChange={(v) => handleChange("last_seen_time", v.toString())}
+                  onChange={(v) => handleChange("last_seen_time", v.toISOString())}
                 />
               </View>
             </>
