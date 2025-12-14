@@ -30,7 +30,7 @@ Our mission is to create a network of caring pet lovers who can help locate miss
 
 Have questions or feedback? We'd love to hear from you!
 
-📧 **Email**: [spotapaw_dev@gmail.com](mailto:spotapaw_dev@gmail.com)
+📧 **Email**: [spotapaw@gmail.com](mailto:spotapaw@gmail.com)
 
 ---
 

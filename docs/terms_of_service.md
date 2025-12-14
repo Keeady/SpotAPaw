@@ -72,4 +72,4 @@ These Terms are governed by and construed in accordance with the laws of United 
 10- Contact Us
 
 If you have questions about these Terms, please contact us at:
-📧 [spotapaw_dev@gmail.com](mailto:spotapaw_dev@gmail.com)
+📧 [spotapaw@gmail.com](mailto:spotapaw@gmail.com)

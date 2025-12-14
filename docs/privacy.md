@@ -73,4 +73,4 @@ We may update this Privacy Policy from time to time. We will notify you of signi
 9- Contact Us
 
 If you have questions about this Privacy Policy, please contact us at:
-[spotapaw_dev@gmail.com](mailto:spotapaw_dev@gmail.com)
+[spotapaw@gmail.com](mailto:spotapaw@gmail.com)

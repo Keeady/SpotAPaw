@@ -190,7 +190,7 @@ export default function TermsScreen() {
           
           <Text variant="bodyMedium" style={styles.sectionText}>
             If you have questions about these Terms, please contact us at:{'\n'}
-            📧 spotapaw_dev@gmail.com
+            📧 spotapaw@gmail.com
           </Text>
         </Card.Content>
       </Card>
