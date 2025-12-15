@@ -1,9 +1,11 @@
 import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-client";
+import { log } from "../logs";
 type ContextProps = {
   user: null | User;
   session: Session | null;
+  loading: boolean;
 };
 
 const AuthContext = createContext<Partial<ContextProps>>({});
@@ -13,17 +15,20 @@ interface Props {
 }
 
 const AuthProvider = (props: Props) => {
-  // user null = loading
   const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setLoading(false);
     }).catch((e) => {
-      console.log("AuthProvider error", e)
+      log(`AuthProvider ${e}`);
+      setLoading(false);
     });
     const {data: listener} = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      setLoading(false);
     });
 
     return () => listener.subscription.unsubscribe()
@@ -34,6 +39,7 @@ const AuthProvider = (props: Props) => {
       value={{
         user: session?.user,
         session,
+        loading
       }}
     >
       {props.children}

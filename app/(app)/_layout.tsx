@@ -4,8 +4,9 @@ import React, { useContext } from "react";
 import { Icon } from "react-native-paper";
 
 export default function AppLayout() {
-  const auth = useContext(AuthContext);
-  const user = auth.user;
+  const {user, loading} = useContext(AuthContext);
+
+  if (loading) return null;
 
   if (!user) {
     return <Redirect href={"/(auth)/signin"} />;

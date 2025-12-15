@@ -1,19 +1,25 @@
+import { log } from "@/components/logs";
+import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
+import { isValidUuid } from "@/components/util";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput } from "react-native-paper";
 
 export default function SightingContact() {
   const router = useRouter();
+  const { user } = useContext(AuthContext);
 
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { sightingId } = useLocalSearchParams<{ sightingId: string }>();
   const [disableBtn, setDisabledBtn] = useState(true);
+
+  const sightingsRoute = user ? "my-sightings" : "sightings";
 
   useEffect(() => {
     if (name && phone) {
@@ -22,7 +28,7 @@ export default function SightingContact() {
   }, [name, phone]);
 
   async function saveSightingContact() {
-    if (extra_info.trim()) {
+    if (extra_info.trim() || !isValidUuid(sightingId)) {
       return;
     }
 
@@ -31,11 +37,12 @@ export default function SightingContact() {
       {
         name,
         phone,
-        sighting_id: id,
+        sighting_id: sightingId,
       },
     ]);
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error saving sighting contact info. Please try again.",
         type: "warning",
@@ -52,7 +59,8 @@ export default function SightingContact() {
     }
 
     setLoading(false);
-    router.navigate("/sightings");
+
+    router.dismissTo(`/${sightingsRoute}`);
   }
   return (
     <View style={styles.container}>
@@ -84,12 +92,6 @@ export default function SightingContact() {
         />
       </View>
 
-      <TextInput
-        style={{ height: 0, opacity: 0 }}
-        value={extra_info}
-        onChangeText={setExtraInfo}
-      />
-
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
@@ -109,6 +111,12 @@ export default function SightingContact() {
           Register
         </Button>
       </View>
+
+      <TextInput
+        style={{ height: 0, opacity: 0 }}
+        value={extra_info}
+        onChangeText={setExtraInfo}
+      />
     </View>
   );
 }
@@ -135,7 +143,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: "100%",
-    //height: 100,
     marginBottom: 40,
     marginTop: 40,
     resizeMode: "contain",

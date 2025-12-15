@@ -4,18 +4,10 @@ import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import { FAB } from "react-native-paper";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function SightingAnonList() {
   const router = useRouter();
-  const { height } = useWindowDimensions();
 
   const rendererItem = useCallback(
     ({ item }: { item: PetSighting }) => (
@@ -53,16 +45,9 @@ export default function SightingAnonList() {
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}
         />
-        <FAB
-          icon="paw"
-          label="Report"
-          mode="elevated"
-          onPress={() => router.push(`/sightings/new`)}
-          style={{ position: "absolute", bottom: 100, right: 50 }}
-        />
       </View>
     ),
-    [router, height]
+    [rendererItem]
   );
 
   return <SightingPage renderer={renderer} />;
@@ -82,13 +67,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 5,
     backgroundColor: "#fff",
     minHeight: "100%",
   },
   logo: {
     width: "100%",
-    //height: 100,
     marginBottom: 40,
     marginTop: 40,
     resizeMode: "contain",

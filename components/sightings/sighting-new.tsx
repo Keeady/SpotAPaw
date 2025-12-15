@@ -4,15 +4,24 @@ import { PetSighting } from "@/model/sighting";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, RadioButton, Text, TextInput } from "react-native-paper";
+import {
+  Button,
+  RadioButton,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
 import { pickImage } from "../image-picker";
 import useUploadPetImageUrl from "../image-upload";
 import { isValidUuid } from "../util";
+import { log } from "../logs";
+import DatePicker from "../date-picker";
 
 export default function CreateNewSighting() {
+  const theme = useTheme();
   const { id, petId } = useLocalSearchParams<{ id: string; petId: string }>();
 
   const [loading, setLoading] = useState(false);
@@ -28,6 +37,8 @@ export default function CreateNewSighting() {
   const [note, setNote] = useState("");
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
+  const [lastSeenTime, setLastSeenTime] = useState("");
+
   const { user } = useContext(AuthContext);
 
   const router = useRouter();
@@ -57,15 +68,15 @@ export default function CreateNewSighting() {
           setFeatures(data.features);
           setNote(data.note);
           setLinkedSightingId(data.linked_sighting_id);
+          setPhoto(data.photo);
         });
     }
 
     setLoading(false);
   }, [id]);
 
-  const contactRoute = user ? "my-sightings" : "sightings";
-
   async function saveSighting(photo: string) {
+    const sightingId = isValidUuid(id) ? id : null;
     const payload = {
       colors,
       breed,
@@ -77,22 +88,23 @@ export default function CreateNewSighting() {
       last_seen_location: location,
       last_seen_long: coords?.longitude,
       last_seen_lat: coords?.latitude,
-      last_seen_time: new Date().toISOString(),
-      linked_sighting_id: linked_sighting_id ?? id,
+      last_seen_time: lastSeenTime,
+      linked_sighting_id: linked_sighting_id ?? sightingId,
     } as PetSighting;
 
-    if (petId && petId !== "null") {
+    if (petId && isValidUuid(petId)) {
       payload.pet_id = petId;
     }
 
     setLoading(true);
-    const { error } = await supabase
+    const { error, data } = await supabase
       .from("sightings")
       .insert([payload])
       .select("id");
 
     setLoading(false);
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error saving sighting info. Please try again.",
         type: "warning",
@@ -100,13 +112,18 @@ export default function CreateNewSighting() {
       });
       return;
     } else {
+      const sightingId = id ?? data[0]["id"];
       showMessage({
         message: "Successfully added pet sighting.",
         type: "success",
         icon: "success",
       });
 
-      router.dismissTo(`/${contactRoute}/contact`);
+      if (user) {
+        router.navigate(`/owner?sightingId=${sightingId}`);
+      } else {
+        router.navigate(`/sightings/contact/?sightingId=${sightingId}`);
+      }
     }
   }
 
@@ -129,129 +146,169 @@ export default function CreateNewSighting() {
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ flexGrow: 1 }}>
-        <View style={styles.title}>
-          <Text variant="titleLarge">Report a Pet Sighting!</Text>
-          <Text variant="titleSmall">
-            Help find and protect our furry friends
+        <View
+          style={[
+            styles.title,
+            styles.header,
+            { backgroundColor: theme.colors.primary },
+          ]}
+        >
+          <Text style={styles.headerTitle}>Lost Pet Report</Text>
+          <Text style={styles.headerSubtitle}>
+            We help bring pets back home
           </Text>
         </View>
-        <Text variant="bodyLarge" style={{ alignSelf: "flex-start" }}>
-          What did the pet look like? Where was it?
-        </Text>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Colors"}
-            placeholder="Color(s)"
-            value={colors}
-            onChangeText={setColors}
-            mode={"outlined"}
-          />
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Breed"}
-            placeholder="Breed (if known)"
-            value={breed}
-            onChangeText={setBreed}
-            mode={"outlined"}
-          />
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Species"}
-            placeholder="Species (Dog/Cat/Hamster)"
-            value={species}
-            onChangeText={setSpecies}
-            mode={"outlined"}
-          />
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="labelLarge">Gender</Text>
-          <RadioButton.Group onValueChange={setGender} value={gender}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
+        <View style={styles.content}>
+          <Text
+            variant="bodyLarge"
+            style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+          >
+            What did the pet look like?
+          </Text>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Colors"}
+              placeholder="Color(s)"
+              value={colors}
+              onChangeText={setColors}
+              mode={"outlined"}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Breed"}
+              placeholder="Breed (if known)"
+              value={breed}
+              onChangeText={setBreed}
+              mode={"outlined"}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Species"}
+              placeholder="Species (Dog/Cat/Hamster)"
+              value={species}
+              onChangeText={setSpecies}
+              mode={"outlined"}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text variant="labelLarge">Gender</Text>
+            <RadioButton.Group onValueChange={setGender} value={gender}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                <Text>Female</Text>
+                <RadioButton value="Female" />
+
+                <Text>Male</Text>
+                <RadioButton value="Male" />
+              </View>
+            </RadioButton.Group>
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Features"}
+              placeholder="Features (Collar, Tag, Size)"
+              value={features}
+              onChangeText={setFeatures}
+              mode={"outlined"}
+            />
+          </View>
+
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <TextInput
+              label={"Notes"}
+              value={note}
+              onChangeText={setNote}
+              multiline
+              mode={"outlined"}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
             >
-              <Text>Female</Text>
-              <RadioButton value="Female" />
-
-              <Text>Male</Text>
-              <RadioButton value="Male" />
-            </View>
-          </RadioButton.Group>
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Features"}
-            placeholder="Features (Collar, Tag, Size)"
-            value={features}
-            onChangeText={setFeatures}
-            mode={"outlined"}
-          />
-        </View>
-
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Notes"}
-            value={note}
-            onChangeText={setNote}
-            multiline
-          />
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            label={"Last Seen Location"}
-            placeholder="Enter Street names, Cross Streets, Signs, Markers"
-            value={location}
-            onChangeText={setLocation}
-            mode={"outlined"}
-          />
-          <Button
-            icon={"map-marker-radius-outline"}
-            onPress={() => getCurrentLocationV1(setLocation, setCoords)}
-            mode="elevated"
-            style={styles.button}
-          >
-            <Text>
-              {location ? "Location saved" : "Use My Current Location"}
+              When was the pet last seen?
             </Text>
-          </Button>
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="labelLarge">
-            {photo ? "Change Photo" : "Upload Photo (Optional)"}
-          </Text>
-          <Button
-            icon="camera"
-            mode="outlined"
-            onPress={() => pickImage(setPhoto)}
+            <DatePicker
+              dateLabel="Last Seen Date"
+              timeLabel="Last Seen Time"
+              value={new Date()}
+              onChange={(v) => setLastSeenTime(v.toISOString())}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              Where was the pet last seen?
+            </Text>
+            <TextInput
+              label={"Last Seen Location"}
+              placeholder="Enter Street names, Cross Streets, Signs, Markers"
+              value={location}
+              onChangeText={setLocation}
+              mode={"outlined"}
+            />
+            <Button
+              icon={"map-marker-radius-outline"}
+              onPress={() => getCurrentLocationV1(setLocation, setCoords)}
+              mode="elevated"
+              style={styles.button}
+            >
+              <Text>
+                {location ? "Location saved" : "Use My Current Location"}
+              </Text>
+            </Button>
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20, {marginTop: 16}]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              Add or update Photo:
+            </Text>
+            {photo ? (
+              <Image source={{ uri: photo }} style={styles.preview} />
+            ) : (
+              <View style={styles.emptyPreview}>
+                <Text>Add Photo</Text>
+              </View>
+            )}
+
+            <Button
+              icon="camera"
+              mode="elevated"
+              onPress={() => pickImage(setPhoto)}
+              style={{ marginTop: 10 }}
+            >
+              {photo ? "Change Photo" : "Upload Photo"}
+            </Button>
+          </View>
+
+          <View
+            style={[styles.verticallySpaced, styles.mt20, { marginTop: 20 }]}
           >
-            Choose File
-          </Button>
-          {photo ? (
-            <Image source={{ uri: photo }} style={styles.preview} />
-          ) : (
-            <View style={styles.emptyPreview}>
-              <Text>No Photo</Text>
-            </View>
-          )}
-        </View>
-        <TextInput
-          style={{ height: 0, opacity: 0 }}
-          value={extra_info}
-          onChangeText={setExtraInfo}
-        />
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Button
-            mode="contained"
-            disabled={loading || empty}
-            onPress={() => saveSightingPhoto()}
-          >
-            Save
-          </Button>
+            <Button
+              mode="contained"
+              disabled={loading || empty}
+              onPress={() => saveSightingPhoto()}
+            >
+              Save
+            </Button>
+          </View>
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
         </View>
       </View>
     </ScrollView>
@@ -267,11 +324,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    paddingHorizontal: 24,
     backgroundColor: "#fff",
     minHeight: "100%",
     paddingBottom: 40,
-    alignContent: "center",
   },
   secondary: {
     flex: 1,
@@ -282,7 +337,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 20,
-    alignSelf: "center",
   },
   preview: {
     width: "100%",
@@ -303,5 +357,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#ddd",
     marginTop: 5,
+  },
+  content: {
+    paddingHorizontal: 24,
+    alignItems: "center",
+  },
+  header: {
+    backgroundColor: "#714ea9ff",
+    padding: 16,
+    paddingTop: Platform.OS === "ios" ? 50 : 16,
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: "#BBDEFB",
+    marginTop: 4,
   },
 });

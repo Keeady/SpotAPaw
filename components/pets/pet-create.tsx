@@ -1,8 +1,14 @@
 import { Pet } from "@/model/pet";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { Button, RadioButton, Text, TextInput } from "react-native-paper";
+import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Button,
+  RadioButton,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { ImagePickerHandler } from "../image-picker";
 
 type CreatePetDetailsProps = {
@@ -12,6 +18,8 @@ type CreatePetDetailsProps = {
 export default function CreatePetDetails({
   handleSubmit,
 }: CreatePetDetailsProps) {
+  const theme = useTheme();
+
   const [pet, setPet] = useState<Pet>();
   const handleChange = (fieldName: string, fieldValue: string) => {
     setPet((prev) => ({ ...prev, [fieldName]: fieldValue }));
@@ -24,16 +32,16 @@ export default function CreatePetDetails({
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ flexGrow: 1 }}>
-        <View style={styles.title}>
-          <Text variant="titleLarge">Create a Pet Profile!</Text>
-          <Text variant="titleSmall">
+        <View
+          style={[styles.header, { backgroundColor: theme.colors.primary }]}
+        >
+          <Text style={styles.headerTitle}>Create a Pet Profile!</Text>
+          <Text style={styles.headerSubtitle}>
             Help find and protect your furry friends
           </Text>
         </View>
-        <Text variant="bodyLarge" style={{ alignSelf: "flex-start" }}>
-          Create a Pet Profile
-        </Text>
-        <View>
+
+        <View style={styles.content}>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
               label={"Pet Name"}
@@ -102,24 +110,41 @@ export default function CreatePetDetails({
               multiline
             />
           </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text variant="labelLarge">
-              {pet?.photo ? "Change Photo" : "Upload Photo (Optional)"}
-            </Text>
-            <Button
-              icon="camera"
-              mode="outlined"
-              onPress={() => ImagePickerHandler(handleChange)}
-            >
-              Choose File
-            </Button>
+          <View
+            style={[styles.verticallySpaced, styles.mt20, { marginBottom: 20 }]}
+          >
             {pet?.photo ? (
               <Image source={{ uri: pet?.photo }} style={styles.preview} />
             ) : (
               <View style={styles.emptyPreview}>
-                <Text>No Photo</Text>
+                <Text>Add Photo</Text>
               </View>
             )}
+
+            <Button
+              icon="camera"
+              mode="elevated"
+              onPress={() => ImagePickerHandler(handleChange)}
+              style={{ marginTop: 10 }}
+            >
+              {pet?.photo ? "Change Photo" : "Upload Photo"}
+            </Button>
+          </View>
+          <View
+            style={[styles.verticallySpaced, styles.mt20, { marginTop: 20 }]}
+          >
+            <Button
+              mode="contained"
+              onPress={() => {
+                if (extra_info) {
+                  return router.dismissTo("/");
+                }
+
+                handleSubmit(pet);
+              }}
+            >
+              Save Pet
+            </Button>
           </View>
 
           <TextInput
@@ -127,18 +152,6 @@ export default function CreatePetDetails({
             value={extra_info}
             onChangeText={setExtraInfo}
           />
-          <Button
-            mode="contained"
-            onPress={() => {
-              if (extra_info) {
-                return router.dismissTo("/");
-              }
-
-              handleSubmit(pet);
-            }}
-          >
-            Save Pet
-          </Button>
         </View>
       </View>
     </ScrollView>
@@ -154,11 +167,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    paddingHorizontal: 24,
     backgroundColor: "#fff",
     minHeight: "100%",
     paddingBottom: 40,
-    alignContent: "center",
   },
   secondary: {
     flex: 1,
@@ -190,5 +201,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#ddd",
     marginTop: 5,
+  },
+  content: {
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+  header: {
+    backgroundColor: "#714ea9ff",
+    paddingVertical: 16,
+    paddingTop: Platform.OS === "ios" ? 50 : 16,
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: "#BBDEFB",
+    marginTop: 4,
   },
 });

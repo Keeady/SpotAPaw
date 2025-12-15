@@ -17,7 +17,6 @@ Our mission is to create a network of caring pet lovers who can help locate miss
 - **Report Pet Sightings**: Share photos and locations of pets you've spotted
 - **Create Pet Profiles**: Register your own pets with detailed information
 - **Search for Lost Pets**: Browse recent sightings in your area
-- **AI-Powered Chat**: Chat with our AI bot to quickly report a pet sighting
 
 ## Getting Started
 
@@ -28,9 +27,17 @@ Our mission is to create a network of caring pet lovers who can help locate miss
 
 ## Contact Us
 
+### General Inquiry
+
 Have questions or feedback? We'd love to hear from you!
 
-📧 **Email**: [spotapaw_dev@gmail.com](mailto:spotapaw_dev@gmail.com)
+📧 **Email**: [spotapaw@gmail.com](mailto:spotapaw@gmail.com)
+
+### Data or Account Deletion
+
+To request deletion of your data or account, send an email from the address associated with your account to [spotapaw@gmail.com](mailto:spotapaw@gmail.com) with the subject **DATA DELETION REQUEST**.
+
+Requests are processed within 7 days.
 
 ---
 

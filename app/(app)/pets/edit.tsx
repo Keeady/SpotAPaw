@@ -7,13 +7,18 @@ import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { isValidUuid } from "@/components/util";
+import { log } from "@/components/logs";
 
 export default function EditPet() {
-  const { id, is_lost } = useLocalSearchParams();
+  const { id, is_lost } = useLocalSearchParams<{
+    id: string;
+    is_lost: string;
+  }>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
+  const isLost = Boolean(is_lost);
 
   useEffect(() => {
     if (!id || !isValidUuid(id)) {
@@ -26,7 +31,9 @@ export default function EditPet() {
       .eq("id", id)
       .single()
       .then(({ data, error }) => {
-        console.log("error", error);
+        if (error) {
+          log(error?.message || "");
+        }
         setProfileInfo(data);
       });
   }, [id]);
@@ -49,16 +56,13 @@ export default function EditPet() {
         photo: photoUrl,
         note: profileInfo.note,
         owner_id: user?.id,
-        is_lost: !!is_lost,
-        last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
-        last_seen_location: profileInfo.last_seen_location,
-        last_seen_lat: profileInfo?.last_seen_lat,
-        last_seen_long: profileInfo.last_seen_long,
+        is_lost: isLost,
       })
       .eq("id", id)
       .select();
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -70,10 +74,10 @@ export default function EditPet() {
         type: "success",
         icon: "success",
       });
-      if (is_lost) {
-        handleLostPet(photoUrl)
+      if (isLost) {
+        handleLostPet(photoUrl);
       } else {
-        router.dismissTo(`/(app)/pets`);
+        router.replace(`/(app)/pets`);
       }
     }
   };
@@ -90,12 +94,11 @@ export default function EditPet() {
   }
 
   const handleLostPet = async (photoUrl: string) => {
-    if (!profileInfo || !user) {
+    if (!profileInfo || !user || !isValidUuid(id)) {
       return;
     }
 
-
-    const { error } = await supabase
+    const { error, data } = await supabase
       .from("sightings")
       .insert({
         name: profileInfo.name,
@@ -116,7 +119,7 @@ export default function EditPet() {
       .select();
 
     if (error) {
-      console.log("error", error);
+      log(error.message);
 
       showMessage({
         message: "Error updating pet sighting.",
@@ -129,18 +132,14 @@ export default function EditPet() {
         type: "success",
         icon: "success",
       });
-      if (is_lost) {
-        router.dismissTo(`/(app)/pets`);
+      if (isLost) {
+        const sightingId = data && data[0]["id"];
+        router.navigate(`/owner?sightingId=${sightingId}`);
       } else {
-        router.dismissTo(`/(app)/pets`);
+        router.replace(`/(app)/pets`);
       }
     }
   };
 
-  return EditPetDetails(
-    savePetInfo,
-    setProfileInfo,
-    profileInfo,
-    !!is_lost
-  );
+  return EditPetDetails(savePetInfo, setProfileInfo, profileInfo, !!isLost);
 }

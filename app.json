@@ -16,7 +16,14 @@
       }
     },
     "android": {
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "CAMERA_ROLL",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -44,6 +51,13 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow SpotAPaw to use your location."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow SpotAPaw to access your photos to upload pet images.",
+          "cameraPermission": "Allow SpotAPaw to use your camera to take pet photos."
         }
       ]
     ],

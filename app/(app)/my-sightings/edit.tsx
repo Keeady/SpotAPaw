@@ -7,6 +7,8 @@ import { showMessage } from "react-native-flash-message";
 import EditPetSightingDetails from "@/components/sightings/sighting-edit";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { PetSighting } from "@/model/sighting";
+import { isValidUuid } from "@/components/util";
+import { log } from "@/components/logs";
 
 export default function EditPetSighting() {
   const { sightingId, petId } = useLocalSearchParams<{
@@ -59,6 +61,10 @@ export default function EditPetSighting() {
       return;
     }
 
+    if (!isValidUuid(petId) || !isValidUuid(sightingId)) {
+      return;
+    }
+
     const { error } = await supabase
       .from("sightings")
       .update({
@@ -82,6 +88,7 @@ export default function EditPetSighting() {
       .select();
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error updating pet sighting.",
         type: "warning",
@@ -93,7 +100,7 @@ export default function EditPetSighting() {
         type: "success",
         icon: "success",
       });
-      router.dismissTo(`/my-sightings`);
+      router.replace(`/my-sightings`);
     }
   };
 

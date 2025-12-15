@@ -2,8 +2,8 @@ import { useCallback } from "react";
 import { Alert } from "react-native";
 import { supabase } from "../supabase-client";
 import { showMessage } from "react-native-flash-message";
-import { isValidUuid } from "../util";
-import { router } from "expo-router";
+import { handleSignOut, isValidUuid } from "../util";
+import { log } from "../logs";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -14,7 +14,6 @@ export const useConfirmDelete = () =>
         [
           {
             text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
             style: "cancel",
           },
           {
@@ -41,10 +40,11 @@ const onDeleteAccount = async (userId: string) => {
 
   const { error } = await supabase
     .from("owner")
-    .update({ deleted_at: new Date() })
+    .update({ marked_for_deletion: true })
     .eq("owner_id", userId);
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error deleting account.",
       type: "warning",
@@ -57,6 +57,6 @@ const onDeleteAccount = async (userId: string) => {
       icon: "success",
     });
 
-    router.navigate(`/`);
+    handleSignOut();
   }
 };

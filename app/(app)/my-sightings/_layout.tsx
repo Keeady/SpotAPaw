@@ -1,20 +1,10 @@
-import { supabase } from "@/components/supabase-client";
-import { Stack, useRouter } from "expo-router";
+import { handleSignOut } from "@/components/util";
+import { Stack } from "expo-router";
 import React from "react";
-import { Alert, Image, StyleSheet } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 
 export default function SightingsLayout() {
-  const router = useRouter();
-
-  async function handleSignOut() {
-    let { error } = await supabase.auth.signOut();
-    if (error) Alert.alert(error.message);
-    else {
-      router.navigate("/");
-    }
-  }
-
   return (
     <Stack
       screenOptions={{

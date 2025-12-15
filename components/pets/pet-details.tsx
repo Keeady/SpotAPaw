@@ -8,6 +8,7 @@ type RenderPetDetailsProps = {
   onEditPet: () => void;
   onPetLost: () => void;
   onPetFound: () => void;
+  viewPetSightings: () => void;
 };
 
 export default function RenderPetDetails({
@@ -16,6 +17,7 @@ export default function RenderPetDetails({
   onEditPet,
   onPetFound,
   onPetLost,
+  viewPetSightings,
 }: RenderPetDetailsProps) {
   if (!pet) {
     return <Text>No pet details found</Text>;
@@ -28,6 +30,7 @@ export default function RenderPetDetails({
       onPetFound={onPetFound}
       onPetLost={onPetLost}
       onDeletePet={onDeletePet}
+      viewPetSightings={viewPetSightings}
     />
   );
 }

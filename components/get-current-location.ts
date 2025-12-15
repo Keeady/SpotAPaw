@@ -1,4 +1,6 @@
 import * as Location from "expo-location";
+import { Alert, Linking } from "react-native";
+import { log } from "./logs";
 
 export type SightingLocation = {
   lat: number;
@@ -8,16 +10,28 @@ export type SightingLocation = {
 export async function getCurrentLocationV2(
   handleChange: (fieldName: string, fieldValue: string | number) => void
 ) {
-  const granted = await getUserLocationPermission();
+  try {
+    const granted = await getUserLocationPermission();
 
-  if (granted) {
-    const location = await getUserLocationFast();
-    if (location) {
-      const address = await Location.reverseGeocodeAsync(location.coords);
-      handleChange("last_seen_location", address?.[0].formattedAddress || "");
-      handleChange("last_seen_long", location.coords.longitude);
-      handleChange("last_seen_lat", location.coords.latitude);
+    if (granted) {
+      const location = await getUserLocationFast();
+      if (location) {
+        const address = await Location.reverseGeocodeAsync(location.coords);
+        handleChange("last_seen_location", address?.[0].formattedAddress || "");
+        handleChange("last_seen_long", location.coords.longitude);
+        handleChange("last_seen_lat", location.coords.latitude);
+      }
     }
+  } catch (e) {
+    log(`getCurrentLocationV2: ${e}`);
+    Alert.alert(
+      "Location Permission Required",
+      "Please enable location or type the address instead.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Open Settings", onPress: () => Linking.openSettings() },
+      ]
+    );
   }
 }
 
@@ -25,15 +39,27 @@ export async function getCurrentLocationV1(
   setLocation: (a: string) => void,
   setCoords: (c: Location.LocationObjectCoords) => void
 ) {
-  const granted = await getUserLocationPermission();
+  try {
+    const granted = await getUserLocationPermission();
 
-  if (granted) {
-    const location = await getUserLocationFast();
-    if (location) {
-      const address = await Location.reverseGeocodeAsync(location.coords);
-      setLocation(address?.[0].formattedAddress || "");
-      setCoords(location.coords);
+    if (granted) {
+      const location = await getUserLocationFast();
+      if (location) {
+        const address = await Location.reverseGeocodeAsync(location.coords);
+        setLocation(address?.[0].formattedAddress || "");
+        setCoords(location.coords);
+      }
     }
+  } catch (e) {
+    log(`getCurrentLocationV1: ${e}`);
+    Alert.alert(
+      "Location Permission Required",
+      "Please enable location or type the address instead.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Open Settings", onPress: () => Linking.openSettings() },
+      ]
+    );
   }
 }
 
@@ -53,6 +79,7 @@ export async function getCurrentUserLocationV3(): Promise<
 async function requestGrantOfUserLocation(): Promise<boolean> {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
+    log(`requestGrantOfUserLocation: Location permission not granted`);
     throw new Error("Location permission not granted");
   }
 
@@ -70,11 +97,13 @@ const getUserLocationPermission = async () => {
     }
 
     if (existingStatus === "denied" && !canAskAgain) {
+      log("getUserLocationPermission: Cannot Ask Location permission again");
       throw new Error("Cannot Ask Location permission again");
     }
 
     return requestGrantOfUserLocation();
-  } catch {
+  } catch (e) {
+    log(`getUserLocationPermission: ${e}`);
     throw new Error("Existing Location permission not available");
   }
 };
@@ -82,21 +111,30 @@ const getUserLocationPermission = async () => {
 const getUserLocationFast = async (): Promise<Location.LocationObject> => {
   try {
     // Race between current and last known
-    const location = await Promise.race([
+    const location = await Promise.any([
       Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       }),
       Location.getLastKnownPositionAsync({
         maxAge: 300000,
         requiredAccuracy: 100,
-      }).then((loc) => {
-        if (!loc) throw new Error("No cached location");
-        return loc;
-      }),
+      })
+        .then((loc) => {
+          if (!loc) {
+            log(`getUserLocationFast: No cached location`);
+            throw new Error("No cached location");
+          }
+          return loc;
+        })
+        .catch((e) => {
+          log(`getUserLocationFast: ${e}`);
+          throw new Error("Error getting location");
+        }),
     ]);
 
     return location;
   } catch (error) {
+    log(`getUserLocationFast: ${error}`);
     throw new Error("Unable to get user location");
   }
 };

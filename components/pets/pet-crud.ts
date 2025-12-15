@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
 import { Pet } from "@/model/pet";
+import { log } from "../logs";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -14,12 +15,34 @@ export const useConfirmDelete = () =>
         [
           {
             text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
             style: "cancel",
           },
           {
             text: "Yes, please delete",
             onPress: () => onDeletePet(petId, userId),
+          },
+        ],
+        {
+          userInterfaceStyle: "dark",
+        }
+      ),
+    []
+  );
+
+export const useConfirmPetFound = () =>
+  useCallback(
+    (petName: string, petId: string) =>
+      Alert.alert(
+        `Confirm Pet Found: ${petName}!`,
+        `Marking this pet as found will deactivate all public sightings immediately.\n\nThese sightings will be permanently deleted after 7 days.`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Confirm",
+            onPress: () => onPetFound(petId),
           },
         ],
         {
@@ -38,6 +61,7 @@ export async function onDeletePet(id: string, userId: string) {
     .select();
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error deleting pet profile.",
       type: "warning",
@@ -49,7 +73,7 @@ export async function onDeletePet(id: string, userId: string) {
       type: "success",
       icon: "success",
     });
-    router.dismissTo(`/(app)/pets`);
+    router.replace(`/(app)/pets`);
   }
 }
 
@@ -61,19 +85,16 @@ export function onPetLost(id: string) {
   router.navigate(`/(app)/pets/edit?id=${id}&is_lost=true`);
 }
 
-export async function onPetFound(id: string) {
+async function onPetFound(id: string) {
   const { error } = await supabase
     .from("pets")
     .update({
       is_lost: false,
-      last_seen_time: null,
-      last_seen_long: null,
-      last_seen_lat: null,
-      last_seen_location: null,
     })
     .eq("id", id);
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error updating pet profile.",
       type: "warning",
@@ -89,6 +110,7 @@ export async function onPetFound(id: string) {
       .eq("pet_id", id);
 
     if (error) {
+      log(error.message);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -103,7 +125,11 @@ export async function onPetFound(id: string) {
       });
     }
   }
-  router.navigate(`/(app)/pets/${id}`);
+  router.replace(`/(app)/pets/${id}`);
+}
+
+export async function viewPetSightings(id: string) {
+  router.navigate(`/(app)/my-sightings`);
 }
 
 export async function createNewPet(profileInfo: Pet, userId: string) {
@@ -129,6 +155,7 @@ export async function createNewPet(profileInfo: Pet, userId: string) {
     .select();
 
   if (error) {
+    log(error.message);
     showMessage({
       message: "Error creating pet profile. Please try again.",
       type: "warning",
@@ -136,6 +163,6 @@ export async function createNewPet(profileInfo: Pet, userId: string) {
     });
     return;
   } else {
-    router.dismissTo(`/(app)/pets`);
+    router.replace(`/(app)/pets`);
   }
 }

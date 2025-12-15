@@ -1,6 +1,8 @@
+import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import ClaimSighting from "@/components/sightings/sighting-claim";
 import { supabase } from "@/components/supabase-client";
+import { isValidUuid } from "@/components/util";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -39,12 +41,15 @@ export default function ClaimLostPet() {
       .single()
       .then(({ data, error }) => {
         setSighting(data);
-        setLoadingSighting(false)
+        setLoadingSighting(false);
       });
   }, [petId, sightingId]);
 
   const onConfirm = useCallback(
     async (selectedPetId: string) => {
+      if (!isValidUuid(selectedPetId) || !isValidUuid(sightingId)) {
+        return;
+      }
       const { error } = await supabase
         .from("pet_claims")
         .insert([
@@ -57,6 +62,7 @@ export default function ClaimLostPet() {
         .select();
 
       if (error) {
+        log(error.message);
         showMessage({
           message: "Error updating pet sighting.",
           type: "warning",
@@ -78,5 +84,7 @@ export default function ClaimLostPet() {
   if (loadingPet || loadingSighting || !sighting) {
     return null;
   }
-  return <ClaimSighting sighting={sighting} pets={pets} onConfirm={onConfirm} />;
+  return (
+    <ClaimSighting sighting={sighting} pets={pets} onConfirm={onConfirm} />
+  );
 }

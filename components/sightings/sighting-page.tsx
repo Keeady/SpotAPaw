@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Portal } from "react-native-paper";
 import {
   getCurrentUserLocationV3,
   SightingLocation,
@@ -16,6 +16,9 @@ import {
   SIGHTING_RADIUSKM,
 } from "../constants";
 import { EmptySighting } from "@/components/sightings/empty-sighting";
+import ReportLostPetFab from "./report-fab";
+import { useRouter } from "expo-router";
+import { log } from "../logs";
 
 type SightingPageProps = {
   renderer: (
@@ -26,6 +29,7 @@ type SightingPageProps = {
 };
 
 export default function SightingPage({ renderer }: SightingPageProps) {
+  const router = useRouter();
   const [sightings, setSightings] = useState<PetSighting[]>([]);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState<SightingLocation>();
@@ -44,7 +48,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
           setLocation(location);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        log(`getCurrentUserLocationV3 ${err}`);
         setError("Location access is needed to show nearby sightings.");
         setLoading(false);
       });
@@ -61,6 +66,26 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     }
   }, [location, user, pagination]);
 
+  const onEndReached = useCallback(() => {
+    setPagination((prev) => ({
+      start: prev.end,
+      end: prev.end + SIGHTING_OFFSET,
+    }));
+  }, []);
+
+  const onFetchComplete = useCallback(
+    (newSightings: PetSighting[], error: string | null) => {
+      if (error) {
+        log(error);
+        setError(error);
+      } else if (newSightings.length > 0) {
+        processSightings(sightings, newSightings, setSightings);
+      }
+      setLoading(false);
+    },
+    [sightings]
+  );
+
   const reLoadSightings = useCallback(
     (
       location: SightingLocation | undefined,
@@ -74,26 +99,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         fetchSightings(location, pagination, onFetchComplete);
       }
     },
-    [user]
-  );
-
-  const onEndReached = useCallback(() => {
-    setPagination((prev) => ({
-      start: prev.end,
-      end: prev.end + SIGHTING_OFFSET,
-    }));
-  }, []);
-
-  const onFetchComplete = useCallback(
-    (newSightings: PetSighting[], error: string | null) => {
-      if (error) {
-        setError(error);
-      } else if (newSightings.length > 0) {
-        processSightings(sightings, newSightings, setSightings);
-      }
-      setLoading(false);
-    },
-    [sightings]
+    [user, onFetchComplete]
   );
 
   const onLocationRequestDenied = useCallback(() => {
@@ -131,25 +137,38 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     location,
   ]);
 
+  const sightingsRoute = user ? "my-sightings" : "sightings";
+
   return (
-    <View style={{ flex: 1, padding: 5 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <Button mode="text" disabled={true}>
-          {loading ? "Loading Nearby Sightings..." : "Showing Nearby Sightings"}
-        </Button>
-        {loading ? <ActivityIndicator size="small" /> : ""}
-      </View>
+    <Portal.Host>
       <View style={{ flex: 1 }}>
-        {loading ? null : renderer(sightings, onEndReached, ListEmptyComponent)}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Button mode="text" disabled={true}>
+            {loading
+              ? "Loading Nearby Sightings..."
+              : "Showing Nearby Sightings"}
+          </Button>
+          {loading ? <ActivityIndicator size="small" /> : ""}
+        </View>
+        <View style={{ flex: 1 }}>
+          {loading
+            ? null
+            : renderer(sightings, onEndReached, ListEmptyComponent)}
+        </View>
+
+        <ReportLostPetFab
+          onChatbotPress={() => router.navigate(`/${sightingsRoute}/chat-bot`)}
+          onFormPress={() => router.navigate(`/${sightingsRoute}/new`)}
+        />
       </View>
-    </View>
+    </Portal.Host>
   );
 }
 
@@ -206,6 +225,7 @@ const fetchSightingsWithLocation = async (
     .range(pagination.start, pagination.end);
 
   if (error) {
+    log(error.message);
     onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
     onFetchComplete(data || [], null);
@@ -241,6 +261,7 @@ const fetchSightingsByUserWithLocation = async (
     .range(pagination.start, pagination.end);
 
   if (error) {
+    log(error.message);
     onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
     onFetchComplete(data || [], null);

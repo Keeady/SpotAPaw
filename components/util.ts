@@ -1,3 +1,62 @@
-export const isValidUuid = (id: string) => {
-    return id && id != undefined && id != "undefined" && id != null && id != "null" && id != "";
+import { Alert } from "react-native";
+import { supabase } from "./supabase-client";
+import { router } from "expo-router";
+import { PetReportData } from "./sightings/sighting-interface";
+import * as Location from "expo-location";
+import { log } from "./logs";
+
+export const isValidUuid = (id: string | null) => {
+  return (
+    id &&
+    id !== undefined &&
+    id !== "undefined" &&
+    id !== null &&
+    id !== "null" &&
+    id !== ""
+  );
+};
+
+export async function handleSignOut() {
+  let { error } = await supabase.auth.signOut();
+  if (error) {
+    log(error.message);
+    Alert.alert(error.message);
+  } else {
+    router.navigate("/");
+  }
+}
+
+export async function getLastSeenLocation(report: PetReportData) {
+  if (
+    !report.lastSeenLocation &&
+    report.lastSeenLocationLat &&
+    report.lastSeenLocationLng
+  ) {
+    try {
+      const address = await Location.reverseGeocodeAsync({
+        longitude: report.lastSeenLocationLng,
+        latitude: report.lastSeenLocationLat,
+      });
+      return address?.[0].formattedAddress || "";
+    } catch {
+      return `${report.lastSeenLocationLat.toFixed(
+        6
+      )},${report.lastSeenLocationLng.toFixed(6)}`;
+    }
+  }
+
+  return report.lastSeenLocation;
+}
+
+export function getIconByAnimalSpecies(species: string) {
+  switch(species.toLowerCase()) {
+    case "dog":
+      return "dog";
+    case "cat":
+      return "cat";
+    case "rabbit":
+      return "rabbit";
+    default:
+      return "paw";
+  }
 }
