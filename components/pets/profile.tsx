@@ -22,6 +22,7 @@ type PetProfileCardProps = {
   onEditPet: () => void;
   onPetLost: () => void;
   onPetFound: () => void;
+  viewPetSightings: () => void;
 };
 
 const PetProfileCard: React.FC<PetProfileCardProps> = ({
@@ -30,6 +31,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   onPetFound,
   onPetLost,
   onDeletePet,
+  viewPetSightings,
 }) => {
   const {
     name,
@@ -58,89 +60,109 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
 
   return (
     <ScrollView>
-    <Card style={styles.card}>
-      {photo ? (
-        <Image source={{ uri: photo }} style={styles.image} />
-      ) : (
-        <View style={[styles.image, styles.placeholder]}>
-          <Text style={styles.placeholderText}>No Photo</Text>
-        </View>
-      )}
+      <Card style={styles.card}>
+        {photo ? (
+          <Image source={{ uri: photo }} style={styles.image} />
+        ) : (
+          <View style={[styles.image, styles.placeholder]}>
+            <Text style={styles.placeholderText}>No Photo</Text>
+          </View>
+        )}
 
-      <Card.Content>
-        <View style={styles.header}>
-          <Text style={styles.name}>{name || "Unknown"}</Text>
-          {status && (
-            <Chip
-              style={{
-                backgroundColor: getStatusColor().bg,
-              }}
-              textStyle={{ color: getStatusColor().text, fontWeight: "bold" }}
-            >
-              {status.toUpperCase()}
-            </Chip>
+        <Card.Content>
+          <View style={styles.header}>
+            <Text style={styles.name}>{name || "Unknown"}</Text>
+            {status && (
+              <Chip
+                style={{
+                  backgroundColor: getStatusColor().bg,
+                }}
+                textStyle={{ color: getStatusColor().text, fontWeight: "bold" }}
+              >
+                {status.toUpperCase()}
+              </Chip>
+            )}
+          </View>
+
+          {gender && <Text style={styles.detail}>🐾 Gender: {gender}</Text>}
+          {breed && <Text style={styles.detail}>🐾 Breed: {breed}</Text>}
+          {species && <Text style={styles.detail}>🐾 Species: {species}</Text>}
+          {age !== undefined && (
+            <Text style={styles.detail}>🎂 Age: {age}</Text>
           )}
-        </View>
-
-        {gender && <Text style={styles.detail}>🐾 Gender: {gender}</Text>}
-        {breed && <Text style={styles.detail}>🐾 Breed: {breed}</Text>}
-        {species && <Text style={styles.detail}>🐾 Species: {species}</Text>}
-        {age !== undefined && <Text style={styles.detail}>🎂 Age: {age}</Text>}
-        {colors && <Text style={styles.detail}>🎨 Color: {colors}</Text>}
-        {features && <Text style={styles.detail}>⭐ Features: {features}</Text>}
-        {note && <Text style={styles.detail}>📝 Notes: {note}</Text>}
-      </Card.Content>
-      <Card.Actions>
-        <View style={styles.buttonContainer}>
-          <Button
-            icon={"paw"}
-            theme={{ colors: { primary: "blue" } }}
-            mode={"text"}
-            style={{ backgroundColor: "transparent", marginTop: 15 }}
-            onPress={onEditPet}
-            compact={true}
-          >
-            Edit
-          </Button>
-
-          <Button
-            icon={"paw"}
-            theme={{ colors: { primary: "red" } }}
-            mode={"text"}
-            style={{ backgroundColor: "transparent", marginTop: 15 }}
-            onPress={onDeletePet}
-            compact={true}
-          >
-            Delete
-          </Button>
-
-          {status === "lost" && (
-            <Button
-              icon={"paw"}
-              theme={{ colors: { primary: "green" } }}
-              mode={"text"}
-              style={{ backgroundColor: "transparent", marginTop: 15 }}
-              onPress={onPetFound}
-              compact={true}
-            >
-              Report Pet Found
-            </Button>
+          {colors && <Text style={styles.detail}>🎨 Color: {colors}</Text>}
+          {features && (
+            <Text style={styles.detail}>⭐ Features: {features}</Text>
           )}
-          {status === "safe" && (
-            <Button
-              icon={"paw"}
-              theme={{ colors: { primary: "purple" } }}
-              mode={"text"}
-              style={{ backgroundColor: "transparent", marginTop: 15 }}
-              onPress={onPetLost}
-              compact={true}
-            >
-              Report Lost Pet
-            </Button>
-          )}
-        </View>
-      </Card.Actions>
-    </Card>
+          {note && <Text style={styles.detail}>📝 Notes: {note}</Text>}
+        </Card.Content>
+        <Card.Actions>
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            <View style={styles.buttonContainer}>
+              <Button
+                icon={"paw"}
+                theme={{ colors: { primary: "blue" } }}
+                mode={"text"}
+                style={{ backgroundColor: "transparent", marginTop: 15 }}
+                onPress={onEditPet}
+                compact={true}
+              >
+                Edit
+              </Button>
+
+              <Button
+                icon={"paw"}
+                theme={{ colors: { primary: "red" } }}
+                mode={"text"}
+                style={{ backgroundColor: "transparent", marginTop: 15 }}
+                onPress={onDeletePet}
+                compact={true}
+              >
+                Delete
+              </Button>
+
+              {status === "lost" && (
+                <Button
+                  icon={"paw"}
+                  theme={{ colors: { primary: "green" } }}
+                  mode={"text"}
+                  style={{ backgroundColor: "transparent", marginTop: 15 }}
+                  onPress={onPetFound}
+                  compact={true}
+                >
+                  Report Pet Found
+                </Button>
+              )}
+              {status === "safe" && (
+                <Button
+                  icon={"paw"}
+                  theme={{ colors: { primary: "purple" } }}
+                  mode={"text"}
+                  style={{ backgroundColor: "transparent", marginTop: 15 }}
+                  onPress={onPetLost}
+                  compact={true}
+                >
+                  Report Lost Pet
+                </Button>
+              )}
+            </View>
+            <View>
+              {status === "lost" && (
+                <Button
+                  icon={"paw"}
+                  theme={{ colors: { primary: "#C62828" } }}
+                  mode={"text"}
+                  style={{ backgroundColor: "transparent", marginTop: 15 }}
+                  onPress={viewPetSightings}
+                  compact={true}
+                >
+                  View Pet Sightings
+                </Button>
+              )}
+            </View>
+          </View>
+        </Card.Actions>
+      </Card>
     </ScrollView>
   );
 };

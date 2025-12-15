@@ -246,7 +246,7 @@ export default function SightingDetail({
                                 : "none",
                             }}
                           >
-                            {sighting.last_seen_location.substring(0, 35) ||
+                            {sighting.last_seen_location?.substring(0, 35) ||
                               "Location not provided"}
                             ...
                           </Text>

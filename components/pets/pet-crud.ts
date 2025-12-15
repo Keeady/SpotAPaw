@@ -105,6 +105,10 @@ export async function onPetFound(id: string) {
   router.replace(`/(app)/pets/${id}`);
 }
 
+export async function viewPetSightings(id: string) {
+  router.navigate(`/(app)/my-sightings`);
+}
+
 export async function createNewPet(profileInfo: Pet, userId: string) {
   if (!profileInfo) {
     return;

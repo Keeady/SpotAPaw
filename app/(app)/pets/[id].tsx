@@ -5,7 +5,13 @@ import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { onPetFound, onPetLost, onEditPet, useConfirmDelete } from "@/components/pets/pet-crud";
+import {
+  onPetFound,
+  onPetLost,
+  onEditPet,
+  useConfirmDelete,
+  viewPetSightings,
+} from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
 
 export default function PetProfile() {
@@ -54,6 +60,7 @@ export default function PetProfile() {
       onEditPet={() => onEditPet(pet.id)}
       onPetLost={() => onPetLost(pet.id)}
       onPetFound={() => onPetFound(pet.id)}
+      viewPetSightings={() => viewPetSightings(pet.id)}
     />
   );
 }
