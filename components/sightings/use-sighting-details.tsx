@@ -41,6 +41,7 @@ export function usePetSightings(petId: string, sightingId: string) {
     const { data, error } = await supabase
       .from("sightings")
       .select("*")
+      .eq("is_active", true)
       .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
       .order("last_seen_time", { ascending: false });
 
@@ -70,6 +71,7 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("sightings")
       .select("*")
       .eq("pet_id", petId)
+      .eq("is_active", true)
       .order("last_seen_time", { ascending: false });
 
     if (error) {
@@ -95,6 +97,7 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("sightings")
       .select("*, sighting_contact(name, phone)")
       .eq("pet_id", petId)
+      .eq("is_active", true)
       .order("last_seen_time", { ascending: false });
 
     if (error) {
@@ -116,6 +119,7 @@ export function usePetSightings(petId: string, sightingId: string) {
     const { data, error } = await supabase
       .from("sightings")
       .select("*, sighting_contact(name, phone)")
+      .is("is_active", true)
       .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
       .order("last_seen_time", { ascending: false });
 
