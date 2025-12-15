@@ -17,7 +17,6 @@ Our mission is to create a network of caring pet lovers who can help locate miss
 - **Report Pet Sightings**: Share photos and locations of pets you've spotted
 - **Create Pet Profiles**: Register your own pets with detailed information
 - **Search for Lost Pets**: Browse recent sightings in your area
-- **AI-Powered Chat**: Chat with our AI bot to quickly report a pet sighting
 
 ## Getting Started
 
