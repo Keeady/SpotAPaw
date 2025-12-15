@@ -18,6 +18,7 @@ import { pickImage } from "../image-picker";
 import useUploadPetImageUrl from "../image-upload";
 import { isValidUuid } from "../util";
 import { log } from "../logs";
+import DatePicker from "../date-picker";
 
 export default function CreateNewSighting() {
   const theme = useTheme();
@@ -36,6 +37,8 @@ export default function CreateNewSighting() {
   const [note, setNote] = useState("");
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
+  const [lastSeenTime, setLastSeenTime] = useState("");
+
   const { user } = useContext(AuthContext);
 
   const router = useRouter();
@@ -85,7 +88,7 @@ export default function CreateNewSighting() {
       last_seen_location: location,
       last_seen_long: coords?.longitude,
       last_seen_lat: coords?.latitude,
-      last_seen_time: new Date().toISOString(),
+      last_seen_time: lastSeenTime,
       linked_sighting_id: linked_sighting_id ?? sightingId,
     } as PetSighting;
 
@@ -156,8 +159,11 @@ export default function CreateNewSighting() {
           </Text>
         </View>
         <View style={styles.content}>
-          <Text variant="bodyLarge" style={{ alignSelf: "flex-start" }}>
-            What did the pet look like? Where was it?
+          <Text
+            variant="bodyLarge"
+            style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+          >
+            What did the pet look like?
           </Text>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
@@ -224,6 +230,26 @@ export default function CreateNewSighting() {
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              When was the pet last seen?
+            </Text>
+            <DatePicker
+              dateLabel="Last Seen Date"
+              timeLabel="Last Seen Time"
+              value={new Date()}
+              onChange={(v) => setLastSeenTime(v.toISOString())}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              Where was the pet last seen?
+            </Text>
             <TextInput
               label={"Last Seen Location"}
               placeholder="Enter Street names, Cross Streets, Signs, Markers"
@@ -242,7 +268,13 @@ export default function CreateNewSighting() {
               </Text>
             </Button>
           </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
+          <View style={[styles.verticallySpaced, styles.mt20, {marginTop: 16}]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              Add or update Photo:
+            </Text>
             {photo ? (
               <Image source={{ uri: photo }} style={styles.preview} />
             ) : (

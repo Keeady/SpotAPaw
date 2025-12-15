@@ -596,8 +596,8 @@ const LostPetChatbot = () => {
           setCurrentStep("gender");
           setTimeout(() => {
             addBotMessage("Whatis the gender of your pet?", [
-              { text: "Female", value: "female" },
-              { text: "Male", value: "male" },
+              { text: "Female", value: "Female" },
+              { text: "Male", value: "Male" },
               { text: "Not sure", value: "" },
             ]);
           }, 500);
