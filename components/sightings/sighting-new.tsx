@@ -37,7 +37,7 @@ export default function CreateNewSighting() {
   const [note, setNote] = useState("");
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
-  const [lastSeenTime, setLastSeenTime] = useState("");
+  const [lastSeenTime, setLastSeenTime] = useState(new Date().toISOString());
 
   const { user } = useContext(AuthContext);
 
