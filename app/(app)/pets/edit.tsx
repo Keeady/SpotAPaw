@@ -98,7 +98,7 @@ export default function EditPet() {
       return;
     }
 
-    const { error } = await supabase
+    const { error, data } = await supabase
       .from("sightings")
       .insert({
         name: profileInfo.name,
@@ -133,7 +133,8 @@ export default function EditPet() {
         icon: "success",
       });
       if (isLost) {
-        router.replace(`/(app)/my-sightings`);
+        const sightingId = data && data[0]["id"];
+        router.navigate(`/owner?sightingId=${sightingId}`);
       } else {
         router.replace(`/(app)/pets`);
       }

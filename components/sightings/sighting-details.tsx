@@ -48,6 +48,7 @@ export default function SightingDetail({
   hasOwner,
   isOwner,
   onPetFound,
+  petName,
 }: {
   sightings: PetSighting[];
   petSummary: PetSighting;
@@ -59,6 +60,7 @@ export default function SightingDetail({
   hasOwner: boolean;
   isOwner: boolean;
   onPetFound?: () => void;
+  petName: string
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
@@ -79,7 +81,7 @@ export default function SightingDetail({
         <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
           <Card>
             <Card.Title
-              title={petSummary?.name || "Unknown"}
+              title={petSummary?.name || petName || "Unknown"}
               titleVariant="titleLarge"
               right={() => (
                 <View style={{ flexDirection: "row" }}>

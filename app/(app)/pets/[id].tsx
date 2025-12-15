@@ -6,11 +6,11 @@ import { View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import {
-  onPetFound,
   onPetLost,
   onEditPet,
   useConfirmDelete,
   viewPetSightings,
+  useConfirmPetFound,
 } from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
 
@@ -21,6 +21,7 @@ export default function PetProfile() {
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
   const onConfirmDelete = useConfirmDelete();
+  const onPetFound = useConfirmPetFound();
 
   useEffect(() => {
     setLoading(true);
@@ -59,7 +60,7 @@ export default function PetProfile() {
       onDeletePet={() => onConfirmDelete(pet.name, pet.id, user.id)}
       onEditPet={() => onEditPet(pet.id)}
       onPetLost={() => onPetLost(pet.id)}
-      onPetFound={() => onPetFound(pet.id)}
+      onPetFound={() => onPetFound(pet.name, pet.id)}
       viewPetSightings={() => viewPetSightings(pet.id)}
     />
   );

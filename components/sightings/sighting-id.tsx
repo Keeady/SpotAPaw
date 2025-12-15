@@ -5,7 +5,7 @@ import SightingDetail from "@/components/sightings/sighting-details";
 import { usePetSightings } from "@/components/sightings/use-sighting-details";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
-import { onPetFound } from "../pets/pet-crud";
+import { useConfirmPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
 import { log } from "../logs";
 
@@ -18,6 +18,7 @@ export default function SightingProfile() {
   }>(); // pet id
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState();
+  const [petName, setPetName] = useState("");
 
   const { loading, error, timeline, summary } = usePetSightings(
     petId,
@@ -25,6 +26,7 @@ export default function SightingProfile() {
   );
 
   const { user } = useContext(AuthContext);
+  const onPetFound = useConfirmPetFound();
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function SightingProfile() {
         .then(({ data }) => {
           if (data) {
             setPetOwner(data.owner_id);
+            setPetName(data.name)
           }
         });
     }
@@ -80,8 +83,8 @@ export default function SightingProfile() {
   }, [petId, sightingId, router, sightingsRoute]);
 
   const handlePetFound = useCallback(() => {
-    onPetFound(petId);
-  }, [petId]);
+    onPetFound(petName, petId);
+  }, [petId, petName]);
 
   if (error) {
     log(error);
@@ -102,6 +105,7 @@ export default function SightingProfile() {
 
   return (
     <SightingDetail
+      petName={petName}
       sightings={timeline}
       petSummary={summary}
       onAddSighting={onAddSighting}

@@ -29,6 +29,29 @@ export const useConfirmDelete = () =>
     []
   );
 
+export const useConfirmPetFound = () =>
+  useCallback(
+    (petName: string, petId: string) =>
+      Alert.alert(
+        `Confirm Pet Found: ${petName}!`,
+        `Marking this pet as found will deactivate all public sightings immediately.\n\nThese sightings will be permanently deleted after 7 days.`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Confirm",
+            onPress: () => onPetFound(petId),
+          },
+        ],
+        {
+          userInterfaceStyle: "dark",
+        }
+      ),
+    []
+  );
+
 export async function onDeletePet(id: string, userId: string) {
   const { error } = await supabase
     .from("pets")
@@ -62,7 +85,7 @@ export function onPetLost(id: string) {
   router.navigate(`/(app)/pets/edit?id=${id}&is_lost=true`);
 }
 
-export async function onPetFound(id: string) {
+async function onPetFound(id: string) {
   const { error } = await supabase
     .from("pets")
     .update({
