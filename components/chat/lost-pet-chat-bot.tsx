@@ -595,7 +595,7 @@ const LostPetChatbot = () => {
         } else {
           setCurrentStep("gender");
           setTimeout(() => {
-            addBotMessage("Whatis the gender of your pet?", [
+            addBotMessage("What is the gender of your pet?", [
               { text: "Female", value: "Female" },
               { text: "Male", value: "Male" },
               { text: "Not sure", value: "" },
@@ -801,7 +801,7 @@ const LostPetChatbot = () => {
         }));
         processResponse("location_shared");
       } catch (error) {
-        log(`getCurrentUserLocationV3: ${error}`)
+        log(`getCurrentUserLocationV3: ${error}`);
         addBotMessage(
           "Unable to get your location. Please enable location or type the address instead.",
           [{ text: "I'll type it", value: "will_type" }],

@@ -112,7 +112,7 @@ export function RenderSightingProfile(data) {
         <View style={styles.line}>
           <View style={styles.header}>
             <Icon
-              source={getIconByAnimalSpecies(pet.species) || ""}
+              source={getIconByAnimalSpecies(pet.species)}
               size={25}
               color={theme.colors.primary}
             />
