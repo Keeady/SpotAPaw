@@ -108,33 +108,27 @@ const getUserLocationPermission = async () => {
   }
 };
 
-const getUserLocationFast = async (): Promise<Location.LocationObject> => {
-  try {
-    // Race between current and last known
-    const location = await Promise.any([
-      Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      }),
-      Location.getLastKnownPositionAsync({
-        maxAge: 300000,
-        requiredAccuracy: 100,
-      })
-        .then((loc) => {
-          if (!loc) {
-            log(`getUserLocationFast: No cached location`);
-            throw new Error("No cached location");
-          }
-          return loc;
-        })
-        .catch((e) => {
-          log(`getUserLocationFast: ${e}`);
-          throw new Error("Error getting location");
+const getUserLocationFast =
+  async (): Promise<Location.LocationObject | null> => {
+    try {
+      // Get the first to fulfill between current and last known
+      const location = await Promise.any([
+        Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
         }),
-    ]);
+        Location.getLastKnownPositionAsync({
+          maxAge: 300000,
+          requiredAccuracy: 100,
+        }),
+      ]);
 
-    return location;
-  } catch (error) {
-    log(`getUserLocationFast: ${error}`);
-    throw new Error("Unable to get user location");
-  }
-};
+      if (!location) {
+        throw new Error("No location data found");
+      }
+
+      return location;
+    } catch (error) {
+      log(`getUserLocationFast: ${error}`);
+      throw new Error("Unable to get user location");
+    }
+  };
