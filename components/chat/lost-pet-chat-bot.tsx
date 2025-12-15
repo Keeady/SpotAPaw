@@ -131,12 +131,6 @@ const LostPetChatbot = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (currentStep === "saving") {
-      processResponse(currentStep);
-    }
-  }, [currentStep]);
-
   const requestPermissions = async () => {
     getCurrentUserLocationV3()
       .then((location) => {
@@ -807,6 +801,7 @@ const LostPetChatbot = () => {
         }));
         processResponse("location_shared");
       } catch (error) {
+        log(`getCurrentUserLocationV3: ${error}`)
         addBotMessage(
           "Unable to get your location. Please enable location or type the address instead.",
           [{ text: "I'll type it", value: "will_type" }],
@@ -917,6 +912,12 @@ const LostPetChatbot = () => {
       ]);
     }, 500);
   };
+
+  useEffect(() => {
+    if (currentStep === "saving") {
+      processResponse(currentStep);
+    }
+  }, [currentStep]);
 
   return (
     <KeyboardAvoidingView

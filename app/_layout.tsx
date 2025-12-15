@@ -33,7 +33,7 @@ export default function Layout() {
     });
 
     return () => subscription.remove();
-  }, []);
+  }, [router]);
 
   return (
     <PaperProvider theme={MD3LightTheme}>

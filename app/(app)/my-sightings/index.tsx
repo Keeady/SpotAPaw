@@ -47,7 +47,7 @@ export default function SightingList() {
         />
       </View>
     ),
-    [router]
+    [rendererItem]
   );
 
   return <SightingPage renderer={renderer} />;

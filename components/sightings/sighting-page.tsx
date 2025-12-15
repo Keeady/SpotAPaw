@@ -16,7 +16,6 @@ import {
   SIGHTING_RADIUSKM,
 } from "../constants";
 import { EmptySighting } from "@/components/sightings/empty-sighting";
-import React from "react";
 import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
@@ -67,22 +66,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     }
   }, [location, user, pagination]);
 
-  const reLoadSightings = useCallback(
-    (
-      location: SightingLocation | undefined,
-      pagination: { start: number; end: number }
-    ) => {
-      if (!location) {
-        return;
-      } else if (user) {
-        fetchSightingsByUser(location, pagination, onFetchComplete);
-      } else {
-        fetchSightings(location, pagination, onFetchComplete);
-      }
-    },
-    [user]
-  );
-
   const onEndReached = useCallback(() => {
     setPagination((prev) => ({
       start: prev.end,
@@ -101,6 +84,22 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       setLoading(false);
     },
     [sightings]
+  );
+
+  const reLoadSightings = useCallback(
+    (
+      location: SightingLocation | undefined,
+      pagination: { start: number; end: number }
+    ) => {
+      if (!location) {
+        return;
+      } else if (user) {
+        fetchSightingsByUser(location, pagination, onFetchComplete);
+      } else {
+        fetchSightings(location, pagination, onFetchComplete);
+      }
+    },
+    [user, onFetchComplete]
   );
 
   const onLocationRequestDenied = useCallback(() => {
