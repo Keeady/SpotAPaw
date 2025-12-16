@@ -98,7 +98,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       setLoading(false);
       setRefreshing(false);
     },
-    [sightings, refreshing]
+    [sightings]
   );
 
   const reLoadSightings = useCallback(
