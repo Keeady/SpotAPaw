@@ -125,7 +125,7 @@ async function onPetFound(id: string) {
       });
     }
   }
-  router.replace(`/(app)/pets/${id}`);
+  router.replace(`/(app)/pets`);
 }
 
 export async function viewPetSightings(id: string) {

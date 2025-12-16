@@ -84,7 +84,7 @@ export default function SightingProfile() {
 
   const handlePetFound = useCallback(() => {
     onPetFound(petName, petId);
-  }, [petId, petName]);
+  }, [petId, petName, onPetFound]);
 
   if (error) {
     log(error);

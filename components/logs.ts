@@ -6,10 +6,7 @@ export function log(issue: string) {
       .from("logs")
       .insert([{ issue }])
       .select()
-      .then((r) => {
-        console.log(r);
-      });
-  } catch (e) {
-    console.log(e);
+  } catch {
+    // error
   }
 }

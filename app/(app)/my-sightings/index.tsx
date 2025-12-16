@@ -4,7 +4,13 @@ import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function SightingList() {
   const router = useRouter();
@@ -27,7 +33,9 @@ export default function SightingList() {
     (
       sightings: PetSighting[],
       onEndReached: () => void,
-      ListEmptyComponent: () => JSX.Element
+      ListEmptyComponent: () => JSX.Element,
+      onRefresh: () => void,
+      refreshing: boolean
     ) => (
       <View style={styles.container}>
         <FlatList
@@ -44,6 +52,9 @@ export default function SightingList() {
           pagingEnabled
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     ),

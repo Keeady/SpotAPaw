@@ -24,8 +24,15 @@ type SightingPageProps = {
   renderer: (
     sightings: PetSighting[],
     onEndReached: () => void,
-    ListEmptyComponent: () => JSX.Element
+    ListEmptyComponent: () => JSX.Element,
+    onRefresh: () => void,
+    refreshing: boolean
   ) => JSX.Element;
+};
+
+type SightingPagination = {
+  start: number;
+  end: number;
 };
 
 export default function SightingPage({ renderer }: SightingPageProps) {
@@ -40,6 +47,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   });
   const [error, setError] = useState("");
   const [enableFromSettings, setEnableFromSettings] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getCurrentUserLocationV3()
@@ -74,14 +82,21 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   }, []);
 
   const onFetchComplete = useCallback(
-    (newSightings: PetSighting[], error: string | null) => {
+    (
+      newSightings: PetSighting[],
+      error: string | null,
+      pagination?: SightingPagination
+    ) => {
       if (error) {
         log(error);
         setError(error);
+      } else if (pagination?.start === 0) {
+        processSightings([], newSightings, setSightings);
       } else if (newSightings.length > 0) {
         processSightings(sightings, newSightings, setSightings);
       }
       setLoading(false);
+      setRefreshing(false);
     },
     [sightings]
   );
@@ -118,6 +133,11 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setEnableFromSettings(false);
       });
   }, [reLoadSightings]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
+  }, [reLoadSightings, location]);
 
   const ListEmptyComponent = useCallback(() => {
     return (
@@ -160,7 +180,13 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         <View style={{ flex: 1 }}>
           {loading
             ? null
-            : renderer(sightings, onEndReached, ListEmptyComponent)}
+            : renderer(
+                sightings,
+                onEndReached,
+                ListEmptyComponent,
+                onRefresh,
+                refreshing
+              )}
         </View>
 
         <ReportLostPetFab
@@ -187,7 +213,11 @@ const fetchSightings = async (
 const fetchSightingsByUser = async (
   location: SightingLocation | undefined,
   pagination: { start: number; end: number },
-  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
+  onFetchComplete: (
+    newSightings: PetSighting[],
+    error: string | null,
+    pagination?: SightingPagination
+  ) => void
 ) => {
   if (!location) {
     return;
@@ -199,7 +229,11 @@ const fetchSightingsByUser = async (
 const fetchSightingsWithLocation = async (
   location: SightingLocation,
   pagination: { start: number; end: number },
-  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
+  onFetchComplete: (
+    newSightings: PetSighting[],
+    error: string | null,
+    pagination?: SightingPagination
+  ) => void
 ) => {
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
@@ -228,14 +262,18 @@ const fetchSightingsWithLocation = async (
     log(error.message);
     onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
-    onFetchComplete(data || [], null);
+    onFetchComplete(data || [], null, pagination);
   }
 };
 
 const fetchSightingsByUserWithLocation = async (
   location: SightingLocation,
   pagination: { start: number; end: number },
-  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
+  onFetchComplete: (
+    newSightings: PetSighting[],
+    error: string | null,
+    pagination?: SightingPagination
+  ) => void
 ) => {
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
@@ -264,7 +302,7 @@ const fetchSightingsByUserWithLocation = async (
     log(error.message);
     onFetchComplete([], "An error occurred while fetching sightings.");
   } else {
-    onFetchComplete(data || [], null);
+    onFetchComplete(data || [], null, pagination);
   }
 };
 
@@ -337,5 +375,6 @@ const processSightings = (
       return acc;
     }, {} as PetSighting)
   );
+
   setSightings(mergedSightings);
 };

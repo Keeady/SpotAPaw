@@ -204,9 +204,9 @@ const LostPetChatbot = () => {
             addBotMessage(
               "I'm so sorry to hear your pet is missing. What type of pet are you looking for?",
               [
-                { text: "Dog", value: "dog" },
-                { text: "Cat", value: "cat" },
-                { text: "Other", value: "other" },
+                { text: "Dog", value: "Dog" },
+                { text: "Cat", value: "Cat" },
+                { text: "Other", value: "Other" },
               ]
             );
           }, 500);
@@ -216,9 +216,9 @@ const LostPetChatbot = () => {
             addBotMessage(
               "Thank you for helping bring our furry friends home! What type of pet did you find?",
               [
-                { text: "Dog", value: "dog" },
-                { text: "Cat", value: "cat" },
-                { text: "Other", value: "other" },
+                { text: "Dog", value: "Dog" },
+                { text: "Cat", value: "Cat" },
+                { text: "Other", value: "Other" },
               ]
             );
           }, 500);
@@ -671,6 +671,17 @@ const LostPetChatbot = () => {
               addBotMessage(
                 "Please type the address or area where your pet was last seen."
               );
+            }, 500);
+          } else if (response === "location_shared") {
+            setCurrentStep("time");
+            setTimeout(() => {
+              addBotMessage("When did you last see your pet?", [
+                { text: "Within the last hour", value: "1 hour ago" },
+                { text: "Today", value: "today" },
+                { text: "Yesterday", value: "yesterday" },
+                { text: "2 days ago", value: "2 days ago" },
+                { text: "More than 2 days ago", value: "3 days ago" },
+              ]);
             }, 500);
           } else {
             setReportData((prev) => ({ ...prev, lastSeenLocation: response }));
