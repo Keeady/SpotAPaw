@@ -376,6 +376,5 @@ const processSightings = (
     }, {} as PetSighting)
   );
 
-  console.log(mergedSightings);
   setSightings(mergedSightings);
 };
