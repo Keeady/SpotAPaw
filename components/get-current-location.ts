@@ -7,9 +7,7 @@ export type SightingLocation = {
   lng: number;
 };
 
-export async function getCurrentLocationV2(
-  handleChange: (fieldName: string, fieldValue: string | number) => void
-) {
+export async function getCurrentLocationV4() {
   try {
     const granted = await getUserLocationPermission();
 
@@ -17,41 +15,15 @@ export async function getCurrentLocationV2(
       const location = await getUserLocationFast();
       if (location) {
         const address = await Location.reverseGeocodeAsync(location.coords);
-        handleChange("last_seen_location", address?.[0].formattedAddress || "");
-        handleChange("last_seen_long", location.coords.longitude);
-        handleChange("last_seen_lat", location.coords.latitude);
+        return {
+          last_seen_location: address?.[0].formattedAddress || "",
+          last_seen_long: location.coords.longitude,
+          last_seen_lat: location.coords.latitude,
+        };
       }
     }
   } catch (e) {
-    log(`getCurrentLocationV2: ${e}`);
-    Alert.alert(
-      "Location Permission Required",
-      "Please enable location or type the address instead.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
-    );
-  }
-}
-
-export async function getCurrentLocationV1(
-  setLocation: (a: string) => void,
-  setCoords: (c: Location.LocationObjectCoords) => void
-) {
-  try {
-    const granted = await getUserLocationPermission();
-
-    if (granted) {
-      const location = await getUserLocationFast();
-      if (location) {
-        const address = await Location.reverseGeocodeAsync(location.coords);
-        setLocation(address?.[0].formattedAddress || "");
-        setCoords(location.coords);
-      }
-    }
-  } catch (e) {
-    log(`getCurrentLocationV1: ${e}`);
+    log(`getCurrentLocationV4: ${e}`);
     Alert.alert(
       "Location Permission Required",
       "Please enable location or type the address instead.",

@@ -8,20 +8,11 @@ import {
   TextInput as RNTextInput,
   Keyboard,
 } from "react-native";
+import { Button, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import {
-  Button,
-  Card,
-  Chip,
-  IconButton,
-  Text,
-  useTheme,
-} from "react-native-paper";
-import MapView, {
-  MapPressEvent,
-  Marker,
-  PROVIDER_GOOGLE,
-} from "react-native-maps";
-import { getCurrentUserLocationV3 } from "../get-current-location";
+  getCurrentUserLocationV3,
+  SightingLocation,
+} from "../get-current-location";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { saveChatBotSighting } from "../sightings/sightings-crud";
 import { PetReportData } from "../sightings/sighting-interface";
@@ -33,6 +24,7 @@ import {
 import useUploadPetImageUrl from "../image-upload";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { log } from "../logs";
+import DropPinOnMap from "../map-util";
 
 type ChatBotActionButton = {
   label: string;
@@ -93,10 +85,9 @@ const LostPetChatbot = () => {
     linkedSightingId: null,
   });
   const [currentStep, setCurrentStep] = useState("greeting");
-  const [selectedLocation, setSelectedLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<
+    SightingLocation | undefined
+  >();
   const [mapRegion, setMapRegion] = useState({
     latitude: 47.3073,
     longitude: -122.2284,
@@ -826,15 +817,15 @@ const LostPetChatbot = () => {
     } else if (action === "closeMap") {
       if (selectedLocation) {
         addUserMessage(
-          `📍 Pin dropped at (${selectedLocation.latitude.toFixed(
+          `📍 Pin dropped at (${selectedLocation.lat.toFixed(
             6
-          )}, ${selectedLocation.longitude.toFixed(6)})`
+          )}, ${selectedLocation.lng.toFixed(6)})`
         );
 
         setReportData((prev) => ({
           ...prev,
-          lastSeenLocationLat: selectedLocation.latitude,
-          lastSeenLocationLng: selectedLocation.longitude,
+          lastSeenLocationLat: selectedLocation.lat,
+          lastSeenLocationLng: selectedLocation.lng,
           lastSeenLocation: "",
         }));
 
@@ -860,7 +851,7 @@ const LostPetChatbot = () => {
             ]);
           }, 500);
         }
-        setSelectedLocation(null);
+        setSelectedLocation(undefined);
       }
     } else if (action === "enableLocation") {
       getCurrentUserLocationV3()
@@ -882,11 +873,6 @@ const LostPetChatbot = () => {
           );
         });
     }
-  };
-
-  const handleMapPress = (event: MapPressEvent) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    setSelectedLocation({ latitude, longitude });
   };
 
   const resetChat = () => {
@@ -971,40 +957,18 @@ const LostPetChatbot = () => {
             {msg.actionButton && (
               <View style={styles.actionButtonContainer}>
                 {msg.actionButton.showMap ? (
-                  <Card style={styles.mapCard}>
-                    <MapView
-                      style={styles.map}
-                      initialRegion={mapRegion}
-                      onRegionChangeComplete={setMapRegion}
-                      onPress={handleMapPress}
-                      provider={PROVIDER_GOOGLE}
-                    >
-                      {selectedLocation && (
-                        <Marker
-                          coordinate={selectedLocation}
-                          title="Selected Location"
-                          pinColor="red"
-                        />
-                      )}
-                    </MapView>
-                    <Card.Content style={styles.mapFooter}>
-                      <Text style={styles.mapFooterText}>
-                        {selectedLocation
-                          ? "Pin placed! Tap button to confirm."
-                          : "Tap the map to place a pin"}
-                      </Text>
-                      <Button
-                        mode="contained"
-                        onPress={() =>
-                          handleActionButton(msg.actionButton?.action || "")
-                        }
-                        disabled={!selectedLocation}
-                        style={styles.confirmButton}
-                      >
-                        Confirm Location
-                      </Button>
-                    </Card.Content>
-                  </Card>
+                  <DropPinOnMap
+                    currentLocation={{
+                      lat: mapRegion.latitude,
+                      lng: mapRegion.longitude,
+                    }}
+                    handleActionButton={(location) => {
+                      if (location) {
+                        setSelectedLocation(location);
+                        handleActionButton(msg.actionButton?.action || "");
+                      }
+                    }}
+                  />
                 ) : (
                   <Button
                     mode="contained"

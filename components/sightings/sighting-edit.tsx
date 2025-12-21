@@ -11,8 +11,11 @@ import {
   useTheme,
 } from "react-native-paper";
 import DatePicker from "../date-picker";
-import { getCurrentLocationV2 } from "../get-current-location";
+import {
+  SightingLocation,
+} from "../get-current-location";
 import { ImagePickerHandler } from "../image-picker";
+import ShowLocationControls from "../location-util";
 
 export default function EditPetSightingDetails(
   handleSubmit: () => Promise<void>,
@@ -65,27 +68,9 @@ export default function EditPetSightingDetails(
                 >
                   Where was your pet last seen?
                 </Text>
-                <TextInput
-                  label={"Last Seen Location"}
-                  placeholder="Enter Street names, Cross Streets, Signs, Markers"
-                  value={pet?.last_seen_location}
-                  onChangeText={(v) =>
-                    handleSightingChange("last_seen_location", v)
-                  }
-                  mode={"outlined"}
+                <ShowLocationControls
+                  handleChange={handleSightingChange}
                 />
-                <Button
-                  icon={"map-marker-radius-outline"}
-                  onPress={() => getCurrentLocationV2(handleSightingChange)}
-                  mode="elevated"
-                  style={styles.button}
-                >
-                  <Text>
-                    {sighting?.last_seen_location
-                      ? "Location saved"
-                      : "Use My Current Location"}
-                  </Text>
-                </Button>
               </View>
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Text
@@ -102,7 +87,9 @@ export default function EditPetSightingDetails(
                       ? new Date(sighting?.last_seen_time)
                       : new Date()
                   }
-                  onChange={(v) => handleSightingChange("last_seen_time", v.toISOString())}
+                  onChange={(v) =>
+                    handleSightingChange("last_seen_time", v.toISOString())
+                  }
                 />
               </View>
             </>

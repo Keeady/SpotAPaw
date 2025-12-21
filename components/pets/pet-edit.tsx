@@ -10,8 +10,8 @@ import {
   useTheme,
 } from "react-native-paper";
 import DatePicker from "../date-picker";
-import { getCurrentLocationV2 } from "../get-current-location";
 import { ImagePickerHandler } from "../image-picker";
+import ShowLocationControls from "../location-util";
 
 export default function EditPetDetails(
   handleSubmit: () => Promise<void>,
@@ -59,25 +59,7 @@ export default function EditPetDetails(
                 >
                   Where was your pet last seen?
                 </Text>
-                <TextInput
-                  label={"Last Seen Location"}
-                  placeholder="Enter Street names, Cross Streets, Signs, Markers"
-                  value={pet?.last_seen_location}
-                  onChangeText={(v) => handleChange("last_seen_location", v)}
-                  mode={"outlined"}
-                />
-                <Button
-                  icon={"map-marker-radius-outline"}
-                  onPress={() => getCurrentLocationV2(handleChange)}
-                  mode="elevated"
-                  style={styles.button}
-                >
-                  <Text>
-                    {pet?.last_seen_location
-                      ? "Location saved"
-                      : "Use My Current Location"}
-                  </Text>
-                </Button>
+                <ShowLocationControls handleChange={handleChange} />
               </View>
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Text
@@ -94,7 +76,9 @@ export default function EditPetDetails(
                       ? new Date(pet?.last_seen_time)
                       : new Date()
                   }
-                  onChange={(v) => handleChange("last_seen_time", v.toISOString())}
+                  onChange={(v) =>
+                    handleChange("last_seen_time", v.toISOString())
+                  }
                 />
               </View>
             </>
@@ -253,9 +237,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
-  },
-  button: {
-    marginTop: 20,
   },
   emptyPreview: {
     width: "100%",

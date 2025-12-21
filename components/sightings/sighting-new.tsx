@@ -1,7 +1,5 @@
-import { getCurrentLocationV1 } from "@/components/get-current-location";
 import { supabase } from "@/components/supabase-client";
 import { PetSighting } from "@/model/sighting";
-import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -19,6 +17,7 @@ import useUploadPetImageUrl from "../image-upload";
 import { isValidUuid } from "../util";
 import { log } from "../logs";
 import DatePicker from "../date-picker";
+import ShowLocationControls from "../location-util";
 
 export default function CreateNewSighting() {
   const theme = useTheme();
@@ -31,13 +30,19 @@ export default function CreateNewSighting() {
   const [gender, setGender] = useState("");
   const [features, setFeatures] = useState("");
   const [photo, setPhoto] = useState("");
-  const [location, setLocation] = useState("");
-  const [coords, setCoords] = useState<Location.LocationObjectCoords>();
   const [extra_info, setExtraInfo] = useState("");
   const [note, setNote] = useState("");
   const [empty, setEmpty] = useState(true);
   const [linked_sighting_id, setLinkedSightingId] = useState();
   const [lastSeenTime, setLastSeenTime] = useState(new Date().toISOString());
+
+  const [lastSeenLocation, setLastSeenLocation] = useState<string | number>("");
+  const [lastSeenLocationLng, setLastSeenLocationLng] = useState<
+    string | number
+  >(0);
+  const [lastSeenLocationLat, setLastSeenLocationLat] = useState<
+    string | number
+  >(0);
 
   const { user } = useContext(AuthContext);
 
@@ -85,9 +90,9 @@ export default function CreateNewSighting() {
       features,
       photo,
       note,
-      last_seen_location: location,
-      last_seen_long: coords?.longitude,
-      last_seen_lat: coords?.latitude,
+      last_seen_location: lastSeenLocation,
+      last_seen_long: lastSeenLocationLng,
+      last_seen_lat: lastSeenLocationLat,
       last_seen_time: lastSeenTime,
       linked_sighting_id: linked_sighting_id ?? sightingId,
     } as PetSighting;
@@ -250,25 +255,22 @@ export default function CreateNewSighting() {
             >
               Where was the pet last seen?
             </Text>
-            <TextInput
-              label={"Last Seen Location"}
-              placeholder="Enter Street names, Cross Streets, Signs, Markers"
-              value={location}
-              onChangeText={setLocation}
-              mode={"outlined"}
+            <ShowLocationControls
+              handleChange={(fieldName, fieldValue: string | number) => {
+                if (fieldName === "last_seen_long") {
+                  setLastSeenLocationLng(fieldValue);
+                } else if (fieldName === "last_seen_lat") {
+                  setLastSeenLocationLat(fieldValue);
+                } else if (fieldName === "last_seen_location") {
+                  setLastSeenLocation(fieldValue);
+                }
+              }}
             />
-            <Button
-              icon={"map-marker-radius-outline"}
-              onPress={() => getCurrentLocationV1(setLocation, setCoords)}
-              mode="elevated"
-              style={styles.button}
-            >
-              <Text>
-                {location ? "Location saved" : "Use My Current Location"}
-              </Text>
-            </Button>
           </View>
-          <View style={[styles.verticallySpaced, styles.mt20, {marginTop: 16}]}>
+
+          <View
+            style={[styles.verticallySpaced, styles.mt20, { marginTop: 16 }]}
+          >
             <Text
               variant="bodyLarge"
               style={{ alignSelf: "flex-start", fontWeight: "bold" }}
@@ -344,9 +346,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
-  },
-  button: {
-    marginTop: 20,
   },
   emptyPreview: {
     width: "100%",
