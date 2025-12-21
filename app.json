@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.bcamaria.SpotAPaw",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app needs access to your location."
+        "NSLocationWhenInUseUsageDescription": "This app needs access to your location.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -37,6 +38,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-font",
+      "expo-web-browser",
       "expo-router",
       [
         "expo-splash-screen",
