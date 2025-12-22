@@ -110,10 +110,7 @@ const LostPetChatbot = () => {
 
   useEffect(() => {
     requestPermissions();
-    addBotMessage("Hello! I can help you report a lost pet. Are you:", [
-      { text: "Missing my pet", value: "lost_own" },
-      { text: "Found a lost pet", value: "found_stray" },
-    ]);
+    showGreeting();
   }, []);
 
   useEffect(() => {
@@ -265,7 +262,7 @@ const LostPetChatbot = () => {
     [pets]
   );
 
-  const showBehaviorWarningMsg = () => {
+  const showBehaviorWarningMsg = useCallback(() => {
     setTimeout(() => {
       const behaviorWarning =
         reportData.petBehavior === "injured"
@@ -278,7 +275,57 @@ const LostPetChatbot = () => {
         addBotMessage(`${behaviorWarning}`);
       }
     }, 500);
-  };
+  }, [reportData.petBehavior]);
+
+  const showFoundLocationMsg = useCallback((message: string = "") => {
+    setTimeout(() => {
+      addBotMessage(
+        `${message}Where did you find this pet?`,
+        [
+          { text: "Drop pin on map", value: "show_map" },
+          { text: "I'll type it", value: "will_type" },
+        ],
+        {
+          label: "Share My Location",
+          icon: "crosshairs-gps",
+          action: "shareLocation",
+        }
+      );
+    }, 500);
+  }, []);
+
+  const showGreeting = useCallback(() => {
+    if (linkedSightingId) {
+      setCurrentStep("foundPhoto");
+      showFoundPhotoMsg("Hello! I can help you report sighting for this pet.");
+    } else {
+      addBotMessage("Hello! I can help you report a lost pet. Are you:", [
+        { text: "Missing my pet", value: "lost_own" },
+        { text: "Found a lost pet", value: "found_stray" },
+      ]);
+    }
+  }, [linkedSightingId]);
+
+  const showFoundPhotoMsg = useCallback((message: string = "") => {
+    if (message) {
+      addBotMessage(message);
+    }
+
+    setTimeout(() => {
+      addBotMessage(
+        "A photo would really help identify this pet. Can you take a picture?",
+        [
+          { text: "I'll take one", value: "will_take" },
+          { text: "Can't take photo", value: "no_photo" },
+        ],
+        {
+          label: "Take Photo",
+          icon: "camera",
+          action: "uploadPhoto",
+        }
+      );
+    }, 500);
+  }, []);
 
   const processResponse = async (response: string) => {
     switch (currentStep) {
@@ -448,21 +495,19 @@ const LostPetChatbot = () => {
 
       case "foundBehavior":
         setReportData((prev) => ({ ...prev, petBehavior: response }));
-        setCurrentStep("foundPhoto");
+        setCurrentStep("foundFeatures");
         setTimeout(() => {
           addBotMessage(
-            "A photo would really help owners identify their pet. Can you take a picture?",
-            [
-              { text: "I'll take one", value: "will_take" },
-              { text: "Can't take photo", value: "no_photo" },
-            ],
-            {
-              label: "Take Photo",
-              icon: "camera",
-              action: "uploadPhoto",
-            }
+            "Any distinctive features? (unique markings, scars, missing teeth, etc.)"
           );
         }, 500);
+
+        break;
+
+      case "foundFeatures":
+        setReportData((prev) => ({ ...prev, distinctiveFeatures: response }));
+        setCurrentStep("foundPhoto");
+        showFoundPhotoMsg();
         break;
 
       case "foundPhoto":
@@ -473,12 +518,8 @@ const LostPetChatbot = () => {
           response.toLowerCase().includes("no") ||
           response.toLowerCase().includes("later")
         ) {
-          setCurrentStep("foundFeatures");
-          setTimeout(() => {
-            addBotMessage(
-              "Any distinctive features? (unique markings, scars, missing teeth, etc.)"
-            );
-          }, 500);
+          setCurrentStep("foundLocation");
+          showFoundLocationMsg();
         } else if (response === "will_take") {
           setTimeout(() => {
             addBotMessage(
@@ -492,25 +533,6 @@ const LostPetChatbot = () => {
             );
           }, 500);
         }
-        break;
-
-      case "foundFeatures":
-        setReportData((prev) => ({ ...prev, distinctiveFeatures: response }));
-        setCurrentStep("foundLocation");
-        setTimeout(() => {
-          addBotMessage(
-            "Where did you find this pet?",
-            [
-              { text: "Drop pin on map", value: "show_map" },
-              { text: "I'll type it", value: "will_type" },
-            ],
-            {
-              label: "Share My Location",
-              icon: "crosshairs-gps",
-              action: "shareLocation",
-            }
-          );
-        }, 500);
         break;
 
       case "foundLocation":
