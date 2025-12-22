@@ -5,7 +5,7 @@ import { PetReportData } from "./sightings/sighting-interface";
 import * as Location from "expo-location";
 import { log } from "./logs";
 
-export const isValidUuid = (id: string | null) => {
+export const isValidUuid = (id: string | null | undefined) => {
   return (
     id &&
     id !== undefined &&
@@ -49,7 +49,7 @@ export async function getLastSeenLocation(report: PetReportData) {
 }
 
 export function getIconByAnimalSpecies(species: string) {
-  switch(species.toLowerCase()) {
+  switch (species?.toLowerCase()) {
     case "dog":
       return "dog";
     case "cat":
