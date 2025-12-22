@@ -57,11 +57,15 @@ const LostPetChatbot = () => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const sightingsRoute = user ? "my-sightings" : "sightings";
-  const { sightingId: linkedSightingId, petId: petIdParam } =
-    useLocalSearchParams<{
-      sightingId: string;
-      petId: string;
-    }>();
+  const {
+    sightingId: linkedSightingId,
+    petId: petIdParam,
+    petName,
+  } = useLocalSearchParams<{
+    sightingId: string;
+    petId: string;
+    petName: string;
+  }>();
 
   const uploadImage = useUploadPetImageUrl();
 
@@ -297,14 +301,16 @@ const LostPetChatbot = () => {
   const showGreeting = useCallback(() => {
     if (linkedSightingId) {
       setCurrentStep("foundPhoto");
-      showFoundPhotoMsg("Hello! I can help you report sighting for this pet.");
+      const placeholder = petName ? petName : "this pet";
+      const message = `Hello! I can help you report sighting for ${placeholder}.`;
+      showFoundPhotoMsg(message);
     } else {
       addBotMessage("Hello! I can help you report a lost pet. Are you:", [
         { text: "Missing my pet", value: "lost_own" },
         { text: "Found a lost pet", value: "found_stray" },
       ]);
     }
-  }, [linkedSightingId]);
+  }, [linkedSightingId, petName]);
 
   const showFoundPhotoMsg = useCallback((message: string = "") => {
     if (message) {
