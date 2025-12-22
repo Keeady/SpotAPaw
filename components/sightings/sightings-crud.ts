@@ -25,7 +25,7 @@ export const saveChatBotSighting = async (
     species: report.petType,
     breed: report.breed,
     gender: report.gender,
-    photo: "",
+    photo: report.photo,
     last_seen_long: report.lastSeenLocationLng,
     last_seen_lat: report.lastSeenLocationLat,
     last_seen_location: await getLastSeenLocation(report),
@@ -42,8 +42,8 @@ export const saveChatBotSighting = async (
 
   try {
     // Upload image if exists and then save sighting
-    if (report.photo) {
-      uploadImage(report.photo, (url, error) => {
+    if (report.photoUrl) {
+      uploadImage(report.photoUrl, (url, error) => {
         if (error) {
           log(error);
           callback({

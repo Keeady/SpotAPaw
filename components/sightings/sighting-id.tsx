@@ -53,7 +53,7 @@ export default function SightingProfile() {
         .then(({ data }) => {
           if (data) {
             setPetOwner(data.owner_id);
-            setPetName(data.name)
+            setPetName(data.name);
           }
         });
     }
@@ -65,9 +65,9 @@ export default function SightingProfile() {
 
   const onChatSighting = useCallback(() => {
     router.push(
-      `/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}`
+      `/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}&petName=${petName}`
     );
-  }, [sightingId, petId, router, sightingsRoute]);
+  }, [sightingId, petId, router, sightingsRoute, petName]);
 
   const onClaimPet = useCallback(() => {
     router.push(`/pets/claim/?petId=${petId}&sightingId=${sightingId}`);

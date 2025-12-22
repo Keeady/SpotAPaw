@@ -181,19 +181,19 @@ export default function CreateNewSighting() {
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
-              label={"Breed"}
-              placeholder="Breed (if known)"
-              value={breed}
-              onChangeText={setBreed}
+              label={"Species"}
+              placeholder="Species (Dog/Cat/Hamster/Rabbit/Snake)"
+              value={species}
+              onChangeText={setSpecies}
               mode={"outlined"}
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
-              label={"Species"}
-              placeholder="Species (Dog/Cat/Hamster)"
-              value={species}
-              onChangeText={setSpecies}
+              label={"Breed"}
+              placeholder="Breed (if known)"
+              value={breed}
+              onChangeText={setBreed}
               mode={"outlined"}
             />
           </View>
