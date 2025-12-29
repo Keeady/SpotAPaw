@@ -19,4 +19,5 @@ export type PetReportData = {
   notes: string | null;
   collarDescription: string | null;
   linkedSightingId: string | null;
+  photoUrl?: string | null;
 };
