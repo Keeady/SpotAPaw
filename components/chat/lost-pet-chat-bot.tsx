@@ -141,7 +141,7 @@ const LostPetChatbot = () => {
         .from("pets")
         .select("*")
         .eq("owner_id", user.id)
-        .then(({ data, error }) => {
+        .then(({ data }) => {
           if (data && data.length > 0) {
             setPets(data);
           }
@@ -302,7 +302,7 @@ const LostPetChatbot = () => {
     if (linkedSightingId) {
       setCurrentStep("foundPhoto");
       const placeholder = petName ? petName : "this pet";
-      const message = `Hello! I can help you report sighting for ${placeholder}.`;
+      const message = `Hello! I can help you report a sighting for ${placeholder}.`;
       showFoundPhotoMsg(message);
     } else {
       addBotMessage("Hello! I can help you report a lost pet. Are you:", [
@@ -341,7 +341,7 @@ const LostPetChatbot = () => {
             setCurrentStep("petOwnType");
             setTimeout(() => {
               addBotMessage(
-                "I'm so sorry to hear your pet is missing. Which of your pet is missing?",
+                "I'm so sorry to hear your pet is missing. Which of your pets is missing?",
                 getMissingPetReplies()
               );
             }, 500);
