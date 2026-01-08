@@ -65,38 +65,10 @@ export default function SightingList() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    textAlign: "center",
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
   container: {
     flex: 1,
     paddingTop: 5,
     backgroundColor: "#fff",
     minHeight: "100%",
-  },
-  logo: {
-    width: "100%",
-    marginBottom: 40,
-    marginTop: 40,
-    resizeMode: "contain",
-  },
-  button: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  secondary: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "baseline",
-    paddingTop: 4,
-    paddingBottom: 4,
   },
 });

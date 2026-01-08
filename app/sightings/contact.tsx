@@ -141,16 +141,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     minHeight: "100%",
   },
-  logo: {
-    width: "100%",
-    marginBottom: 40,
-    marginTop: 40,
-    resizeMode: "contain",
-  },
-  button: {
-    width: "100%",
-    marginBottom: 16,
-  },
   secondary: {
     flex: 1,
     flexDirection: "row",

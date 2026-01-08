@@ -247,9 +247,6 @@ export default function OwnerList() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    textAlign: "center",
-  },
   verticallySpaced: {
     paddingTop: 4,
     paddingBottom: 4,
@@ -263,23 +260,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: "#fff",
     minHeight: "100%",
-  },
-  logo: {
-    width: "100%",
-    marginBottom: 40,
-    marginTop: 40,
-    resizeMode: "contain",
-  },
-  button: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  secondary: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "baseline",
-    paddingTop: 4,
-    paddingBottom: 4,
   },
   content: {
     paddingHorizontal: 24,

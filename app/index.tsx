@@ -120,10 +120,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "column",
   },
-  logo: {
-    width: "100%",
-    resizeMode: "contain",
-  },
   button: {
     width: "100%",
     marginBottom: 16,
