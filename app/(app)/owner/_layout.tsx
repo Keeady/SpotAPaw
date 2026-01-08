@@ -1,7 +1,8 @@
+import styles from "@/components/layout.style";
 import { handleSignOut } from "@/components/util";
 import { Stack } from "expo-router";
 import React from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image } from "react-native";
 import { Button } from "react-native-paper";
 
 export default function OwnerLayout() {
@@ -26,15 +27,3 @@ export default function OwnerLayout() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  logo: {
-    width: 100,
-    marginLeft: 24,
-    resizeMode: "contain",
-    height: 50,
-  },
-  button: {
-    marginRight: 12,
-  },
-});

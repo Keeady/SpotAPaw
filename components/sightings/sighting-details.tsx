@@ -368,36 +368,6 @@ export default function SightingDetail({
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  emptyPreview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ddd",
-    marginTop: 5,
-  },
-  // Modal styles
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.9)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  fullImage: {
-    width: "90%",
-    height: "70%",
-    borderRadius: 12,
-  },
   // card styles unused
   card: {
     margin: 12,
@@ -418,12 +388,6 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: "#546E7A",
     fontSize: 14,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
   },
   name: {
     fontSize: 20,

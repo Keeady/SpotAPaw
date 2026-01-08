@@ -50,30 +50,42 @@ export default function CreateNewSighting() {
   const uploadImage = useUploadPetImageUrl();
 
   useEffect(() => {
-    if (colors && species && features && location) {
+    if (
+      !id &&
+      colors &&
+      species &&
+      features &&
+      (lastSeenLocation || (lastSeenLocationLat && lastSeenLocationLng))
+    ) {
+      setEmpty(false);
+    } else if (
+      id &&
+      (lastSeenLocation || (lastSeenLocationLat && lastSeenLocationLng))
+    ) {
       setEmpty(false);
     } else {
       setEmpty(true);
     }
-  }, [location, colors, species, features]);
+  }, [
+    lastSeenLocation,
+    lastSeenLocationLat,
+    lastSeenLocationLng,
+    colors,
+    species,
+    features,
+    id
+  ]);
 
   useEffect(() => {
     if (id && isValidUuid(id)) {
       setLoading(true);
       supabase
         .from("sightings")
-        .select("*")
+        .select("linked_sighting_id")
         .eq("id", id)
         .single()
         .then(({ data }) => {
-          setColors(data.colors);
-          setBreed(data.breed);
-          setSpecies(data.species);
-          setGender(data.gender);
-          setFeatures(data.features);
-          setNote(data.note);
           setLinkedSightingId(data.linked_sighting_id);
-          setPhoto(data.photo);
         });
     }
 
@@ -164,76 +176,6 @@ export default function CreateNewSighting() {
           </Text>
         </View>
         <View style={styles.content}>
-          <Text
-            variant="bodyLarge"
-            style={{ alignSelf: "flex-start", fontWeight: "bold" }}
-          >
-            What did the pet look like?
-          </Text>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <TextInput
-              label={"Colors"}
-              placeholder="Color(s)"
-              value={colors}
-              onChangeText={setColors}
-              mode={"outlined"}
-            />
-          </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <TextInput
-              label={"Species"}
-              placeholder="Species (Dog/Cat/Hamster/Rabbit/Snake)"
-              value={species}
-              onChangeText={setSpecies}
-              mode={"outlined"}
-            />
-          </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <TextInput
-              label={"Breed"}
-              placeholder="Breed (if known)"
-              value={breed}
-              onChangeText={setBreed}
-              mode={"outlined"}
-            />
-          </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text variant="labelLarge">Gender</Text>
-            <RadioButton.Group onValueChange={setGender} value={gender}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <Text>Female</Text>
-                <RadioButton value="Female" />
-
-                <Text>Male</Text>
-                <RadioButton value="Male" />
-              </View>
-            </RadioButton.Group>
-          </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <TextInput
-              label={"Features"}
-              placeholder="Features (Collar, Tag, Size)"
-              value={features}
-              onChangeText={setFeatures}
-              mode={"outlined"}
-            />
-          </View>
-
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <TextInput
-              label={"Notes"}
-              value={note}
-              onChangeText={setNote}
-              multiline
-              mode={"outlined"}
-            />
-          </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Text
               variant="bodyLarge"
@@ -275,7 +217,7 @@ export default function CreateNewSighting() {
               variant="bodyLarge"
               style={{ alignSelf: "flex-start", fontWeight: "bold" }}
             >
-              Add or update Photo:
+              Add sighting photo:
             </Text>
             {photo ? (
               <Image source={{ uri: photo }} style={styles.preview} />
@@ -293,6 +235,94 @@ export default function CreateNewSighting() {
             >
               {photo ? "Change Photo" : "Upload Photo"}
             </Button>
+          </View>
+          {!id && (
+            <>
+              <Text
+                variant="bodyLarge"
+                style={{
+                  alignSelf: "flex-start",
+                  fontWeight: "bold",
+                  marginTop: 10,
+                }}
+              >
+                What did the pet look like?
+              </Text>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <TextInput
+                  label={"Colors"}
+                  placeholder="Color(s)"
+                  value={colors}
+                  onChangeText={setColors}
+                  mode={"outlined"}
+                />
+              </View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <TextInput
+                  label={"Species"}
+                  placeholder="Species (Dog/Cat/Hamster/Rabbit/Snake)"
+                  value={species}
+                  onChangeText={setSpecies}
+                  mode={"outlined"}
+                />
+              </View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <TextInput
+                  label={"Breed"}
+                  placeholder="Breed (if known)"
+                  value={breed}
+                  onChangeText={setBreed}
+                  mode={"outlined"}
+                />
+              </View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <Text variant="labelLarge">Gender</Text>
+                <RadioButton.Group onValueChange={setGender} value={gender}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Text>Female</Text>
+                    <RadioButton value="Female" />
+
+                    <Text>Male</Text>
+                    <RadioButton value="Male" />
+                  </View>
+                </RadioButton.Group>
+              </View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <TextInput
+                  label={"Features"}
+                  placeholder="Features (Collar, Tag, Size)"
+                  value={features}
+                  onChangeText={setFeatures}
+                  mode={"outlined"}
+                />
+              </View>
+            </>
+          )}
+
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text
+              variant="bodyLarge"
+              style={{
+                alignSelf: "flex-start",
+                fontWeight: "bold",
+                marginTop: 10,
+              }}
+            >
+              Additional Details:
+            </Text>
+            <TextInput
+              label={"Notes"}
+              value={note}
+              onChangeText={setNote}
+              multiline
+              mode={"outlined"}
+            />
           </View>
 
           <View
@@ -329,13 +359,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     minHeight: "100%",
     paddingBottom: 40,
-  },
-  secondary: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "baseline",
-    paddingTop: 4,
-    paddingBottom: 4,
   },
   title: {
     marginBottom: 20,

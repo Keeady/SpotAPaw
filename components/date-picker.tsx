@@ -45,7 +45,7 @@ export default function DatePicker({
     <View style={styles.wrapper}>
       <Button
         icon={"calendar"}
-        mode={"contained"}
+        mode="elevated"
         onPress={() => setShowDate(true)}
         style={styles.button}
       >
@@ -53,7 +53,7 @@ export default function DatePicker({
       </Button>
       <Button
         icon={"clock"}
-        mode={"contained"}
+        mode="elevated"
         onPress={() => setShowTime(true)}
         style={styles.button}
       >

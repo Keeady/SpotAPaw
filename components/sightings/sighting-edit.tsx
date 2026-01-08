@@ -230,26 +230,12 @@ const styles = StyleSheet.create({
     minHeight: "100%",
     paddingBottom: 40,
   },
-  secondary: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "baseline",
-    paddingTop: 4,
-    paddingBottom: 4,
-  },
-  title: {
-    marginBottom: 20,
-    alignSelf: "center",
-  },
   preview: {
     width: "100%",
     height: 300,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
-  },
-  button: {
-    marginTop: 20,
   },
   emptyPreview: {
     width: "100%",

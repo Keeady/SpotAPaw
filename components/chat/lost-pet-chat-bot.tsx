@@ -402,6 +402,7 @@ const LostPetChatbot = () => {
               }
             );
           }, 500);
+          break;
         }
         break;
 

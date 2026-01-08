@@ -15,7 +15,6 @@ export default function EditPetSighting() {
     sightingId: string;
     petId: string;
   }>();
-  const [pet, setPet] = useState<Pet | undefined>();
   const { user } = useContext(AuthContext);
   const [profileInfo, setProfileInfo] = useState<Pet>();
   const [sightingInfo, setSightingInfo] = useState<PetSighting>();
@@ -34,8 +33,7 @@ export default function EditPetSighting() {
       .select("*")
       .eq("id", petId)
       .single()
-      .then(({ data, error }) => {
-        setPet(data);
+      .then(({ data }) => {
         setProfileInfo(data);
       });
   }, [petId]);
@@ -50,7 +48,7 @@ export default function EditPetSighting() {
       .select("*")
       .eq("id", sightingId)
       .single()
-      .then(({ data, error }) => {
+      .then(({ data }) => {
         setSighting(data);
         setSightingInfo(data);
       });
@@ -108,8 +106,8 @@ export default function EditPetSighting() {
     if (!profileInfo || !user || !sightingInfo) {
       return;
     }
-    if (profileInfo.photo) {
-      await uploadImage(profileInfo.photo, handleSubmit);
+    if (profileInfo.photoUrl) {
+      await uploadImage(profileInfo.photoUrl, handleSubmit);
     } else {
       await handleSubmit("");
     }
@@ -119,7 +117,7 @@ export default function EditPetSighting() {
     saveSightingPhoto,
     setProfileInfo,
     setSightingInfo,
-    pet,
+    profileInfo,
     sighting,
     true
   );

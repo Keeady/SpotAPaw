@@ -17,7 +17,7 @@ export const ImagePickerHandler = async (
   });
 
   if (result && !result.canceled) {
-    handleChange("photo", result.assets[0].uri);
+    handleChange("photoUrl", result.assets[0].uri);
   }
 };
 

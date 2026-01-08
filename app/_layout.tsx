@@ -1,10 +1,11 @@
 import { AuthProvider } from "@/components/Provider/auth-provider";
 import { Stack, useRouter } from "expo-router";
 import FlashMessage from "react-native-flash-message";
-import { Image, Linking, StyleSheet } from "react-native";
+import { Image, Linking } from "react-native";
 import { useEffect } from "react";
 import { supabase } from "@/components/supabase-client";
 import { MD3LightTheme, PaperProvider } from "react-native-paper";
+import styles from "@/components/layout.style";
 
 export default function Layout() {
   const router = useRouter();
@@ -53,23 +54,11 @@ export default function Layout() {
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          <Stack.Screen name="terms" options={{ headerShown: false }} />
-          <Stack.Screen name="privacy" options={{ headerShown: false }} />
+          <Stack.Screen name="terms" options={{ headerShown: true }} />
+          <Stack.Screen name="privacy" options={{ headerShown: true }} />
         </Stack>
         <FlashMessage position="bottom" duration={5000} />
       </AuthProvider>
     </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  logo: {
-    width: 100,
-    marginLeft: 0,
-    resizeMode: "contain",
-    height: 50,
-  },
-  button: {
-    marginRight: 12,
-  },
-});

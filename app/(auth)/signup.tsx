@@ -198,16 +198,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: "#fff",
   },
-  logo: {
-    width: "100%",
-    marginBottom: 40,
-    marginTop: 40,
-    resizeMode: "contain",
-  },
-  button: {
-    width: "100%",
-    marginBottom: 16,
-  },
   verticallySpaced: {
     paddingTop: 4,
     paddingBottom: 4,
