@@ -50,7 +50,13 @@ export default function CreateNewSighting() {
   const uploadImage = useUploadPetImageUrl();
 
   useEffect(() => {
-    if (!id && colors && species && features && location) {
+    if (
+      !id &&
+      colors &&
+      species &&
+      features &&
+      (lastSeenLocation || (lastSeenLocationLat && lastSeenLocationLng))
+    ) {
       setEmpty(false);
     } else if (
       id &&
@@ -67,6 +73,7 @@ export default function CreateNewSighting() {
     colors,
     species,
     features,
+    id
   ]);
 
   useEffect(() => {
