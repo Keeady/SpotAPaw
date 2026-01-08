@@ -108,8 +108,8 @@ export default function EditPetSighting() {
     if (!profileInfo || !user || !sightingInfo) {
       return;
     }
-    if (profileInfo.photo) {
-      await uploadImage(profileInfo.photo, handleSubmit);
+    if (profileInfo.photoUrl) {
+      await uploadImage(profileInfo.photoUrl, handleSubmit);
     } else {
       await handleSubmit("");
     }
