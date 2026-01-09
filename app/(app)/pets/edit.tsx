@@ -6,7 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 import useUploadPetImageUrl from "@/components/image-upload";
-import { isValidUuid } from "@/components/util";
+import { getLastSeenLocation, isValidUuid } from "@/components/util";
 import { log } from "@/components/logs";
 
 export default function EditPet() {
@@ -98,6 +98,12 @@ export default function EditPet() {
       return;
     }
 
+    const lastSeenFormatted = await getLastSeenLocation(
+      profileInfo.last_seen_location,
+      profileInfo.last_seen_lat,
+      profileInfo.last_seen_long
+    );
+
     const { error, data } = await supabase
       .from("sightings")
       .insert({
@@ -111,8 +117,8 @@ export default function EditPet() {
         note: profileInfo.note,
         reporter_id: user?.id,
         last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
-        last_seen_location: profileInfo.last_seen_location,
-        last_seen_lat: profileInfo?.last_seen_lat,
+        last_seen_location: lastSeenFormatted,
+        last_seen_lat: profileInfo.last_seen_lat,
         last_seen_long: profileInfo.last_seen_long,
         pet_id: id,
       })

@@ -11,9 +11,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import DatePicker from "../date-picker";
-import {
-  SightingLocation,
-} from "../get-current-location";
 import { ImagePickerHandler } from "../image-picker";
 import ShowLocationControls from "../location-util";
 
@@ -68,14 +65,16 @@ export default function EditPetSightingDetails(
                 >
                   Where was your pet last seen?
                 </Text>
-                <ShowLocationControls
-                  handleChange={handleSightingChange}
-                />
+                <ShowLocationControls handleChange={handleSightingChange} />
               </View>
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Text
                   variant="bodyLarge"
-                  style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+                  style={{
+                    alignSelf: "flex-start",
+                    fontWeight: "bold",
+                    marginBottom: 10,
+                  }}
                 >
                   When was your pet last seen?
                 </Text>
@@ -94,6 +93,17 @@ export default function EditPetSightingDetails(
               </View>
             </>
           )}
+
+          <Text
+            variant="bodyLarge"
+            style={{
+              alignSelf: "flex-start",
+              fontWeight: "bold",
+              marginBottom: 10,
+            }}
+          >
+            What does your pet look like?
+          </Text>
 
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput

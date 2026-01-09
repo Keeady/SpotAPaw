@@ -2,6 +2,7 @@ import React from "react";
 import { Image, View, StyleSheet } from "react-native";
 import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
 import { getIconByAnimalSpecies } from "./util";
+import { formatDistanceToNow } from "date-fns";
 
 export function RenderPetProfile(data) {
   const pet = data.pet;
@@ -148,8 +149,7 @@ export function RenderSightingProfile(data) {
               <Text variant="labelMedium">{"Last Seen"}:</Text>
             </View>
             <Text variant="bodyLarge" style={styles.title}>
-              {new Date(pet.last_seen_time).toLocaleDateString()} -{" "}
-              {new Date(pet.last_seen_time).toLocaleTimeString()}
+              {formatDistanceToNow(new Date(pet.last_seen_time), { addSuffix: true })}
             </Text>
             <Text variant="bodyLarge" style={styles.title}>
               {pet.last_seen_location}

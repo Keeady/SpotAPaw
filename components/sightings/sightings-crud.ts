@@ -1,7 +1,6 @@
 import { supabase } from "../supabase-client";
 import { PetReportData } from "./sighting-interface";
-import * as chrono from "chrono-node";
-import { getLastSeenLocation, isValidUuid } from "../util";
+import { convertTime, getLastSeenLocation, isValidUuid } from "../util";
 import { log } from "../logs";
 
 type ChatBotSightingResult = {
@@ -28,7 +27,11 @@ export const saveChatBotSighting = async (
     photo: report.photo,
     last_seen_long: report.lastSeenLocationLng,
     last_seen_lat: report.lastSeenLocationLat,
-    last_seen_location: await getLastSeenLocation(report),
+    last_seen_location: await getLastSeenLocation(
+      report.lastSeenLocation || "",
+      report.lastSeenLocationLat,
+      report.lastSeenLocationLng
+    ),
     last_seen_time: convertTime(report.lastSeenTime || ""),
     pet_id: isValidUuid(report.petId) ? report.petId : null,
     note: saveNotes(report),
@@ -88,24 +91,6 @@ async function saveSightingInfo(
     error: errorMsg,
     reportId,
   });
-}
-
-function convertTime(time: string) {
-  // Convert time to ISO 8601 format if possible
-  let lastSeenTime = "";
-  if (time) {
-    try {
-      const convertedDateTime = chrono.parseDate(time, new Date(), {
-        forwardDate: false,
-      });
-      lastSeenTime =
-        convertedDateTime?.toISOString() || new Date().toISOString();
-    } catch {
-      lastSeenTime = new Date().toISOString();
-    }
-  }
-
-  return lastSeenTime;
 }
 
 function saveNotes(report: PetReportData) {

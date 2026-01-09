@@ -1,9 +1,9 @@
 import { Alert } from "react-native";
 import { supabase } from "./supabase-client";
 import { router } from "expo-router";
-import { PetReportData } from "./sightings/sighting-interface";
 import * as Location from "expo-location";
 import { log } from "./logs";
+import * as chrono from "chrono-node";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -26,26 +26,37 @@ export async function handleSignOut() {
   }
 }
 
-export async function getLastSeenLocation(report: PetReportData) {
-  if (
-    !report.lastSeenLocation &&
-    report.lastSeenLocationLat &&
-    report.lastSeenLocationLng
-  ) {
+export async function getLastSeenLocation(
+  lastSeenLocation?: string | null,
+  lastSeenLocationLat?: number | null,
+  lastSeenLocationLng?: number | null
+) {
+  if (!lastSeenLocation && lastSeenLocationLat && lastSeenLocationLng) {
+    const defaultAddress = `${lastSeenLocationLat.toFixed(
+      6
+    )},${lastSeenLocationLng.toFixed(6)}`;
     try {
-      const address = await Location.reverseGeocodeAsync({
-        longitude: report.lastSeenLocationLng,
-        latitude: report.lastSeenLocationLat,
+      const addressObject = await Location.reverseGeocodeAsync({
+        longitude: lastSeenLocationLng,
+        latitude: lastSeenLocationLat,
       });
-      return address?.[0].formattedAddress || "";
+      const address = addressObject?.[0];
+      if (address) {
+        const city = address.city;
+        const street = address.street;
+        const state = address.region;
+        const streetNumber = address.streetNumber;
+
+        return `${streetNumber} ${street}, ${city}, ${state}`;
+      }
+
+      return defaultAddress;
     } catch {
-      return `${report.lastSeenLocationLat.toFixed(
-        6
-      )},${report.lastSeenLocationLng.toFixed(6)}`;
+      return defaultAddress;
     }
   }
 
-  return report.lastSeenLocation;
+  return lastSeenLocation;
 }
 
 export function getIconByAnimalSpecies(species: string) {
@@ -59,4 +70,22 @@ export function getIconByAnimalSpecies(species: string) {
     default:
       return "paw";
   }
+}
+
+export function convertTime(time: string) {
+  // Convert time to ISO 8601 format if possible
+  let lastSeenTime = new Date().toISOString();
+  if (time) {
+    try {
+      const convertedDateTime = chrono.parseDate(time, new Date(), {
+        forwardDate: false,
+      });
+      lastSeenTime =
+        convertedDateTime?.toISOString() || new Date().toISOString();
+    } catch {
+      // no action needed
+    }
+  }
+
+  return lastSeenTime;
 }

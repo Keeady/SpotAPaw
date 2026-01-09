@@ -64,7 +64,11 @@ export default function EditPetDetails(
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Text
                   variant="bodyLarge"
-                  style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+                  style={{
+                    alignSelf: "flex-start",
+                    fontWeight: "bold",
+                    marginBottom: 10,
+                  }}
                 >
                   When was your pet last seen?
                 </Text>
@@ -82,6 +86,19 @@ export default function EditPetDetails(
                 />
               </View>
             </>
+          )}
+
+          {is_lost && (
+            <Text
+              variant="bodyLarge"
+              style={{
+                alignSelf: "flex-start",
+                fontWeight: "bold",
+                marginBottom: 10,
+              }}
+            >
+              What does your pet look like?
+            </Text>
           )}
 
           <View style={[styles.verticallySpaced, styles.mt20]}>
