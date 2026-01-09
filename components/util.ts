@@ -3,6 +3,7 @@ import { supabase } from "./supabase-client";
 import { router } from "expo-router";
 import * as Location from "expo-location";
 import { log } from "./logs";
+import * as chrono from "chrono-node";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -64,4 +65,22 @@ export function getIconByAnimalSpecies(species: string) {
     default:
       return "paw";
   }
+}
+
+export function convertTime(time: string) {
+  // Convert time to ISO 8601 format if possible
+  let lastSeenTime = "";
+  if (time) {
+    try {
+      const convertedDateTime = chrono.parseDate(time, new Date(), {
+        forwardDate: false,
+      });
+      lastSeenTime =
+        convertedDateTime?.toISOString() || new Date().toISOString();
+    } catch {
+      lastSeenTime = new Date().toISOString();
+    }
+  }
+
+  return lastSeenTime;
 }
