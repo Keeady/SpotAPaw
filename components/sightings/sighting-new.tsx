@@ -95,7 +95,6 @@ export default function CreateNewSighting() {
       lastSeenLocationLat,
       lastSeenLocationLng
     );
-    console.log("lastSeenFormatted", lastSeenFormatted);
     const payload = {
       colors,
       breed,
