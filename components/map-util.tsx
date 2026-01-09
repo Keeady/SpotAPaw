@@ -56,7 +56,7 @@ export default function DropPinOnMap({
         <Text style={styles.mapFooterText}>
           {selectedLocation
             ? "Pin placed! Tap button to confirm."
-            : "Tap the map to place a pin or double tap to zoom ."}
+            : "Tap the map to place a pin or double tap to zoom."}
         </Text>
         <Button
           mode="contained"

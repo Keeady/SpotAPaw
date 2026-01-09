@@ -32,22 +32,27 @@ export async function getLastSeenLocation(
   lastSeenLocationLng?: number | null
 ) {
   if (!lastSeenLocation && lastSeenLocationLat && lastSeenLocationLng) {
+    const defaultAddress = `${lastSeenLocationLat.toFixed(
+      6
+    )},${lastSeenLocationLng.toFixed(6)}`;
     try {
       const addressObject = await Location.reverseGeocodeAsync({
         longitude: lastSeenLocationLng,
         latitude: lastSeenLocationLat,
       });
       const address = addressObject?.[0];
-      const city = address.city;
-      const street = address.street;
-      const state = address.region;
-      const streetNumber = address.streetNumber;
+      if (address) {
+        const city = address.city;
+        const street = address.street;
+        const state = address.region;
+        const streetNumber = address.streetNumber;
 
-      return `${streetNumber} ${street}, ${city}, ${state}`;
+        return `${streetNumber} ${street}, ${city}, ${state}`;
+      }
+
+      return defaultAddress;
     } catch {
-      return `${lastSeenLocationLat.toFixed(6)},${lastSeenLocationLng.toFixed(
-        6
-      )}`;
+      return defaultAddress;
     }
   }
 
@@ -69,7 +74,7 @@ export function getIconByAnimalSpecies(species: string) {
 
 export function convertTime(time: string) {
   // Convert time to ISO 8601 format if possible
-  let lastSeenTime = "";
+  let lastSeenTime = new Date().toISOString();
   if (time) {
     try {
       const convertedDateTime = chrono.parseDate(time, new Date(), {
@@ -78,7 +83,7 @@ export function convertTime(time: string) {
       lastSeenTime =
         convertedDateTime?.toISOString() || new Date().toISOString();
     } catch {
-      lastSeenTime = new Date().toISOString();
+      // no action needed
     }
   }
 

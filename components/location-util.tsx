@@ -53,8 +53,7 @@ export default function ShowLocationControls({
         </Text>
       </Button>
       <TextInput
-        label={"Press button to share your location"}
-        placeholder="Enter Street names, Cross Streets, Signs, Markers"
+        label={"Last Seen Location"}
         value={lastSeenLocation}
         onChangeText={(v) => setLastSeenLocation(v)}
         mode={"outlined"}

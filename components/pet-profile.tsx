@@ -149,7 +149,7 @@ export function RenderSightingProfile(data) {
               <Text variant="labelMedium">{"Last Seen"}:</Text>
             </View>
             <Text variant="bodyLarge" style={styles.title}>
-              {formatDistanceToNow(pet.last_seen_time, { addSuffix: true })}
+              {formatDistanceToNow(new Date(pet.last_seen_time), { addSuffix: true })}
             </Text>
             <Text variant="bodyLarge" style={styles.title}>
               {pet.last_seen_location}
