@@ -1,4 +1,4 @@
-import { Button, Card } from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import MapView, {
   MapPressEvent,
@@ -6,12 +6,11 @@ import MapView, {
   PROVIDER_GOOGLE,
 } from "react-native-maps";
 import { useState } from "react";
-import { Text } from "react-native-paper";
 import { SightingLocation } from "./get-current-location";
 
 type DropPinOnMapProps = {
   currentLocation?: SightingLocation;
-  handleActionButton: (location?: SightingLocation) => void
+  handleActionButton: (location?: SightingLocation) => void;
 };
 
 export default function DropPinOnMap({
@@ -57,7 +56,7 @@ export default function DropPinOnMap({
         <Text style={styles.mapFooterText}>
           {selectedLocation
             ? "Pin placed! Tap button to confirm."
-            : "Tap the map to place a pin."}
+            : "Tap the map to place a pin or double tap to zoom ."}
         </Text>
         <Button
           mode="contained"
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
   mapCard: {
     width: 320,
     marginTop: 8,
-    alignSelf: "center"
+    alignSelf: "center",
   },
   map: {
     width: "100%",

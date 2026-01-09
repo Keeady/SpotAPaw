@@ -7,7 +7,7 @@ import { showMessage } from "react-native-flash-message";
 import EditPetSightingDetails from "@/components/sightings/sighting-edit";
 import useUploadPetImageUrl from "@/components/image-upload";
 import { PetSighting } from "@/model/sighting";
-import { isValidUuid } from "@/components/util";
+import { getLastSeenLocation, isValidUuid } from "@/components/util";
 import { log } from "@/components/logs";
 
 export default function EditPetSighting() {
@@ -63,6 +63,12 @@ export default function EditPetSighting() {
       return;
     }
 
+    const lastSeenFormatted = await getLastSeenLocation(
+      sightingInfo.last_seen_location,
+      sightingInfo?.last_seen_lat,
+      sightingInfo.last_seen_long
+    );
+
     const { error } = await supabase
       .from("sightings")
       .update({
@@ -75,7 +81,7 @@ export default function EditPetSighting() {
         photo: photoUrl,
         reporter_id: user?.id,
         last_seen_time: sightingInfo.last_seen_time || new Date().toISOString(),
-        last_seen_location: sightingInfo.last_seen_location,
+        last_seen_location: lastSeenFormatted,
         last_seen_lat: sightingInfo?.last_seen_lat,
         last_seen_long: sightingInfo.last_seen_long,
         pet_id: petId,

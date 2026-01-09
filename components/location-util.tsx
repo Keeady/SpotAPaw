@@ -11,7 +11,6 @@ type ShowLocationControlsProps = {
 export default function ShowLocationControls({
   handleChange,
 }: ShowLocationControlsProps) {
-  const [showMap, setShowMap] = useState(false);
   const [lastSeenLocation, setLastSeenLocation] = useState("");
 
   async function getCurrentLocation() {
@@ -27,53 +26,52 @@ export default function ShowLocationControls({
 
   return (
     <>
-      {!showMap && (
-        <>
-          <TextInput
-            label={"Last Seen Location"}
-            placeholder="Enter Street names, Cross Streets, Signs, Markers"
-            value={lastSeenLocation}
-            onChangeText={(v) => setLastSeenLocation(v)}
-            mode={"outlined"}
-          />
-          <Button
-            icon={"map-marker-radius-outline"}
-            onPress={getCurrentLocation}
-            mode="elevated"
-            style={styles.button}
-          >
-            <Text>
-              {lastSeenLocation ? "Location saved" : "Use My Current Location"}
-            </Text>
-          </Button>
-        </>
-      )}
-      {showMap && (
-        <DropPinOnMap
-          handleActionButton={(location) => {
-            if (location) {
-              handleChange("last_seen_long", location?.lng);
-              handleChange("last_seen_lat", location?.lat);
-              handleChange("last_seen_location", "");
-            }
-          }}
-        />
-      )}
+      <Text variant="labelMedium" style={styles.centerText}>
+        Tap the map to share location
+      </Text>
+      <DropPinOnMap
+        handleActionButton={(location) => {
+          if (location) {
+            handleChange("last_seen_long", location?.lng);
+            handleChange("last_seen_lat", location?.lat);
+            handleChange("last_seen_location", "");
+          }
+        }}
+      />
+
+      <Text variant="labelLarge" style={styles.centerText}>
+        Or
+      </Text>
       <Button
-        icon={"map-marker-circle"}
-        onPress={() => setShowMap(!showMap)}
+        icon={"map-marker-radius-outline"}
+        onPress={getCurrentLocation}
         mode="elevated"
         style={styles.button}
       >
-        <Text>{showMap ? "Close Map" : "Drop pin on map"}</Text>
+        <Text>
+          {lastSeenLocation ? "Location saved" : "Use My Current Location"}
+        </Text>
       </Button>
+      <TextInput
+        label={"Press button to share your location"}
+        placeholder="Enter Street names, Cross Streets, Signs, Markers"
+        value={lastSeenLocation}
+        onChangeText={(v) => setLastSeenLocation(v)}
+        mode={"outlined"}
+        editable={false}
+      />
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
+  centerText: {
+    alignSelf: "center",
     marginTop: 20,
+    marginBottom: 10,
+  },
+  button: {
+    marginTop: 10,
     marginBottom: 10,
   },
 });

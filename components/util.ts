@@ -1,7 +1,6 @@
 import { Alert } from "react-native";
 import { supabase } from "./supabase-client";
 import { router } from "expo-router";
-import { PetReportData } from "./sightings/sighting-interface";
 import * as Location from "expo-location";
 import { log } from "./logs";
 
@@ -26,26 +25,32 @@ export async function handleSignOut() {
   }
 }
 
-export async function getLastSeenLocation(report: PetReportData) {
-  if (
-    !report.lastSeenLocation &&
-    report.lastSeenLocationLat &&
-    report.lastSeenLocationLng
-  ) {
+export async function getLastSeenLocation(
+  lastSeenLocation?: string | null,
+  lastSeenLocationLat?: number | null,
+  lastSeenLocationLng?: number | null
+) {
+  if (!lastSeenLocation && lastSeenLocationLat && lastSeenLocationLng) {
     try {
-      const address = await Location.reverseGeocodeAsync({
-        longitude: report.lastSeenLocationLng,
-        latitude: report.lastSeenLocationLat,
+      const addressObject = await Location.reverseGeocodeAsync({
+        longitude: lastSeenLocationLng,
+        latitude: lastSeenLocationLat,
       });
-      return address?.[0].formattedAddress || "";
+      const address = addressObject?.[0];
+      const city = address.city;
+      const street = address.street;
+      const state = address.region;
+      const streetNumber = address.streetNumber;
+
+      return `${streetNumber} ${street}, ${city}, ${state}`;
     } catch {
-      return `${report.lastSeenLocationLat.toFixed(
+      return `${lastSeenLocationLat.toFixed(6)},${lastSeenLocationLng.toFixed(
         6
-      )},${report.lastSeenLocationLng.toFixed(6)}`;
+      )}`;
     }
   }
 
-  return report.lastSeenLocation;
+  return lastSeenLocation;
 }
 
 export function getIconByAnimalSpecies(species: string) {

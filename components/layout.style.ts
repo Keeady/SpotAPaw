@@ -6,7 +6,6 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     resizeMode: "contain",
     height: 50,
-    backgroundColor: "red"
   },
   button: {
     marginRight: 12,

@@ -14,7 +14,7 @@ import {
 import { AuthContext } from "../Provider/auth-provider";
 import { pickImage } from "../image-picker";
 import useUploadPetImageUrl from "../image-upload";
-import { isValidUuid } from "../util";
+import { getLastSeenLocation, isValidUuid } from "../util";
 import { log } from "../logs";
 import DatePicker from "../date-picker";
 import ShowLocationControls from "../location-util";
@@ -36,13 +36,9 @@ export default function CreateNewSighting() {
   const [linked_sighting_id, setLinkedSightingId] = useState();
   const [lastSeenTime, setLastSeenTime] = useState(new Date().toISOString());
 
-  const [lastSeenLocation, setLastSeenLocation] = useState<string | number>("");
-  const [lastSeenLocationLng, setLastSeenLocationLng] = useState<
-    string | number
-  >(0);
-  const [lastSeenLocationLat, setLastSeenLocationLat] = useState<
-    string | number
-  >(0);
+  const [lastSeenLocation, setLastSeenLocation] = useState<string>("");
+  const [lastSeenLocationLng, setLastSeenLocationLng] = useState<number>(0);
+  const [lastSeenLocationLat, setLastSeenLocationLat] = useState<number>(0);
 
   const { user } = useContext(AuthContext);
 
@@ -73,7 +69,7 @@ export default function CreateNewSighting() {
     colors,
     species,
     features,
-    id
+    id,
   ]);
 
   useEffect(() => {
@@ -94,6 +90,12 @@ export default function CreateNewSighting() {
 
   async function saveSighting(photo: string) {
     const sightingId = isValidUuid(id) ? id : null;
+    const lastSeenFormatted = await getLastSeenLocation(
+      lastSeenLocation,
+      lastSeenLocationLat,
+      lastSeenLocationLng
+    );
+    console.log("lastSeenFormatted", lastSeenFormatted);
     const payload = {
       colors,
       breed,
@@ -102,7 +104,7 @@ export default function CreateNewSighting() {
       features,
       photo,
       note,
-      last_seen_location: lastSeenLocation,
+      last_seen_location: lastSeenFormatted,
       last_seen_long: lastSeenLocationLng,
       last_seen_lat: lastSeenLocationLat,
       last_seen_time: lastSeenTime,
@@ -200,11 +202,11 @@ export default function CreateNewSighting() {
             <ShowLocationControls
               handleChange={(fieldName, fieldValue: string | number) => {
                 if (fieldName === "last_seen_long") {
-                  setLastSeenLocationLng(fieldValue);
+                  setLastSeenLocationLng(fieldValue as number);
                 } else if (fieldName === "last_seen_lat") {
-                  setLastSeenLocationLat(fieldValue);
+                  setLastSeenLocationLat(fieldValue as number);
                 } else if (fieldName === "last_seen_location") {
-                  setLastSeenLocation(fieldValue);
+                  setLastSeenLocation(fieldValue as string);
                 }
               }}
             />
@@ -243,7 +245,7 @@ export default function CreateNewSighting() {
                 style={{
                   alignSelf: "flex-start",
                   fontWeight: "bold",
-                  marginTop: 10,
+                  marginTop: 20,
                 }}
               >
                 What did the pet look like?

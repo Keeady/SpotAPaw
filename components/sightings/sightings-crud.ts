@@ -28,7 +28,11 @@ export const saveChatBotSighting = async (
     photo: report.photo,
     last_seen_long: report.lastSeenLocationLng,
     last_seen_lat: report.lastSeenLocationLat,
-    last_seen_location: await getLastSeenLocation(report),
+    last_seen_location: await getLastSeenLocation(
+      report.lastSeenLocation || "",
+      report.lastSeenLocationLat,
+      report.lastSeenLocationLng
+    ),
     last_seen_time: convertTime(report.lastSeenTime || ""),
     pet_id: isValidUuid(report.petId) ? report.petId : null,
     note: saveNotes(report),
