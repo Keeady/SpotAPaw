@@ -32,6 +32,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { log } from "../logs";
 import DropPinOnMap from "../map-util";
 import { supabase } from "../supabase-client";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 type ChatBotActionButton = {
   label: string;
@@ -88,8 +89,8 @@ const LostPetChatbot = () => {
     distinctiveFeatures: null,
     photo: null,
     photoUrl: "",
-    contactName: null,
-    contactPhone: null,
+    contactName: "",
+    contactPhone: "",
     petBehavior: null,
     hasCollar: null,
     gender: null,
@@ -243,7 +244,7 @@ const LostPetChatbot = () => {
       return [{ text: owner.phone, value: owner.phone }];
     }
 
-    return [];
+    return [{ text: "Skip", value: "Skip" }];
   }, [owner]);
 
   const populatePetReport = useCallback(
@@ -285,10 +286,7 @@ const LostPetChatbot = () => {
     setTimeout(() => {
       addBotMessage(
         `${message}Where did you find this pet?`,
-        [
-          { text: "Drop pin on map", value: "show_map" },
-          { text: "I'll type it", value: "will_type" },
-        ],
+        [{ text: "Drop pin on map", value: "show_map" }],
         {
           label: "Share My Location",
           icon: "crosshairs-gps",
@@ -391,10 +389,7 @@ const LostPetChatbot = () => {
           setTimeout(() => {
             addBotMessage(
               "Where was your pet last seen?",
-              [
-                { text: "Drop pin on map", value: "show_map" },
-                { text: "I'll type it", value: "will_type" },
-              ],
+              [{ text: "Drop pin on map", value: "show_map" }],
               {
                 label: "Share My Location",
                 icon: "crosshairs-gps",
@@ -642,15 +637,30 @@ const LostPetChatbot = () => {
         break;
 
       case "foundPhone":
-        setReportData((prev) => ({
-          ...prev,
-          contactPhone: response,
-          contactName: owner?.firstname,
-        }));
+        if (response !== "Skip") {
+          const isValid = isValidPhoneNumber(response, "US");
+          setReportData((prev) => ({
+            ...prev,
+            contactPhone: isValid ? response : "",
+            contactName: owner?.firstname,
+          }));
+          if (!isValid) {
+            setCurrentStep("foundPhone");
+            setTimeout(() => {
+              addBotMessage("Please enter a valid phone number", [
+                { text: "Skip", value: "Skip" },
+              ]);
+            }, 500);
+            return;
+          }
+        }
+
         if (!owner?.firstname) {
           setCurrentStep("foundContact");
           setTimeout(() => {
-            addBotMessage("What's your name?");
+            addBotMessage("What's your name?", [
+              { text: "Skip", value: "Skip" },
+            ]);
           }, 500);
         } else {
           setCurrentStep("saving");
@@ -659,7 +669,9 @@ const LostPetChatbot = () => {
         break;
 
       case "foundContact":
-        setReportData((prev) => ({ ...prev, contactName: response }));
+        if (response !== "Skip") {
+          setReportData((prev) => ({ ...prev, contactName: response }));
+        }
         setCurrentStep("saving");
         showBehaviorWarningMsg();
         break;
@@ -800,10 +812,7 @@ const LostPetChatbot = () => {
         setTimeout(() => {
           addBotMessage(
             "Where was your pet last seen?",
-            [
-              { text: "Drop pin on map", value: "show_map" },
-              { text: "I'll type it", value: "will_type" },
-            ],
+            [{ text: "Drop pin on map", value: "show_map" }],
             {
               label: "Share My Location",
               icon: "crosshairs-gps",
@@ -887,16 +896,31 @@ const LostPetChatbot = () => {
         break;
 
       case "phone":
-        setReportData((prev) => ({
-          ...prev,
-          contactPhone: response,
-          contactName: owner?.firstname,
-        }));
+        if (response !== "Skip") {
+          const isValid = isValidPhoneNumber(response, "US");
+          setReportData((prev) => ({
+            ...prev,
+            contactPhone: isValid ? response : "",
+            contactName: owner?.firstname,
+          }));
+
+          if (!isValid) {
+            setCurrentStep("phone");
+            setTimeout(() => {
+              addBotMessage("Please enter a valid phone number", [
+                { text: "Skip", value: "Skip" },
+              ]);
+            }, 500);
+            return;
+          }
+        }
 
         if (!owner?.firstname) {
           setCurrentStep("contact");
           setTimeout(() => {
-            addBotMessage("What's your name?");
+            addBotMessage("What's your name?", [
+              { text: "Skip", value: "Skip" },
+            ]);
           }, 500);
         } else {
           setCurrentStep("saving");
@@ -904,10 +928,12 @@ const LostPetChatbot = () => {
         break;
 
       case "contact":
-        setReportData((prev) => ({
-          ...prev,
-          contactName: response,
-        }));
+        if (response !== "Skip") {
+          setReportData((prev) => ({
+            ...prev,
+            contactName: response,
+          }));
+        }
         setCurrentStep("saving");
         break;
 
@@ -1079,8 +1105,8 @@ const LostPetChatbot = () => {
       lastSeenTime: null,
       distinctiveFeatures: null,
       photo: null,
-      contactName: null,
-      contactPhone: null,
+      contactName: "",
+      contactPhone: "",
       petBehavior: null,
       hasCollar: null,
       gender: null,
