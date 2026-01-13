@@ -9,6 +9,8 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import { isValidPhoneNumber } from "libphonenumber-js";
+import isEmail from "validator/es/lib/isEmail";
 
 export default function OwnerList() {
   const theme = useTheme();
@@ -29,6 +31,9 @@ export default function OwnerList() {
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(true);
 
   const { sightingId } = useLocalSearchParams<{ sightingId: string }>();
+
+  const [hasPhoneError, setHasPhoneError] = useState(false);
+  const [hasEmailError, setHasEmailError] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -89,6 +94,17 @@ export default function OwnerList() {
     if (extra_info.trim() || !user) {
       return;
     }
+
+    if (!isValidPhoneNumber(phone, "US")) {
+      setHasPhoneError(true);
+      return;
+    }
+
+    if (!isEmail(email)) {
+      setHasEmailError(true);
+      return;
+    }
+
     setLoading(true);
     let result;
     if (id && isValidUuid(id)) {
@@ -158,17 +174,26 @@ export default function OwnerList() {
       <View style={styles.content}>
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <TextInput
+            error={hasPhoneError}
             label="Phone Number"
             left={<TextInput.Icon icon="phone" />}
-            onChangeText={(text) => setPhone(text)}
+            onChangeText={(text) => {
+              setPhone(text);
+            }}
             value={phone}
-            placeholder="555-555-5555"
+            placeholder="+1-555-555-5555"
             autoCapitalize={"none"}
             mode="outlined"
+            autoComplete="tel"
+            keyboardType="phone-pad"
+            onBlur={() => {
+              setHasPhoneError(!isValidPhoneNumber(phone, "US"));
+            }}
           />
         </View>
         <View style={styles.verticallySpaced}>
           <TextInput
+            error={hasEmailError}
             label="Email"
             left={<TextInput.Icon icon="account-box-outline" />}
             onChangeText={(text) => setEmail(text)}
@@ -176,6 +201,10 @@ export default function OwnerList() {
             placeholder="youremail@email.com"
             autoCapitalize={"none"}
             mode="outlined"
+            keyboardType="email-address"
+            onBlur={() => {
+              setHasEmailError(!isEmail(email));
+            }}
           />
         </View>
         <View style={styles.verticallySpaced}>
@@ -216,10 +245,16 @@ export default function OwnerList() {
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <Button
             mode="contained"
-            disabled={loading || disableSubmitBtn}
+            disabled={
+              loading || disableSubmitBtn || hasPhoneError || hasEmailError
+            }
             onPress={() => createContact()}
           >
-            {id ? "Save Contact" : "Create Contact"}
+            {hasPhoneError || hasEmailError
+              ? "Invalid input. Please fix."
+              : id
+              ? "Save Contact"
+              : "Create Contact"}
           </Button>
         </View>
 
