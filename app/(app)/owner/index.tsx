@@ -95,7 +95,7 @@ export default function OwnerList() {
       return;
     }
 
-    if (!isValidPhoneNumber(phone)) {
+    if (!isValidPhoneNumber(phone, "US")) {
       setHasPhoneError(true);
       return;
     }

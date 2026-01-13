@@ -34,7 +34,7 @@ export default function SightingContact() {
       return;
     }
 
-    if (!isValidPhoneNumber(phone)) {
+    if (!isValidPhoneNumber(phone, "US")) {
       setHasPhoneError(true);
       return;
     }

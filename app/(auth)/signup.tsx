@@ -45,7 +45,7 @@ export default function SignUpScreen() {
       return;
     }
 
-    if (phone && !isValidPhoneNumber(phone)) {
+    if (phone && !isValidPhoneNumber(phone, "US")) {
       setHasPhoneError(true);
       return;
     }
