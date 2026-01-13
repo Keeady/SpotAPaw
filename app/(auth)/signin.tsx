@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import isEmail from "validator/es/lib/isEmail";
 
 export default function SignInScreen() {
   const theme = useTheme();
@@ -14,6 +15,8 @@ export default function SignInScreen() {
   const router = useRouter();
   const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
+
+  const [hasEmailError, setHasEmailError] = useState(false);
 
   async function signInWithEmail() {
     if (extra_info.trim()) {
@@ -30,6 +33,12 @@ export default function SignInScreen() {
       });
       return;
     }
+
+    if (!email || !isEmail(email)) {
+      setHasEmailError(true);
+      return;
+    }
+
     setLoading(true);
     const {
       error,
@@ -75,6 +84,11 @@ export default function SignInScreen() {
             placeholder="email@address.com"
             autoCapitalize={"none"}
             mode="outlined"
+            keyboardType="email-address"
+            onBlur={() => {
+              setHasEmailError(!isEmail(email));
+            }}
+            error={hasEmailError}
           />
         </View>
         <View style={styles.verticallySpaced}>
@@ -99,7 +113,7 @@ export default function SignInScreen() {
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <Button
             mode="contained"
-            disabled={loading || !email || !password}
+            disabled={loading || !email || !password || hasEmailError}
             onPress={() => signInWithEmail()}
           >
             Sign in

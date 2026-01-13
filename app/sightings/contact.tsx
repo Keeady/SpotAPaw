@@ -3,6 +3,7 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
@@ -18,6 +19,7 @@ export default function SightingContact() {
   const [extra_info, setExtraInfo] = useState("");
   const { sightingId } = useLocalSearchParams<{ sightingId: string }>();
   const [disableBtn, setDisabledBtn] = useState(true);
+  const [hasPhoneError, setHasPhoneError] = useState(false);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -29,6 +31,11 @@ export default function SightingContact() {
 
   async function saveSightingContact() {
     if (extra_info.trim() || !isValidUuid(sightingId)) {
+      return;
+    }
+
+    if (!isValidPhoneNumber(phone)) {
+      setHasPhoneError(true);
       return;
     }
 
@@ -73,10 +80,16 @@ export default function SightingContact() {
           left={<TextInput.Icon icon="phone" />}
           onChangeText={(text) => setPhone(text)}
           value={phone}
-          placeholder="555-555-5555"
+          placeholder="+1-555-555-5555"
           autoCapitalize={"none"}
           mode="outlined"
           textContentType="telephoneNumber"
+          autoComplete="tel"
+          keyboardType="phone-pad"
+          onBlur={() => {
+            setHasPhoneError(!!phone && !isValidPhoneNumber(phone, "US"));
+          }}
+          error={hasPhoneError}
         />
       </View>
       <View style={styles.verticallySpaced}>
@@ -95,20 +108,30 @@ export default function SightingContact() {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           mode="contained"
-          disabled={loading}
+          disabled={loading || hasPhoneError || disableBtn}
           onPress={() => saveSightingContact()}
         >
-          Save Contact
+          {hasPhoneError ? "Invalid input. Please fix." : "Save Contact"}
         </Button>
       </View>
       <View style={styles.secondary}>
         <Text>Do you want to create an account?</Text>
         <Button
           mode="text"
-          disabled={loading || disableBtn}
+          disabled={loading}
           onPress={() => router.push("/(auth)/signup")}
         >
           Register
+        </Button>
+      </View>
+
+      <View style={styles.secondary}>
+        <Button
+          mode="text"
+          disabled={loading}
+          onPress={() => router.dismissTo(`/${sightingsRoute}`)}
+        >
+          Skip?
         </Button>
       </View>
 
@@ -142,7 +165,6 @@ const styles = StyleSheet.create({
     minHeight: "100%",
   },
   secondary: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "baseline",
     paddingTop: 4,

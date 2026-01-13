@@ -1,6 +1,7 @@
 import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -11,6 +12,7 @@ import {
 } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import isEmail from "validator/es/lib/isEmail";
 
 export default function SignUpScreen() {
   const theme = useTheme();
@@ -24,6 +26,8 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
+  const [hasPhoneError, setHasPhoneError] = useState(false);
+  const [hasEmailError, setHasEmailError] = useState(false);
 
   async function signUpWithEmail() {
     if (extra_info.trim()) {
@@ -38,6 +42,16 @@ export default function SignUpScreen() {
         autoHide: true,
         statusBarHeight: 100,
       });
+      return;
+    }
+
+    if (phone && !isValidPhoneNumber(phone)) {
+      setHasPhoneError(true);
+      return;
+    }
+
+    if (!email || !isEmail(email)) {
+      setHasEmailError(true);
       return;
     }
 
@@ -128,25 +142,36 @@ export default function SignUpScreen() {
             left={<TextInput.Icon icon="phone" />}
             onChangeText={(text) => setPhone(text)}
             value={phone}
-            placeholder="Phone Number"
+            placeholder="+1-555-555-5555"
             autoCapitalize={"none"}
             mode="outlined"
+            autoComplete="tel"
+            keyboardType="phone-pad"
+            onBlur={() => {
+              setHasPhoneError(!!phone && !isValidPhoneNumber(phone, "US"));
+            }}
+            error={hasPhoneError}
           />
         </View>
         <View style={[styles.verticallySpaced]}>
           <TextInput
-            label="Email*"
+            label="Email (Required)"
             left={<TextInput.Icon icon="mail" />}
             onChangeText={(text) => setEmail(text)}
             value={email}
             placeholder="email@address.com"
             autoCapitalize={"none"}
             mode="outlined"
+            keyboardType="email-address"
+            onBlur={() => {
+              setHasEmailError(!isEmail(email));
+            }}
+            error={hasEmailError}
           />
         </View>
         <View style={styles.verticallySpaced}>
           <TextInput
-            label="Password*"
+            label="Password (Required)"
             left={<TextInput.Icon icon="lock" />}
             onChangeText={(text) => setPassword(text)}
             value={password}
@@ -166,10 +191,10 @@ export default function SignUpScreen() {
         <View style={styles.verticallySpaced}>
           <Button
             mode="contained"
-            disabled={loading}
+            disabled={loading || hasEmailError || hasPhoneError}
             onPress={() => signUpWithEmail()}
           >
-            Sign up
+            {hasEmailError || hasPhoneError ? "Invalid Input. Please fix." : "Sign up"}
           </Button>
         </View>
         <View style={styles.secondary}>
