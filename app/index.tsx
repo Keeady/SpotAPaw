@@ -96,7 +96,7 @@ export default function PublicHome() {
       </View>
       <FAB
         icon="message-outline"
-        label="Report"
+        label="Add Sighting"
         mode="elevated"
         onPress={() => router.push("/sightings/chat-bot")}
         style={{
