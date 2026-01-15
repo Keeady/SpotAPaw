@@ -1,14 +1,16 @@
+DECLARE pet_name TEXT;
 BEGIN
-  -- Only proceed if claim confirmed was just set to true
+  -- Only proceed if confirmed was just set to true
   IF NEW.confirmed = true AND (OLD.confirmed IS NULL OR OLD.confirmed = false) THEN
-    -- Update sightings where id matches this claim's sighting_id
-    UPDATE sightings
-    SET pet_id = NEW.pet_id
-    WHERE id = NEW.sighting_id;
-
-    -- Update sightings where linked_sighting_id matches this claim's sighting_id
-    UPDATE sightings
-    SET pet_id = NEW.pet_id
+    -- Fetch pet info
+    SELECT name into pet_name FROM pets WHERE id = NEW.pet_id;
+    
+    -- Update aggregated_sightings where linked_sighting_id matches this claim's sighting_id
+    UPDATE aggregated_sightings
+    SET 
+      pet_id = NEW.pet_id,
+      owner_id = NEW.owner_id,
+      name = pet_name
     WHERE linked_sighting_id = NEW.sighting_id;
   END IF;
 
