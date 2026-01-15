@@ -21,7 +21,10 @@ import ShowLocationControls from "../location-util";
 
 export default function CreateNewSighting() {
   const theme = useTheme();
-  const { id, petId } = useLocalSearchParams<{ id: string; petId: string }>();
+  const { id: linked_sighting_id, petId } = useLocalSearchParams<{
+    id: string;
+    petId: string;
+  }>();
 
   const [loading, setLoading] = useState(false);
   const [colors, setColors] = useState("");
@@ -33,7 +36,6 @@ export default function CreateNewSighting() {
   const [extra_info, setExtraInfo] = useState("");
   const [note, setNote] = useState("");
   const [empty, setEmpty] = useState(true);
-  const [linked_sighting_id, setLinkedSightingId] = useState();
   const [lastSeenTime, setLastSeenTime] = useState(new Date().toISOString());
 
   const [lastSeenLocation, setLastSeenLocation] = useState<string>("");
@@ -47,7 +49,7 @@ export default function CreateNewSighting() {
 
   useEffect(() => {
     if (
-      !id &&
+      !linked_sighting_id &&
       colors &&
       species &&
       features &&
@@ -55,7 +57,7 @@ export default function CreateNewSighting() {
     ) {
       setEmpty(false);
     } else if (
-      id &&
+      linked_sighting_id &&
       (lastSeenLocation || (lastSeenLocationLat && lastSeenLocationLng))
     ) {
       setEmpty(false);
@@ -69,27 +71,13 @@ export default function CreateNewSighting() {
     colors,
     species,
     features,
-    id,
+    linked_sighting_id,
   ]);
 
-  useEffect(() => {
-    if (id && isValidUuid(id)) {
-      setLoading(true);
-      supabase
-        .from("sightings")
-        .select("linked_sighting_id")
-        .eq("id", id)
-        .single()
-        .then(({ data }) => {
-          setLinkedSightingId(data.linked_sighting_id);
-        });
-    }
-
-    setLoading(false);
-  }, [id]);
-
   async function saveSighting(photo: string) {
-    const sightingId = isValidUuid(id) ? id : null;
+    const sightingId = isValidUuid(linked_sighting_id)
+      ? linked_sighting_id
+      : null;
     const lastSeenFormatted = await getLastSeenLocation(
       lastSeenLocation,
       lastSeenLocationLat,
@@ -107,7 +95,7 @@ export default function CreateNewSighting() {
       last_seen_long: lastSeenLocationLng,
       last_seen_lat: lastSeenLocationLat,
       last_seen_time: lastSeenTime,
-      linked_sighting_id: linked_sighting_id ?? sightingId,
+      linked_sighting_id: sightingId,
     } as PetSighting;
 
     if (petId && isValidUuid(petId)) {
@@ -130,7 +118,7 @@ export default function CreateNewSighting() {
       });
       return;
     } else {
-      const sightingId = id ?? data[0]["id"];
+      const sightingId = linked_sighting_id ?? data[0]["id"];
       showMessage({
         message: "Successfully added pet sighting.",
         type: "success",
@@ -237,7 +225,7 @@ export default function CreateNewSighting() {
               {photo ? "Change Photo" : "Upload Photo"}
             </Button>
           </View>
-          {!id && (
+          {!linked_sighting_id && (
             <>
               <Text
                 variant="bodyLarge"

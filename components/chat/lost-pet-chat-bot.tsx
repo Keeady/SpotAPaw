@@ -979,7 +979,7 @@ const LostPetChatbot = () => {
                       [
                         {
                           text: "View Report",
-                          value: `view_report-${reportId}`,
+                          value: `view_report-${linkedSightingId ?? reportId}`,
                         },
                         { text: "Done", value: "done" },
                       ]
@@ -992,7 +992,7 @@ const LostPetChatbot = () => {
                       [
                         {
                           text: "View Report",
-                          value: `view_report-${reportId}`,
+                          value: `view_report-${linkedSightingId ?? reportId}`,
                         },
                         { text: "Done", value: "done" },
                       ]

@@ -20,7 +20,9 @@ export default function SightingList() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() =>
-          router.push(`/(app)/my-sightings/${item.id}/?petId=${item.pet_id}`)
+          router.push(
+            `/(app)/my-sightings/${item.linked_sighting_id}/?petId=${item.pet_id}`
+          )
         }
       >
         <RenderSightingProfile pet={item} />

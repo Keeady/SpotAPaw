@@ -20,7 +20,9 @@ export default function SightingAnonList() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() =>
-          router.push(`/sightings/${item.id}/?petId=${item.pet_id}`)
+          router.push(
+            `/sightings/${item.linked_sighting_id}/?petId=${item.pet_id}`
+          )
         }
       >
         <RenderSightingProfile pet={item} />
