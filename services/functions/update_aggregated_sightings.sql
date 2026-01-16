@@ -1,7 +1,11 @@
+CREATE OR REPLACE FUNCTION update_aggregated_sighting()
+RETURNS TRIGGER AS $$
+
 BEGIN
-  -- Check if linked_sighting_id is provided
+  -- Check if linked_sighting_id is provided otherwise create a new entry
   IF NEW.linked_sighting_id IS NOT NULL THEN
-    -- Update existing aggregated_sighting
+    -- Update existing aggregated_sighting to save latest location, time, photo
+    -- Only execute update if this is the latest sighting data
     UPDATE aggregated_sightings
     SET 
       last_seen_lat = NEW.last_seen_lat,
@@ -13,13 +17,14 @@ BEGIN
         WHEN NEW.photo IS NOT NULL AND NEW.photo != '' THEN NEW.photo 
         ELSE photo 
       END,
+      -- Only update name if provided by this sighting data
       name = CASE 
         WHEN NEW.name IS NOT NULL AND NEW.name != '' THEN NEW.name 
         ELSE name 
       END,
       is_active = NEW.is_active,
       updated_at = NOW()
-    WHERE linked_sighting_id = NEW.linked_sighting_id OR linked_sighting_id = NEW.id;
+    WHERE linked_sighting_id = NEW.linked_sighting_id AND NEW.last_seen_time > last_seen_time;
     
   ELSE
     -- Insert new aggregated_sighting when no linked_sighting_id provided
@@ -41,7 +46,7 @@ BEGIN
       created_at,
       updated_at
     ) VALUES (
-      NEW.linked_sighting_id,
+      NEW.id,
       NEW.pet_id,
       NEW.last_seen_lat,
       NEW.last_seen_long,
@@ -63,3 +68,4 @@ BEGIN
   
   RETURN NEW;
 END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

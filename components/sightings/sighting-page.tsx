@@ -9,7 +9,6 @@ import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
-import { isValidUuid } from "../util";
 import {
   MAX_SIGHTINGS,
   SIGHTING_OFFSET,
@@ -93,12 +92,12 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       } else if (pagination?.start === 0) {
         setSightings(newSightings);
       } else if (newSightings.length > 0) {
-        setSightings(newSightings);
+        setSightings((prev) => [...prev, ...newSightings]);
       }
       setLoading(false);
       setRefreshing(false);
     },
-    [sightings]
+    []
   );
 
   const reLoadSightings = useCallback(
@@ -289,7 +288,7 @@ const fetchSightingsByUserWithLocation = async (
   // Default: fetch all sightings
   const { data, error } = await supabase
     .from("aggregated_sightings")
-    .select("*") // , sighting_contact (sighting_id, name, phone)
+    .select("*")
     .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)

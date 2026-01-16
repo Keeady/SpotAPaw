@@ -264,7 +264,7 @@ const LostPetChatbot = () => {
         };
       }
     },
-    [pets]
+    [pets, user?.id]
   );
 
   const showBehaviorWarningMsg = useCallback(() => {
