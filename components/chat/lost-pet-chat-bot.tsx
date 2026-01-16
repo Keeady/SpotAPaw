@@ -156,10 +156,9 @@ const LostPetChatbot = () => {
         .from("owner")
         .select("*")
         .eq("owner_id", user.id)
-        .single()
         .then(({ data }) => {
           if (data) {
-            setOwner(data);
+            setOwner(data[0]);
           }
         });
     }

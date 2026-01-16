@@ -19,8 +19,7 @@ export function usePetSightings(petId: string, sightingId: string) {
       .from("aggregated_sightings")
       .select("*")
       .eq("is_active", true)
-      .eq("linked_sighting_id", sightingId)
-      .single();
+      .eq("linked_sighting_id", sightingId);
 
     if (error) {
       console.log(error);
@@ -31,7 +30,7 @@ export function usePetSightings(petId: string, sightingId: string) {
     }
 
     if (data) {
-      setSummary(data); // merged summary
+      setSummary(data[0]);
     }
 
     setLoading(false);
