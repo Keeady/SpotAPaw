@@ -54,7 +54,7 @@ export default function ReportLostPetFab({
         backdropColor={"rgba(0,0,0,0.8)"}
         style={{ position: "absolute", bottom: 20, right: 5 }}
         variant={"primary"}
-        label="Report"
+        label="Add Sighting"
       />
     </Portal>
   );

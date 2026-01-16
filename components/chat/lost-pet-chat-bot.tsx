@@ -156,10 +156,9 @@ const LostPetChatbot = () => {
         .from("owner")
         .select("*")
         .eq("owner_id", user.id)
-        .single()
         .then(({ data }) => {
           if (data) {
-            setOwner(data);
+            setOwner(data[0]);
           }
         });
     }
@@ -264,7 +263,7 @@ const LostPetChatbot = () => {
         };
       }
     },
-    [pets]
+    [pets, user?.id]
   );
 
   const showBehaviorWarningMsg = useCallback(() => {
@@ -979,7 +978,7 @@ const LostPetChatbot = () => {
                       [
                         {
                           text: "View Report",
-                          value: `view_report-${reportId}`,
+                          value: `view_report-${linkedSightingId ?? reportId}`,
                         },
                         { text: "Done", value: "done" },
                       ]
@@ -992,7 +991,7 @@ const LostPetChatbot = () => {
                       [
                         {
                           text: "View Report",
-                          value: `view_report-${reportId}`,
+                          value: `view_report-${linkedSightingId ?? reportId}`,
                         },
                         { text: "Done", value: "done" },
                       ]

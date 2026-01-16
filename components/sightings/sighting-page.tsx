@@ -9,7 +9,6 @@ import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
-import { isValidUuid } from "../util";
 import {
   MAX_SIGHTINGS,
   SIGHTING_OFFSET,
@@ -91,14 +90,14 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         log(error);
         setError(error);
       } else if (pagination?.start === 0) {
-        processSightings([], newSightings, setSightings);
+        setSightings(newSightings);
       } else if (newSightings.length > 0) {
-        processSightings(sightings, newSightings, setSightings);
+        setSightings((prev) => [...prev, ...newSightings]);
       }
       setLoading(false);
       setRefreshing(false);
     },
-    [sightings]
+    []
   );
 
   const reLoadSightings = useCallback(
@@ -248,14 +247,14 @@ const fetchSightingsWithLocation = async (
 
   // Default: fetch all sightings
   const { data, error } = await supabase
-    .from("sightings")
+    .from("aggregated_sightings")
     .select("*")
     .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)
     .lte("last_seen_long", maxLng)
-    .order("created_at", { ascending: false })
+    .order("updated_at", { ascending: false })
     .range(pagination.start, pagination.end);
 
   if (error) {
@@ -288,14 +287,14 @@ const fetchSightingsByUserWithLocation = async (
 
   // Default: fetch all sightings
   const { data, error } = await supabase
-    .from("sightings")
-    .select("*, sighting_contact (sighting_id, name, phone)")
+    .from("aggregated_sightings")
+    .select("*")
     .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)
     .lte("last_seen_long", maxLng)
-    .order("created_at", { ascending: false })
+    .order("updated_at", { ascending: false })
     .range(pagination.start, pagination.end);
 
   if (error) {
@@ -304,77 +303,4 @@ const fetchSightingsByUserWithLocation = async (
   } else {
     onFetchComplete(data || [], null, pagination);
   }
-};
-
-const processSightings = (
-  prevData: PetSighting[],
-  data: PetSighting[],
-  setSightings: React.Dispatch<React.SetStateAction<PetSighting[]>>
-) => {
-  const sightingData: PetSighting[] = prevData.concat(data);
-
-  // Merge sightings by pet_id or linked_sighting_id or sighting id
-  const mergedSightings = Object.values(
-    sightingData.reduce((acc, sighting) => {
-      // if we have a pet id, then group by pet id
-      if (sighting.pet_id && isValidUuid(sighting.pet_id)) {
-        if (!acc[sighting.pet_id]) {
-          acc[sighting.pet_id] = sighting;
-        } else {
-          const merged = acc[sighting.pet_id];
-          acc[sighting.pet_id] = {
-            id: merged.id,
-            pet_id: sighting.pet_id,
-            photo: !!merged.photo ? merged.photo : sighting.photo,
-            name: merged.name ?? sighting.name,
-            colors: merged.colors ?? sighting.colors,
-            breed: merged.breed ?? sighting.breed,
-            species: merged.species ?? sighting.species,
-            gender: merged.gender ?? sighting.gender,
-            features: merged.features ?? sighting.features,
-            last_seen_location:
-              merged.last_seen_location ?? sighting.last_seen_location,
-            last_seen_time: merged.last_seen_time,
-          };
-        }
-      }
-      // if we have a linked sighting id, group by that
-      else if (
-        sighting.linked_sighting_id &&
-        isValidUuid(sighting.linked_sighting_id)
-      ) {
-        if (!acc[sighting.linked_sighting_id]) {
-          acc[sighting.linked_sighting_id] = {
-            ...sighting,
-            id: sighting.linked_sighting_id,
-          };
-        } else {
-          const merged = acc[sighting.linked_sighting_id];
-          acc[sighting.linked_sighting_id] = {
-            pet_id: "",
-            photo: !!merged.photo ? merged.photo : sighting.photo,
-            name: merged.name ?? sighting.name,
-            colors: merged.colors ?? sighting.colors,
-            breed: merged.breed ?? sighting.breed,
-            species: merged.species ?? sighting.species,
-            gender: merged.gender ?? sighting.gender,
-            features: merged.features ?? sighting.features,
-            last_seen_location:
-              merged.last_seen_location ?? sighting.last_seen_location,
-            last_seen_time: merged.last_seen_time,
-            // sighting_contact: merged.sighting_contact,
-            id: sighting.linked_sighting_id,
-          };
-        }
-      }
-      // otherwise, start a new grouping by this id
-      else if (isValidUuid(sighting.id) && !acc[sighting.id]) {
-        acc[sighting.id] = sighting;
-      }
-
-      return acc;
-    }, {} as PetSighting)
-  );
-
-  setSightings(mergedSightings);
 };

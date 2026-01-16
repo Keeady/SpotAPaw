@@ -4,35 +4,37 @@ import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import { log } from "../logs";
 
-// Helper to merge sightings into summary
-export function mergeSightings(sightings: PetSighting[]) {
-  return sightings.reduce(
-    (merged, s) => ({
-      ...merged,
-      id: merged.id ?? s.id,
-      pet_id: merged.pet_id ?? s.pet_id,
-      name: merged.name ?? s.name,
-      photo: !!merged.photo ? merged.photo : s.photo,
-      last_seen_location: merged.last_seen_location ?? s.last_seen_location,
-      note: merged.note ?? s.note,
-      breed: merged.breed ?? s.breed,
-      gender: merged.gender ?? s.gender,
-      colors: merged.colors ?? s.colors,
-      species: merged.species ?? s.species,
-      features: merged.features ?? s.features,
-      last_seen_long: merged.last_seen_long ?? s.last_seen_long,
-      last_seen_lat: merged.last_seen_lat ?? s.last_seen_lat,
-    }),
-    {} as PetSighting
-  );
-}
-
 export function usePetSightings(petId: string, sightingId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeline, setTimeline] = useState<PetSighting[]>([]);
   const [summary, setSummary] = useState<PetSighting>();
   const { user } = useContext(AuthContext);
+
+  async function fetchSummary(sightingId: string) {
+    setLoading(true);
+    setError(null);
+
+    const { data, error } = await supabase
+      .from("aggregated_sightings")
+      .select("*")
+      .eq("is_active", true)
+      .eq("linked_sighting_id", sightingId);
+
+    if (error) {
+      console.log(error);
+      log(error.message);
+      setError(error);
+      setLoading(false);
+      return;
+    }
+
+    if (data) {
+      setSummary(data[0]);
+    }
+
+    setLoading(false);
+  }
 
   async function fetchSightingsBySightingId(sightingId: string) {
     setLoading(true);
@@ -54,7 +56,6 @@ export function usePetSightings(petId: string, sightingId: string) {
 
     if (data) {
       setTimeline(data);
-      setSummary(mergeSightings(data)); // merged summary
     }
 
     setLoading(false);
@@ -82,7 +83,6 @@ export function usePetSightings(petId: string, sightingId: string) {
     }
 
     setTimeline(data);
-    setSummary(mergeSightings(data)); // merged summary
     setLoading(false);
   }
 
@@ -108,7 +108,6 @@ export function usePetSightings(petId: string, sightingId: string) {
     }
 
     setTimeline(data);
-    setSummary(mergeSightings(data)); // merged summary
     setLoading(false);
   }
 
@@ -132,13 +131,14 @@ export function usePetSightings(petId: string, sightingId: string) {
 
     if (data) {
       setTimeline(data);
-      setSummary(mergeSightings(data)); // merged summary
     }
 
     setLoading(false);
   }
 
   useEffect(() => {
+    fetchSummary(sightingId);
+
     if (user) {
       if (!petId || petId === null || petId === "null") {
         fetchSightingsBySightingIdForUser(sightingId);

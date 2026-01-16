@@ -103,7 +103,7 @@ async function onPetFound(id: string) {
     return;
   } else {
     const { error } = await supabase
-      .from("sightings")
+      .from("aggregated_sightings")
       .update({
         is_active: false,
       })
