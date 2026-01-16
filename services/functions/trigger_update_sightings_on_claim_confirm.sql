@@ -1,3 +1,6 @@
+CREATE OR REPLACE FUNCTION trigger_update_sightings_on_claim_confirm()
+RETURNS TRIGGER AS $$
+
 DECLARE pet_name TEXT;
 BEGIN
   -- Only proceed if confirmed was just set to true
@@ -16,3 +19,4 @@ BEGIN
 
   RETURN NEW;
 END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

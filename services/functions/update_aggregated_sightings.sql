@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION update_aggregated_sighting()
 RETURNS TRIGGER AS $$
 
+-- This function creates a parent sighting with all the latest updates related to all created sightings of a pet
 BEGIN
   -- Check if linked_sighting_id is provided otherwise create a new entry
   IF NEW.linked_sighting_id IS NOT NULL THEN
@@ -22,7 +23,6 @@ BEGIN
         WHEN NEW.name IS NOT NULL AND NEW.name != '' THEN NEW.name 
         ELSE name 
       END,
-      is_active = NEW.is_active,
       updated_at = NOW()
     WHERE linked_sighting_id = NEW.linked_sighting_id AND NEW.last_seen_time > last_seen_time;
     
