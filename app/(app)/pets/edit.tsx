@@ -43,21 +43,26 @@ export default function EditPet() {
       return;
     }
 
+    const payload = {
+      name: profileInfo.name,
+      species: profileInfo.species,
+      breed: profileInfo.breed,
+      age: profileInfo.age,
+      gender: profileInfo.gender,
+      colors: profileInfo.colors,
+      features: profileInfo.features,
+      note: profileInfo.note,
+      owner_id: user?.id,
+      is_lost: isLost,
+    };
+
+    if (photoUrl !== "") {
+      payload.photo = photoUrl;
+    }
+
     const { error } = await supabase
       .from("pets")
-      .update({
-        name: profileInfo.name,
-        species: profileInfo.species,
-        breed: profileInfo.breed,
-        age: profileInfo.age,
-        gender: profileInfo.gender,
-        colors: profileInfo.colors,
-        features: profileInfo.features,
-        photo: photoUrl,
-        note: profileInfo.note,
-        owner_id: user?.id,
-        is_lost: isLost,
-      })
+      .update(payload)
       .eq("id", id)
       .select();
 
@@ -101,27 +106,34 @@ export default function EditPet() {
     const lastSeenFormatted = await getLastSeenLocation(
       profileInfo.last_seen_location,
       profileInfo.last_seen_lat,
-      profileInfo.last_seen_long
+      profileInfo.last_seen_long,
     );
+
+    const payload = {
+      name: profileInfo.name,
+      species: profileInfo.species,
+      breed: profileInfo.breed,
+      gender: profileInfo.gender,
+      colors: profileInfo.colors,
+      features: profileInfo.features,
+      note: profileInfo.note,
+      reporter_id: user?.id,
+      last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
+      last_seen_location: lastSeenFormatted,
+      last_seen_lat: profileInfo.last_seen_lat,
+      last_seen_long: profileInfo.last_seen_long,
+      pet_id: id,
+    };
+
+    if (photoUrl !== "") {
+      payload.photo = photoUrl;
+    } else if (profileInfo.photo) {
+      payload.photo = profileInfo.photo;
+    }
 
     const { error, data } = await supabase
       .from("sightings")
-      .insert({
-        name: profileInfo.name,
-        species: profileInfo.species,
-        breed: profileInfo.breed,
-        gender: profileInfo.gender,
-        colors: profileInfo.colors,
-        features: profileInfo.features,
-        photo: photoUrl,
-        note: profileInfo.note,
-        reporter_id: user?.id,
-        last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
-        last_seen_location: lastSeenFormatted,
-        last_seen_lat: profileInfo.last_seen_lat,
-        last_seen_long: profileInfo.last_seen_long,
-        pet_id: id,
-      })
+      .insert(payload)
       .select();
 
     if (error) {

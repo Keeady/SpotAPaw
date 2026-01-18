@@ -260,6 +260,7 @@ const LostPetChatbot = () => {
           gender: pet.gender,
           ownerId: user?.id,
           photo: pet.photo,
+          is_lost: pet.is_lost
         };
       }
     },
@@ -567,7 +568,7 @@ const LostPetChatbot = () => {
               addBotMessage("When did you find them?", [
                 { text: "Just now", value: "now" },
                 { text: "Within the hour", value: "1 hour ago" },
-                { text: "Today", value: "today" },
+                { text: "A few hours ago", value: "a few hours ago" },
                 { text: "Yesterday", value: "yesterday" },
               ]);
             }, 500);
@@ -578,7 +579,7 @@ const LostPetChatbot = () => {
               addBotMessage("When did you find them?", [
                 { text: "Just now", value: "now" },
                 { text: "Within the hour", value: "1 hour ago" },
-                { text: "Today", value: "today" },
+                { text: "A few hours ago", value: "a few hours ago" },
                 { text: "Yesterday", value: "yesterday" },
               ]);
             }, 500);
@@ -607,7 +608,7 @@ const LostPetChatbot = () => {
           addBotMessage("When did you find them?", [
             { text: "Just now", value: "now" },
             { text: "Within the hour", value: "1 hour ago" },
-            { text: "Today", value: "today" },
+            { text: "A few hours ago", value: "a few hours ago" },
             { text: "Yesterday", value: "yesterday" },
           ]);
         }, 500);
@@ -851,7 +852,7 @@ const LostPetChatbot = () => {
             setTimeout(() => {
               addBotMessage("When did you last see your pet?", [
                 { text: "Within the last hour", value: "1 hour ago" },
-                { text: "Today", value: "today" },
+                { text: "A few hours ago", value: "a few hours ago" },
                 { text: "Yesterday", value: "yesterday" },
                 { text: "2 days ago", value: "2 days ago" },
                 { text: "More than 2 days ago", value: "3 days ago" },
@@ -863,7 +864,7 @@ const LostPetChatbot = () => {
             setTimeout(() => {
               addBotMessage("When did you last see your pet?", [
                 { text: "Within the last hour", value: "1 hour ago" },
-                { text: "Today", value: "today" },
+                { text: "A few hours ago", value: "a few hours ago" },
                 { text: "Yesterday", value: "yesterday" },
                 { text: "2 days ago", value: "2 days ago" },
                 { text: "More than 2 days ago", value: "3 days ago" },
@@ -1049,7 +1050,7 @@ const LostPetChatbot = () => {
         setTimeout(() => {
           addBotMessage("When did you last see your pet?", [
             { text: "Within the last hour", value: "1 hour ago" },
-            { text: "Today", value: "today" },
+            { text: "A few hours ago", value: "a few hours ago" },
             { text: "Yesterday", value: "yesterday" },
             { text: "2 days ago", value: "2 days ago" },
             { text: "More than 2 days ago", value: "3 days ago" },
@@ -1061,7 +1062,7 @@ const LostPetChatbot = () => {
           addBotMessage("When did you find the pet?", [
             { text: "Just now", value: "now" },
             { text: "Within the hour", value: "1 hour ago" },
-            { text: "Today", value: "today" },
+            { text: "A few hours ago", value: "a few hours ago" },
             { text: "Yesterday", value: "yesterday" },
           ]);
         }, 500);

@@ -113,8 +113,8 @@ export default function CreatePetDetails({
           <View
             style={[styles.verticallySpaced, styles.mt20, { marginBottom: 20 }]}
           >
-            {pet?.photo ? (
-              <Image source={{ uri: pet?.photo }} style={styles.preview} />
+            {pet?.photoUrl ? (
+              <Image source={{ uri: pet?.photoUrl }} style={styles.preview} />
             ) : (
               <View style={styles.emptyPreview}>
                 <Text>Add Photo</Text>

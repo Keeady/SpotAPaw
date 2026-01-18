@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-client";
-import { PetSighting } from "@/model/sighting";
+import { PetSighting, PetSightingSummary } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import { log } from "../logs";
 
@@ -8,7 +8,7 @@ export function usePetSightings(petId: string, sightingId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeline, setTimeline] = useState<PetSighting[]>([]);
-  const [summary, setSummary] = useState<PetSighting>();
+  const [summary, setSummary] = useState<PetSightingSummary>();
   const { user } = useContext(AuthContext);
 
   async function fetchSummary(sightingId: string) {
@@ -22,7 +22,6 @@ export function usePetSightings(petId: string, sightingId: string) {
       .eq("linked_sighting_id", sightingId);
 
     if (error) {
-      console.log(error);
       log(error.message);
       setError(error);
       setLoading(false);
@@ -61,56 +60,6 @@ export function usePetSightings(petId: string, sightingId: string) {
     setLoading(false);
   }
 
-  async function fetchSightingsByPetId(petId: string) {
-    setLoading(true);
-    setError(null);
-    if (!petId) {
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("sightings")
-      .select("*")
-      .eq("pet_id", petId)
-      .eq("is_active", true)
-      .order("last_seen_time", { ascending: false });
-
-    if (error) {
-      log(error.message);
-      setError(error);
-      setLoading(false);
-      return;
-    }
-
-    setTimeline(data);
-    setLoading(false);
-  }
-
-  async function fetchSightingsByPetIdForUser(petId: string) {
-    setLoading(true);
-    setError(null);
-    if (!petId) {
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("sightings")
-      .select("*, sighting_contact(name, phone)")
-      .eq("pet_id", petId)
-      .eq("is_active", true)
-      .order("last_seen_time", { ascending: false });
-
-    if (error) {
-      log(error.message);
-      setError(error);
-      setLoading(false);
-      return;
-    }
-
-    setTimeline(data);
-    setLoading(false);
-  }
-
   async function fetchSightingsBySightingIdForUser(sightingId: string) {
     setLoading(true);
     setError(null);
@@ -140,19 +89,9 @@ export function usePetSightings(petId: string, sightingId: string) {
     fetchSummary(sightingId);
 
     if (user) {
-      if (!petId || petId === null || petId === "null") {
-        fetchSightingsBySightingIdForUser(sightingId);
-        return;
-      }
-
-      fetchSightingsByPetIdForUser(petId);
+      fetchSightingsBySightingIdForUser(sightingId);
     } else {
-      if (!petId || petId === null || petId === "null") {
-        fetchSightingsBySightingId(sightingId);
-        return;
-      }
-
-      fetchSightingsByPetId(petId);
+      fetchSightingsBySightingId(sightingId);
     }
   }, [petId, sightingId, user]);
 

@@ -17,7 +17,7 @@ export default function EditPetDetails(
   handleSubmit: () => Promise<void>,
   setProfileInfo: (v: Pet) => void,
   pet?: Pet,
-  is_lost?: boolean
+  is_lost?: boolean,
 ) {
   const theme = useTheme();
   const [isDisabled, setDisabled] = React.useState(false);
@@ -179,7 +179,9 @@ export default function EditPetDetails(
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
-            {pet?.photo ? (
+            {pet?.photoUrl ? (
+              <Image source={{ uri: pet?.photoUrl }} style={styles.preview} />
+            ) : pet?.photo ? (
               <Image source={{ uri: pet?.photo }} style={styles.preview} />
             ) : (
               <View style={styles.emptyPreview}>

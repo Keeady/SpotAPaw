@@ -60,7 +60,7 @@ export default function SightingDetail({
   hasOwner: boolean;
   isOwner: boolean;
   onPetFound?: () => void;
-  petName: string
+  petName: string;
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
@@ -186,6 +186,9 @@ export default function SightingDetail({
           {sightings.map((sighting, index) => {
             const phone = sighting.sighting_contact?.[0]?.phone;
             const name = sighting.sighting_contact?.[0]?.name;
+
+            const reportName = sighting.reporter_name;
+            const reporterPhone = sighting.reporter_phone;
             const isLatest = index === 0; // assuming sightings sorted DESC by created_at
             return (
               <View key={sighting.id} style={{ flexDirection: "row" }}>
@@ -222,7 +225,7 @@ export default function SightingDetail({
                         new Date(sighting.last_seen_time),
                         {
                           addSuffix: true,
-                        }
+                        },
                       )}
                       subtitle={
                         <TouchableOpacity
@@ -230,8 +233,8 @@ export default function SightingDetail({
                           onPress={() =>
                             Linking.openURL(
                               `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                sighting.last_seen_location
-                              )}`
+                                sighting.last_seen_location,
+                              )}`,
                             )
                           }
                           style={{
@@ -305,28 +308,30 @@ export default function SightingDetail({
                           {sighting.note}
                         </Text>
                       )}
-                      {isOwner && name && phone && (
+                      {isOwner && (phone || reporterPhone) && (
                         <View
                           style={{
                             flexDirection: "row",
-                            justifyContent: "flex-start",
-                            gap: 8,
+                            justifyContent: "flex-end",
+                            gap: 4,
                           }}
                         >
                           <Text style={{ alignSelf: "center" }}>
-                            Reported by {name}
+                            Reported by {name ?? reportName}
                           </Text>
                           <Button
-                            mode="contained"
+                            mode="text"
                             icon="phone"
-                            onPress={() => handleCall(phone)}
+                            onPress={() => handleCall(phone || reporterPhone)}
+                            compact
                           >
                             Call
                           </Button>
                           <Button
-                            mode="outlined"
+                            mode="text"
                             icon="message-text"
-                            onPress={() => handleText(phone)}
+                            onPress={() => handleText(phone || reporterPhone)}
+                            compact
                           >
                             Text
                           </Button>

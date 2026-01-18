@@ -12,10 +12,10 @@ export const saveChatBotSighting = async (
   report: PetReportData,
   uploadImage: (
     uri: string,
-    callback: (uri: string, error?: string) => void
+    callback: (uri: string, error?: string) => void,
   ) => Promise<void>,
   callback: (result: ChatBotSightingResult) => void,
-  userId?: string
+  userId?: string,
 ) => {
   const finalSighting = {
     name: report.petName,
@@ -30,7 +30,7 @@ export const saveChatBotSighting = async (
     last_seen_location: await getLastSeenLocation(
       report.lastSeenLocation || "",
       report.lastSeenLocationLat,
-      report.lastSeenLocationLng
+      report.lastSeenLocationLng,
     ),
     last_seen_time: convertTime(report.lastSeenTime || ""),
     pet_id: isValidUuid(report.petId) ? report.petId : null,
@@ -61,6 +61,10 @@ export const saveChatBotSighting = async (
     } else {
       saveSightingInfo(finalSighting, callback);
     }
+
+    if (report.petId && isValidUuid(report.petId) && !report.is_lost) {
+      savePetState(report.petId);
+    }
   } catch {
     callback({ error: "Error saving report. Please try again.", reportId: "" });
   }
@@ -68,7 +72,7 @@ export const saveChatBotSighting = async (
 
 async function saveSightingInfo(
   finalSighting: any,
-  callback: (result: ChatBotSightingResult) => void
+  callback: (result: ChatBotSightingResult) => void,
 ) {
   let errorMsg = "";
   let reportId = "";
@@ -91,6 +95,10 @@ async function saveSightingInfo(
     error: errorMsg,
     reportId,
   });
+}
+
+async function savePetState(petId: string) {
+  await supabase.from("pets").update({ is_lost: true }).eq("id", petId);
 }
 
 function saveNotes(report: PetReportData) {
