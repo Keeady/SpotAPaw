@@ -81,7 +81,7 @@ export default function CreateNewSighting() {
     const lastSeenFormatted = await getLastSeenLocation(
       lastSeenLocation,
       lastSeenLocationLat,
-      lastSeenLocationLng
+      lastSeenLocationLng,
     );
     const payload = {
       colors,
@@ -118,18 +118,14 @@ export default function CreateNewSighting() {
       });
       return;
     } else {
-      const sightingId = linked_sighting_id ?? data[0]["id"];
+      const sightingId = data[0]["id"];
       showMessage({
         message: "Successfully added pet sighting.",
         type: "success",
         icon: "success",
       });
 
-      if (user) {
-        router.navigate(`/owner?sightingId=${sightingId}`);
-      } else {
-        router.navigate(`/sightings/contact/?sightingId=${sightingId}`);
-      }
+      router.navigate(`/sightings/contact/?sightingId=${sightingId}`);
     }
   }
 

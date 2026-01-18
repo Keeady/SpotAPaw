@@ -21,14 +21,14 @@ export default function SightingList() {
         activeOpacity={0.7}
         onPress={() =>
           router.push(
-            `/(app)/my-sightings/${item.linked_sighting_id}/?petId=${item.pet_id}`
+            `/(app)/my-sightings/${item.linked_sighting_id}/?petId=${item.pet_id}`,
           )
         }
       >
         <RenderSightingProfile pet={item} />
       </TouchableOpacity>
     ),
-    [router]
+    [router],
   );
 
   const renderer = useCallback(
@@ -37,14 +37,12 @@ export default function SightingList() {
       onEndReached: () => void,
       ListEmptyComponent: () => JSX.Element,
       onRefresh: () => void,
-      refreshing: boolean
+      refreshing: boolean,
     ) => (
       <View style={styles.container}>
         <FlatList
           data={sightings}
-          keyExtractor={(item) =>
-            isValidUuid(item.pet_id) ? item.pet_id : item.id
-          }
+          keyExtractor={(item) => item.id}
           renderItem={rendererItem}
           ListEmptyComponent={ListEmptyComponent}
           style={{ marginBottom: 20 }}
@@ -60,7 +58,7 @@ export default function SightingList() {
         />
       </View>
     ),
-    [rendererItem]
+    [rendererItem],
   );
 
   return <SightingPage renderer={renderer} />;
