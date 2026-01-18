@@ -2,6 +2,12 @@ CREATE OR REPLACE FUNCTION update_aggregated_sighting()
 RETURNS TRIGGER AS $$
 
 -- This function creates a parent sighting with all the latest updates related to all created sightings of a pet
+
+DECLARE 
+  pet_owner UUID;
+  pet_name TEXT;
+  sighting_name TEXT;
+
 BEGIN
   -- Check if linked_sighting_id is provided otherwise create a new entry
   IF NEW.linked_sighting_id IS NOT NULL THEN
@@ -27,6 +33,17 @@ BEGIN
     WHERE linked_sighting_id = NEW.linked_sighting_id AND NEW.last_seen_time > last_seen_time;
     
   ELSE
+
+    -- If pet_id is present, retrieve pet owner ID
+    IF NEW.pet_id IS NOT NULL THEN
+      SELECT owner_id, name INTO pet_owner, pet_name 
+      FROM pets WHERE id = NEW.pet_id;
+
+      sighting_name = COALESCE(pet_name, NEW.name);
+    ELSE
+      sighting_name = NEW.name;
+    END IF;
+
     -- Insert new aggregated_sighting when no linked_sighting_id provided
     INSERT INTO aggregated_sightings (
       linked_sighting_id,
@@ -44,7 +61,8 @@ BEGIN
       name,
       is_active,
       created_at,
-      updated_at
+      updated_at,
+      owner_id
     ) VALUES (
       NEW.id,
       NEW.pet_id,
@@ -58,10 +76,11 @@ BEGIN
       NEW.breed,
       NEW.species,
       NEW.features,
-      NEW.name,
+      sighting_name,
       true,
       NOW(),
-      NOW()
+      NOW(),
+      pet_owner
     );
     
   END IF;
