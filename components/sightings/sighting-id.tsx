@@ -44,12 +44,7 @@ export default function SightingProfile() {
   }, [user?.id, petId, sightingId]);
 
   useEffect(() => {
-    if (
-      user?.id &&
-      petId &&
-      isValidUuid(petId) &&
-      (!summary?.name || summary.owner_id)
-    ) {
+    if ((!summary?.name || !summary.owner_id) && petId && isValidUuid(petId)) {
       supabase
         .from("pets")
         .select("*")
@@ -62,7 +57,7 @@ export default function SightingProfile() {
           }
         });
     }
-  }, [petId, user?.id, summary?.name, summary?.owner_id]);
+  }, [petId, summary?.name, summary?.owner_id]);
 
   const onAddSighting = useCallback(() => {
     router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);

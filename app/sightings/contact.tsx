@@ -44,8 +44,8 @@ export default function SightingContact() {
           setName(`${data[0].firstname} ${data[0].lastname}`);
           setPhone(data[0].phone);
         }
+        setLoading(false);
       });
-    setLoading(false);
   }, [user?.id]);
 
   async function saveSightingContact() {
