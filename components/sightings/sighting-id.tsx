@@ -62,7 +62,7 @@ export default function SightingProfile() {
           }
         });
     }
-  }, [petId, user?.id]);
+  }, [petId, user?.id, summary?.name, summary?.owner_id]);
 
   const onAddSighting = useCallback(() => {
     router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);
