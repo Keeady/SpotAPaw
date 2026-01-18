@@ -260,6 +260,7 @@ const LostPetChatbot = () => {
           gender: pet.gender,
           ownerId: user?.id,
           photo: pet.photo,
+          is_lost: pet.is_lost
         };
       }
     },

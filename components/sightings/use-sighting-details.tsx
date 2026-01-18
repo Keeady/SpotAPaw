@@ -22,7 +22,6 @@ export function usePetSightings(petId: string, sightingId: string) {
       .eq("linked_sighting_id", sightingId);
 
     if (error) {
-      console.log(error);
       log(error.message);
       setError(error);
       setLoading(false);

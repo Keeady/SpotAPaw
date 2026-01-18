@@ -20,4 +20,5 @@ export type PetReportData = {
   collarDescription: string | null;
   linkedSightingId: string | null;
   photoUrl?: string | null;
+  is_lost?: boolean
 };
