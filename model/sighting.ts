@@ -19,6 +19,10 @@ export type PetSighting = {
     sighting_contact: SightingContact[];
 }
 
+export type PetSightingSummary = PetSighting & {
+    owner_id: string;
+}
+
 export type SightingReporter = {
     name: string;
     phone: string;

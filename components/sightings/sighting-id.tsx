@@ -22,7 +22,7 @@ export default function SightingProfile() {
 
   const { loading, error, timeline, summary } = usePetSightings(
     petId,
-    sightingId
+    sightingId,
   );
 
   const { user } = useContext(AuthContext);
@@ -44,7 +44,12 @@ export default function SightingProfile() {
   }, [user?.id, petId, sightingId]);
 
   useEffect(() => {
-    if (user?.id && petId && isValidUuid(petId)) {
+    if (
+      user?.id &&
+      petId &&
+      isValidUuid(petId) &&
+      (!summary?.name || summary.owner_id)
+    ) {
       supabase
         .from("pets")
         .select("*")
@@ -65,7 +70,7 @@ export default function SightingProfile() {
 
   const onChatSighting = useCallback(() => {
     router.push(
-      `/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}&petName=${petName}`
+      `/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}&petName=${petName}`,
     );
   }, [sightingId, petId, router, sightingsRoute, petName]);
 
@@ -78,7 +83,7 @@ export default function SightingProfile() {
       return;
     }
     router.push(
-      `/${sightingsRoute}/edit/?petId=${petId}&sightingId=${sightingId}`
+      `/${sightingsRoute}/edit/?petId=${petId}&sightingId=${sightingId}`,
     );
   }, [petId, sightingId, router, sightingsRoute]);
 
