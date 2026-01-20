@@ -42,10 +42,10 @@ export async function getLastSeenLocation(
       });
       const address = addressObject?.[0];
       if (address) {
-        const city = address.city;
-        const street = address.street;
-        const state = address.region;
-        const streetNumber = address.streetNumber;
+        const city = address.city ?? "Uknown";
+        const street = address.street ?? "Uknown";
+        const state = address.region ?? "Unknown";
+        const streetNumber = address.streetNumber ?? "Unknown";
 
         return `${streetNumber} ${street}, ${city}, ${state}`;
       }
