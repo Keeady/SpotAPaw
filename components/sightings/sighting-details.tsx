@@ -359,6 +359,7 @@ export default function SightingDetail({
                   </View>
                 );
               }}
+              presentationStyle={"overFullScreen"}
             />
           </View>
         </ScrollView>
