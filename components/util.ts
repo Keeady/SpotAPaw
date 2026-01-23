@@ -47,7 +47,7 @@ export async function getLastSeenLocation(
         const state = address.region ?? "";
         const streetNumber = address.streetNumber ?? "";
 
-        const streetInfo = streetNumber || street ? `${streetNumber} ${street}, ` : "";
+        const streetInfo = street ? `${streetNumber} ${street}, ` : "";
         const cityInfo = city ? `${city}, ` : "";
 
         return `${streetInfo}${cityInfo}${state}`;
