@@ -33,6 +33,7 @@ export default function DropPinOnMap({
   const handleMapPress = (event: MapPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setSelectedLocation({ latitude, longitude });
+    setDisabled(false);
   };
 
   return (
