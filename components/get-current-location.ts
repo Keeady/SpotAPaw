@@ -27,7 +27,7 @@ export async function getCurrentLocationV4() {
     log(`getCurrentLocationV4: ${e}`);
     Alert.alert(
       "Location Permission Required",
-      "Please enable location or type the address instead.",
+      "Please grant Location permission in your device settings.",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
