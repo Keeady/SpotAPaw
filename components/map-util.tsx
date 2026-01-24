@@ -23,26 +23,27 @@ export default function DropPinOnMap({
     longitude: number;
   } | null>(null);
 
-  const [mapRegion, setMapRegion] = useState({
-    latitude: currentLocation?.lat ?? 47.3073,
-    longitude: currentLocation?.lng ?? -122.2284,
+  const initialRegion = {
+    latitude: currentLocation?.lat ?? 34.05223,
+    longitude: currentLocation?.lng ?? -118.24368,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
-  });
+  };
 
   const handleMapPress = (event: MapPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setSelectedLocation({ latitude, longitude });
+    setDisabled(false);
   };
 
   return (
     <Card style={styles.mapCard}>
       <MapView
         style={styles.map}
-        initialRegion={mapRegion}
-        onRegionChangeComplete={setMapRegion}
+        region={initialRegion}
         onPress={handleMapPress}
         provider={PROVIDER_GOOGLE}
+        showsUserLocation={true}
       >
         {selectedLocation && (
           <Marker
