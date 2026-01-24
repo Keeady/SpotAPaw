@@ -6,7 +6,6 @@ import { ShowHappyDogAnimation } from "@/components/animate";
 type EmptySightingProps = {
   error: string;
   enableFromSettings: boolean;
-  setEnableFromSettings: (enabled: boolean) => void;
   reloadPage: () => void;
   hasLocation: boolean;
 };
@@ -14,7 +13,6 @@ type EmptySightingProps = {
 export const EmptySighting = ({
   error,
   enableFromSettings,
-  setEnableFromSettings,
   reloadPage,
   hasLocation,
 }: EmptySightingProps) => (
@@ -82,12 +80,11 @@ export const EmptySighting = ({
       </View>
     )}
 
-    {!enableFromSettings && !hasLocation && (
+    {enableFromSettings && !hasLocation && (
       <Button
         mode="contained"
         onPress={() => {
           Linking.openSettings();
-          setEnableFromSettings(true);
         }}
         compact={true}
         style={{ paddingHorizontal: 10, marginTop: 10 }}
@@ -97,7 +94,7 @@ export const EmptySighting = ({
     )}
     {enableFromSettings && (
       <Button
-        mode="contained"
+        mode="outlined"
         onPress={() => {
           reloadPage();
         }}
@@ -106,6 +103,17 @@ export const EmptySighting = ({
       >
         Reload
       </Button>
+    )}
+
+    {enableFromSettings && (
+      <Text
+        variant="labelMedium"
+        style={{ paddingHorizontal: 10, marginTop: 10 }}
+      >
+        Please click Enable Location Access button to open permission settings,
+        grant Location Permission for this app then click the Reload button to
+        apply the changes.
+      </Text>
     )}
   </View>
 );

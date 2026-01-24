@@ -25,7 +25,7 @@ type SightingPageProps = {
     onEndReached: () => void,
     ListEmptyComponent: () => JSX.Element,
     onRefresh: () => void,
-    refreshing: boolean
+    refreshing: boolean,
   ) => JSX.Element;
 };
 
@@ -59,6 +59,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         log(`getCurrentUserLocationV3 ${err}`);
         setError("Location access is needed to show nearby sightings.");
         setLoading(false);
+        setEnableFromSettings(true);
       });
   }, []);
 
@@ -84,7 +85,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     (
       newSightings: PetSighting[],
       error: string | null,
-      pagination?: SightingPagination
+      pagination?: SightingPagination,
     ) => {
       if (error) {
         log(error);
@@ -97,13 +98,13 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       setLoading(false);
       setRefreshing(false);
     },
-    []
+    [],
   );
 
   const reLoadSightings = useCallback(
     (
       location: SightingLocation | undefined,
-      pagination: { start: number; end: number }
+      pagination: { start: number; end: number },
     ) => {
       if (!location) {
         return;
@@ -113,7 +114,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         fetchSightings(location, pagination, onFetchComplete);
       }
     },
-    [user, onFetchComplete]
+    [user, onFetchComplete],
   );
 
   const onLocationRequestDenied = useCallback(() => {
@@ -129,7 +130,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       })
       .catch(() => {
         setError("Location access is needed to show nearby sightings.");
-        setEnableFromSettings(false);
+        setEnableFromSettings(true);
       });
   }, [reLoadSightings]);
 
@@ -144,7 +145,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         error={error}
         hasLocation={!!location}
         enableFromSettings={enableFromSettings}
-        setEnableFromSettings={setEnableFromSettings}
         reloadPage={onLocationRequestDenied}
       />
     );
@@ -184,7 +184,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
                 onEndReached,
                 ListEmptyComponent,
                 onRefresh,
-                refreshing
+                refreshing,
               )}
         </View>
 
@@ -200,7 +200,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
 const fetchSightings = async (
   location: SightingLocation | undefined,
   pagination: { start: number; end: number },
-  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void
+  onFetchComplete: (newSightings: PetSighting[], error: string | null) => void,
 ) => {
   if (!location) {
     return;
@@ -215,8 +215,8 @@ const fetchSightingsByUser = async (
   onFetchComplete: (
     newSightings: PetSighting[],
     error: string | null,
-    pagination?: SightingPagination
-  ) => void
+    pagination?: SightingPagination,
+  ) => void,
 ) => {
   if (!location) {
     return;
@@ -231,8 +231,8 @@ const fetchSightingsWithLocation = async (
   onFetchComplete: (
     newSightings: PetSighting[],
     error: string | null,
-    pagination?: SightingPagination
-  ) => void
+    pagination?: SightingPagination,
+  ) => void,
 ) => {
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
@@ -271,8 +271,8 @@ const fetchSightingsByUserWithLocation = async (
   onFetchComplete: (
     newSightings: PetSighting[],
     error: string | null,
-    pagination?: SightingPagination
-  ) => void
+    pagination?: SightingPagination,
+  ) => void,
 ) => {
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
