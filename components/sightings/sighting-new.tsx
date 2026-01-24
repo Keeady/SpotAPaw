@@ -1,7 +1,7 @@
 import { supabase } from "@/components/supabase-client";
 import { PetSighting } from "@/model/sighting";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import {
@@ -11,7 +11,6 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { AuthContext } from "../Provider/auth-provider";
 import { pickImage } from "../image-picker";
 import useUploadPetImageUrl from "../image-upload";
 import { getLastSeenLocation, isValidUuid } from "../util";
@@ -42,7 +41,7 @@ export default function CreateNewSighting() {
   const [lastSeenLocationLng, setLastSeenLocationLng] = useState<number>(0);
   const [lastSeenLocationLat, setLastSeenLocationLat] = useState<number>(0);
 
-  const { user } = useContext(AuthContext);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
@@ -146,6 +145,7 @@ export default function CreateNewSighting() {
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
+      ref={scrollViewRef}
     >
       <View style={{ flexGrow: 1 }}>
         <View
@@ -161,43 +161,7 @@ export default function CreateNewSighting() {
           </Text>
         </View>
         <View style={styles.content}>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text
-              variant="bodyLarge"
-              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
-            >
-              When was the pet last seen?
-            </Text>
-            <DatePicker
-              dateLabel="Last Seen Date"
-              timeLabel="Last Seen Time"
-              value={new Date()}
-              onChange={(v) => setLastSeenTime(v.toISOString())}
-            />
-          </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text
-              variant="bodyLarge"
-              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
-            >
-              Where was the pet last seen?
-            </Text>
-            <ShowLocationControls
-              handleChange={(fieldName, fieldValue: string | number) => {
-                if (fieldName === "last_seen_long") {
-                  setLastSeenLocationLng(fieldValue as number);
-                } else if (fieldName === "last_seen_lat") {
-                  setLastSeenLocationLat(fieldValue as number);
-                } else if (fieldName === "last_seen_location") {
-                  setLastSeenLocation(fieldValue as string);
-                }
-              }}
-            />
-          </View>
-
-          <View
-            style={[styles.verticallySpaced, styles.mt20, { marginTop: 16 }]}
-          >
+          <View style={[styles.verticallySpaced, styles.mb10]}>
             <Text
               variant="bodyLarge"
               style={{ alignSelf: "flex-start", fontWeight: "bold" }}
@@ -221,6 +185,45 @@ export default function CreateNewSighting() {
               {photo ? "Change Photo" : "Upload Photo"}
             </Button>
           </View>
+
+          <View style={[styles.verticallySpaced, styles.mt10]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              When was the pet last seen?
+            </Text>
+            <DatePicker
+              dateLabel="Last Seen Date"
+              timeLabel="Last Seen Time"
+              value={new Date()}
+              onChange={(v) => setLastSeenTime(v.toISOString())}
+            />
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt10]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              Where was the pet last seen?
+            </Text>
+            <ShowLocationControls
+              handleChange={(fieldName, fieldValue: string | number) => {
+                if (fieldName === "last_seen_long") {
+                  setLastSeenLocationLng(fieldValue as number);
+                } else if (fieldName === "last_seen_lat") {
+                  setLastSeenLocationLat(fieldValue as number);
+                } else if (fieldName === "last_seen_location") {
+                  setLastSeenLocation(fieldValue as string);
+                }
+
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 500);
+              }}
+            />
+          </View>
+
           {!linked_sighting_id && (
             <>
               <Text
@@ -233,7 +236,7 @@ export default function CreateNewSighting() {
               >
                 What did the pet look like?
               </Text>
-              <View style={[styles.verticallySpaced, styles.mt20]}>
+              <View style={[styles.verticallySpaced, styles.mt10]}>
                 <TextInput
                   label={"Colors"}
                   placeholder="Color(s)"
@@ -242,7 +245,7 @@ export default function CreateNewSighting() {
                   mode={"outlined"}
                 />
               </View>
-              <View style={[styles.verticallySpaced, styles.mt20]}>
+              <View style={[styles.verticallySpaced, styles.mt10]}>
                 <TextInput
                   label={"Species"}
                   placeholder="Species (Dog/Cat/Hamster/Rabbit/Snake)"
@@ -251,7 +254,7 @@ export default function CreateNewSighting() {
                   mode={"outlined"}
                 />
               </View>
-              <View style={[styles.verticallySpaced, styles.mt20]}>
+              <View style={[styles.verticallySpaced, styles.mt10]}>
                 <TextInput
                   label={"Breed"}
                   placeholder="Breed (if known)"
@@ -260,7 +263,7 @@ export default function CreateNewSighting() {
                   mode={"outlined"}
                 />
               </View>
-              <View style={[styles.verticallySpaced, styles.mt20]}>
+              <View style={[styles.verticallySpaced, styles.mt10]}>
                 <Text variant="labelLarge">Gender</Text>
                 <RadioButton.Group onValueChange={setGender} value={gender}>
                   <View
@@ -278,7 +281,7 @@ export default function CreateNewSighting() {
                   </View>
                 </RadioButton.Group>
               </View>
-              <View style={[styles.verticallySpaced, styles.mt20]}>
+              <View style={[styles.verticallySpaced, styles.mt10]}>
                 <TextInput
                   label={"Features"}
                   placeholder="Features (Collar, Tag, Size)"
@@ -290,7 +293,7 @@ export default function CreateNewSighting() {
             </>
           )}
 
-          <View style={[styles.verticallySpaced, styles.mt20]}>
+          <View style={[styles.verticallySpaced, styles.mt10]}>
             <Text
               variant="bodyLarge"
               style={{
@@ -311,7 +314,7 @@ export default function CreateNewSighting() {
           </View>
 
           <View
-            style={[styles.verticallySpaced, styles.mt20, { marginTop: 20 }]}
+            style={[styles.verticallySpaced, styles.mt10, { marginTop: 20 }]}
           >
             <Button
               mode="contained"
@@ -336,8 +339,11 @@ const styles = StyleSheet.create({
   verticallySpaced: {
     alignSelf: "stretch",
   },
-  mt20: {
+  mt10: {
     marginTop: 10,
+  },
+  mb10: {
+    marginBottom: 10,
   },
   container: {
     flexGrow: 1,

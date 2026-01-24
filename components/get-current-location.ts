@@ -5,6 +5,7 @@ import { log } from "./logs";
 export type SightingLocation = {
   lat: number;
   lng: number;
+  locationAddress?: string;
 };
 
 export async function getCurrentLocationV4() {
@@ -30,7 +31,7 @@ export async function getCurrentLocationV4() {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
+      ],
     );
   }
 }
