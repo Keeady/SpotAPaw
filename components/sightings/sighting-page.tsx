@@ -151,7 +151,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   }, [
     error,
     enableFromSettings,
-    setEnableFromSettings,
     onLocationRequestDenied,
     location,
   ]);

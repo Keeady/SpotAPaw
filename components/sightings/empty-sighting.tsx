@@ -110,9 +110,8 @@ export const EmptySighting = ({
         variant="labelMedium"
         style={{ paddingHorizontal: 10, marginTop: 10 }}
       >
-        Please click Enable Location Access button to open permission settings,
-        grant Location Permission for this app then click the Reload button to
-        apply the changes.
+        Tap 'Enable Location Access' to open Settings, grant Location
+        permission, then tap 'Reload' to apply changes.
       </Text>
     )}
   </View>
