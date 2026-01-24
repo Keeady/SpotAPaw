@@ -1,6 +1,5 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
 import SightingPage from "@/components/sightings/sighting-page";
-import { isValidUuid } from "@/components/util";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";

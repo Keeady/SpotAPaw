@@ -42,7 +42,7 @@ export default function ShowLocationControls({
       handleChange("last_seen_long", sightingLocation.lng);
       handleChange("last_seen_lat", sightingLocation.lat);
     }
-  }, [sightingLocation]);
+  }, [sightingLocation, handleChange]);
 
   return (
     <>
