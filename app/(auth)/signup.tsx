@@ -139,7 +139,7 @@ export default function SignUpScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="labelSmall" style={{ color: "red" }}>{" "}</Text>
+          <Text variant="labelSmall"> </Text>
           <TextInput
             label="First Name"
             left={<TextInput.Icon icon="account" />}
@@ -151,7 +151,7 @@ export default function SignUpScreen() {
           />
         </View>
         <View style={[styles.verticallySpaced]}>
-          <Text variant="labelSmall" style={{ color: "red" }}>{" "}</Text>
+          <Text variant="labelSmall"> </Text>
           <TextInput
             label="Last Name"
             left={<TextInput.Icon icon="account" />}
@@ -163,7 +163,7 @@ export default function SignUpScreen() {
           />
         </View>
         <View style={[styles.verticallySpaced]}>
-          <Text variant="labelSmall" style={{ color: "red" }}>
+          <Text variant="labelSmall" style={{ color: theme.colors.error }}>
             {hasPhoneError ? "Invalid phone number." : ""}
           </Text>
 
@@ -183,7 +183,7 @@ export default function SignUpScreen() {
           />
         </View>
         <View style={[styles.verticallySpaced]}>
-          <Text variant="labelSmall" style={{ color: "red" }}>
+          <Text variant="labelSmall" style={{ color: theme.colors.error }}>
             {hasEmailError ? "Invalid email address." : ""}
           </Text>
           <TextInput
