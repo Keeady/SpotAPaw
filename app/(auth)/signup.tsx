@@ -2,7 +2,7 @@ import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import { isValidPhoneNumber } from "libphonenumber-js";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -28,6 +28,8 @@ export default function SignUpScreen() {
   const [extra_info, setExtraInfo] = useState("");
   const [hasPhoneError, setHasPhoneError] = useState(false);
   const [hasEmailError, setHasEmailError] = useState(false);
+
+  const debounceTimer = useRef<number>(null);
 
   async function signUpWithEmail() {
     if (extra_info.trim()) {
@@ -96,6 +98,32 @@ export default function SignUpScreen() {
     router.navigate("/");
   }
 
+  useEffect(() => {
+    if (!email && !phone) {
+      return;
+    }
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      if (email) {
+        setHasEmailError(!isEmail(email));
+      }
+
+      if (phone) {
+        setHasPhoneError(!isValidPhoneNumber(phone, "US"));
+      }
+    }, 500);
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [email, phone]);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -115,6 +143,7 @@ export default function SignUpScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.verticallySpaced, styles.mt20]}>
+          <Text variant="labelSmall" style={{ color: "red" }}>{" "}</Text>
           <TextInput
             label="First Name"
             left={<TextInput.Icon icon="account" />}
@@ -126,6 +155,7 @@ export default function SignUpScreen() {
           />
         </View>
         <View style={[styles.verticallySpaced]}>
+          <Text variant="labelSmall" style={{ color: "red" }}>{" "}</Text>
           <TextInput
             label="Last Name"
             left={<TextInput.Icon icon="account" />}
@@ -137,35 +167,40 @@ export default function SignUpScreen() {
           />
         </View>
         <View style={[styles.verticallySpaced]}>
+          <Text variant="labelSmall" style={{ color: "red" }}>
+            {hasPhoneError ? "Invalid phone number." : ""}
+          </Text>
+
           <TextInput
             label="Phone Number"
             left={<TextInput.Icon icon="phone" />}
-            onChangeText={(text) => setPhone(text)}
+            onChangeText={(text) => {
+              setPhone(text);
+            }}
             value={phone}
             placeholder="+1-555-555-5555"
             autoCapitalize={"none"}
             mode="outlined"
             autoComplete="tel"
             keyboardType="phone-pad"
-            onBlur={() => {
-              setHasPhoneError(!!phone && !isValidPhoneNumber(phone, "US"));
-            }}
             error={hasPhoneError}
           />
         </View>
         <View style={[styles.verticallySpaced]}>
+          <Text variant="labelSmall" style={{ color: "red" }}>
+            {hasEmailError ? "Invalid email address." : ""}
+          </Text>
           <TextInput
             label="Email (Required)"
             left={<TextInput.Icon icon="mail" />}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={(text) => {
+              setEmail(text);
+            }}
             value={email}
             placeholder="email@address.com"
             autoCapitalize={"none"}
             mode="outlined"
             keyboardType="email-address"
-            onBlur={() => {
-              setHasEmailError(!isEmail(email));
-            }}
             error={hasEmailError}
           />
         </View>
@@ -194,7 +229,7 @@ export default function SignUpScreen() {
             disabled={loading || hasEmailError || hasPhoneError}
             onPress={() => signUpWithEmail()}
           >
-            {hasEmailError || hasPhoneError ? "Invalid Input. Please fix." : "Sign up"}
+            Sign up
           </Button>
         </View>
         <View style={styles.secondary}>
