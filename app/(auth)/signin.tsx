@@ -1,7 +1,7 @@
 import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
@@ -17,6 +17,8 @@ export default function SignInScreen() {
   const [extra_info, setExtraInfo] = useState("");
 
   const [hasEmailError, setHasEmailError] = useState(false);
+
+  const debounceTimer = useRef<number>(null);
 
   async function signInWithEmail() {
     if (extra_info.trim()) {
@@ -66,6 +68,26 @@ export default function SignInScreen() {
     setLoading(false);
   }
 
+  useEffect(() => {
+    if (!email) {
+      return;
+    }
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      setHasEmailError(!isEmail(email));
+    }, 1000);
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [email]);
+
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
@@ -76,18 +98,20 @@ export default function SignInScreen() {
       </View>
       <View style={styles.content}>
         <View style={[styles.verticallySpaced, styles.mt20]}>
+          <Text variant="labelSmall" style={{ color: "red" }}>
+            {hasEmailError ? "Invalid email address." : ""}
+          </Text>
           <TextInput
             label="Email"
             left={<TextInput.Icon icon="mail" />}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={(text) => {
+              setEmail(text);
+            }}
             value={email}
             placeholder="email@address.com"
             autoCapitalize={"none"}
             mode="outlined"
             keyboardType="email-address"
-            onBlur={() => {
-              setHasEmailError(!isEmail(email));
-            }}
             error={hasEmailError}
           />
         </View>
