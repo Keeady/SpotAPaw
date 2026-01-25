@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import * as Location from "expo-location";
 import { log } from "./logs";
 import * as chrono from "chrono-node";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -29,11 +30,11 @@ export async function handleSignOut() {
 export async function getLastSeenLocation(
   lastSeenLocation?: string | null,
   lastSeenLocationLat?: number | null,
-  lastSeenLocationLng?: number | null
+  lastSeenLocationLng?: number | null,
 ) {
   if (!lastSeenLocation && lastSeenLocationLat && lastSeenLocationLng) {
     const defaultAddress = `${lastSeenLocationLat.toFixed(
-      6
+      6,
     )},${lastSeenLocationLng.toFixed(6)}`;
     try {
       const addressObject = await Location.reverseGeocodeAsync({
@@ -92,3 +93,15 @@ export function convertTime(time: string) {
 
   return lastSeenTime;
 }
+
+export const saveStorageItem = async (key: string, value: string) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch {}
+};
+
+export const getStorageItem = async (key: string) => {
+  try {
+    return await AsyncStorage.getItem(key);
+  } catch {}
+};

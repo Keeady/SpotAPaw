@@ -18,6 +18,7 @@ import { EmptySighting } from "@/components/sightings/empty-sighting";
 import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
+import { getStorageItem, saveStorageItem } from "../util";
 
 type SightingPageProps = {
   renderer: (
@@ -45,7 +46,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     end: MAX_SIGHTINGS,
   });
   const [error, setError] = useState("");
-  const [enableFromSettings, setEnableFromSettings] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -53,13 +53,24 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       .then((location) => {
         if (location) {
           setLocation(location);
+        } else {
+          getSavedLocation().then((location) => {
+            if (location) {
+              setLocation(location);
+            }
+          });
         }
       })
       .catch((err) => {
-        log(`getCurrentUserLocationV3 ${err}`);
-        setError("Location access is needed to show nearby sightings.");
-        setLoading(false);
-        setEnableFromSettings(true);
+        getSavedLocation().then((location) => {
+          if (location) {
+            setLocation(location);
+          } else {
+            log(`getCurrentUserLocationV3 ${err}`);
+            setError("Location access is needed to show nearby sightings.");
+            setLoading(false);
+          }
+        });
       });
   }, []);
 
@@ -117,43 +128,48 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     [user, onFetchComplete],
   );
 
-  const onLocationRequestDenied = useCallback(() => {
-    getCurrentUserLocationV3()
-      .then((location) => {
-        if (location) {
-          setLocation(location);
-        }
-        setError("");
-        setEnableFromSettings(false);
-        setLoading(true);
-        reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
-      })
-      .catch(() => {
-        setError("Location access is needed to show nearby sightings.");
-        setEnableFromSettings(true);
-      });
-  }, [reLoadSightings]);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
   }, [reLoadSightings, location]);
+
+  const saveLocation = useCallback((location: SightingLocation) => {
+    saveStorageItem("sightingLocation", JSON.stringify(location));
+  }, []);
+
+  const getSavedLocation = useCallback(async () => {
+    try {
+      const location = await getStorageItem("sightingLocation");
+      if (location) {
+        return JSON.parse(location);
+      }
+    } catch {
+      return;
+    }
+  }, []);
+
+  const onLocationSelected = useCallback(
+    (location?: SightingLocation) => {
+      if (location) {
+        setLocation(location);
+        setError("");
+        setLoading(true);
+        reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
+        saveLocation(location);
+      }
+    },
+    [reLoadSightings, saveLocation],
+  );
 
   const ListEmptyComponent = useCallback(() => {
     return (
       <EmptySighting
         error={error}
         hasLocation={!!location}
-        enableFromSettings={enableFromSettings}
-        reloadPage={onLocationRequestDenied}
+        onLocationSelected={onLocationSelected}
       />
     );
-  }, [
-    error,
-    enableFromSettings,
-    onLocationRequestDenied,
-    location,
-  ]);
+  }, [error, location, onLocationSelected]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
