@@ -99,10 +99,6 @@ export default function SignUpScreen() {
   }
 
   useEffect(() => {
-    if (!email && !phone) {
-      return;
-    }
-
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
