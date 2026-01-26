@@ -69,16 +69,16 @@ export default function SignInScreen() {
   }
 
   useEffect(() => {
-    if (!email) {
-      return;
-    }
-
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
 
     debounceTimer.current = setTimeout(() => {
-      setHasEmailError(!isEmail(email));
+      if (email) {
+        setHasEmailError(!isEmail(email));
+      } else {
+        setHasEmailError(false);
+      }
     }, 1000);
 
     return () => {
