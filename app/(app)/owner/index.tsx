@@ -9,8 +9,9 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import isEmail from "validator/es/lib/isEmail";
+import PhoneNumberInput from "@/components/phone-number-util";
 
 export default function OwnerList() {
   const theme = useTheme();
@@ -34,6 +35,11 @@ export default function OwnerList() {
 
   const [hasPhoneError, setHasPhoneError] = useState(false);
   const [hasEmailError, setHasEmailError] = useState(false);
+
+  const [selectedCountryCode, setSelectedCountryCode] =
+    useState<CountryCode>("US");
+
+  const debounceTimer = useRef<number>(null);
 
   useEffect(() => {
     if (user) {
@@ -90,12 +96,32 @@ export default function OwnerList() {
     setLoading(false);
   }, [user?.id]);
 
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      if (email) {
+        setHasEmailError(!isEmail(email));
+      } else {
+        setHasEmailError(false);
+      }
+    }, 500);
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [email]);
+
   async function createContact() {
     if (extra_info.trim() || !user) {
       return;
     }
 
-    if (!isValidPhoneNumber(phone, "US")) {
+    if (!isValidPhoneNumber(phone, selectedCountryCode)) {
       setHasPhoneError(true);
       return;
     }
@@ -163,6 +189,16 @@ export default function OwnerList() {
     }
   }
 
+  const handlePhoneNumberChange = (
+    phone: string,
+    countryCode: CountryCode,
+    isValid: boolean,
+  ) => {
+    setSelectedCountryCode(countryCode);
+    setPhone(phone);
+    setHasPhoneError(!isValid);
+  };
+
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
@@ -173,25 +209,15 @@ export default function OwnerList() {
       </View>
       <View style={styles.content}>
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextInput
-            error={hasPhoneError}
-            label="Phone Number"
-            left={<TextInput.Icon icon="phone" />}
-            onChangeText={(text) => {
-              setPhone(text);
-            }}
-            value={phone}
-            placeholder="+1-555-555-5555"
-            autoCapitalize={"none"}
-            mode="outlined"
-            autoComplete="tel"
-            keyboardType="phone-pad"
-            onBlur={() => {
-              setHasPhoneError(!isValidPhoneNumber(phone, "US"));
-            }}
+          <PhoneNumberInput
+            onPhoneNumberChange={handlePhoneNumberChange}
+            showInvalidPhoneError={hasPhoneError}
           />
         </View>
         <View style={styles.verticallySpaced}>
+          <Text variant="labelSmall" style={{ color: theme.colors.error }}>
+            {hasEmailError ? "Invalid email address." : ""}
+          </Text>
           <TextInput
             error={hasEmailError}
             label="Email"
@@ -202,9 +228,6 @@ export default function OwnerList() {
             autoCapitalize={"none"}
             mode="outlined"
             keyboardType="email-address"
-            onBlur={() => {
-              setHasEmailError(!isEmail(email));
-            }}
           />
         </View>
         <View style={styles.verticallySpaced}>
@@ -250,11 +273,7 @@ export default function OwnerList() {
             }
             onPress={() => createContact()}
           >
-            {hasPhoneError || hasEmailError
-              ? "Invalid input. Please fix."
-              : id
-              ? "Save Contact"
-              : "Create Contact"}
+            {id ? "Save Contact" : "Create Contact"}
           </Button>
         </View>
 

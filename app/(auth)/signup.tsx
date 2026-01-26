@@ -1,7 +1,8 @@
 import { log } from "@/components/logs";
+import PhoneNumberInput from "@/components/phone-number-util";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import React, { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -31,6 +32,9 @@ export default function SignUpScreen() {
 
   const debounceTimer = useRef<number>(null);
 
+  const [selectedCountryCode, setSelectedCountryCode] =
+    useState<CountryCode>("US");
+
   async function signUpWithEmail() {
     if (extra_info.trim()) {
       return;
@@ -47,7 +51,7 @@ export default function SignUpScreen() {
       return;
     }
 
-    if (phone && !isValidPhoneNumber(phone, "US")) {
+    if (phone && !isValidPhoneNumber(phone, selectedCountryCode)) {
       setHasPhoneError(true);
       return;
     }
@@ -106,10 +110,8 @@ export default function SignUpScreen() {
     debounceTimer.current = setTimeout(() => {
       if (email) {
         setHasEmailError(!isEmail(email));
-      }
-
-      if (phone) {
-        setHasPhoneError(!isValidPhoneNumber(phone, "US"));
+      } else {
+        setHasEmailError(false);
       }
     }, 500);
 
@@ -118,7 +120,17 @@ export default function SignUpScreen() {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [email, phone]);
+  }, [email]);
+
+  const handlePhoneNumberChange = (
+    phone: string,
+    countryCode: CountryCode,
+    isValid: boolean,
+  ) => {
+    setSelectedCountryCode(countryCode);
+    setPhone(phone);
+    setHasPhoneError(!isValid);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -163,23 +175,9 @@ export default function SignUpScreen() {
           />
         </View>
         <View style={[styles.verticallySpaced]}>
-          <Text variant="labelSmall" style={{ color: theme.colors.error }}>
-            {hasPhoneError ? "Invalid phone number." : ""}
-          </Text>
-
-          <TextInput
-            label="Phone Number"
-            left={<TextInput.Icon icon="phone" />}
-            onChangeText={(text) => {
-              setPhone(text);
-            }}
-            value={phone}
-            placeholder="+1-555-555-5555"
-            autoCapitalize={"none"}
-            mode="outlined"
-            autoComplete="tel"
-            keyboardType="phone-pad"
-            error={hasPhoneError}
+          <PhoneNumberInput
+            onPhoneNumberChange={handlePhoneNumberChange}
+            showInvalidPhoneError={hasPhoneError}
           />
         </View>
         <View style={[styles.verticallySpaced]}>
@@ -288,5 +286,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#BBDEFB",
     marginTop: 4,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+
+  countryButton: {
+    marginRight: 8,
+    marginTop: 4,
+  },
+  countryButtonContent: {
+    height: 56,
+  },
+  menuScroll: {
+    maxHeight: 300,
+  },
+  phoneInput: {
+    flex: 1,
   },
 });

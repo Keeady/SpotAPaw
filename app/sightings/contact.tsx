@@ -1,9 +1,10 @@
 import { log } from "@/components/logs";
+import PhoneNumberInput from "@/components/phone-number-util";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
@@ -21,7 +22,8 @@ export default function SightingContact() {
   const [disableBtn, setDisabledBtn] = useState(true);
   const [hasPhoneError, setHasPhoneError] = useState(false);
 
-  const sightingsRoute = user ? "my-sightings" : "sightings";
+  const [selectedCountryCode, setSelectedCountryCode] =
+    useState<CountryCode>("US");
 
   useEffect(() => {
     if (name && phone) {
@@ -48,12 +50,14 @@ export default function SightingContact() {
       });
   }, [user?.id]);
 
+  const sightingsRoute = user ? "my-sightings" : "sightings";
+
   async function saveSightingContact() {
     if (extra_info.trim() || !isValidUuid(sightingId)) {
       return;
     }
 
-    if (!isValidPhoneNumber(phone, "US")) {
+    if (!isValidPhoneNumber(phone, selectedCountryCode)) {
       setHasPhoneError(true);
       return;
     }
@@ -88,28 +92,24 @@ export default function SightingContact() {
 
     router.dismissTo(`/${sightingsRoute}`);
   }
+
+  const handlePhoneNumberChange = (
+    phone: string,
+    countryCode: CountryCode,
+    isValid: boolean,
+  ) => {
+    setSelectedCountryCode(countryCode);
+    setPhone(phone);
+    setHasPhoneError(!isValid);
+  };
+
   return (
     <View style={styles.container}>
       <Text variant="bodyLarge" style={styles.title}>
         Would you like to be contacted by pet owner about this sighting?
       </Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <TextInput
-          label="Phone Number"
-          left={<TextInput.Icon icon="phone" />}
-          onChangeText={(text) => setPhone(text)}
-          value={phone}
-          placeholder="+1-555-555-5555"
-          autoCapitalize={"none"}
-          mode="outlined"
-          textContentType="telephoneNumber"
-          autoComplete="tel"
-          keyboardType="phone-pad"
-          onBlur={() => {
-            setHasPhoneError(!!phone && !isValidPhoneNumber(phone, "US"));
-          }}
-          error={hasPhoneError}
-        />
+        <PhoneNumberInput onPhoneNumberChange={handlePhoneNumberChange} />
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
@@ -130,7 +130,7 @@ export default function SightingContact() {
           disabled={loading || hasPhoneError || disableBtn}
           onPress={() => saveSightingContact()}
         >
-          {hasPhoneError ? "Invalid input. Please fix." : "Save Contact"}
+          Save Contact
         </Button>
       </View>
       {!user && (

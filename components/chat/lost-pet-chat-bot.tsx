@@ -32,7 +32,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { log } from "../logs";
 import DropPinOnMap from "../map-util";
 import { supabase } from "../supabase-client";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isPossiblePhoneNumber } from "libphonenumber-js";
 
 type ChatBotActionButton = {
   label: string;
@@ -638,7 +638,7 @@ const LostPetChatbot = () => {
 
       case "foundPhone":
         if (response !== "Skip") {
-          const isValid = isValidPhoneNumber(response, "US");
+          const isValid = isPossiblePhoneNumber(response);
           setReportData((prev) => ({
             ...prev,
             contactPhone: isValid ? response : "",
@@ -647,7 +647,7 @@ const LostPetChatbot = () => {
           if (!isValid) {
             setCurrentStep("foundPhone");
             setTimeout(() => {
-              addBotMessage("Please enter a valid phone number", [
+              addBotMessage("Please enter a valid phone number with country code", [
                 { text: "Skip", value: "Skip" },
               ]);
             }, 500);
@@ -897,7 +897,7 @@ const LostPetChatbot = () => {
 
       case "phone":
         if (response !== "Skip") {
-          const isValid = isValidPhoneNumber(response, "US");
+          const isValid = isPossiblePhoneNumber(response);
           setReportData((prev) => ({
             ...prev,
             contactPhone: isValid ? response : "",
@@ -907,7 +907,7 @@ const LostPetChatbot = () => {
           if (!isValid) {
             setCurrentStep("phone");
             setTimeout(() => {
-              addBotMessage("Please enter a valid phone number", [
+              addBotMessage("Please enter a valid phone number with country code", [
                 { text: "Skip", value: "Skip" },
               ]);
             }, 500);
