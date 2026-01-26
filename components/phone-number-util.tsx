@@ -19,7 +19,7 @@ export type PhoneNumberInputProps = {
   onPhoneNumberChange: (
     phone: string,
     countryCode: CountryCode,
-    invalidPhoneNumber: boolean,
+    isvalidPhoneNumber: boolean,
   ) => void;
   showInvalidPhoneError?: boolean;
 };
@@ -65,7 +65,7 @@ export default function PhoneNumberInput({
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [phone, selectedCountryCode]);
+  }, [phone, selectedCountryCode, onPhoneNumberChange]);
 
   const countries = useMemo(() => {
     const allCountries = getCountries();
@@ -74,7 +74,6 @@ export default function PhoneNumberInput({
       callingCode: `+${getCountryCallingCode(countryCode)}`,
       name: countryCode,
     }));
-    // .sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
   const selectedCountryData = useMemo(() => {
