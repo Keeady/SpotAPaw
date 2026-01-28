@@ -5,6 +5,7 @@ import * as Location from "expo-location";
 import { log } from "./logs";
 import * as chrono from "chrono-node";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppConstants, { GOOGLE_GEOCODE_URL } from "./constants";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -33,9 +34,6 @@ export async function getLastSeenLocation(
   lastSeenLocationLng?: number | null,
 ) {
   if (!lastSeenLocation && lastSeenLocationLat && lastSeenLocationLng) {
-    const defaultAddress = `${lastSeenLocationLat.toFixed(
-      6,
-    )},${lastSeenLocationLng.toFixed(6)}`;
     try {
       const addressObject = await Location.reverseGeocodeAsync({
         longitude: lastSeenLocationLng,
@@ -52,11 +50,17 @@ export async function getLastSeenLocation(
         const cityInfo = city ? `${city}, ` : "";
 
         return `${streetInfo}${cityInfo}${state}`;
+      } else {
+        return await convertToFullAddress(
+          lastSeenLocationLat,
+          lastSeenLocationLng,
+        );
       }
-
-      return defaultAddress;
     } catch {
-      return defaultAddress;
+      return await convertToFullAddress(
+        lastSeenLocationLat,
+        lastSeenLocationLng,
+      );
     }
   }
 
@@ -105,3 +109,17 @@ export const getStorageItem = async (key: string) => {
     return await AsyncStorage.getItem(key);
   } catch {}
 };
+
+export async function convertToFullAddress(lat: number, long: number) {
+  return fetch(
+    `${GOOGLE_GEOCODE_URL}?latlng=${lat},${long}&key=${AppConstants.EXPO_GOOGLE_MAP_API_KEY}`,
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.results && data.results.length > 0) {
+        const address = data.results[0].formatted_address;
+        return address;
+      }
+    })
+    .catch(() => {});
+}
