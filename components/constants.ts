@@ -11,4 +11,4 @@ export const MAX_SIGHTINGS = 50;
 export const SIGHTING_OFFSET = 50;
 export const SIGHTING_RADIUSKM = 20;
 
-export const GOOGLE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+export const GOOGLE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json";

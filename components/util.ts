@@ -114,12 +114,18 @@ export async function convertToFullAddress(lat: number, long: number) {
   return fetch(
     `${GOOGLE_GEOCODE_URL}?latlng=${lat},${long}&key=${AppConstants.EXPO_GOOGLE_MAP_API_KEY}`,
   )
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+    })
     .then((data) => {
       if (data.results && data.results.length > 0) {
         const address = data.results[0].formatted_address;
         return address;
       }
     })
-    .catch(() => {});
+    .catch(() => {
+      return `${lat.toFixed(6)},${long.toFixed(6)}`;
+    });
 }
