@@ -1,5 +1,4 @@
 import * as Location from "expo-location";
-import { Alert, Linking } from "react-native";
 import { log } from "./logs";
 
 export type SightingLocation = {
@@ -23,17 +22,7 @@ export async function getCurrentLocationV4() {
         };
       }
     }
-  } catch (e) {
-    log(`getCurrentLocationV4: ${e}`);
-    Alert.alert(
-      "Location Permission Required",
-      "Please grant Location permission in your device settings.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ],
-    );
-  }
+  } catch {}
 }
 
 export async function getCurrentUserLocationV3(): Promise<

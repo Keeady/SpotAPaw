@@ -50,7 +50,7 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
           {pet.breed}
         </Text>
         <Text style={{ fontSize: 16, color: "#555", marginTop: 2 }}>
-          {pet.age} years old
+          {pet.age ? `${pet.age} years old` : ""}
         </Text>
       </Card.Content>
     </Card>
