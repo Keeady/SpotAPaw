@@ -79,7 +79,7 @@ const getUserLocationFast =
           accuracy: Location.Accuracy.Balanced,
         }),
         Location.getLastKnownPositionAsync({
-          maxAge: 300000,
+          maxAge: 86400000,
           requiredAccuracy: 100,
         }),
       ]);
