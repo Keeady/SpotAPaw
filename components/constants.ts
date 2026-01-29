@@ -3,7 +3,8 @@ import Constants from 'expo-constants';
 const AppConstants = {
     EXPO_PUBLIC_SUPABASE_ANON_KEY: Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY,
     EXPO_PUBLIC_SUPABASE_URL: Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL,
-    EXPO_GOOGLE_MAP_API_KEY: Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY
+    EXPO_GOOGLE_MAP_API_KEY: Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY,
+    EXPO_GOOGLE_GEOCODE_API_KEY: Constants.expoConfig?.extra?.EXPO_GOOGLE_GEOCODE_API_KEY
 };
 export default AppConstants;
 

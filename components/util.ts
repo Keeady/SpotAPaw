@@ -111,21 +111,29 @@ export const getStorageItem = async (key: string) => {
 };
 
 export async function convertToFullAddress(lat: number, long: number) {
+  const defaultAddress = `${lat.toFixed(6)},${long.toFixed(6)}`;
+
   return fetch(
-    `${GOOGLE_GEOCODE_URL}?latlng=${lat},${long}&key=${AppConstants.EXPO_GOOGLE_MAP_API_KEY}`,
+    `${GOOGLE_GEOCODE_URL}?latlng=${lat},${long}&key=${AppConstants.EXPO_GOOGLE_GEOCODE_API_KEY}`,
   )
     .then((response) => {
       if (response.ok) {
         return response.json();
+      } else {
+        throw new Error(
+          `Geocode request failed with status ${response.status}`,
+        );
       }
     })
     .then((data) => {
       if (data.results && data.results.length > 0) {
         const address = data.results[0].formatted_address;
         return address;
+      } else {
+        return defaultAddress;
       }
     })
     .catch(() => {
-      return `${lat.toFixed(6)},${long.toFixed(6)}`;
+      return defaultAddress;
     });
 }
