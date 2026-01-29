@@ -120,7 +120,9 @@ export async function convertToFullAddress(lat: number, long: number) {
       if (response.ok) {
         return response.json();
       } else {
-        return defaultAddress;
+        throw new Error(
+          `Geocode request failed with status ${response.status}`,
+        );
       }
     })
     .then((data) => {
