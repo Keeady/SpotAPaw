@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { supabase } from "./supabase-client";
-import { router } from "expo-router";
+import { Router } from "expo-router";
 import * as Location from "expo-location";
 import { log } from "./logs";
 import * as chrono from "chrono-node";
@@ -18,7 +18,7 @@ export const isValidUuid = (id: string | null | undefined) => {
   );
 };
 
-export async function handleSignOut() {
+export async function handleSignOut(router: Router) {
   let { error } = await supabase.auth.signOut();
   if (error) {
     log(error.message);
@@ -26,6 +26,10 @@ export async function handleSignOut() {
   } else {
     router.navigate("/");
   }
+}
+
+export async function handleSignIn(router: Router) {
+  router.navigate("/");
 }
 
 export async function getLastSeenLocation(

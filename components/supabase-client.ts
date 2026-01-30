@@ -10,7 +10,10 @@ export const supabase = createClient(
     auth: {
       storageKey: "spotapaw",
       detectSessionInUrl: false,
-      storage: AsyncStorage
+      storage: AsyncStorage,
+      autoRefreshToken: true,
+      persistSession: true,
+      flowType: "pkce"
     }
   }
 );

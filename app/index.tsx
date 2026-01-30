@@ -1,12 +1,12 @@
+import DividerWithText from "@/components/divider-with-text";
 import HomePageHeader from "@/components/header/homepage-header";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, useRouter } from "expo-router";
 import { useContext } from "react";
-import { StyleSheet, View } from "react-native";
-import { Button, FAB, Text, useTheme } from "react-native-paper";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, Text } from "react-native-paper";
 
 export default function PublicHome() {
-  const theme = useTheme();
   const router = useRouter();
   const { user, loading } = useContext(AuthContext);
 
@@ -15,37 +15,35 @@ export default function PublicHome() {
   }
 
   if (user) {
-    return <Redirect href={"/(app)/pets"} />;
+    return <Redirect href={"/(app)/my-sightings"} />;
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.logoContainer}>
         <HomePageHeader />
       </View>
 
+      <View>
+        <Text variant="titleMedium" style={styles.largeText}>
+          A community helping lost pets find their way home.
+        </Text>
+      </View>
       <View style={styles.buttonContainer}>
         <Button
-          icon="paw"
+          icon="google"
           mode="contained"
-          onPress={() => router.push("/sightings/new")}
-          contentStyle={{ width: "100%" }}
+          onPress={() => router.push("/(auth)/oauth")}
           style={styles.button}
         >
-          Report a Pet Sighting
+          Continue with Google
         </Button>
-        <Button
-          icon="paw"
-          mode="outlined"
-          onPress={() => router.push("/sightings/")}
-          contentStyle={{ width: "100%" }}
-          style={styles.button}
-        >
-          View Lost Pet Sightings
-        </Button>
+
+        <DividerWithText text="or continue with email and password" />
+
         <Button
           icon=""
-          mode="outlined"
+          mode="elevated"
           onPress={() => router.push("/(auth)/signin")}
           style={styles.button}
         >
@@ -59,18 +57,19 @@ export default function PublicHome() {
         >
           Register
         </Button>
+
+        <DividerWithText text="or continue without an account" />
+
+        <Button
+          icon=""
+          mode="outlined"
+          style={styles.button}
+          onPress={() => router.push("/sightings/")}
+        >
+          Continue as Guest
+        </Button>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginTop: 16,
-          marginHorizontal: 24,
-          alignContent: "center",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+      <View style={styles.bottomSection}>
         <Text variant="bodyMedium" style={{ textAlign: "center" }}>
           By using this app, you agree to our
         </Text>
@@ -94,21 +93,7 @@ export default function PublicHome() {
           </Text>
         </Button>
       </View>
-      <FAB
-        icon="message-outline"
-        label="Add Sighting"
-        mode="elevated"
-        onPress={() => router.push("/sightings/chat-bot")}
-        style={{
-          position: "absolute",
-          bottom: 20,
-          right: 50,
-          backgroundColor: theme.colors.primary,
-        }}
-        color={theme.colors.onPrimary}
-        theme={theme}
-      />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -116,9 +101,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    alignItems: "center",
     backgroundColor: "#fff",
     flexDirection: "column",
+  },
+  content: {
+    alignItems: "center",
   },
   button: {
     width: "100%",
@@ -130,5 +117,20 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: "100%",
     alignItems: "center",
+  },
+  largeText: {
+    textAlign: "center",
+    marginBottom: 20,
+    marginTop: -10,
+  },
+  bottomSection: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 16,
+    marginHorizontal: 24,
+    alignContent: "center",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 16,
   },
 });

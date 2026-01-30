@@ -4,6 +4,7 @@ import { supabase } from "../supabase-client";
 import { showMessage } from "react-native-flash-message";
 import { handleSignOut, isValidUuid } from "../util";
 import { log } from "../logs";
+import { router } from "expo-router";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -57,6 +58,6 @@ const onDeleteAccount = async (userId: string) => {
       icon: "success",
     });
 
-    handleSignOut();
+    handleSignOut(router);
   }
 };

@@ -1,11 +1,12 @@
 import { AuthProvider } from "@/components/Provider/auth-provider";
 import { Stack, useRouter } from "expo-router";
-import FlashMessage from "react-native-flash-message";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 import { Image, Linking } from "react-native";
 import { useEffect } from "react";
 import { supabase } from "@/components/supabase-client";
-import { MD3LightTheme, PaperProvider } from "react-native-paper";
+import { Button, MD3LightTheme, PaperProvider } from "react-native-paper";
 import styles from "@/components/layout.style";
+import { handleSignIn } from "@/components/util";
 
 export default function Layout() {
   const router = useRouter();
@@ -19,10 +20,33 @@ export default function Layout() {
       router.replace("/(auth)/signin");
     };
 
+    const handleOAuthRedirect = async (url: string) => {
+      const parsedUrl = new URL(url);
+      const code = parsedUrl.searchParams.get("code");
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          showMessage({
+            message: "Authentication failed. Please try again.",
+            type: "warning",
+            icon: "warning",
+          });
+        } else {
+          router.replace("/(app)/my-sightings");
+        }
+      }
+    };
+
     // Listener for when app is already open
     const subscription = Linking.addEventListener("url", ({ url }) => {
       if (url && url.indexOf("auth/verify") > -1) {
         handleRedirect(url);
+      }
+
+      if (url && url.indexOf("auth/v1/callback") > -1) {
+        handleOAuthRedirect(url);
       }
     });
 
@@ -30,6 +54,10 @@ export default function Layout() {
     Linking.getInitialURL().then((url) => {
       if (url && url.indexOf("auth/verify") > -1) {
         handleRedirect(url);
+      }
+
+      if (url && url.indexOf("auth/v1/callback") > -1) {
+        handleOAuthRedirect(url);
       }
     });
 
@@ -50,6 +78,15 @@ export default function Layout() {
                 style={styles.logo}
               />
             ),
+            headerRight: () => (
+              <Button
+                mode="text"
+                onPress={() => handleSignIn(router)}
+                style={styles.button}
+              >
+                Sign In
+              </Button>
+            ),
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -57,7 +94,7 @@ export default function Layout() {
           <Stack.Screen name="terms" options={{ headerShown: true }} />
           <Stack.Screen name="privacy" options={{ headerShown: true }} />
         </Stack>
-        <FlashMessage position="bottom" duration={5000} />
+        <FlashMessage position="top" duration={5000} />
       </AuthProvider>
     </PaperProvider>
   );

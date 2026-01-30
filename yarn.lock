@@ -1621,6 +1621,11 @@
   dependencies:
     invariant "^2.2.4"
 
+"@react-native-google-signin/google-signin@^16.1.1":
+  version "16.1.1"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-16.1.1.tgz#40b9f8458a09cf8933132efd8a68f0a573167e92"
+  integrity sha512-lcHBnZ7uvCJiWtGooKOklo/4okqszWvJ0BatW1UaIe+ynmpVpp1lyJkvv1Mj08d39k4soaWuhZVNKjD/RFL34Q==
+
 "@react-native/assets-registry@0.81.5":
   version "0.81.5"
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.81.5.tgz#d22c924fa6f6d4a463c5af34ce91f38756c0fa7d"
@@ -2633,7 +2638,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
+base64-js@^1.2.3, base64-js@^1.3.0, base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
@@ -3613,6 +3618,11 @@ exec-async@^2.2.0:
   resolved "https://registry.npmjs.org/exec-async/-/exec-async-2.2.0.tgz"
   integrity sha512-87OpwcEiMia/DeiKFzaQNBNFeN3XkkpYIh9FyOqq5mS2oKv3CBE67PXoEKcr6nodWdXNogTiQ0jE2NGuoffXPw==
 
+expo-application@~7.0.8:
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-7.0.8.tgz#320af0d6c39b331456d3bc833b25763c702d23db"
+  integrity sha512-qFGyxk7VJbrNOQWBbE09XUuGuvkOgFS9QfToaK2FdagM2aQ+x3CvGV2DuVgl/l4ZxPgIf3b/MNh9xHpwSwn74Q==
+
 expo-asset@~12.0.12:
   version "12.0.12"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-12.0.12.tgz#15eb7d92cd43cc81c37149e5bbcdc3091875a85b"
@@ -3621,10 +3631,30 @@ expo-asset@~12.0.12:
     "@expo/image-utils" "^0.8.8"
     expo-constants "~18.0.12"
 
+expo-auth-session@~7.0.10:
+  version "7.0.10"
+  resolved "https://registry.yarnpkg.com/expo-auth-session/-/expo-auth-session-7.0.10.tgz#37250576baf5d56f16b861fb7c387a990f8eaf45"
+  integrity sha512-XDnKkudvhHSKkZfJ+KkodM+anQcrxB71i+h0kKabdLa5YDXTQ81aC38KRc3TMqmnBDHAu0NpfbzEVd9WDFY3Qg==
+  dependencies:
+    expo-application "~7.0.8"
+    expo-constants "~18.0.11"
+    expo-crypto "~15.0.8"
+    expo-linking "~8.0.10"
+    expo-web-browser "~15.0.10"
+    invariant "^2.2.4"
+
 expo-blur@~15.0.8:
   version "15.0.8"
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-15.0.8.tgz#846cea275a6644639c5c338987b4cca54cf93eca"
   integrity sha512-rWyE1NBRZEu9WD+X+5l7gyPRszw7n12cW3IRNAb5i6KFzaBp8cxqT5oeaphJapqURvcqhkOZn2k5EtBSbsuU7w==
+
+expo-constants@~18.0.11:
+  version "18.0.13"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-18.0.13.tgz#0117f1f3d43be7b645192c0f4f431fb4efc4803d"
+  integrity sha512-FnZn12E1dRYKDHlAdIyNFhBurKTS3F9CrfrBDJI5m3D7U17KBHMQ6JEfYlSj7LG7t+Ulr+IKaj58L1k5gBwTcQ==
+  dependencies:
+    "@expo/config" "~12.0.13"
+    "@expo/env" "~2.0.8"
 
 expo-constants@~18.0.12:
   version "18.0.12"
@@ -3633,6 +3663,13 @@ expo-constants@~18.0.12:
   dependencies:
     "@expo/config" "~12.0.12"
     "@expo/env" "~2.0.8"
+
+expo-crypto@~15.0.8:
+  version "15.0.8"
+  resolved "https://registry.yarnpkg.com/expo-crypto/-/expo-crypto-15.0.8.tgz#339198aae149b3ccc0b44f7150d7261a3a1f5287"
+  integrity sha512-aF7A914TB66WIlTJvl5J6/itejfY78O7dq3ibvFltL9vnTALJ/7LYHvLT4fwmx9yUNS6ekLBtDGWivFWnj2Fcw==
+  dependencies:
+    base64-js "^1.3.0"
 
 expo-dev-client@~6.0.20:
   version "6.0.20"
@@ -3710,7 +3747,7 @@ expo-keep-awake@~15.0.8:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-15.0.8.tgz#911c5effeba9baff2ccde79ef0ff5bf856215f8d"
   integrity sha512-YK9M1VrnoH1vLJiQzChZgzDvVimVoriibiDIFLbQMpjYBnvyfUeHJcin/Gx1a+XgupNXy92EQJLgI/9ZuXajYQ==
 
-expo-linking@~8.0.11:
+expo-linking@~8.0.10, expo-linking@~8.0.11:
   version "8.0.11"
   resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-8.0.11.tgz#b13ca9fc409ef0536352443221eb50e5e2bee366"
   integrity sha512-+VSaNL5om3kOp/SSKO5qe6cFgfSIWnnQDSbA7XLs3ECkYzXRquk5unxNS3pg7eK5kNUmQ4kgLI7MhTggAEUBLA==

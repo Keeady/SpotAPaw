@@ -367,6 +367,7 @@ export default function SightingDetail({
         <ReportLostPetFab
           onChatbotPress={() => onChatSighting()}
           onFormPress={() => onAddSighting()}
+          title={"Seen This Pet?"}
         />
       </View>
     </Portal.Host>

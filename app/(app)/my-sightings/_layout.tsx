@@ -1,11 +1,12 @@
 import styles from "@/components/layout.style";
 import { handleSignOut } from "@/components/util";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React from "react";
 import { Image } from "react-native";
 import { Button } from "react-native-paper";
 
 export default function SightingsLayout() {
+  const router = useRouter();
   return (
     <Stack
       screenOptions={{
@@ -13,7 +14,7 @@ export default function SightingsLayout() {
         headerBackButtonDisplayMode: "minimal",
         title: "",
         headerRight: () => (
-          <Button onPress={handleSignOut} style={styles.button}>
+          <Button onPress={() => handleSignOut(router)} style={styles.button}>
             Sign Out
           </Button>
         ),

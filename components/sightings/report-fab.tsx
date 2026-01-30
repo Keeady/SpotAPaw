@@ -4,6 +4,7 @@ import { FAB, Portal, useTheme } from "react-native-paper";
 type ReportLostPetFabProps = {
   onChatbotPress: () => void;
   onFormPress: () => void;
+  title: string;
 };
 
 type FABGroupStateChangeProps = {
@@ -13,6 +14,7 @@ type FABGroupStateChangeProps = {
 export default function ReportLostPetFab({
   onChatbotPress,
   onFormPress,
+  title,
 }: ReportLostPetFabProps) {
   const theme = useTheme();
   const [state, setState] = React.useState<FABGroupStateChangeProps>({
@@ -54,7 +56,7 @@ export default function ReportLostPetFab({
         backdropColor={"rgba(0,0,0,0.8)"}
         style={{ position: "absolute", bottom: 20, right: 5 }}
         variant={"primary"}
-        label="Add Sighting"
+        label={title}
       />
     </Portal>
   );
