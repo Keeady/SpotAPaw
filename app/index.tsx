@@ -3,11 +3,10 @@ import HomePageHeader from "@/components/header/homepage-header";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, useRouter } from "expo-router";
 import { useContext } from "react";
-import { StyleSheet, View } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, Text } from "react-native-paper";
 
 export default function PublicHome() {
-  const theme = useTheme();
   const router = useRouter();
   const { user, loading } = useContext(AuthContext);
 
@@ -16,18 +15,18 @@ export default function PublicHome() {
   }
 
   if (user) {
-    return <Redirect href={"/(app)/pets"} />;
+    return <Redirect href={"/(app)/my-sightings"} />;
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.logoContainer}>
         <HomePageHeader />
       </View>
 
       <View>
         <Text variant="titleMedium" style={styles.largeText}>
-          Helping lost pets find their way home.
+          A community helping lost pets find their way home.
         </Text>
       </View>
       <View style={styles.buttonContainer}>
@@ -70,17 +69,7 @@ export default function PublicHome() {
           Continue as Guest
         </Button>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginTop: 16,
-          marginHorizontal: 24,
-          alignContent: "center",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+      <View style={styles.bottomSection}>
         <Text variant="bodyMedium" style={{ textAlign: "center" }}>
           By using this app, you agree to our
         </Text>
@@ -104,7 +93,7 @@ export default function PublicHome() {
           </Text>
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -112,9 +101,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    alignItems: "center",
     backgroundColor: "#fff",
     flexDirection: "column",
+  },
+  content: {
+    alignItems: "center",
   },
   button: {
     width: "100%",
@@ -131,5 +122,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
     marginTop: -10,
+  },
+  bottomSection: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 16,
+    marginHorizontal: 24,
+    alignContent: "center",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 16,
   },
 });
