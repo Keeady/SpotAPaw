@@ -1,9 +1,10 @@
+import DividerWithText from "@/components/divider-with-text";
 import HomePageHeader from "@/components/header/homepage-header";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, useRouter } from "expo-router";
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, FAB, Text, useTheme } from "react-native-paper";
+import { Button, Text, useTheme } from "react-native-paper";
 
 export default function PublicHome() {
   const theme = useTheme();
@@ -24,28 +25,26 @@ export default function PublicHome() {
         <HomePageHeader />
       </View>
 
+      <View>
+        <Text variant="titleMedium" style={styles.largeText}>
+          Helping lost pets find their way home.
+        </Text>
+      </View>
       <View style={styles.buttonContainer}>
         <Button
-          icon="paw"
+          icon="google"
           mode="contained"
-          onPress={() => router.push("/sightings/new")}
-          contentStyle={{ width: "100%" }}
+          onPress={() => router.push("/(auth)/oauth")}
           style={styles.button}
         >
-          Report a Pet Sighting
+          Continue with Google
         </Button>
-        <Button
-          icon="paw"
-          mode="outlined"
-          onPress={() => router.push("/sightings/")}
-          contentStyle={{ width: "100%" }}
-          style={styles.button}
-        >
-          View Lost Pet Sightings
-        </Button>
+
+        <DividerWithText text="or continue with email and password" />
+
         <Button
           icon=""
-          mode="outlined"
+          mode="elevated"
           onPress={() => router.push("/(auth)/signin")}
           style={styles.button}
         >
@@ -58,6 +57,17 @@ export default function PublicHome() {
           style={styles.button}
         >
           Register
+        </Button>
+
+        <DividerWithText text="or continue without an account" />
+
+        <Button
+          icon=""
+          mode="outlined"
+          style={styles.button}
+          onPress={() => router.push("/sightings/")}
+        >
+          Continue as Guest
         </Button>
       </View>
       <View
@@ -94,20 +104,6 @@ export default function PublicHome() {
           </Text>
         </Button>
       </View>
-      <FAB
-        icon="message-outline"
-        label="Add Sighting"
-        mode="elevated"
-        onPress={() => router.push("/sightings/chat-bot")}
-        style={{
-          position: "absolute",
-          bottom: 20,
-          right: 50,
-          backgroundColor: theme.colors.primary,
-        }}
-        color={theme.colors.onPrimary}
-        theme={theme}
-      />
     </View>
   );
 }
@@ -130,5 +126,10 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: "100%",
     alignItems: "center",
+  },
+  largeText: {
+    textAlign: "center",
+    marginBottom: 20,
+    marginTop: -10,
   },
 });

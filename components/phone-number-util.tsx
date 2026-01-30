@@ -102,15 +102,15 @@ export default function PhoneNumberInput({
           onDismiss={closeMenu}
           anchor={
             <Button
-              mode="elevated"
+              mode="outlined"
               onPress={openMenu}
               style={[
                 styles.countryButton,
                 {
-                  borderWidth: 2,
+                  borderWidth: hasPhoneError ? 2 : 1,
                   borderColor: hasPhoneError
                     ? theme.colors.error
-                    : "transparent",
+                    : theme.colors.outline,
                 },
               ]}
               contentStyle={styles.countryButtonContent}
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
   },
   menuScroll: {
     maxHeight: 300,
+    backgroundColor: "white"
   },
   phoneInput: {
     flex: 1,
