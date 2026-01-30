@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   menuScroll: {
     maxHeight: 300,
-    backgroundColor: "white"
+    backgroundColor: "#fff",
   },
   phoneInput: {
     flex: 1,

@@ -4,7 +4,7 @@ import { FAB, Portal, useTheme } from "react-native-paper";
 type ReportLostPetFabProps = {
   onChatbotPress: () => void;
   onFormPress: () => void;
-  title: string
+  title: string;
 };
 
 type FABGroupStateChangeProps = {

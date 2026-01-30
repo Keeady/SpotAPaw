@@ -1,7 +1,7 @@
 import { AuthProvider } from "@/components/Provider/auth-provider";
 import { Stack, useRouter } from "expo-router";
-import FlashMessage from "react-native-flash-message";
-import { ActivityIndicator, Alert, Image, Linking, View } from "react-native";
+import FlashMessage, { showMessage } from "react-native-flash-message";
+import { Image, Linking } from "react-native";
 import { useEffect } from "react";
 import { supabase } from "@/components/supabase-client";
 import { Button, MD3LightTheme, PaperProvider } from "react-native-paper";
@@ -14,30 +14,29 @@ export default function Layout() {
   useEffect(() => {
     const handleRedirect = async (url: string) => {
       // Let Supabase verify the confirmation link
-      //if (url && url.indexOf("auth/verify") > -1) {
-        await supabase.auth.exchangeCodeForSession(url);
+      await supabase.auth.exchangeCodeForSession(url);
 
-        // Then send user to the login screen (no auto-login)
-        router.replace("/(auth)/signin");
-      //}
+      // Then send user to the login screen (no auto-login)
+      router.replace("/(auth)/signin");
     };
 
     const handleOAuthRedirect = async (url: string) => {
-      //if (url && url.indexOf("auth/v1/callback") > -1) {
-        const parsedUrl = new URL(url);
-        const code = parsedUrl.searchParams.get("code");
+      const parsedUrl = new URL(url);
+      const code = parsedUrl.searchParams.get("code");
 
-        if (code) {
-          // Exchange the code for a session
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-          if (error) {
-            Alert.alert("Error", error.message);
-          } else {
-            router.replace("/(app)/my-sightings");
-          }
+        if (error) {
+          showMessage({
+            message: "Authentication failed. Please try again.",
+            type: "warning",
+            icon: "warning",
+          });
+        } else {
+          router.replace("/(app)/my-sightings");
         }
-      //}
+      }
     };
 
     // Listener for when app is already open

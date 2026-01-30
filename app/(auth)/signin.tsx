@@ -51,7 +51,7 @@ export default function SignInScreen() {
     });
 
     if (session) {
-      router.dismissTo("/(app)/pets");
+      router.dismissTo("/(app)/my-sightings");
       return;
     }
 
