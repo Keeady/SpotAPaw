@@ -55,14 +55,14 @@ export default function PublicHome() {
           onPress={() => router.push("/(auth)/signup")}
           style={styles.button}
         >
-          Register
+          Create an account
         </Button>
 
         <DividerWithText text="or continue without an account" />
 
         <Button
           icon=""
-          mode="outlined"
+          mode="text"
           style={styles.button}
           onPress={() => router.push("/sightings/")}
         >
@@ -70,28 +70,34 @@ export default function PublicHome() {
         </Button>
       </View>
       <View style={styles.bottomSection}>
-        <Text variant="bodyMedium" style={{ textAlign: "center" }}>
-          By using this app, you agree to our
-        </Text>
-        <Button mode="text" onPress={() => router.push("/privacy")} compact>
-          <Text
-            variant="bodyMedium"
-            style={{ textDecorationLine: "underline" }}
-          >
-            Privacy Policy
+        <View style={styles.usageText}>
+          <Text variant="bodySmall" style={{ textAlign: "center" }}>
+            By using this app, you agree to our
           </Text>
-        </Button>
-        <Text variant="bodyMedium" style={{ textAlign: "center" }}>
-          and
-        </Text>
-        <Button mode="text" onPress={() => router.push("/terms")} compact>
-          <Text
-            variant="bodyMedium"
-            style={{ textDecorationLine: "underline" }}
-          >
-            Terms of Service
+          <Button mode="text" onPress={() => router.push("/privacy")} compact>
+            <Text
+              variant="bodySmall"
+              style={{ textDecorationLine: "underline" }}
+            >
+              Privacy Policy
+            </Text>
+          </Button>
+          <Text variant="bodySmall" style={{ textAlign: "center" }}>
+            and
           </Text>
-        </Button>
+          <Button mode="text" onPress={() => router.push("/terms")} compact>
+            <Text
+              variant="bodySmall"
+              style={{ textDecorationLine: "underline" }}
+            >
+              Terms of Service
+            </Text>
+          </Button>
+        </View>
+
+        <Text variant="bodySmall">
+          SpotAPaw &#169; {new Date().getFullYear()}
+        </Text>
       </View>
     </ScrollView>
   );
@@ -121,16 +127,19 @@ const styles = StyleSheet.create({
   largeText: {
     textAlign: "center",
     marginBottom: 20,
-    marginTop: -10,
   },
   bottomSection: {
-    flexDirection: "row",
+    marginBottom: 16,
+    alignItems: "center",
     justifyContent: "center",
     marginTop: 16,
-    marginHorizontal: 24,
+    gap: 8,
+  },
+  usageText: {
+    flexDirection: "row",
+    justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
     flexWrap: "wrap",
-    marginBottom: 16,
   },
 });
