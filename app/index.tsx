@@ -90,7 +90,7 @@ export default function PublicHome() {
               variant="bodySmall"
               style={{ textDecorationLine: "underline" }}
             >
-              Terms of Service.
+              Terms of Service
             </Text>
           </Button>
         </View>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 16,
-    gap: 8
+    gap: 8,
   },
   usageText: {
     flexDirection: "row",
