@@ -1,4 +1,3 @@
-import { useConfirmDelete } from "@/components/account/delete";
 import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
@@ -27,7 +26,6 @@ export default function OwnerList() {
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const { user } = useContext(AuthContext);
-  const onConfirmDelete = useConfirmDelete();
 
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(true);
 
@@ -276,19 +274,6 @@ export default function OwnerList() {
             {id ? "Save Contact" : "Create Contact"}
           </Button>
         </View>
-
-        {user && (
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Button
-              mode="outlined"
-              disabled={loading}
-              onPress={async () => onConfirmDelete(user.id)}
-              style={{ borderColor: "red" }}
-            >
-              Delete Account
-            </Button>
-          </View>
-        )}
 
         <TextInput
           style={{ height: 0, opacity: 0 }}
