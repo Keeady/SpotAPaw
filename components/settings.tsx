@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { View, ScrollView, StyleSheet, Alert, AppState } from "react-native";
+import { View, ScrollView, StyleSheet, AppState } from "react-native";
 import { List, Switch, Button, Divider, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
@@ -169,7 +169,7 @@ const SettingsScreen = () => {
       setSavedLocation(undefined);
       setResetLocationDialogVisible(false);
       setLocationResetSuccessDialogVisible(true);
-    } catch (error) {
+    } catch {
       setErrorMessage("Failed to reset saved location");
     }
   };
@@ -236,7 +236,7 @@ const SettingsScreen = () => {
         await AsyncStorage.clear();
         await onDeleteAccount(user.id);
       }
-    } catch (error) {
+    } catch {
       setErrorMessage(
         "Failed to delete account. Please try again or contact support.",
       );

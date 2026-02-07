@@ -168,7 +168,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         onLocationSelected(location);
       })
       .catch(() => {});
-  }, [reLoadSightings, saveLocation]);
+  }, [onLocationSelected]);
 
   const ListEmptyComponent = useCallback(() => {
     return (
@@ -179,7 +179,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         onRetryLocationRequest={onRetryLocationRequest}
       />
     );
-  }, [error, location, onLocationSelected]);
+  }, [error, location, onLocationSelected, onRetryLocationRequest]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 

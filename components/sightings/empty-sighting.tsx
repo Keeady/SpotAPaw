@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, Linking, StyleSheet, View } from "react-native";
+import { AppState, StyleSheet, View } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
 import { ShowHappyDogAnimation } from "@/components/animate";
 import DropPinOnMap from "../map-util";
@@ -35,7 +35,7 @@ export const EmptySighting = ({
       .catch(() => {
         setPermissionDeniedDialogVisible(true);
       });
-  }, []);
+  }, [onLocationSelected]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -53,7 +53,7 @@ export const EmptySighting = ({
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [onRetryLocationRequest]);
 
   return (
     <View style={styles.container}>

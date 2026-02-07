@@ -93,7 +93,7 @@ export const LocationConfirmationDialog = ({
         <Dialog.Title>Reset Saved Location?</Dialog.Title>
         <Dialog.Content>
           <Text variant="bodyMedium">
-            This will remove your manually selected location. You'll need to
+            This will remove your manually selected location. You will need to
             select a new location from the map or grant location permission.
           </Text>
         </Dialog.Content>
