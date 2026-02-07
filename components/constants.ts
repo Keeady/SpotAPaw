@@ -13,3 +13,8 @@ export const SIGHTING_OFFSET = 50;
 export const SIGHTING_RADIUSKM = 20;
 
 export const GOOGLE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
+
+export const SIGHTING_LOCATION_KEY = "sightingLocation";
+export const SIGHTING_NOTIFICATION_ENABLED_KEY = "notificationsEnabled";
+export const SIGHTING_DISTANCE_KEY = "sightingDistance";
+export const PREFERRED_LANGUAGE = "preferredLanguage"

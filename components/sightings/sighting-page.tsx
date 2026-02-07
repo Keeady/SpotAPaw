@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Button, Portal } from "react-native-paper";
+import { Button, IconButton, Portal } from "react-native-paper";
 import {
   getCurrentUserLocationV3,
   SightingLocation,
@@ -11,6 +11,7 @@ import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import {
   MAX_SIGHTINGS,
+  SIGHTING_LOCATION_KEY,
   SIGHTING_OFFSET,
   SIGHTING_RADIUSKM,
 } from "../constants";
@@ -134,12 +135,12 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   }, [reLoadSightings, location]);
 
   const saveLocation = useCallback((location: SightingLocation) => {
-    saveStorageItem("sightingLocation", JSON.stringify(location));
+    saveStorageItem(SIGHTING_LOCATION_KEY, JSON.stringify(location));
   }, []);
 
   const getSavedLocation = useCallback(async () => {
     try {
-      const location = await getStorageItem("sightingLocation");
+      const location = await getStorageItem(SIGHTING_LOCATION_KEY);
       if (location) {
         return JSON.parse(location);
       }
@@ -161,15 +162,24 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     [reLoadSightings, saveLocation],
   );
 
+  const onRetryLocationRequest = useCallback(() => {
+    getCurrentUserLocationV3()
+      .then((location) => {
+        onLocationSelected(location);
+      })
+      .catch(() => {});
+  }, [onLocationSelected]);
+
   const ListEmptyComponent = useCallback(() => {
     return (
       <EmptySighting
         error={error}
         hasLocation={!!location}
         onLocationSelected={onLocationSelected}
+        onRetryLocationRequest={onRetryLocationRequest}
       />
     );
-  }, [error, location, onLocationSelected]);
+  }, [error, location, onLocationSelected, onRetryLocationRequest]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -189,7 +199,17 @@ export default function SightingPage({ renderer }: SightingPageProps) {
               ? "Loading Nearby Sightings..."
               : "Showing Nearby Sightings"}
           </Button>
-          {loading ? <ActivityIndicator size="small" /> : ""}
+          {loading ? (
+            <ActivityIndicator size="small" />
+          ) : user ? (
+            ""
+          ) : (
+            <IconButton
+              icon={"cog"}
+              size={20}
+              onPress={() => router.navigate("/settings")}
+            />
+          )}
         </View>
         <View style={{ flex: 1 }}>
           {loading

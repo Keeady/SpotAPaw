@@ -29,7 +29,7 @@ export const useConfirmDelete = () =>
     []
   );
 
-const onDeleteAccount = async (userId: string) => {
+export const onDeleteAccount = async (userId: string) => {
   if (!isValidUuid(userId)) {
     showMessage({
       message: "Invalid user ID.",

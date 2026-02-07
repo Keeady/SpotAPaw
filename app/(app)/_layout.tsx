@@ -14,10 +14,20 @@ export default function AppLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
+        name="my-sightings"
+        options={{
+          tabBarIcon: ({ size }) => (
+            <Icon source={"map-marker-multiple"} size={size} />
+          ),
+          title: "Sightings",
+          headerTitle: "",
+        }}
+      />
+      <Tabs.Screen
         name="pets"
         options={{
           tabBarIcon: ({ size }) => <Icon source={"paw"} size={size} />,
-          title: "Pets",
+          title: "My Pets",
           headerTitle: "",
         }}
       />
@@ -25,19 +35,19 @@ export default function AppLayout() {
         name="owner"
         options={{
           tabBarIcon: ({ size }) => (
-            <Icon source={"account-box-outline"} size={size} />
+            <Icon source={"account"} size={size} />
           ),
-          title: "Profile",
+          title: "My Profile",
           headerTitle: "",
         }}
+        
       />
+
       <Tabs.Screen
-        name="my-sightings"
+        name="my-settings"
         options={{
-          tabBarIcon: ({ size }) => (
-            <Icon source={"eye-check-outline"} size={size} />
-          ),
-          title: "Sightings",
+          tabBarIcon: ({ size }) => <Icon source={"cog"} size={size} />,
+          title: "Settings",
           headerTitle: "",
         }}
       />

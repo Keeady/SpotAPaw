@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button, TextInput, Text } from "react-native-paper";
 import { getCurrentLocationV4, SightingLocation } from "./get-current-location";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import DropPinOnMap from "./map-util";
+import DividerWithText from "./divider-with-text";
 
 type ShowLocationControlsProps = {
   handleChange: (fieldName: string, fieldValue: string | number) => void;
@@ -60,9 +61,9 @@ export default function ShowLocationControls({
         }}
       />
 
-      <Text variant="labelLarge" style={styles.centerText}>
-        Or
-      </Text>
+      <View style={styles.centerText}></View>
+      <DividerWithText text="Or share your current location"></DividerWithText>
+
       <Button
         icon={"map-marker-radius-outline"}
         onPress={getSavedUserCurrentLocation}
@@ -86,7 +87,7 @@ export default function ShowLocationControls({
 const styles = StyleSheet.create({
   centerText: {
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 10,
   },
   button: {
