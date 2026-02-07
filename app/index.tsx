@@ -31,34 +31,33 @@ export default function PublicHome() {
       </View>
       <View style={styles.buttonContainer}>
         <Button
-          icon="google"
+          icon="login"
           mode="contained"
-          onPress={() => router.push("/(auth)/oauth")}
-          style={styles.button}
-        >
-          Continue with Google
-        </Button>
-
-        <DividerWithText text="or continue with email and password" />
-
-        <Button
-          icon=""
-          mode="elevated"
           onPress={() => router.push("/(auth)/signin")}
           style={styles.button}
         >
           Sign In
         </Button>
         <Button
-          icon=""
+          icon="account-plus-outline"
           mode="outlined"
           onPress={() => router.push("/(auth)/signup")}
           style={styles.button}
         >
           Create an account
         </Button>
+        <DividerWithText text="OR" />
 
-        <DividerWithText text="or continue without an account" />
+        <Button
+          icon="google"
+          mode="contained-tonal"
+          onPress={() => router.push("/(auth)/oauth")}
+          style={styles.button}
+        >
+          Continue with Google
+        </Button>
+
+        <DividerWithText text="OR" />
 
         <Button
           icon=""
@@ -72,7 +71,7 @@ export default function PublicHome() {
       <View style={styles.bottomSection}>
         <View style={styles.usageText}>
           <Text variant="bodySmall" style={{ textAlign: "center" }}>
-            By using this app, you agree to our
+            By continuing, you agree to our
           </Text>
           <Button mode="text" onPress={() => router.push("/privacy")} compact>
             <Text
@@ -112,10 +111,13 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
+    flexGrow: 1,
   },
   button: {
     width: "100%",
     marginBottom: 16,
+    borderWidth: 1,
+    borderRadius: 12,
   },
   buttonContainer: {
     width: "100%",
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
   },
   largeText: {
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 40,
   },
   bottomSection: {
     marginBottom: 16,

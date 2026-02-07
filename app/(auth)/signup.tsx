@@ -1,3 +1,4 @@
+import DividerWithText from "@/components/divider-with-text";
 import { log } from "@/components/logs";
 import PhoneNumberInput from "@/components/phone-number-util";
 import { supabase } from "@/components/supabase-client";
@@ -217,13 +218,25 @@ export default function SignUpScreen() {
             textContentType="password"
           />
         </View>
-        <View style={styles.verticallySpaced}>
+        <View style={[styles.verticallySpaced, styles.mt20]}>
           <Button
             mode="contained"
             disabled={loading || hasEmailError || hasPhoneError}
             onPress={() => signUpWithEmail()}
           >
-            Sign up
+            Create an account
+          </Button>
+        </View>
+
+        <DividerWithText text="OR" />
+
+        <View style={styles.secondary}>
+          <Button
+            mode="outlined"
+            disabled={loading}
+            onPress={() => router.push("/(auth)/oauth")}
+          >
+            Sign up with Google
           </Button>
         </View>
         <View style={styles.secondary}>

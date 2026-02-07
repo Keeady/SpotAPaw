@@ -12,7 +12,6 @@ export default function HomePageHeader() {
 const styles = StyleSheet.create({
   logo: {
     width: "100%",
-    marginTop: 20,
     resizeMode: "contain",
   },
 });

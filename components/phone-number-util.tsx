@@ -161,6 +161,8 @@ const styles = StyleSheet.create({
   countryButton: {
     marginRight: 8,
     marginTop: 4,
+    borderWidth: 1,
+    borderRadius: 5,
   },
   countryButtonContent: {
     height: 56,
