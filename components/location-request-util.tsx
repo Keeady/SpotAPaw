@@ -1,4 +1,11 @@
-import { Button, Dialog, Portal, RadioButton, Text, TextInput } from "react-native-paper";
+import {
+  Button,
+  Dialog,
+  Portal,
+  RadioButton,
+  Text,
+  TextInput,
+} from "react-native-paper";
 import { Linking, View, StyleSheet, ScrollView } from "react-native";
 
 type LocationPermissionDeniedDialogProps = {
@@ -213,17 +220,17 @@ export const DistanceSelectionDialog = ({
 };
 
 export type SupportedLanguage = {
-    code: string;
-    name: string;
-    nativeName: string;
-}
+  code: string;
+  name: string;
+  nativeName: string;
+};
 
 type LanguageSelectionDialogProps = {
   languageDialogVisible: boolean;
   setLanguageDialogVisible: (status: boolean) => void;
   handleLanguageChange: (value: string) => Promise<void>;
   selectedLanguage: string;
-  languages: SupportedLanguage[]
+  languages: SupportedLanguage[];
 };
 
 export const LanguageSelectionDialog = ({
@@ -231,44 +238,41 @@ export const LanguageSelectionDialog = ({
   setLanguageDialogVisible,
   handleLanguageChange,
   selectedLanguage,
-  languages
+  languages,
 }: LanguageSelectionDialogProps) => {
   return (
     <Portal>
-        <Dialog
-          visible={languageDialogVisible}
-          onDismiss={() => setLanguageDialogVisible(false)}
-        >
-          <Dialog.Title>Select Language</Dialog.Title>
-          <Dialog.ScrollArea>
-            <ScrollView>
-              <RadioButton.Group
-                onValueChange={handleLanguageChange}
-                value={selectedLanguage}
-              >
-                {languages.map((language) => (
-                  <RadioButton.Item
-                    key={language.code}
-                    label={`${language.name} (${language.nativeName})`}
-                    value={language.code}
-                  />
-                ))}
-              </RadioButton.Group>
-            </ScrollView>
-          </Dialog.ScrollArea>
-          <Dialog.Actions>
-            <Button onPress={() => setLanguageDialogVisible(false)}>
-              Cancel
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <Dialog
+        visible={languageDialogVisible}
+        onDismiss={() => setLanguageDialogVisible(false)}
+      >
+        <Dialog.Title>Select Language</Dialog.Title>
+        <Dialog.ScrollArea>
+          <ScrollView>
+            <RadioButton.Group
+              onValueChange={handleLanguageChange}
+              value={selectedLanguage}
+            >
+              {languages.map((language) => (
+                <RadioButton.Item
+                  key={language.code}
+                  label={`${language.name} (${language.nativeName})`}
+                  value={language.code}
+                />
+              ))}
+            </RadioButton.Group>
+          </ScrollView>
+        </Dialog.ScrollArea>
+        <Dialog.Actions>
+          <Button onPress={() => setLanguageDialogVisible(false)}>
+            Cancel
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
   );
 };
 
-{
-  /* Account Deletion Warning Dialog */
-}
 type AccountDeletionWarningDialogProps = {
   deleteDialogVisible: boolean;
   setDeleteDialogVisible: (status: boolean) => void;
@@ -326,16 +330,13 @@ export const AccountDeletionWarningDialog = ({
   );
 };
 
-{
-  /* Account Deletion Confirmation Dialog */
-}
 type AccountDeletionConfirmationDialogProps = {
   deleteConfirmDialogVisible: boolean;
   setDeleteConfirmDialogVisible: (status: boolean) => void;
   handleConfirmAccountDeletion: () => void;
-  deletingAccount: boolean,
-  deleteConfirmText: string,
-  setDeleteConfirmText: (value: string) => void
+  deletingAccount: boolean;
+  deleteConfirmText: string;
+  setDeleteConfirmText: (value: string) => void;
 };
 
 export const AccountDeletionConfirmationDialog = ({
@@ -385,7 +386,8 @@ export const AccountDeletionConfirmationDialog = ({
             onPress={handleConfirmAccountDeletion}
             loading={deletingAccount}
             disabled={
-              deletingAccount || deleteConfirmText.trim().toLowerCase() !== "delete"
+              deletingAccount ||
+              deleteConfirmText.trim().toLowerCase() !== "delete"
             }
           >
             Delete Account
@@ -396,10 +398,9 @@ export const AccountDeletionConfirmationDialog = ({
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   warningList: {
     marginVertical: 16,
@@ -407,27 +408,27 @@ const styles = StyleSheet.create({
   },
   warningItem: {
     marginBottom: 8,
-    color: '#666',
+    color: "#666",
   },
   warningNote: {
     marginTop: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   dialogText: {
     marginBottom: 12,
   },
-    dangerText: {
-    color: '#d32f2f',
+  dangerText: {
+    color: "#d32f2f",
   },
   dialogDangerTitle: {
-    color: '#d32f2f',
-    textAlign: 'center',
+    color: "#d32f2f",
+    textAlign: "center",
   },
-    boldText: {
-    fontWeight: 'bold',
-    color: '#d32f2f',
+  boldText: {
+    fontWeight: "bold",
+    color: "#d32f2f",
   },
   confirmInput: {
     marginTop: 16,
   },
-})
+});
