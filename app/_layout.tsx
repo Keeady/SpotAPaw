@@ -32,6 +32,7 @@ export default function Layout() {
             message: "Authentication failed. Please try again.",
             type: "warning",
             icon: "warning",
+            statusBarHeight: 50,
           });
         } else {
           router.replace("/(app)/my-sightings");

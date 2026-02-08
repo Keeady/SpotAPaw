@@ -67,6 +67,7 @@ export default function ClaimLostPet() {
           message: "Error updating pet sighting.",
           type: "warning",
           icon: "warning",
+          statusBarHeight: 50,
         });
         return;
       } else {
@@ -74,6 +75,7 @@ export default function ClaimLostPet() {
           message: "Successfully submitted Claim.",
           type: "success",
           icon: "success",
+          statusBarHeight: 50,
         });
         router.replace(`/(app)/my-sightings`);
       }

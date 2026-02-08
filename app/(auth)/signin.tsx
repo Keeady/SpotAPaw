@@ -31,7 +31,7 @@ export default function SignInScreen() {
         type: "warning",
         icon: "warning",
         autoHide: true,
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
       return;
     }
@@ -62,7 +62,7 @@ export default function SignInScreen() {
         type: "danger",
         icon: "danger",
         autoHide: true,
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
     }
     setLoading(false);

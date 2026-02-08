@@ -1,33 +1,8 @@
-import { useCallback } from "react";
-import { Alert } from "react-native";
 import { supabase } from "../supabase-client";
 import { showMessage } from "react-native-flash-message";
 import { handleSignOut, isValidUuid } from "../util";
 import { log } from "../logs";
 import { router } from "expo-router";
-
-export const useConfirmDelete = () =>
-  useCallback(
-    (userId: string) =>
-      Alert.alert(
-        `Deleting Account`,
-        `Are you sure you want to delete your account? This action cannot be undone. All your pets' profiles will also be deleted.`,
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Yes, please delete everything",
-            onPress: () => onDeleteAccount(userId),
-          },
-        ],
-        {
-          userInterfaceStyle: "dark",
-        }
-      ),
-    []
-  );
 
 export const onDeleteAccount = async (userId: string) => {
   if (!isValidUuid(userId)) {
@@ -35,6 +10,7 @@ export const onDeleteAccount = async (userId: string) => {
       message: "Invalid user ID.",
       type: "warning",
       icon: "warning",
+      statusBarHeight: 50,
     });
     return;
   }
@@ -50,12 +26,14 @@ export const onDeleteAccount = async (userId: string) => {
       message: "Error deleting account.",
       type: "warning",
       icon: "warning",
+      statusBarHeight: 50,
     });
   } else {
     showMessage({
       message: "Successfully deleted account and all associated pets.",
       type: "success",
       icon: "success",
+      statusBarHeight: 50,
     });
 
     handleSignOut(router);

@@ -72,12 +72,14 @@ export default function EditPet() {
         message: "Error updating pet profile.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
     } else {
       showMessage({
         message: "Successfully updated pet profile.",
         type: "success",
         icon: "success",
+        statusBarHeight: 50,
       });
       if (isLost) {
         handleLostPet(photoUrl);
@@ -143,12 +145,14 @@ export default function EditPet() {
         message: "Error updating pet sighting.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
     } else {
       showMessage({
         message: "Successfully updated pet sighting.",
         type: "success",
         icon: "success",
+        statusBarHeight: 50,
       });
       if (isLost) {
         const sightingId = data && data[0]["id"];
