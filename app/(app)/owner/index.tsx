@@ -10,7 +10,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Image,
   TouchableOpacity,
   Platform,
   Keyboard,
