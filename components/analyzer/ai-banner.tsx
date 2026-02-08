@@ -3,11 +3,13 @@ import { Button, Icon, Text } from "react-native-paper";
 
 interface AIAnalysisBannerProps {
   loading: boolean;
+  aiNote: string;
   onSettingsPress: () => void;
 }
 
 export default function AIAnalysisBanner({
   loading,
+  aiNote,
   onSettingsPress,
 }: AIAnalysisBannerProps) {
   return (
@@ -26,6 +28,11 @@ export default function AIAnalysisBanner({
               accurate.
             </Text>
           </>
+        )}
+      </View>
+      <View style={{ marginTop: 10 }}>
+        {!loading && aiNote && (
+          <Text variant="labelMedium">Note: {aiNote}</Text>
         )}
       </View>
       <Button mode="text" onPress={onSettingsPress}>
