@@ -81,7 +81,7 @@ export default function CreateNewSighting() {
       }
     },
     onError: (error: Error) => {
-      console.log(error);
+      log(error.message)
       setAiGenerated(false);
     },
   });
