@@ -9,6 +9,7 @@ import {
 } from "@/components/get-current-location";
 import {
   PREFERRED_LANGUAGE,
+  SIGHTING_AI_ENABLED_KEY,
   SIGHTING_DISTANCE_KEY,
   SIGHTING_LOCATION_KEY,
   SIGHTING_NOTIFICATION_ENABLED_KEY,
@@ -65,6 +66,9 @@ const SettingsScreen = () => {
   // languages
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [languageDialogVisible, setLanguageDialogVisible] = useState(false);
+
+  // AI
+  const [aiFeatureEnabled, setAIFeatureEnabled] = useState(false);
 
   // Dialog states
   const [distanceDialogVisible, setDistanceDialogVisible] = useState(false);
@@ -132,11 +136,15 @@ const SettingsScreen = () => {
       const language = await AsyncStorage.getItem(PREFERRED_LANGUAGE);
       setSelectedLanguage(language || "en");
 
-      // Load other settings
+      // Load notification settings
       const notifications = await AsyncStorage.getItem(
         SIGHTING_NOTIFICATION_ENABLED_KEY,
       );
       setNotificationsEnabled(notifications === "true");
+
+      // Load AI settings
+      const aiFeature = await AsyncStorage.getItem(SIGHTING_AI_ENABLED_KEY);
+      setAIFeatureEnabled(aiFeature === "true");
 
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
       setDefaultDistance(distance || "5");
@@ -180,6 +188,11 @@ const SettingsScreen = () => {
       SIGHTING_NOTIFICATION_ENABLED_KEY,
       value.toString(),
     );
+  };
+
+  const handleToggleAIFeature = async (value: boolean) => {
+    setAIFeatureEnabled(value);
+    await AsyncStorage.setItem(SIGHTING_AI_ENABLED_KEY, value.toString());
   };
 
   const handleDistanceChange = async (value: string) => {
@@ -355,6 +368,24 @@ const SettingsScreen = () => {
         {/* Preferences Section (Future Feature) */}
         <List.Section>
           <List.Subheader>Preferences</List.Subheader>
+
+          <List.Item
+            title="AI Image Analysis"
+            description="Enable image analysis for pet identification"
+            left={(props) => (
+              <List.Icon
+                {...props}
+                icon="creation-outline"
+                color={iconColors.notification}
+              />
+            )}
+            right={() => (
+              <Switch
+                value={aiFeatureEnabled}
+                onValueChange={handleToggleAIFeature}
+              />
+            )}
+          />
 
           <List.Item
             title="Language"

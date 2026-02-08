@@ -17,6 +17,11 @@ import { getLastSeenLocation, isValidUuid } from "../util";
 import { log } from "../logs";
 import DatePicker from "../date-picker";
 import ShowLocationControls from "../location-util";
+import AppConstants, { SIGHTING_AI_ENABLED_KEY } from "../constants";
+import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
+import { AnalysisResponse } from "../analyzer/types";
+import AIAnalysisBanner, { AIFieldAnalysisBanner } from "../analyzer/ai-banner";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CreateNewSighting() {
   const theme = useTheme();
@@ -36,15 +41,50 @@ export default function CreateNewSighting() {
   const [note, setNote] = useState("");
   const [empty, setEmpty] = useState(true);
   const [lastSeenTime, setLastSeenTime] = useState(new Date().toISOString());
+  const [size, setPetSize] = useState("");
 
   const [lastSeenLocation, setLastSeenLocation] = useState<string>("");
   const [lastSeenLocationLng, setLastSeenLocationLng] = useState<number>(0);
   const [lastSeenLocationLat, setLastSeenLocationLat] = useState<number>(0);
 
+  const [aiGenerated, setAiGenerated] = useState(false);
+
   const scrollViewRef = useRef<ScrollView>(null);
 
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
+
+  const { analyze, loading: loadingAnalyzer } = usePetAnalyzer({
+    apiKey: AppConstants.EXPO_GOOGLE_GENAI_API_KEY,
+    onSuccess: (data: AnalysisResponse) => {
+      if ("pets" in data) {
+        const petInfo = data.pets[0];
+        if (petInfo.species) {
+          setSpecies(petInfo.species);
+        }
+
+        if (petInfo.breed) {
+          setBreed(petInfo.breed);
+        }
+
+        if (petInfo.colors) {
+          setColors(petInfo.colors.join(", "));
+        }
+
+        if (petInfo.distinctive_features) {
+          setFeatures(petInfo.distinctive_features.join(","));
+        }
+
+        if (petInfo.size) {
+          setPetSize(petInfo.size);
+        }
+      }
+    },
+    onError: (error: Error) => {
+      console.log(error);
+      setAiGenerated(false);
+    },
+  });
 
   useEffect(() => {
     if (
@@ -72,6 +112,23 @@ export default function CreateNewSighting() {
     features,
     linked_sighting_id,
   ]);
+
+  useEffect(() => {
+    async function run(photo: string) {
+      const aiFeatureEnabled = await AsyncStorage.getItem(
+        SIGHTING_AI_ENABLED_KEY,
+      );
+
+      if (aiFeatureEnabled === "true") {
+        setAiGenerated(true);
+        await analyze(photo);
+      }
+    }
+
+    if (photo) {
+      run(photo);
+    }
+  }, [photo]);
 
   async function saveSighting(photo: string) {
     const sightingId = isValidUuid(linked_sighting_id)
@@ -161,35 +218,14 @@ export default function CreateNewSighting() {
           </Text>
         </View>
         <View style={styles.content}>
-          <View style={[styles.verticallySpaced, styles.mb10]}>
-            <Text
-              variant="bodyLarge"
-              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
-            >
-              Add sighting photo:
-            </Text>
-            {photo ? (
-              <Image source={{ uri: photo }} style={styles.preview} />
-            ) : (
-              <View style={styles.emptyPreview}>
-                <Text>Add Photo</Text>
-              </View>
-            )}
-
-            <Button
-              icon="camera"
-              mode="elevated"
-              onPress={() => pickImage(setPhoto)}
-              style={{ marginTop: 10 }}
-            >
-              {photo ? "Change Photo" : "Upload Photo"}
-            </Button>
-          </View>
-
           <View style={[styles.verticallySpaced, styles.mt10]}>
             <Text
               variant="bodyLarge"
-              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+              style={{
+                alignSelf: "flex-start",
+                fontWeight: "bold",
+                marginBottom: 10,
+              }}
             >
               When was the pet last seen?
             </Text>
@@ -224,6 +260,40 @@ export default function CreateNewSighting() {
             />
           </View>
 
+          <View style={[styles.verticallySpaced, styles.mb10, styles.mt20]}>
+            <Text
+              variant="bodyLarge"
+              style={{ alignSelf: "flex-start", fontWeight: "bold" }}
+            >
+              Add sighting photo:
+            </Text>
+            {photo ? (
+              <Image source={{ uri: photo }} style={styles.preview} />
+            ) : (
+              <View style={styles.emptyPreview}>
+                <Text>Add Photo</Text>
+              </View>
+            )}
+
+            <Button
+              icon="camera"
+              mode="elevated"
+              onPress={() => pickImage(setPhoto)}
+              style={{ marginTop: 10 }}
+            >
+              {photo ? "Change Photo" : "Upload Photo"}
+            </Button>
+
+            {aiGenerated && (
+              <View style={{ marginTop: 20 }}>
+                <AIAnalysisBanner
+                  loading={loadingAnalyzer}
+                  onSettingsPress={() => router.navigate("/(app)/my-settings")}
+                />
+              </View>
+            )}
+          </View>
+
           {!linked_sighting_id && (
             <>
               <Text
@@ -237,6 +307,11 @@ export default function CreateNewSighting() {
                 What did the pet look like?
               </Text>
               <View style={[styles.verticallySpaced, styles.mt10]}>
+                <AIFieldAnalysisBanner
+                  loading={loadingAnalyzer}
+                  aiGenerated={aiGenerated}
+                />
+
                 <TextInput
                   label={"Colors"}
                   placeholder="Color(s)"
@@ -246,6 +321,11 @@ export default function CreateNewSighting() {
                 />
               </View>
               <View style={[styles.verticallySpaced, styles.mt10]}>
+                <AIFieldAnalysisBanner
+                  loading={loadingAnalyzer}
+                  aiGenerated={aiGenerated}
+                />
+
                 <TextInput
                   label={"Species"}
                   placeholder="Species (Dog/Cat/Hamster/Rabbit/Snake)"
@@ -255,6 +335,11 @@ export default function CreateNewSighting() {
                 />
               </View>
               <View style={[styles.verticallySpaced, styles.mt10]}>
+                <AIFieldAnalysisBanner
+                  loading={loadingAnalyzer}
+                  aiGenerated={aiGenerated}
+                />
+
                 <TextInput
                   label={"Breed"}
                   placeholder="Breed (if known)"
@@ -281,7 +366,28 @@ export default function CreateNewSighting() {
                   </View>
                 </RadioButton.Group>
               </View>
+
               <View style={[styles.verticallySpaced, styles.mt10]}>
+                <AIFieldAnalysisBanner
+                  loading={loadingAnalyzer}
+                  aiGenerated={aiGenerated}
+                />
+
+                <TextInput
+                  label={"Size"}
+                  placeholder="Small/Medium/Large"
+                  value={size}
+                  onChangeText={setPetSize}
+                  mode={"outlined"}
+                />
+              </View>
+
+              <View style={[styles.verticallySpaced, styles.mt10]}>
+                <AIFieldAnalysisBanner
+                  loading={loadingAnalyzer}
+                  aiGenerated={aiGenerated}
+                />
+
                 <TextInput
                   label={"Features"}
                   placeholder="Features (Collar, Tag, Size)"
@@ -338,6 +444,9 @@ export default function CreateNewSighting() {
 const styles = StyleSheet.create({
   verticallySpaced: {
     alignSelf: "stretch",
+  },
+  mt20: {
+    marginTop: 20,
   },
   mt10: {
     marginTop: 10,
