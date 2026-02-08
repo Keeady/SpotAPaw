@@ -230,16 +230,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
   },
-  guestBanner: {
-    padding: 12,
-    backgroundColor: "#FFF3E0",
-    borderBottomWidth: 1,
-    borderBottomColor: "#FFE0B2",
-  },
-  guestText: {
-    textAlign: "center",
-    color: "#E65100",
-  },
   listContent: {
     padding: 16,
     flexGrow: 1,
