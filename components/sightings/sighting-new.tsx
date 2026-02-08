@@ -54,10 +54,9 @@ export default function CreateNewSighting() {
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
 
-  const { analyze, loading: loadingAnalyzer } = usePetAnalyzer({
-    apiKey: AppConstants.EXPO_GOOGLE_GENAI_API_KEY,
-    onSuccess: (data: AnalysisResponse) => {
-      if ("pets" in data) {
+  const onImageAnalyzeSuccess = useCallback(() => {
+    (data: AnalysisResponse) => {
+      if ("pets" in data && data.pets.length > 0) {
         const petInfo = data.pets[0];
         if (petInfo.species) {
           setSpecies(petInfo.species);
@@ -79,7 +78,12 @@ export default function CreateNewSighting() {
           setPetSize(petInfo.size);
         }
       }
-    },
+    }
+  }, []);
+
+  const { analyze, loading: loadingAnalyzer } = usePetAnalyzer({
+    apiKey: AppConstants.EXPO_GOOGLE_GENAI_API_KEY,
+    onSuccess: onImageAnalyzeSuccess,
     onError: (error: Error) => {
       log(error.message)
       setAiGenerated(false);
