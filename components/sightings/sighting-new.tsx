@@ -54,31 +54,32 @@ export default function CreateNewSighting() {
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
 
-  const onImageAnalyzeSuccess = useCallback(() => {
-    (data: AnalysisResponse) => {
-      if ("pets" in data && data.pets.length > 0) {
-        const petInfo = data.pets[0];
-        if (petInfo.species) {
-          setSpecies(petInfo.species);
-        }
-
-        if (petInfo.breed) {
-          setBreed(petInfo.breed);
-        }
-
-        if (petInfo.colors) {
-          setColors(petInfo.colors.join(", "));
-        }
-
-        if (petInfo.distinctive_features) {
-          setFeatures(petInfo.distinctive_features.join(","));
-        }
-
-        if (petInfo.size) {
-          setPetSize(petInfo.size);
-        }
+  const onImageAnalyzeSuccess = useCallback((data: AnalysisResponse) => {
+    if ("pets" in data && data.pets.length > 0) {
+      const petInfo = data.pets[0];
+      if (petInfo.species) {
+        setSpecies(petInfo.species);
       }
-    };
+
+      if (petInfo.breed) {
+        setBreed(petInfo.breed);
+      }
+
+      if (petInfo.colors) {
+        setColors(petInfo.colors.join(", "));
+      }
+
+      if (petInfo.distinctive_features) {
+        setFeatures(petInfo.distinctive_features.join(","));
+      }
+
+      if (petInfo.size) {
+        setPetSize(petInfo.size);
+      }
+    } else {
+      setAiGenerated(false);
+      // TODO show no pets detected in photo
+    }
   }, []);
 
   const { analyze, loading: loadingAnalyzer } = usePetAnalyzer({
@@ -123,7 +124,7 @@ export default function CreateNewSighting() {
         SIGHTING_AI_ENABLED_KEY,
       );
 
-      if (aiFeatureEnabled === "true") {
+      if (aiFeatureEnabled === "true" || aiFeatureEnabled === null) {
         setAiGenerated(true);
         await analyze(photo);
       }

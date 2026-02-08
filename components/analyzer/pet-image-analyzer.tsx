@@ -69,7 +69,7 @@ Guidelines:
   - Large: Over 50 lbs (23 kg) for dogs, large cats
 - **Distinctive Features**: 
   - Notable characteristics like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
-  - Collar, tag, or harness description
+  - Collar, tag, or harness description and extract any writings or brandings
 
 If NO pets are visible in the image, return:
 {
@@ -175,6 +175,7 @@ Respond ONLY with valid JSON. Do not include any other text or markdown formatti
 
       // Parse JSON response
       const result = this.parseJsonResponse(textResponse);
+      console.log(result);
 
       return result as PetAnalysisResult;
     } catch (error) {
