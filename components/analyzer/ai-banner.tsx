@@ -22,7 +22,7 @@ export default function AIAnalysisBanner({
           <>
             <Icon source={"creation-outline"} size={20} />
             <Text variant="labelMedium">
-              We've analyzed your photo using AI. Results may not be 100%
+              We&#39;ve analyzed your photo using AI. Results may not be 100%
               accurate.
             </Text>
           </>

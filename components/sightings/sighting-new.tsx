@@ -1,7 +1,7 @@
 import { supabase } from "@/components/supabase-client";
 import { PetSighting } from "@/model/sighting";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import {
@@ -113,8 +113,8 @@ export default function CreateNewSighting() {
     linked_sighting_id,
   ]);
 
-  useEffect(() => {
-    async function run(photo: string) {
+  const runImageAnalyzer = useCallback(
+    async (photo: string) => {
       const aiFeatureEnabled = await AsyncStorage.getItem(
         SIGHTING_AI_ENABLED_KEY,
       );
@@ -123,10 +123,13 @@ export default function CreateNewSighting() {
         setAiGenerated(true);
         await analyze(photo);
       }
-    }
+    },
+    [analyze],
+  );
 
+  useEffect(() => {
     if (photo) {
-      run(photo);
+      runImageAnalyzer(photo);
     }
   }, [photo]);
 
