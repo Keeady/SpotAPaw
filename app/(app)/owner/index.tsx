@@ -378,7 +378,11 @@ const ProfileScreen = () => {
           </View>
 
           <Surface style={styles.navigationCard} elevation={1}>
-            <TouchableOpacity style={styles.navigationItem} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.navigationItem}
+              activeOpacity={0.7}
+              onPress={() => router.navigate("/(app)/owner/my-reports")}
+            >
               <View style={styles.navigationContent}>
                 <View style={styles.iconContainer}>
                   <IconButton

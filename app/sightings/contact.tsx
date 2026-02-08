@@ -109,7 +109,10 @@ export default function SightingContact() {
         Would you like to be contacted by pet owner about this sighting?
       </Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <PhoneNumberInput onPhoneNumberChange={handlePhoneNumberChange} />
+        <PhoneNumberInput
+          onPhoneNumberChange={handlePhoneNumberChange}
+          disabled={false}
+        />
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
