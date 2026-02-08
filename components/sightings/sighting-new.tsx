@@ -78,14 +78,14 @@ export default function CreateNewSighting() {
           setPetSize(petInfo.size);
         }
       }
-    }
+    };
   }, []);
 
   const { analyze, loading: loadingAnalyzer } = usePetAnalyzer({
     apiKey: AppConstants.EXPO_GOOGLE_GENAI_API_KEY,
     onSuccess: onImageAnalyzeSuccess,
     onError: (error: Error) => {
-      log(error.message)
+      log(error.message);
       setAiGenerated(false);
     },
   });
