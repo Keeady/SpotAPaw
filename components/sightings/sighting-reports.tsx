@@ -5,7 +5,6 @@ import {
   StyleSheet,
   RefreshControl,
   Image,
-  Dimensions,
   Platform,
 } from "react-native";
 import {
@@ -20,8 +19,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../supabase-client";
 import { AuthContext } from "../Provider/auth-provider";
 import { useRouter } from "expo-router";
-
-const { width } = Dimensions.get("window");
 
 interface Report {
   id: string;
