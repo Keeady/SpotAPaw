@@ -23,7 +23,7 @@ const AuthProvider = (props: Props) => {
       setSession(session);
       setLoading(false);
     }).catch((e) => {
-      log(`AuthProvider ${e}`);
+      log(`AuthProvider ${e.message}`);
       setLoading(false);
     });
     const {data: listener} = supabase.auth.onAuthStateChange((_event, session) => {

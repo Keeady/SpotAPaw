@@ -177,13 +177,13 @@ const LostPetChatbot = () => {
         }
       })
       .catch((e) => {
-        log(`requestPermissions: ${e}`);
+        log(`requestPermissions: ${e.message}`);
       });
     await requestCameraPermission().catch((e) => {
-      log(`requestPermissions: ${e}`);
+      log(`requestPermissions: ${e.message}`);
     });
     await requestMediaLibraryPermission().catch((e) => {
-      log(`requestPermissions: ${e}`);
+      log(`requestPermissions: ${e.message}`);
     });
   };
 
@@ -1033,7 +1033,7 @@ const LostPetChatbot = () => {
         }));
         processResponse("location_shared");
       } catch (error) {
-        log(`getCurrentUserLocationV3: ${error}`);
+        log(`getCurrentUserLocationV3: ${error.message}`);
         addBotMessage(
           "Unable to get your location. Please enable location or type the address instead.",
           [{ text: "I'll type it", value: "will_type" }],
@@ -1081,7 +1081,7 @@ const LostPetChatbot = () => {
           }
         })
         .catch((err) => {
-          log(`getCurrentUserLocationV3: ${err}`);
+          log(`getCurrentUserLocationV3: ${err.message}`);
           addBotMessage(
             "Unable to get your location. Please type the address instead.",
             [{ text: "I'll type it", value: "will_type" }]

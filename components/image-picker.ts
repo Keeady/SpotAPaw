@@ -12,7 +12,7 @@ export const ImagePickerHandler = async (
     aspect: [4, 3],
     quality: 1,
   }).catch((err) => {
-    log(`launchImageLibraryAsync: ${err}`);
+    log(`launchImageLibraryAsync: ${err.message}`);
     return;
   });
 
@@ -30,7 +30,7 @@ export const pickImage = async (
     allowsEditing: true,
     quality: 0.8,
   }).catch((err) => {
-    log(`pickImage: ${err}`);
+    log(`pickImage: ${err.message}`);
   });
 
   if (!result || !result.assets || result.canceled) {
@@ -54,7 +54,7 @@ export const takePhoto = async (
     quality: 0.8,
     cameraType: ImagePicker.CameraType.back,
   }).catch((err) => {
-    log(`takePhoto: ${err}`);
+    log(`takePhoto: ${err.message}`);
   });
 
   if (!result || !result.assets || result.canceled) {

@@ -171,6 +171,7 @@ export default function CreateNewSighting() {
         message: "Error saving sighting info. Please try again.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
       return;
     } else {
@@ -179,6 +180,7 @@ export default function CreateNewSighting() {
         message: "Successfully added pet sighting.",
         type: "success",
         icon: "success",
+        statusBarHeight: 50,
       });
 
       router.navigate(`/sightings/contact/?sightingId=${sightingId}`);

@@ -56,7 +56,7 @@ export default function useUploadPetImageUrl() {
         xhr.send(blob);
       } catch (e) {
         callback("", `Error saving photo ${e}`);
-        log(`Error saving photo ${e}`);
+        log(`Error saving photo ${e.message}`);
       }
     },
     [SUPABASE_KEY, SUPABASE_URL, session?.access_token]

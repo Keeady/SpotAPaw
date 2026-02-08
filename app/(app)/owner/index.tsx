@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import PhoneNumberInput from "@/components/phone-number-util";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
@@ -192,6 +193,7 @@ const ProfileScreen = () => {
             phone,
             address,
             email,
+            country_code: selectedCountryCode,
           },
         ])
         .select();
@@ -201,11 +203,12 @@ const ProfileScreen = () => {
     setLoading(false);
 
     if (error) {
+      log(error.message)
       showMessage({
         message: "Error saving owner profile.",
         type: "warning",
         icon: "warning",
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
     } else {
       setIsEditing(false);
@@ -217,7 +220,7 @@ const ProfileScreen = () => {
         message: "Successfully saved owner profile.",
         type: "success",
         icon: "success",
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
 
       if (sightingId) {
@@ -482,8 +485,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   phoneContainer: {
-    flex: 1,
-    flexDirection: "row",
     gap: 12,
     marginBottom: 16,
   },

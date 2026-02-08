@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 8,
-    backgroundColor: "red",
   },
   successText: {
     flex: 1,

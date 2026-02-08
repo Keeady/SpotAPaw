@@ -66,7 +66,7 @@ export default function EditPetSighting() {
     const lastSeenFormatted = await getLastSeenLocation(
       sightingInfo.last_seen_location,
       sightingInfo?.last_seen_lat,
-      sightingInfo.last_seen_long
+      sightingInfo.last_seen_long,
     );
 
     const { error } = await supabase
@@ -97,12 +97,14 @@ export default function EditPetSighting() {
         message: "Error updating pet sighting.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
     } else {
       showMessage({
         message: "Successfully updated pet sighting.",
         type: "success",
         icon: "success",
+        statusBarHeight: 50,
       });
       router.replace(`/my-sightings`);
     }
@@ -125,6 +127,6 @@ export default function EditPetSighting() {
     setSightingInfo,
     profileInfo,
     sighting,
-    true
+    true,
   );
 }
