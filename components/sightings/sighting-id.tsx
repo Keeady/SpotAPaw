@@ -92,6 +92,7 @@ export default function SightingProfile() {
       message: "Error fetching sighting info. Please try again.",
       type: "warning",
       icon: "warning",
+      statusBarHeight: 50,
     });
     return;
   }

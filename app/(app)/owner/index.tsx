@@ -205,7 +205,7 @@ const ProfileScreen = () => {
         message: "Error saving owner profile.",
         type: "warning",
         icon: "warning",
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
     } else {
       setIsEditing(false);
@@ -217,7 +217,7 @@ const ProfileScreen = () => {
         message: "Successfully saved owner profile.",
         type: "success",
         icon: "success",
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
 
       if (sightingId) {
@@ -482,8 +482,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   phoneContainer: {
-    flex: 1,
-    flexDirection: "row",
     gap: 12,
     marginBottom: 16,
   },

@@ -66,12 +66,14 @@ export async function onDeletePet(id: string, userId: string) {
       message: "Error deleting pet profile.",
       type: "warning",
       icon: "warning",
+      statusBarHeight: 50,
     });
   } else {
     showMessage({
       message: "Successfully deleted pet profile.",
       type: "success",
       icon: "success",
+      statusBarHeight: 50,
     });
     router.replace(`/(app)/pets`);
   }
@@ -99,6 +101,7 @@ async function onPetFound(id: string) {
       message: "Error updating pet profile.",
       type: "warning",
       icon: "warning",
+      statusBarHeight: 50,
     });
     return;
   } else {
@@ -115,6 +118,7 @@ async function onPetFound(id: string) {
         message: "Error updating pet profile.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
       return;
     } else {
@@ -122,6 +126,7 @@ async function onPetFound(id: string) {
         message: "Successfully updated pet profile.",
         type: "success",
         icon: "success",
+        statusBarHeight: 50,
       });
     }
   }
@@ -160,6 +165,7 @@ export async function createNewPet(profileInfo: Pet, userId: string) {
       message: "Error creating pet profile. Please try again.",
       type: "warning",
       icon: "warning",
+      statusBarHeight: 50,
     });
     return;
   } else {

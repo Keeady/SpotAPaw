@@ -109,7 +109,7 @@ export default function PhoneNumberInput({
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text variant="labelSmall" style={{ color: theme.colors.error }}>
         {hasPhoneError
           ? "Invalid phone number and country code combination."
@@ -131,7 +131,9 @@ export default function PhoneNumberInput({
                   borderWidth: hasPhoneError ? 2 : 1,
                   borderColor: hasPhoneError
                     ? theme.colors.error
-                    : theme.colors.outline,
+                    : disabled
+                      ? theme.colors.surfaceDisabled
+                      : theme.colors.outline,
                 },
               ]}
               contentStyle={styles.countryButtonContent}
@@ -155,36 +157,31 @@ export default function PhoneNumberInput({
           </ScrollView>
         </Menu>
 
-        <TextInput
-          label="Phone Number"
-          // left={<TextInput.Icon icon="phone" />}
-          onChangeText={(text) => {
-            setEditedPhoneValue(text);
-          }}
-          value={editedPhoneValue}
-          placeholder="555-555-5555"
-          autoCapitalize={"none"}
-          mode="outlined"
-          autoComplete="tel"
-          keyboardType="phone-pad"
-          error={hasPhoneError || !!showInvalidPhoneError}
-          style={styles.phoneInput}
-          disabled={disabled}
-        />
+        <View style={styles.phoneInput}>
+          <TextInput
+            label="Phone Number"
+            onChangeText={(text) => {
+              setEditedPhoneValue(text);
+            }}
+            value={editedPhoneValue}
+            placeholder="555-555-5555"
+            autoCapitalize={"none"}
+            mode="outlined"
+            autoComplete="tel"
+            keyboardType="phone-pad"
+            error={hasPhoneError || !!showInvalidPhoneError}
+            disabled={disabled}
+          />
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   inputContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "flex-start",
-    // backgroundColor: "green",
   },
 
   countryButton: {
@@ -194,14 +191,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   countryButtonContent: {
-    height: 56,
+    height: 50,
   },
   menuScroll: {
     maxHeight: 300,
     backgroundColor: "#fff",
   },
   phoneInput: {
-    // backgroundColor: "red",
     flexGrow: 1,
   },
 });

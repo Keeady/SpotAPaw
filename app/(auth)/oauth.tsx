@@ -28,6 +28,7 @@ export default function Auth() {
           message: "Authentication failed. Please try again.",
           type: "warning",
           icon: "warning",
+          statusBarHeight: 50,
         });
         return;
       }
@@ -41,6 +42,7 @@ export default function Auth() {
         message: "Authentication failed. Please try again.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
     }
   }

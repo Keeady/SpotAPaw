@@ -77,6 +77,7 @@ export default function SightingContact() {
         message: "Error saving sighting contact info. Please try again.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 50,
       });
       setLoading(false);
       return;
@@ -85,6 +86,7 @@ export default function SightingContact() {
         message: "Successfully saved contact.",
         type: "success",
         icon: "success",
+        statusBarHeight: 50,
       });
     }
 
@@ -117,7 +119,7 @@ export default function SightingContact() {
       <View style={styles.verticallySpaced}>
         <TextInput
           label="Name"
-          left={<TextInput.Icon icon="account-box-outline" />}
+          left={<TextInput.Icon icon="account" />}
           onChangeText={(text) => setName(text)}
           value={name}
           placeholder="First & Last Name"

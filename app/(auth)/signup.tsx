@@ -47,7 +47,7 @@ export default function SignUpScreen() {
         type: "warning",
         icon: "warning",
         autoHide: true,
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
       return;
     }
@@ -86,7 +86,7 @@ export default function SignUpScreen() {
         type: "danger",
         icon: "danger",
         autoHide: true,
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
     }
     if (!session) {
@@ -95,7 +95,7 @@ export default function SignUpScreen() {
         type: "success",
         icon: "success",
         autoHide: true,
-        statusBarHeight: 100,
+        statusBarHeight: 50,
       });
     }
 
@@ -179,6 +179,7 @@ export default function SignUpScreen() {
           <PhoneNumberInput
             onPhoneNumberChange={handlePhoneNumberChange}
             showInvalidPhoneError={hasPhoneError}
+            disabled={false}
           />
         </View>
         <View style={[styles.verticallySpaced]}>
