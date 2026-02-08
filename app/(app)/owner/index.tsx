@@ -1,23 +1,41 @@
-import { log } from "@/components/logs";
+import PhoneNumberInput from "@/components/phone-number-util";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
 import { Person } from "@/model/person";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Platform, StyleSheet, View } from "react-native";
-import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
+} from "react-native";
+import { showMessage } from "react-native-flash-message";
+import {
+  TextInput,
+  Button,
+  Surface,
+  Text,
+  IconButton,
+  useTheme,
+  Avatar,
+} from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
-import PhoneNumberInput from "@/components/phone-number-util";
 
-export default function OwnerList() {
-  const theme = useTheme();
+const ProfileScreen = () => {
   const router = useRouter();
+  const theme = useTheme();
+
+  const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
   const ownerInfo = useRef<Person>(undefined);
   const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState<CountryCode>();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
@@ -38,6 +56,8 @@ export default function OwnerList() {
     useState<CountryCode>("US");
 
   const debounceTimer = useRef<number>(null);
+
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -89,6 +109,7 @@ export default function OwnerList() {
           setAddress(data[0].address);
           setId(data[0].id);
           setEmail(data[0].email);
+          setPhoneCountryCode(data[0].country_code);
         }
       });
     setLoading(false);
@@ -113,6 +134,20 @@ export default function OwnerList() {
       }
     };
   }, [email]);
+
+  useEffect(() => {
+    const showListener = Keyboard.addListener("keyboardDidShow", () => {
+      setBehavior("padding");
+    });
+    const hideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setBehavior(undefined);
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   async function createContact() {
     if (extra_info.trim() || !user) {
@@ -142,6 +177,7 @@ export default function OwnerList() {
             address,
             email,
             id,
+            country_code: selectedCountryCode,
           },
         ])
         .eq("id", id)
@@ -165,20 +201,23 @@ export default function OwnerList() {
     setLoading(false);
 
     if (error) {
-      log(error.message);
       showMessage({
         message: "Error saving owner profile.",
         type: "warning",
         icon: "warning",
+        statusBarHeight: 100,
       });
     } else {
+      setIsEditing(false);
+
       if (data && !id) {
         setId(data[0].id);
       }
       showMessage({
-        message: "Successfully saving owner profile.",
+        message: "Successfully saved owner profile.",
         type: "success",
         icon: "success",
+        statusBarHeight: 100,
       });
 
       if (sightingId) {
@@ -197,112 +236,188 @@ export default function OwnerList() {
     setHasPhoneError(!isValid);
   };
 
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Update your Contact Info!</Text>
-        <Text style={styles.headerSubtitle}>
-          Help people reach out to find your furry friend
-        </Text>
-      </View>
-      <View style={styles.content}>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <PhoneNumberInput
-            onPhoneNumberChange={handlePhoneNumberChange}
-            showInvalidPhoneError={hasPhoneError}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Text variant="labelSmall" style={{ color: theme.colors.error }}>
-            {hasEmailError ? "Invalid email address." : ""}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={behavior}
+      keyboardVerticalOffset={100}
+    >
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarContainer}>
+            <Avatar.Icon size={120} icon={"account"} style={styles.avatar} />
+            {isEditing && (
+              <IconButton
+                icon="camera"
+                size={24}
+                mode="contained"
+                containerColor={theme.colors.primary}
+                iconColor="#fff"
+                style={styles.cameraButton}
+              />
+            )}
+          </View>
+
+          <Text variant="headlineMedium" style={styles.name}>
+            {firstName} {lastName}
           </Text>
-          <TextInput
-            error={hasEmailError}
-            label="Email"
-            left={<TextInput.Icon icon="account-box-outline" />}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            placeholder="youremail@email.com"
-            autoCapitalize={"none"}
-            mode="outlined"
-            keyboardType="email-address"
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <TextInput
-            label="First Name"
-            left={<TextInput.Icon icon="account-box-outline" />}
-            onChangeText={(text) => setFirstName(text)}
-            value={firstName}
-            placeholder="First Name"
-            autoCapitalize={"none"}
-            mode="outlined"
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <TextInput
-            label="Last Name"
-            left={<TextInput.Icon icon="account-box-outline" />}
-            onChangeText={(text) => setLastName(text)}
-            value={lastName}
-            placeholder="Last Name"
-            autoCapitalize={"none"}
-            mode="outlined"
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <TextInput
-            label="Address"
-            left={<TextInput.Icon icon="account-box-outline" />}
-            onChangeText={(text) => setAddress(text)}
-            value={address}
-            placeholder="Street, City"
-            autoCapitalize={"none"}
-            mode="outlined"
-            multiline={true}
-          />
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            {email}
+          </Text>
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Button
-            mode="contained"
-            disabled={
-              loading || disableSubmitBtn || hasPhoneError || hasEmailError
-            }
-            onPress={() => createContact()}
-          >
-            {id ? "Save Contact" : "Create Contact"}
-          </Button>
-        </View>
+        <View style={styles.content}>
+          <View style={styles.sectionHeader}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
+              My Contact Information
+            </Text>
+            {!isEditing ? (
+              <IconButton
+                icon="pencil"
+                size={20}
+                onPress={() => setIsEditing(true)}
+              />
+            ) : null}
+          </View>
 
-        <TextInput
-          style={{ height: 0, opacity: 0 }}
-          value={extra_info}
-          onChangeText={setExtraInfo}
-        />
-      </View>
-    </View>
+          <View style={styles.formContainer}>
+            <TextInput
+              label="First Name"
+              left={<TextInput.Icon icon="account" />}
+              onChangeText={(text) => setFirstName(text)}
+              value={firstName}
+              placeholder="First Name"
+              autoCapitalize={"none"}
+              mode="outlined"
+              disabled={!isEditing}
+              style={styles.input}
+            />
+
+            <TextInput
+              label="Last Name"
+              left={<TextInput.Icon icon="account" />}
+              onChangeText={(text) => setLastName(text)}
+              value={lastName}
+              placeholder="Last Name"
+              autoCapitalize={"none"}
+              mode="outlined"
+              disabled={!isEditing}
+              // style={styles.input}
+            />
+            <View>
+              <Text variant="labelSmall" style={{ color: theme.colors.error }}>
+                {hasEmailError ? "Invalid email address." : ""}
+              </Text>
+              <TextInput
+                error={hasEmailError}
+                label="Email"
+                left={<TextInput.Icon icon="email" />}
+                onChangeText={(text) => setEmail(text)}
+                value={email}
+                placeholder="youremail@email.com"
+                autoCapitalize={"none"}
+                mode="outlined"
+                keyboardType="email-address"
+                disabled={!isEditing}
+                // style={styles.input}
+              />
+            </View>
+
+            <View style={styles.phoneContainer}>
+              <PhoneNumberInput
+                onPhoneNumberChange={handlePhoneNumberChange}
+                showInvalidPhoneError={hasPhoneError}
+                disabled={!isEditing}
+                phoneCountryCode={phoneCountryCode}
+                phone={phone}
+              />
+            </View>
+
+            <TextInput
+              label="Address"
+              left={<TextInput.Icon icon="map-marker" />}
+              onChangeText={(text) => setAddress(text)}
+              value={address}
+              placeholder="Street, City"
+              autoCapitalize={"none"}
+              mode="outlined"
+              multiline={true}
+              disabled={!isEditing}
+              numberOfLines={3}
+              style={styles.input}
+            />
+
+            {isEditing && (
+              <View style={styles.buttonContainer}>
+                <Button
+                  mode="outlined"
+                  onPress={handleCancel}
+                  style={[styles.button, styles.cancelButton]}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={() => createContact()}
+                  style={styles.button}
+                  disabled={
+                    loading ||
+                    disableSubmitBtn ||
+                    hasPhoneError ||
+                    hasEmailError
+                  }
+                >
+                  Save Changes
+                </Button>
+              </View>
+            )}
+          </View>
+
+          <Surface style={styles.navigationCard} elevation={1}>
+            <TouchableOpacity
+              style={styles.navigationItem}
+              activeOpacity={0.7}
+              onPress={() => router.navigate("/(app)/owner/my-reports")}
+            >
+              <View style={styles.navigationContent}>
+                <View style={styles.iconContainer}>
+                  <IconButton
+                    icon="file-document-multiple"
+                    size={28}
+                    iconColor={theme.colors.primary}
+                  />
+                </View>
+                <View style={styles.navigationText}>
+                  <Text variant="titleMedium" style={styles.navigationTitle}>
+                    My Reports
+                  </Text>
+                  <Text variant="bodySmall" style={styles.navigationSubtitle}>
+                    View and manage your sighting reports
+                  </Text>
+                </View>
+              </View>
+              <IconButton icon="chevron-right" size={24} />
+            </TouchableOpacity>
+          </Surface>
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-  mt20: {
-    marginTop: 20,
-  },
   container: {
     flex: 1,
-    paddingTop: 10,
     backgroundColor: "#fff",
-    minHeight: "100%",
-  },
-  content: {
-    paddingHorizontal: 24,
-    alignItems: "center",
   },
   header: {
     backgroundColor: "#714ea9ff",
@@ -320,4 +435,112 @@ const styles = StyleSheet.create({
     color: "#BBDEFB",
     marginTop: 4,
   },
+  profileHeader: {
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  avatarContainer: {
+    position: "relative",
+    marginBottom: 10,
+  },
+  avatar: {
+    backgroundColor: "#e0e0e0",
+  },
+  cameraButton: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    elevation: 4,
+  },
+  name: {
+    fontWeight: "600",
+    marginTop: 8,
+  },
+  subtitle: {
+    color: "#666",
+    marginTop: 4,
+  },
+  content: {
+    padding: 16,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  sectionTitle: {
+    fontWeight: "600",
+  },
+  formContainer: {
+    borderRadius: 16,
+    marginBottom: 8,
+  },
+  input: {
+    marginBottom: 16,
+  },
+  phoneContainer: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 16,
+  },
+  countryCode: {
+    flex: 1,
+    maxWidth: 110,
+  },
+  phoneNumber: {
+    flex: 2,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5,
+    marginBottom: 10,
+    gap: 12,
+  },
+  button: {
+    flex: 1,
+  },
+  cancelButton: {
+    borderColor: "#ddd",
+  },
+  navigationCard: {
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  navigationItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+  },
+  navigationContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#f0f0f0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  navigationText: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  navigationTitle: {
+    fontWeight: "600",
+  },
+  navigationSubtitle: {
+    color: "#666",
+    marginTop: 2,
+  },
 });
+
+export default ProfileScreen;

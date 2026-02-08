@@ -22,15 +22,24 @@ export type PhoneNumberInputProps = {
     isvalidPhoneNumber: boolean,
   ) => void;
   showInvalidPhoneError?: boolean;
+  disabled: boolean;
+  phoneCountryCode?: CountryCode;
+  phone?: string;
 };
 
 export default function PhoneNumberInput({
   onPhoneNumberChange,
   showInvalidPhoneError,
+  disabled,
+  phoneCountryCode,
+  phone,
 }: PhoneNumberInputProps) {
+  const defaultCountryCode = "US";
   const theme = useTheme();
 
-  const [phone, setPhone] = useState("");
+  const [editedPhoneValue, setEditedPhoneValue] = useState("");
+  const [selectedCountryCode, setSelectedCountryCode] = useState<CountryCode>();
+
   const [hasPhoneError, setHasPhoneError] = useState(false);
 
   const debounceTimer = useRef<number>(null);
@@ -39,8 +48,14 @@ export default function PhoneNumberInput({
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
-  const [selectedCountryCode, setSelectedCountryCode] =
-    useState<CountryCode>("US");
+
+  useEffect(() => {
+    setEditedPhoneValue(phone || "");
+  }, [phone]);
+
+  useEffect(() => {
+    setSelectedCountryCode(phoneCountryCode || defaultCountryCode);
+  }, [phoneCountryCode]);
 
   useEffect(() => {
     let isValid = true;
@@ -50,14 +65,18 @@ export default function PhoneNumberInput({
     }
 
     debounceTimer.current = setTimeout(() => {
-      if (phone) {
-        isValid = isValidPhoneNumber(phone, selectedCountryCode);
+      if (editedPhoneValue) {
+        isValid = isValidPhoneNumber(editedPhoneValue, selectedCountryCode);
         setHasPhoneError(!isValid);
       } else {
         setHasPhoneError(false);
       }
 
-      onPhoneNumberChange(phone, selectedCountryCode, isValid);
+      onPhoneNumberChange(
+        editedPhoneValue,
+        selectedCountryCode || defaultCountryCode,
+        isValid,
+      );
     }, 500);
 
     return () => {
@@ -65,7 +84,7 @@ export default function PhoneNumberInput({
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [phone, selectedCountryCode, onPhoneNumberChange]);
+  }, [onPhoneNumberChange, editedPhoneValue, selectedCountryCode]);
 
   const countries = useMemo(() => {
     const allCountries = getCountries();
@@ -78,7 +97,9 @@ export default function PhoneNumberInput({
 
   const selectedCountryData = useMemo(() => {
     return (
-      countries.find((c) => c.code === selectedCountryCode) || countries[0]
+      (selectedCountryCode &&
+        countries.find((c) => c.code === selectedCountryCode)) ||
+      countries[0]
     );
   }, [selectedCountryCode, countries]);
 
@@ -88,7 +109,7 @@ export default function PhoneNumberInput({
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <Text variant="labelSmall" style={{ color: theme.colors.error }}>
         {hasPhoneError
           ? "Invalid phone number and country code combination."
@@ -114,8 +135,10 @@ export default function PhoneNumberInput({
                 },
               ]}
               contentStyle={styles.countryButtonContent}
+              disabled={disabled}
+              icon={"phone"}
             >
-              {selectedCountryData.code} {selectedCountryData.callingCode}
+              {selectedCountryData.code}
             </Button>
           }
         >
@@ -134,11 +157,11 @@ export default function PhoneNumberInput({
 
         <TextInput
           label="Phone Number"
-          left={<TextInput.Icon icon="phone" />}
+          // left={<TextInput.Icon icon="phone" />}
           onChangeText={(text) => {
-            setPhone(text);
+            setEditedPhoneValue(text);
           }}
-          value={phone}
+          value={editedPhoneValue}
           placeholder="555-555-5555"
           autoCapitalize={"none"}
           mode="outlined"
@@ -146,6 +169,7 @@ export default function PhoneNumberInput({
           keyboardType="phone-pad"
           error={hasPhoneError || !!showInvalidPhoneError}
           style={styles.phoneInput}
+          disabled={disabled}
         />
       </View>
     </View>
@@ -153,9 +177,14 @@ export default function PhoneNumberInput({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   inputContainer: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "flex-start",
+    // backgroundColor: "green",
   },
 
   countryButton: {
@@ -172,6 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   phoneInput: {
-    flex: 1,
+    // backgroundColor: "red",
+    flexGrow: 1,
   },
 });
