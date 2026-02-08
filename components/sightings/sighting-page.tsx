@@ -67,7 +67,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
           if (location) {
             setLocation(location);
           } else {
-            log(`getCurrentUserLocationV3 ${err}`);
+            log(`getCurrentUserLocationV3 ${err.message}`);
             setError("Location access is needed to show nearby sightings.");
             setLoading(false);
           }
@@ -100,7 +100,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination?: SightingPagination,
     ) => {
       if (error) {
-        log(error);
         setError(error);
       } else if (pagination?.start === 0) {
         setSightings(newSightings);

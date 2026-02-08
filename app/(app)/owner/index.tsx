@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import PhoneNumberInput from "@/components/phone-number-util";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
@@ -192,6 +193,7 @@ const ProfileScreen = () => {
             phone,
             address,
             email,
+            country_code: selectedCountryCode,
           },
         ])
         .select();
@@ -201,6 +203,7 @@ const ProfileScreen = () => {
     setLoading(false);
 
     if (error) {
+      log(error.message)
       showMessage({
         message: "Error saving owner profile.",
         type: "warning",

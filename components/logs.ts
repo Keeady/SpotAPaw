@@ -5,8 +5,12 @@ export function log(issue: string) {
     supabase
       .from("logs")
       .insert([{ issue }])
-      .select()
-  } catch {
-    // error
+      .then(({ error }) => {
+        if (error) {
+          console.log(error);
+        }
+      });
+  } catch (error) {
+    console.log(error);
   }
 }

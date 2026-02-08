@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../supabase-client";
 import { AuthContext } from "../Provider/auth-provider";
 import { useRouter } from "expo-router";
+import { log } from "../logs";
 
 interface Report {
   id: string;
@@ -54,7 +55,7 @@ const ReportListPage = () => {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error("Error fetching reports from Supabase:", error);
+      log(`Error fetching reports: ${error.message}`);
       return [];
     }
   };
@@ -65,7 +66,7 @@ const ReportListPage = () => {
       const storedReports = await AsyncStorage.getItem(GUEST_REPORTS_KEY);
       return storedReports ? JSON.parse(storedReports) : [];
     } catch (error) {
-      console.error("Error fetching reports from AsyncStorage:", error);
+      log(`Error fetching reports from AsyncStorage: ${error.message}`);
       return [];
     }
   };
@@ -79,7 +80,7 @@ const ReportListPage = () => {
         : await fetchReportsFromSupabase();
       setReports(data);
     } catch (error) {
-      console.error("Error fetching reports:", error);
+      log(`Error fetching reports: ${error.message}`);
     } finally {
       setLoading(false);
     }

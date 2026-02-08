@@ -1,5 +1,4 @@
 import * as Location from "expo-location";
-import { log } from "./logs";
 
 export type SightingLocation = {
   lat: number;
@@ -41,7 +40,6 @@ export async function getCurrentUserLocationV3(): Promise<
 async function requestGrantOfUserLocation(): Promise<boolean> {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
-    log(`requestGrantOfUserLocation: Location permission not granted`);
     throw new Error("Location permission not granted");
   }
 
@@ -59,13 +57,11 @@ const getUserLocationPermission = async () => {
     }
 
     if (existingStatus === "denied" && !canAskAgain) {
-      log("getUserLocationPermission: Cannot Ask Location permission again");
       throw new Error("Cannot Ask Location permission again");
     }
 
     return requestGrantOfUserLocation();
-  } catch (e) {
-    log(`getUserLocationPermission: ${e}`);
+  } catch {
     throw new Error("Existing Location permission not available");
   }
 };
@@ -89,8 +85,7 @@ const getUserLocationFast =
       }
 
       return location;
-    } catch (error) {
-      log(`getUserLocationFast: ${error}`);
+    } catch {
       throw new Error("Unable to get user location");
     }
   };
