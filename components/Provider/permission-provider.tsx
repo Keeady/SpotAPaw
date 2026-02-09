@@ -19,6 +19,7 @@ type ContextProps = {
   saveLocation: (location: SightingLocation) => void;
   getSavedLocation: () => Promise<any>;
   setLocation: (value: SightingLocation) => void;
+  isLoadingLocation: boolean;
 };
 
 const PermissionContext = createContext<Partial<ContextProps>>({});
@@ -31,6 +32,7 @@ const PermissionProvider = (props: Props) => {
   const [enabledLocationPermission, setEnabledLocationPermission] =
     useState<boolean>(false);
   const [location, setLocation] = useState<SightingLocation>();
+  const [isLoadingLocation, setLoadingLocation] = useState(true);
 
   const getSavedLocation = useCallback(async () => {
     try {
@@ -54,10 +56,12 @@ const PermissionProvider = (props: Props) => {
         if (location) {
           setLocation(location);
           saveLocation(location);
+          setLoadingLocation(false);
         } else {
           getSavedLocation().then((location) => {
             if (location) {
               setLocation(location);
+              setLoadingLocation(false);
             }
           });
         }
@@ -69,6 +73,7 @@ const PermissionProvider = (props: Props) => {
           } else {
             log(`getCurrentUserLocationV3 ${err.message}`);
           }
+          setLoadingLocation(false);
         });
       });
   }, [getSavedLocation, saveLocation]);
@@ -86,6 +91,7 @@ const PermissionProvider = (props: Props) => {
         saveLocation,
         getSavedLocation,
         setLocation,
+        isLoadingLocation,
       }}
     >
       {props.children}

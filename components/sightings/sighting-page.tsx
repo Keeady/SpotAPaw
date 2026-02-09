@@ -39,7 +39,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   });
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const { location } = useContext(PermissionContext);
+  const { location, isLoadingLocation } = useContext(PermissionContext);
 
   const onFetchComplete = useCallback(
     (
@@ -72,16 +72,19 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         fetchSightings(location, pagination, onFetchComplete);
       }
     },
-    [user, onFetchComplete, setLoading],
+    [user, onFetchComplete],
   );
 
   // Refetch when filter changes
   useEffect(() => {
-    if (!location) {
+    if (isLoadingLocation) {
       return;
     }
-    fetch(location, { start: 0, end: MAX_SIGHTINGS });
-  }, [location]);
+
+    const pagination = { start: 0, end: MAX_SIGHTINGS };
+
+    fetch(location, pagination);
+  }, [location, isLoadingLocation]);
 
   const onEndReached = useCallback(() => {
     if (loading) {
@@ -92,7 +95,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       start: pagination.end + 1,
       end: pagination.end + MAX_SIGHTINGS,
     });
-  }, [location, pagination]);
+  }, [location, pagination, loading]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -104,7 +107,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       return <></>;
     }
     return <EmptySighting error={error} hasLocation={!!location} />;
-  }, [error, location]);
+  }, [error, location, loading]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 

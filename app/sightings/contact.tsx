@@ -35,9 +35,7 @@ export default function SightingContact() {
     if (user) {
       if (user.user_metadata) {
         if (user.user_metadata["firstName"]) {
-          setName(
-            `${user.user_metadata["firstName"]} ${user.user_metadata["lastName"]}`,
-          );
+          setName(user.user_metadata["firstName"]);
         }
 
         if (user.user_metadata["phone"]) {
