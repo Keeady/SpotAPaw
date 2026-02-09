@@ -133,23 +133,23 @@ export default function CreateNewSighting() {
 
   const runImageAnalyzer = useCallback(
     async (photo: string) => {
-      const aiFeatureEnabled = await AsyncStorage.getItem(
-        SIGHTING_AI_ENABLED_KEY,
-      );
+      if (photo) {
+        const aiFeatureEnabled = await AsyncStorage.getItem(
+          SIGHTING_AI_ENABLED_KEY,
+        );
 
-      if (aiFeatureEnabled === "true" || aiFeatureEnabled === null) {
-        setAiGenerated(true);
-        await analyze(photo);
+        if (aiFeatureEnabled === "true" || aiFeatureEnabled === null) {
+          setAiGenerated(true);
+          await analyze(photo);
+        }
       }
     },
     [analyze],
   );
 
   useEffect(() => {
-    if (photo) {
-      runImageAnalyzer(photo);
-    }
-  }, [photo]);
+    runImageAnalyzer(photo);
+  }, [photo, runImageAnalyzer]);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {

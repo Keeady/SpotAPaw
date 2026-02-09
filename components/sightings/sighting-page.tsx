@@ -35,7 +35,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const { user } = useContext(AuthContext);
   const [pagination, setPagination] = useState({
     start: 0,
-    end: MAX_SIGHTINGS - 1,
+    end: MAX_SIGHTINGS,
   });
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -66,6 +66,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       location: SightingLocation | undefined,
       pagination: SightingPagination,
     ) => {
+      setLoading(true);
       if (user) {
         fetchSightingsByUser(location, pagination, onFetchComplete);
       } else {
@@ -84,7 +85,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     const pagination = { start: 0, end: MAX_SIGHTINGS };
 
     fetch(location, pagination);
-  }, [location, isLoadingLocation]);
+  }, [fetch, location, isLoadingLocation]);
 
   const onEndReached = useCallback(() => {
     if (loading) {
@@ -95,7 +96,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       start: pagination.end + 1,
       end: pagination.end + MAX_SIGHTINGS,
     });
-  }, [location, pagination, loading]);
+  }, [location, pagination, loading, fetch]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

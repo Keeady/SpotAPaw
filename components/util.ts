@@ -141,5 +141,17 @@ export async function convertToFullAddress(lat: number, long: number) {
 }
 
 export function createErrorLogMessage(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
+  if (!error) {
+    return "";
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "object" && "message" in error) {
+    return error.message;
+  }
+
+  return String(error);
 }

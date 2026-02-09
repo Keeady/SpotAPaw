@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import { usePermission } from "./permission-provider";
+import type { ReactNode } from "react";
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 function AppLifecycleProvider({ children }: Props) {
@@ -31,7 +32,7 @@ function AppLifecycleProvider({ children }: Props) {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [subscribe]);
 
   return children;
 }

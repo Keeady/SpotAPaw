@@ -80,7 +80,7 @@ const PermissionProvider = (props: Props) => {
 
   useEffect(() => {
     refreshPermission();
-  }, []);
+  }, [refreshPermission]);
 
   return (
     <PermissionContext.Provider
@@ -102,7 +102,7 @@ const PermissionProvider = (props: Props) => {
 export function usePermission() {
   const ctx = useContext(PermissionContext);
   if (!ctx)
-    throw new Error("usePermission must be used inside PermissionProvider");
+    throw new Error("Context unavailable.");
   return ctx;
 }
 

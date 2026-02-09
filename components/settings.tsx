@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { List, Switch, Button, Divider, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -98,11 +98,7 @@ const SettingsScreen = () => {
   const { getSavedLocation, enabledLocationPermission } =
     useContext(PermissionContext);
 
-  useEffect(() => {
-    loadSettings();
-  }, [enabledLocationPermission]);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       setLocationLoading(true);
 
@@ -127,7 +123,7 @@ const SettingsScreen = () => {
 
       // Load AI settings
       const aiFeature = await AsyncStorage.getItem(SIGHTING_AI_ENABLED_KEY);
-      setAIFeatureEnabled(aiFeature === "true");
+      setAIFeatureEnabled(aiFeature === "true" || aiFeature === null);
 
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
       setDefaultDistance(distance || "5");
@@ -135,7 +131,11 @@ const SettingsScreen = () => {
     } finally {
       setLocationLoading(false);
     }
-  };
+  }, [getSavedLocation]);
+
+  useEffect(() => {
+    loadSettings();
+  }, [enabledLocationPermission, loadSettings]);
 
   const handleRequestLocationPermission = async () => {
     getCurrentUserLocationV3()

@@ -99,7 +99,7 @@ const ReportListPage = () => {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [fetchReports]);
 
   // Format date
   const formatDate = (dateString: string) => {
