@@ -32,6 +32,26 @@ export default function SightingContact() {
   }, [name, phone]);
 
   useEffect(() => {
+    if (user) {
+      if (user.user_metadata) {
+        if (user.user_metadata["firstName"]) {
+          setName(
+            `${user.user_metadata["firstName"]} ${user.user_metadata["lastName"]}`,
+          );
+        }
+
+        if (user.user_metadata["phone"]) {
+          setPhone(user.user_metadata["phone"]);
+        }
+
+        if (user.user_metadata["countryCode"]) {
+          setSelectedCountryCode(user.user_metadata["countryCode"]);
+        }
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (!user?.id) {
       return;
     }
@@ -114,6 +134,8 @@ export default function SightingContact() {
         <PhoneNumberInput
           onPhoneNumberChange={handlePhoneNumberChange}
           disabled={false}
+          phone={phone}
+          phoneCountryCode={selectedCountryCode}
         />
       </View>
       <View style={styles.verticallySpaced}>
