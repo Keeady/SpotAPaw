@@ -69,7 +69,7 @@ const SettingsScreen = () => {
   const [languageDialogVisible, setLanguageDialogVisible] = useState(false);
 
   // AI
-  const [aiFeatureEnabled, setAIFeatureEnabled] = useState(false);
+  const [aiFeatureEnabled, setAIFeatureEnabled] = useState(true);
 
   // Dialog states
   const [distanceDialogVisible, setDistanceDialogVisible] = useState(false);
