@@ -1,17 +1,13 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Button, IconButton, Portal } from "react-native-paper";
-import {
-  getCurrentUserLocationV3,
-  SightingLocation,
-} from "../get-current-location";
+import { SightingLocation } from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import {
   MAX_SIGHTINGS,
-  SIGHTING_LOCATION_KEY,
   SIGHTING_OFFSET,
   SIGHTING_RADIUSKM,
 } from "../constants";
@@ -19,7 +15,7 @@ import { EmptySighting } from "@/components/sightings/empty-sighting";
 import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
-import { getStorageItem, saveStorageItem } from "../util";
+import { PermissionContext } from "../Provider/permission-provider";
 
 type SightingPageProps = {
   renderer: (
@@ -40,7 +36,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const router = useRouter();
   const [sightings, setSightings] = useState<PetSighting[]>([]);
   const [loading, setLoading] = useState(true);
-  const [location, setLocation] = useState<SightingLocation>();
   const { user } = useContext(AuthContext);
   const [pagination, setPagination] = useState({
     start: 0,
@@ -48,50 +43,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   });
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    getCurrentUserLocationV3()
-      .then((location) => {
-        if (location) {
-          setLocation(location);
-        } else {
-          getSavedLocation().then((location) => {
-            if (location) {
-              setLocation(location);
-            }
-          });
-        }
-      })
-      .catch((err) => {
-        getSavedLocation().then((location) => {
-          if (location) {
-            setLocation(location);
-          } else {
-            log(`getCurrentUserLocationV3 ${err.message}`);
-            setError("Location access is needed to show nearby sightings.");
-            setLoading(false);
-          }
-        });
-      });
-  }, []);
-
-  // Refetch when filter changes
-  useEffect(() => {
-    if (!location) {
-      return;
-    } else if (user) {
-      fetchSightingsByUser(location, pagination, onFetchComplete);
-    } else {
-      fetchSightings(location, pagination, onFetchComplete);
-    }
-  }, [location, user, pagination]);
-
-  const onEndReached = useCallback(() => {
-    setPagination((prev) => ({
-      start: prev.end,
-      end: prev.end + SIGHTING_OFFSET,
-    }));
-  }, []);
+  const { location } = useContext(PermissionContext);
 
   const onFetchComplete = useCallback(
     (
@@ -112,14 +64,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     [],
   );
 
-  const reLoadSightings = useCallback(
-    (
-      location: SightingLocation | undefined,
-      pagination: { start: number; end: number },
-    ) => {
-      if (!location) {
-        return;
-      } else if (user) {
+  const fetch = useCallback(
+    (location: SightingLocation, pagination: SightingPagination) => {
+      if (user) {
         fetchSightingsByUser(location, pagination, onFetchComplete);
       } else {
         fetchSightings(location, pagination, onFetchComplete);
@@ -128,46 +75,52 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     [user, onFetchComplete],
   );
 
+  // Refetch when filter changes
+  useEffect(() => {
+    if (!location) {
+      return;
+    }
+
+    fetch(location, pagination);
+  }, [location, pagination]);
+
+  const onEndReached = useCallback(() => {
+    setPagination((prev) => ({
+      start: prev.end + 1,
+      end: prev.end + SIGHTING_OFFSET,
+    }));
+  }, []);
+
+  const reLoadSightings = useCallback(
+    (
+      location: SightingLocation | undefined,
+      pagination: { start: number; end: number },
+    ) => {
+      if (!location) {
+        setLoading(false);
+        return;
+      }
+
+      fetch(location, pagination);
+    },
+    [fetch],
+  );
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
   }, [reLoadSightings, location]);
 
-  const saveLocation = useCallback((location: SightingLocation) => {
-    saveStorageItem(SIGHTING_LOCATION_KEY, JSON.stringify(location));
-  }, []);
-
-  const getSavedLocation = useCallback(async () => {
-    try {
-      const location = await getStorageItem(SIGHTING_LOCATION_KEY);
-      if (location) {
-        return JSON.parse(location);
-      }
-    } catch {
-      return;
-    }
-  }, []);
-
   const onLocationSelected = useCallback(
     (location?: SightingLocation) => {
       if (location) {
-        setLocation(location);
         setError("");
         setLoading(true);
         reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
-        saveLocation(location);
       }
     },
-    [reLoadSightings, saveLocation],
+    [reLoadSightings],
   );
-
-  const onRetryLocationRequest = useCallback(() => {
-    getCurrentUserLocationV3()
-      .then((location) => {
-        onLocationSelected(location);
-      })
-      .catch(() => {});
-  }, [onLocationSelected]);
 
   const ListEmptyComponent = useCallback(() => {
     return (
@@ -175,10 +128,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         error={error}
         hasLocation={!!location}
         onLocationSelected={onLocationSelected}
-        onRetryLocationRequest={onRetryLocationRequest}
       />
     );
-  }, [error, location, onLocationSelected, onRetryLocationRequest]);
+  }, [error, location, onLocationSelected]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 

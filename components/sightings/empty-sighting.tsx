@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, StyleSheet, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
 import { ShowHappyDogAnimation } from "@/components/animate";
 import DropPinOnMap from "../map-util";
@@ -14,16 +14,13 @@ type EmptySightingProps = {
   error: string;
   hasLocation: boolean;
   onLocationSelected: (location?: SightingLocation) => void;
-  onRetryLocationRequest: () => void;
 };
 
 export const EmptySighting = ({
   error,
   hasLocation,
   onLocationSelected,
-  onRetryLocationRequest,
 }: EmptySightingProps) => {
-  const appState = useRef(AppState.currentState);
   const [permissionDeniedDialogVisible, setPermissionDeniedDialogVisible] =
     useState(false);
 
@@ -36,24 +33,6 @@ export const EmptySighting = ({
         setPermissionDeniedDialogVisible(true);
       });
   }, [onLocationSelected]);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      // When app comes back to foreground from background
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        // User returned from settings, check permission status
-        onRetryLocationRequest();
-      }
-      appState.current = nextAppState;
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [onRetryLocationRequest]);
 
   return (
     <View style={styles.container}>

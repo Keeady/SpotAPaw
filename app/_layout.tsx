@@ -7,6 +7,8 @@ import { supabase } from "@/components/supabase-client";
 import { Button, MD3LightTheme, PaperProvider } from "react-native-paper";
 import styles from "@/components/layout.style";
 import { handleSignIn } from "@/components/util";
+import { PermissionProvider } from "@/components/Provider/permission-provider";
+import { AppLifecycleProvider } from "@/components/Provider/app-lifecycle-provider";
 
 export default function Layout() {
   const router = useRouter();
@@ -68,34 +70,38 @@ export default function Layout() {
   return (
     <PaperProvider theme={MD3LightTheme}>
       <AuthProvider>
-        <Stack
-          screenOptions={{
-            headerShown: true,
-            headerBackVisible: true,
-            headerBackButtonDisplayMode: "minimal",
-            headerTitle: () => (
-              <Image
-                source={require("../assets/images/logosmall.png")}
-                style={styles.logo}
-              />
-            ),
-            headerRight: () => (
-              <Button
-                mode="text"
-                onPress={() => handleSignIn(router)}
-                style={styles.button}
-              >
-                Sign In
-              </Button>
-            ),
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          <Stack.Screen name="terms" options={{ headerShown: true }} />
-          <Stack.Screen name="privacy" options={{ headerShown: true }} />
-        </Stack>
-        <FlashMessage position="top" duration={5000} />
+        <PermissionProvider>
+          <AppLifecycleProvider>
+            <Stack
+              screenOptions={{
+                headerShown: true,
+                headerBackVisible: true,
+                headerBackButtonDisplayMode: "minimal",
+                headerTitle: () => (
+                  <Image
+                    source={require("../assets/images/logosmall.png")}
+                    style={styles.logo}
+                  />
+                ),
+                headerRight: () => (
+                  <Button
+                    mode="text"
+                    onPress={() => handleSignIn(router)}
+                    style={styles.button}
+                  >
+                    Sign In
+                  </Button>
+                ),
+              }}
+            >
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+              <Stack.Screen name="terms" options={{ headerShown: true }} />
+              <Stack.Screen name="privacy" options={{ headerShown: true }} />
+            </Stack>
+            <FlashMessage position="top" duration={5000} />
+          </AppLifecycleProvider>
+        </PermissionProvider>
       </AuthProvider>
     </PaperProvider>
   );

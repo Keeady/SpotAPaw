@@ -10,9 +10,7 @@ export class PetImageAnalyzer {
 
   constructor(apiKey: string) {
     if (!apiKey) {
-      throw new Error(
-        "API key is required.",
-      );
+      throw new Error("API key is required.");
     }
     this.apiKey = apiKey;
   }
@@ -142,7 +140,6 @@ Respond ONLY with valid JSON. Do not include any other text or markdown formatti
           { text: prompt },
         ],
       });
-
     } catch (error) {
       throw new Error(`Error generating content from model: ${error}`);
     }
@@ -175,7 +172,6 @@ Respond ONLY with valid JSON. Do not include any other text or markdown formatti
 
       // Parse JSON response
       const result = this.parseJsonResponse(textResponse);
-      console.log(result);
 
       return result as PetAnalysisResult;
     } catch (error) {

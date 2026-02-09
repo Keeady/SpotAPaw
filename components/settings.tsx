@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { View, ScrollView, StyleSheet, AppState } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { List, Switch, Button, Divider, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
@@ -29,6 +29,7 @@ import {
 import { onDeleteAccount } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { useRouter } from "expo-router";
+import { PermissionContext } from "./Provider/permission-provider";
 
 const SettingsScreen = () => {
   // Define color scheme for icons
@@ -93,29 +94,12 @@ const SettingsScreen = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   const { user } = useContext(AuthContext);
-  const appState = useRef(AppState.currentState);
+
+  const { enabledLocationPermission } = useContext(PermissionContext);
 
   useEffect(() => {
     loadSettings();
-  }, []);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      // When app comes back to foreground from background
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        // User returned from settings, check permission status
-        handleRequestLocationPermission();
-      }
-      appState.current = nextAppState;
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  }, [enabledLocationPermission]);
 
   const loadSettings = async () => {
     try {

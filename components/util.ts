@@ -139,3 +139,7 @@ export async function convertToFullAddress(lat: number, long: number) {
       return defaultAddress;
     });
 }
+
+export function createErrorLogMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
