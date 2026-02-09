@@ -82,7 +82,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     }
 
     fetch(location, pagination);
-  }, [location, pagination]);
+  }, [location, pagination, fetch]);
 
   const onEndReached = useCallback(() => {
     setPagination((prev) => ({
