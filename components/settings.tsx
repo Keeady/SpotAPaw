@@ -95,7 +95,8 @@ const SettingsScreen = () => {
 
   const { user } = useContext(AuthContext);
 
-  const { enabledLocationPermission } = useContext(PermissionContext);
+  const { getSavedLocation, enabledLocationPermission } =
+    useContext(PermissionContext);
 
   useEffect(() => {
     loadSettings();
@@ -110,11 +111,9 @@ const SettingsScreen = () => {
       setLocationPermission(status === "granted");
 
       // Load saved location
-      const savedLocationData = await AsyncStorage.getItem(
-        SIGHTING_LOCATION_KEY,
-      );
+      const savedLocationData = await getSavedLocation?.();
       if (savedLocationData) {
-        setSavedLocation(JSON.parse(savedLocationData));
+        setSavedLocation(savedLocationData);
       }
 
       const language = await AsyncStorage.getItem(PREFERRED_LANGUAGE);

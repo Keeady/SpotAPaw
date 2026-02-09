@@ -6,11 +6,7 @@ import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
-import {
-  MAX_SIGHTINGS,
-  SIGHTING_OFFSET,
-  SIGHTING_RADIUSKM,
-} from "../constants";
+import { MAX_SIGHTINGS, SIGHTING_RADIUSKM } from "../constants";
 import { EmptySighting } from "@/components/sightings/empty-sighting";
 import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
@@ -39,7 +35,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const { user } = useContext(AuthContext);
   const [pagination, setPagination] = useState({
     start: 0,
-    end: MAX_SIGHTINGS,
+    end: MAX_SIGHTINGS - 1,
   });
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -65,72 +61,43 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   );
 
   const fetch = useCallback(
-    (location: SightingLocation, pagination: SightingPagination) => {
+    (
+      location: SightingLocation | undefined,
+      pagination: SightingPagination,
+    ) => {
+      setLoading(true);
       if (user) {
         fetchSightingsByUser(location, pagination, onFetchComplete);
       } else {
         fetchSightings(location, pagination, onFetchComplete);
       }
     },
-    [user, onFetchComplete],
+    [user, onFetchComplete, setLoading],
   );
 
   // Refetch when filter changes
   useEffect(() => {
-    if (!location) {
-      return;
-    }
-
     fetch(location, pagination);
   }, [location, pagination, fetch]);
 
   const onEndReached = useCallback(() => {
-    setPagination((prev) => ({
-      start: prev.end + 1,
-      end: prev.end + SIGHTING_OFFSET,
-    }));
-  }, []);
-
-  const reLoadSightings = useCallback(
-    (
-      location: SightingLocation | undefined,
-      pagination: { start: number; end: number },
-    ) => {
-      if (!location) {
-        setLoading(false);
-        return;
-      }
-
-      fetch(location, pagination);
-    },
-    [fetch],
-  );
+    setPagination((prev) => {
+      const start = sightings.length === 0 ? sightings.length : prev.end;
+      return {
+        start: start,
+        end: start + MAX_SIGHTINGS - 1,
+      };
+    });
+  }, [sightings.length]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
-  }, [reLoadSightings, location]);
-
-  const onLocationSelected = useCallback(
-    (location?: SightingLocation) => {
-      if (location) {
-        setError("");
-        setLoading(true);
-        reLoadSightings(location, { start: 0, end: MAX_SIGHTINGS });
-      }
-    },
-    [reLoadSightings],
-  );
+    fetch(location, { start: 0, end: MAX_SIGHTINGS - 1 });
+  }, [fetch, location]);
 
   const ListEmptyComponent = useCallback(() => {
-    return (
-      <EmptySighting
-        error={error}
-        hasLocation={!!location}
-        onLocationSelected={onLocationSelected}
-      />
-    );
-  }, [error, location, onLocationSelected]);
+    return <EmptySighting error={error} hasLocation={!!location} />;
+  }, [error, location]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -189,10 +156,6 @@ const fetchSightings = async (
   pagination: { start: number; end: number },
   onFetchComplete: (newSightings: PetSighting[], error: string | null) => void,
 ) => {
-  if (!location) {
-    return;
-  }
-
   fetchSightingsWithLocation(location, pagination, onFetchComplete);
 };
 
@@ -205,15 +168,11 @@ const fetchSightingsByUser = async (
     pagination?: SightingPagination,
   ) => void,
 ) => {
-  if (!location) {
-    return;
-  }
-
   fetchSightingsByUserWithLocation(location, pagination, onFetchComplete);
 };
 
 const fetchSightingsWithLocation = async (
-  location: SightingLocation,
+  location: SightingLocation | undefined,
   pagination: { start: number; end: number },
   onFetchComplete: (
     newSightings: PetSighting[],
@@ -221,6 +180,10 @@ const fetchSightingsWithLocation = async (
     pagination?: SightingPagination,
   ) => void,
 ) => {
+  if (!location) {
+    return onFetchComplete([], null, pagination);
+  }
+
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
   const latDegree = SIGHTING_RADIUSKM / 111;
@@ -253,7 +216,7 @@ const fetchSightingsWithLocation = async (
 };
 
 const fetchSightingsByUserWithLocation = async (
-  location: SightingLocation,
+  location: SightingLocation | undefined,
   pagination: { start: number; end: number },
   onFetchComplete: (
     newSightings: PetSighting[],
@@ -261,6 +224,12 @@ const fetchSightingsByUserWithLocation = async (
     pagination?: SightingPagination,
   ) => void,
 ) => {
+  console.log(location, pagination);
+
+  if (!location) {
+    return onFetchComplete([], null, pagination);
+  }
+
   const { lat, lng } = location;
   // ~111 km per 1 degree latitude
   const latDegree = SIGHTING_RADIUSKM / 111;
@@ -283,6 +252,8 @@ const fetchSightingsByUserWithLocation = async (
     .lte("last_seen_long", maxLng)
     .order("updated_at", { ascending: false })
     .range(pagination.start, pagination.end);
+
+  console.log(data?.length);
 
   if (error) {
     log(error.message);

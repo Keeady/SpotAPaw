@@ -46,7 +46,7 @@ const ReportListPage = () => {
   const isGuest = !userId;
 
   // Fetch reports from Supabase (authenticated users)
-  const fetchReportsFromSupabase = async () => {
+  const fetchReportsFromSupabase = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("sightings")
@@ -60,10 +60,10 @@ const ReportListPage = () => {
       log(`Error fetching reports: ${message}`);
       return [];
     }
-  };
+  }, [userId]);
 
   // Fetch reports from AsyncStorage (guest users)
-  const fetchReportsFromStorage = async () => {
+  const fetchReportsFromStorage = useCallback(async () => {
     try {
       const storedReports = await AsyncStorage.getItem(GUEST_REPORTS_KEY);
       return storedReports ? JSON.parse(storedReports) : [];
@@ -72,7 +72,7 @@ const ReportListPage = () => {
       log(`Error fetching reports from AsyncStorage: ${message}`);
       return [];
     }
-  };
+  }, []);
 
   // Main fetch function
   const fetchReports = useCallback(async () => {
@@ -88,7 +88,7 @@ const ReportListPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [fetchReportsFromSupabase, isGuest]);
+  }, [fetchReportsFromSupabase, isGuest, fetchReportsFromStorage]);
 
   // Pull to refresh handler
   const onRefresh = useCallback(async () => {

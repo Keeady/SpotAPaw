@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
 import { ShowHappyDogAnimation } from "@/components/animate";
@@ -9,30 +9,37 @@ import {
 } from "../get-current-location";
 import DividerWithText from "../divider-with-text";
 import { LocationPermissionDeniedDialog } from "../location-request-util";
+import { PermissionContext } from "../Provider/permission-provider";
 
 type EmptySightingProps = {
   error: string;
   hasLocation: boolean;
-  onLocationSelected: (location?: SightingLocation) => void;
 };
 
-export const EmptySighting = ({
-  error,
-  hasLocation,
-  onLocationSelected,
-}: EmptySightingProps) => {
+export const EmptySighting = ({ error, hasLocation }: EmptySightingProps) => {
   const [permissionDeniedDialogVisible, setPermissionDeniedDialogVisible] =
     useState(false);
+  const { saveLocation, setLocation } = useContext(PermissionContext);
 
   const onLocationPermissionRequested = useCallback(() => {
     getCurrentUserLocationV3()
       .then((location) => {
-        onLocationSelected(location);
+        if (location) {
+          saveLocation?.(location);
+          setLocation?.(location);
+        }
       })
       .catch(() => {
         setPermissionDeniedDialogVisible(true);
       });
-  }, [onLocationSelected]);
+  }, [saveLocation, setLocation]);
+
+  const onNewLocationSelected = useCallback((location?: SightingLocation) => {
+    if (location) {
+      saveLocation?.(location);
+      setLocation?.(location);
+    }
+  }, [saveLocation, setLocation]);
 
   return (
     <View style={styles.container}>
@@ -58,7 +65,7 @@ export const EmptySighting = ({
             <Text variant="labelLarge" style={styles.infoText}>
               Choose Location Manually
             </Text>
-            <DropPinOnMap handleActionButton={onLocationSelected} />
+            <DropPinOnMap handleActionButton={onNewLocationSelected} />
           </View>
         </View>
       )}

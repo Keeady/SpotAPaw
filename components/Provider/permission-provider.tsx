@@ -16,6 +16,9 @@ type ContextProps = {
   enabledLocationPermission?: boolean;
   location?: SightingLocation;
   refreshPermission: () => Promise<void>;
+  saveLocation: (location: SightingLocation) => void;
+  getSavedLocation: () => Promise<any>;
+  setLocation: (value: SightingLocation) => void;
 };
 
 const PermissionContext = createContext<Partial<ContextProps>>({});
@@ -80,6 +83,9 @@ const PermissionProvider = (props: Props) => {
         enabledLocationPermission,
         location,
         refreshPermission,
+        saveLocation,
+        getSavedLocation,
+        setLocation,
       }}
     >
       {props.children}
