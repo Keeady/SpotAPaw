@@ -50,7 +50,7 @@ export default function SightingAnonList() {
           decelerationRate="fast"
           pagingEnabled
           onEndReached={onEndReached}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={0.9}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
