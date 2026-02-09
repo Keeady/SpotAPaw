@@ -20,6 +20,7 @@ import { supabase } from "../supabase-client";
 import { AuthContext } from "../Provider/auth-provider";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 interface Report {
   id: string;
@@ -45,7 +46,7 @@ const ReportListPage = () => {
   const isGuest = !userId;
 
   // Fetch reports from Supabase (authenticated users)
-  const fetchReportsFromSupabase = async () => {
+  const fetchReportsFromSupabase = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("sightings")
@@ -55,24 +56,26 @@ const ReportListPage = () => {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      log(`Error fetching reports: ${error.message}`);
+      const message = createErrorLogMessage(error);
+      log(`Error fetching reports: ${message}`);
       return [];
     }
-  };
+  }, [userId]);
 
   // Fetch reports from AsyncStorage (guest users)
-  const fetchReportsFromStorage = async () => {
+  const fetchReportsFromStorage = useCallback(async () => {
     try {
       const storedReports = await AsyncStorage.getItem(GUEST_REPORTS_KEY);
       return storedReports ? JSON.parse(storedReports) : [];
     } catch (error) {
-      log(`Error fetching reports from AsyncStorage: ${error.message}`);
+      const message = createErrorLogMessage(error);
+      log(`Error fetching reports from AsyncStorage: ${message}`);
       return [];
     }
-  };
+  }, []);
 
   // Main fetch function
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
       const data = isGuest
@@ -80,22 +83,23 @@ const ReportListPage = () => {
         : await fetchReportsFromSupabase();
       setReports(data);
     } catch (error) {
-      log(`Error fetching reports: ${error.message}`);
+      const message = createErrorLogMessage(error);
+      log(`Error fetching reports: ${message}`);
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchReportsFromSupabase, isGuest, fetchReportsFromStorage]);
 
   // Pull to refresh handler
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchReports();
     setRefreshing(false);
-  }, [isGuest, userId]);
+  }, [fetchReports]);
 
   useEffect(() => {
     fetchReports();
-  }, [userId]);
+  }, [fetchReports]);
 
   // Format date
   const formatDate = (dateString: string) => {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { View, ScrollView, StyleSheet, AppState } from "react-native";
+import React, { useState, useEffect, useContext, useCallback } from "react";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { List, Switch, Button, Divider, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
@@ -9,6 +9,7 @@ import {
 } from "@/components/get-current-location";
 import {
   PREFERRED_LANGUAGE,
+  SIGHTING_AI_ENABLED_KEY,
   SIGHTING_DISTANCE_KEY,
   SIGHTING_LOCATION_KEY,
   SIGHTING_NOTIFICATION_ENABLED_KEY,
@@ -28,6 +29,7 @@ import {
 import { onDeleteAccount } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { useRouter } from "expo-router";
+import { PermissionContext } from "./Provider/permission-provider";
 
 const SettingsScreen = () => {
   // Define color scheme for icons
@@ -66,6 +68,9 @@ const SettingsScreen = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [languageDialogVisible, setLanguageDialogVisible] = useState(false);
 
+  // AI
+  const [aiFeatureEnabled, setAIFeatureEnabled] = useState(true);
+
   // Dialog states
   const [distanceDialogVisible, setDistanceDialogVisible] = useState(false);
   const [resetLocationDialogVisible, setResetLocationDialogVisible] =
@@ -89,31 +94,11 @@ const SettingsScreen = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   const { user } = useContext(AuthContext);
-  const appState = useRef(AppState.currentState);
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
+  const { getSavedLocation, enabledLocationPermission } =
+    useContext(PermissionContext);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      // When app comes back to foreground from background
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        // User returned from settings, check permission status
-        handleRequestLocationPermission();
-      }
-      appState.current = nextAppState;
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       setLocationLoading(true);
 
@@ -122,21 +107,23 @@ const SettingsScreen = () => {
       setLocationPermission(status === "granted");
 
       // Load saved location
-      const savedLocationData = await AsyncStorage.getItem(
-        SIGHTING_LOCATION_KEY,
-      );
+      const savedLocationData = await getSavedLocation?.();
       if (savedLocationData) {
-        setSavedLocation(JSON.parse(savedLocationData));
+        setSavedLocation(savedLocationData);
       }
 
       const language = await AsyncStorage.getItem(PREFERRED_LANGUAGE);
       setSelectedLanguage(language || "en");
 
-      // Load other settings
+      // Load notification settings
       const notifications = await AsyncStorage.getItem(
         SIGHTING_NOTIFICATION_ENABLED_KEY,
       );
       setNotificationsEnabled(notifications === "true");
+
+      // Load AI settings
+      const aiFeature = await AsyncStorage.getItem(SIGHTING_AI_ENABLED_KEY);
+      setAIFeatureEnabled(aiFeature === "true" || aiFeature === null);
 
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
       setDefaultDistance(distance || "5");
@@ -144,7 +131,11 @@ const SettingsScreen = () => {
     } finally {
       setLocationLoading(false);
     }
-  };
+  }, [getSavedLocation]);
+
+  useEffect(() => {
+    loadSettings();
+  }, [enabledLocationPermission, loadSettings]);
 
   const handleRequestLocationPermission = async () => {
     getCurrentUserLocationV3()
@@ -180,6 +171,11 @@ const SettingsScreen = () => {
       SIGHTING_NOTIFICATION_ENABLED_KEY,
       value.toString(),
     );
+  };
+
+  const handleToggleAIFeature = async (value: boolean) => {
+    setAIFeatureEnabled(value);
+    await AsyncStorage.setItem(SIGHTING_AI_ENABLED_KEY, value.toString());
   };
 
   const handleDistanceChange = async (value: string) => {
@@ -355,6 +351,24 @@ const SettingsScreen = () => {
         {/* Preferences Section (Future Feature) */}
         <List.Section>
           <List.Subheader>Preferences</List.Subheader>
+
+          <List.Item
+            title="AI Image Analysis"
+            description="Enable image analysis for pet identification"
+            left={(props) => (
+              <List.Icon
+                {...props}
+                icon="creation-outline"
+                color={iconColors.notification}
+              />
+            )}
+            right={() => (
+              <Switch
+                value={aiFeatureEnabled}
+                onValueChange={handleToggleAIFeature}
+              />
+            )}
+          />
 
           <List.Item
             title="Language"

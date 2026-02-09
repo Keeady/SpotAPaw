@@ -75,6 +75,7 @@ export default function SignUpScreen() {
           firstName,
           lastName,
           phone,
+          countryCode: selectedCountryCode
         },
       },
     });

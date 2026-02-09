@@ -28,7 +28,6 @@ export const pickImage = async (
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
-    aspect: [4, 3],
     quality: 0.8,
   }).catch((err) => {
     log(`pickImage: ${err.message}`);
@@ -52,7 +51,6 @@ export const takePhoto = async (
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images", "livePhotos"],
     allowsEditing: true,
-    aspect: [4, 3],
     quality: 0.8,
     cameraType: ImagePicker.CameraType.back,
   }).catch((err) => {

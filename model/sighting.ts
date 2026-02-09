@@ -6,6 +6,7 @@ export type PetSighting = {
     features: string;
     species: string;
     breed: string;
+    size: string;
     gender: string;
     photo: string;
     last_seen_long: number;
