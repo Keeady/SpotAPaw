@@ -1,6 +1,6 @@
 import { Pet } from "@/model/pet";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
@@ -20,11 +20,33 @@ export default function CreatePetDetails({
 }: CreatePetDetailsProps) {
   const theme = useTheme();
 
+  const [disabled, setDisabled] = useState(true);
+
   const [pet, setPet] = useState<Pet>();
   const handleChange = (fieldName: string, fieldValue: string) => {
     setPet((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
   const [extra_info, setExtraInfo] = useState("");
+
+  useEffect(() => {
+    if (!pet?.name || !pet.species || !pet.age || !pet.gender || !pet.colors) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [pet]);
+
+  const onSubmit = () => {
+    if (extra_info) {
+      return router.dismissTo("/");
+    }
+
+    if (pet) {
+      setDisabled(true);
+
+      handleSubmit(pet);
+    }
+  };
 
   return (
     <ScrollView
@@ -133,16 +155,7 @@ export default function CreatePetDetails({
           <View
             style={[styles.verticallySpaced, styles.mt20, { marginTop: 20 }]}
           >
-            <Button
-              mode="contained"
-              onPress={() => {
-                if (extra_info) {
-                  return router.dismissTo("/");
-                }
-
-                handleSubmit(pet);
-              }}
-            >
+            <Button mode="contained" disabled={disabled} onPress={onSubmit}>
               Save Pet
             </Button>
           </View>
