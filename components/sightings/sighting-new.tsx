@@ -149,7 +149,7 @@ export default function CreateNewSighting() {
 
   useEffect(() => {
     runImageAnalyzer(photo);
-  }, [photo, runImageAnalyzer]);
+  }, [photo]);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {
