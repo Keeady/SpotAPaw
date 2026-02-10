@@ -1,6 +1,6 @@
 import { Pet } from "@/model/pet";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
@@ -22,11 +22,15 @@ export default function EditPetDetails(
   const theme = useTheme();
   const [isDisabled, setDisabled] = React.useState(false);
   const handleChange = (fieldName: string, fieldValue: string | number) => {
-    setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
+    setProfileInfo((prev: Pet) => ({ ...prev, [fieldName]: fieldValue }));
   };
   const [extra_info, setExtraInfo] = React.useState("");
 
   const onSubmit = async () => {
+    if (extra_info) {
+      return router.dismissTo("/");
+    }
+
     try {
       setDisabled(true);
       await handleSubmit();
@@ -34,6 +38,14 @@ export default function EditPetDetails(
       setDisabled(false);
     }
   };
+
+  useEffect(() => {
+    if (!pet?.name || !pet.species || !pet.age || !pet.gender || !pet.colors) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [pet]);
 
   return (
     <ScrollView
@@ -203,13 +215,7 @@ export default function EditPetDetails(
           >
             <Button
               mode="contained"
-              onPress={() => {
-                if (extra_info) {
-                  return router.dismissTo("/");
-                }
-
-                onSubmit();
-              }}
+              onPress={() => onSubmit()}
               disabled={isDisabled}
             >
               {is_lost ? "Update Pet" : "Save Pet"}
