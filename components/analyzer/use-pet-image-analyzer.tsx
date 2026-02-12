@@ -33,13 +33,18 @@ export function usePetAnalyzer(
         const analysisResult = await analyzer.analyzePetImage(imageUri);
 
         if ("error" in analysisResult) {
-          const err = new Error(analysisResult.error);
+          let err = new Error(analysisResult.error);
+          if ("details" in analysisResult) {
+            err = new Error(`${analysisResult.error}: ${analysisResult.details}`)
+          }
+          
           setError(err);
           onError?.(err);
         } else {
           onSuccess?.(analysisResult);
         }
       } catch (err) {
+        console.log(err)
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         onError?.(error);
