@@ -9,7 +9,6 @@ export const ImagePickerHandler = async (
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
-    aspect: [4, 3],
     quality: 1,
   }).catch((err) => {
     log(`launchImageLibraryAsync: ${err.message}`);

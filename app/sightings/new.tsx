@@ -1,5 +1,5 @@
-import CreateNewSighting from "@/components/sightings/sighting-new";
+import { WizardForm } from "@/components/wizard/wizard-form";
 
 export default function NewSighting() {
-  return <CreateNewSighting />
+  return <WizardForm />
 }

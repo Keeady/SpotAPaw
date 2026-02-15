@@ -18,13 +18,15 @@ export default function DatePicker({
 }) {
   const [showTime, setShowTime] = useState(false);
   const [showDate, setShowDate] = useState(false);
-  const [d, setDate] = useState(value);
+  const [currentDate, setDate] = useState(value);
+
   const onDateChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDate(false);
     if (selectedDate) {
       const newDate = new Date(selectedDate);
-      newDate.setHours(value.getHours());
-      newDate.setMinutes(value.getMinutes());
+      newDate.setHours(currentDate.getHours());
+      newDate.setMinutes(currentDate.getMinutes());
+      newDate.setSeconds(0);
       onChange(newDate);
       setDate(newDate);
     }
@@ -33,11 +35,11 @@ export default function DatePicker({
   const onTimeChange = (_event: DateTimePickerEvent, selectedTime?: Date) => {
     setShowTime(false);
     if (selectedTime) {
-      const newDate = new Date(value);
-      newDate.setHours(selectedTime.getHours());
-      newDate.setMinutes(selectedTime.getMinutes());
-      onChange(newDate);
-      setDate(newDate);
+      currentDate.setHours(selectedTime.getHours());
+      currentDate.setMinutes(selectedTime.getMinutes());
+      currentDate.setSeconds(0);
+      onChange(currentDate);
+      setDate(currentDate);
     }
   };
 
@@ -49,7 +51,7 @@ export default function DatePicker({
         onPress={() => setShowDate(true)}
         style={styles.button}
       >
-        Date: {d.toLocaleDateString()}
+        Date: {currentDate.toLocaleDateString()}
       </Button>
       <Button
         icon={"clock"}
@@ -57,7 +59,7 @@ export default function DatePicker({
         onPress={() => setShowTime(true)}
         style={styles.button}
       >
-        Time: {d.toLocaleTimeString()}
+        Time: {currentDate.toLocaleTimeString()}
       </Button>
       {showDate && (
         <DateTimePicker

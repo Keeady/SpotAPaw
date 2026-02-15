@@ -8,6 +8,7 @@ export interface PetInfo {
   colors: string[];
   size: PetSize;
   distinctive_features: string[];
+  collar_descriptions: string[];
   confidence: ConfidenceLevel;
 }
 

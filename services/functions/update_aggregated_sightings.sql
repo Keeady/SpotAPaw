@@ -56,8 +56,10 @@ BEGIN
       gender,
       colors,
       breed,
+      size,
       species,
       features,
+      collar_description,
       name,
       is_active,
       created_at,
@@ -74,8 +76,10 @@ BEGIN
       NEW.gender,
       NEW.colors,
       NEW.breed,
+      NEW.size,
       NEW.species,
       NEW.features,
+      NEW.collar_description,
       sighting_name,
       true,
       NOW(),
@@ -87,4 +91,5 @@ BEGIN
   
   RETURN NEW;
 END;
+
 $$ LANGUAGE plpgsql SECURITY DEFINER;

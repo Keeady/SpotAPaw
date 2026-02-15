@@ -150,7 +150,7 @@ export function createErrorLogMessage(error: unknown) {
   }
 
   if (typeof error === "object" && "message" in error) {
-    return error.message;
+    return error.message as string;
   }
 
   return String(error);

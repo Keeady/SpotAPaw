@@ -5,6 +5,7 @@ import { AuthContext } from "./Provider/auth-provider";
 import { supabase } from "./supabase-client";
 import AppConstant from "./constants";
 import { log } from "./logs";
+import { createErrorLogMessage } from "./util";
 
 export default function useUploadPetImageUrl() {
   const SUPABASE_URL = AppConstant.EXPO_PUBLIC_SUPABASE_URL;
@@ -24,13 +25,13 @@ export default function useUploadPetImageUrl() {
         const xhr = new XMLHttpRequest();
         xhr.open(
           "POST",
-          `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`
+          `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`,
         );
 
         xhr.setRequestHeader("apikey", SUPABASE_KEY);
         xhr.setRequestHeader(
           "Authorization",
-          `Bearer ${session?.access_token ?? SUPABASE_KEY}`
+          `Bearer ${session?.access_token ?? SUPABASE_KEY}`,
         );
         xhr.setRequestHeader("Content-Type", "image/jpg");
 
@@ -56,9 +57,57 @@ export default function useUploadPetImageUrl() {
         xhr.send(blob);
       } catch (e) {
         callback("", `Error saving photo ${e}`);
-        log(`Error saving photo ${e.message}`);
+        const errorMessage = createErrorLogMessage(e);
+        log(`Error saving photo ${errorMessage}`);
       }
     },
-    [SUPABASE_KEY, SUPABASE_URL, session?.access_token]
+    [SUPABASE_KEY, SUPABASE_URL, session?.access_token],
   );
 }
+
+async function readImageAsBase64(uri: string): Promise<string> {
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = (reader.result as string).split(",")[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    throw new Error(`Failed to read image: ${error}`);
+  }
+}
+
+export const uploadPhotoWithProcessing = async (
+  uri: string,
+  prompt: string,
+) => {
+  try {
+    const base64Image = await readImageAsBase64(uri);
+
+    const { data, error } = await supabase.functions.invoke(
+      "upload-photo-with-ai-processing",
+      {
+        body: {
+          photo: base64Image,
+          filename: `photo-${uuidv4()}.jpg`,
+          prompt,
+          filetype: "image/jpeg",
+        },
+      },
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
