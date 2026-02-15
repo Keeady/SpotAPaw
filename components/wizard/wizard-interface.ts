@@ -8,6 +8,6 @@ export type SightingReport = Pet & {
   petBehavior: string;
   linkedSightingId: string;
   collar: "yes_collar" | "no";
-  collarDescription: string
+  collarDescription: string;
   aiMessage: string;
 };

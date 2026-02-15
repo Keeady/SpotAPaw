@@ -84,6 +84,7 @@ Respond ONLY with valid JSON. Do not include any other text or markdown formatti
 
   const analyze = useCallback(async (photoUrl: string) => {
     try {
+      setLoading(true);
       const prompt = createAnalysisPrompt();
       const response = await uploadPhotoWithProcessing(photoUrl, prompt);
 

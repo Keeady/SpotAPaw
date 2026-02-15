@@ -58,7 +58,7 @@ export function ChoosePet({
         });
       }
     }
-  }, [selectedPetId, pets]);
+  }, [selectedPetId, pets, updateSightingData]);
 
   const { id } = sightingFormData;
 

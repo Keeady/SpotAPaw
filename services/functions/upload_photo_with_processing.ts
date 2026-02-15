@@ -110,7 +110,7 @@ Deno.serve(async (req: Request) => {
     // Get public URL
     const {
       data: { publicUrl },
-    } = supabaseClient.storage.from("pet_photos").getPublicUrl(filename);
+    } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
 
     photoPublicUrl = publicUrl;
   } catch (error) {

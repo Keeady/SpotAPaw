@@ -3,6 +3,34 @@ import { SightingReportType } from "./wizard-form";
 import { SightingReport } from "./wizard-interface";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 
+export const defaultSightingFormData = {
+  id: "",
+  species: "",
+  age: "",
+  name: "",
+  breed: "",
+  colors: "",
+  size: "",
+  last_seen_long: 0,
+  last_seen_lat: 0,
+  last_seen_location: "",
+  last_seen_time: "",
+  features: "",
+  photo: "",
+  contactName: "",
+  contactPhone: "",
+  contactPhoneCountryCode: "US",
+  petBehavior: "",
+  gender: "",
+  note: "",
+  linkedSightingId: "",
+  photoUrl: "",
+  is_lost: false,
+  aiMessage: "",
+  collar: "no",
+  collarDescription: "",
+} as SightingReport;
+
 export const validate = (
   currentStep: string,
   sightingFormData: SightingReport,
@@ -45,21 +73,26 @@ export function validateEditPet(
   sightingFormData: SightingReport,
   reportType?: SightingReportType,
 ) {
-  let isValid = false;
-  if (sightingFormData.species && sightingFormData.colors) {
-    isValid = true;
+  let isValid = true;
+  if (!sightingFormData.species || !sightingFormData.colors) {
+    isValid = false;
   }
 
   if (
     reportType === "lost_own" &&
-    sightingFormData.age &&
-    sightingFormData.colors &&
-    sightingFormData.gender &&
-    sightingFormData.name &&
-    sightingFormData.size
+    (!sightingFormData.age ||
+    !sightingFormData.colors ||
+   !sightingFormData.gender ||
+    !sightingFormData.name ||
+    !sightingFormData.size)
   ) {
-    isValid = true;
+    isValid = false;
   }
+
+  if (sightingFormData.collar === "yes_collar" && !sightingFormData.collarDescription) {
+    isValid = false;
+  }
+
   return isValid;
 }
 

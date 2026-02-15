@@ -4,7 +4,12 @@ import { WizardHeader } from "./wizard-header";
 import { HelperText, Surface, Text, useTheme } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
 
-export function Step1({ setReportType, loading, reportType,isValidData }: SightingWizardStepData) {
+export function Step1({
+  setReportType,
+  loading,
+  reportType,
+  isValidData,
+}: SightingWizardStepData) {
   const theme = useTheme();
   const [selected, setSelected] = useState<SightingReportType | null>();
   const [hasErrors, setHasErrors] = useState(false);
@@ -12,20 +17,20 @@ export function Step1({ setReportType, loading, reportType,isValidData }: Sighti
   const onClickLostOwn = useCallback(() => {
     setReportType("lost_own");
     setSelected("lost_own");
-  }, []);
+  }, [setReportType]);
 
   const onClickFoundStray = useCallback(() => {
     setReportType("found_stray");
     setSelected("found_stray");
-  }, []);
+  }, [setReportType]);
 
-    useEffect(() => {
-      if (!isValidData) {
-        setHasErrors(true);
-      } else {
-        setHasErrors(false);
-      }
-    }, [isValidData]);
+  useEffect(() => {
+    if (!isValidData) {
+      setHasErrors(true);
+    } else {
+      setHasErrors(false);
+    }
+  }, [isValidData]);
 
   return (
     <View style={styles.container}>
@@ -43,7 +48,7 @@ export function Step1({ setReportType, loading, reportType,isValidData }: Sighti
           >
             Please select an option!
           </HelperText>
-          
+
           <Surface
             style={[
               styles.navigationCard,
@@ -90,10 +95,6 @@ export function Step1({ setReportType, loading, reportType,isValidData }: Sighti
   );
 }
 
-/***
- *         {/*
- */
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   disabledCard: {
     opacity: 0.6,
   },
-    helperText: {
+  helperText: {
     alignSelf: "flex-end",
   },
 });

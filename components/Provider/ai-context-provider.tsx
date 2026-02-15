@@ -31,7 +31,7 @@ const AIFeatureContextProvider = (props: Props) => {
   }, []);
 
   const saveAIFeatureContext = useCallback((value: boolean) => {
-    setAiFeatureEnabled(value)
+    setAiFeatureEnabled(value);
     saveStorageItem(SIGHTING_AI_ENABLED_KEY, value.toString());
   }, []);
 

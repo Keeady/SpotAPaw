@@ -32,7 +32,7 @@ export function AddContact({
         );
       }
     }
-  }, [user?.user_metadata]);
+  }, [user?.user_metadata, updateSightingData]);
 
   useEffect(() => {
     if (!user?.id) {
@@ -50,7 +50,7 @@ export function AddContact({
           updateSightingData("contactPhoneCountryCode", data[0].countryCode);
         }
       });
-  }, [user?.id]);
+  }, [user?.id, updateSightingData]);
 
   const handlePhoneNumberChange = (phone: string, countryCode: CountryCode) => {
     updateSightingData("contactPhoneCountryCode", countryCode);

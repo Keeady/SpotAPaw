@@ -11,7 +11,7 @@ import { ChoosePet } from "./choose-pet";
 import { EditPet } from "./edit-pet";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { LocatePet } from "./locate-pet";
-import { validate } from "./util";
+import { defaultSightingFormData, validate } from "./util";
 import { AddTime } from "./add-time";
 import { AddContact } from "./add-contact";
 import useUploadPetImageUrl from "../image-upload";
@@ -60,32 +60,7 @@ export const WizardForm = () => {
   const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
   const [reportType, setReportType] = useState<SightingReportType>();
-  const defaultSightingFormData = {
-    id: "",
-    species: "",
-    age: "",
-    name: "",
-    breed: "",
-    colors: "",
-    size: "",
-    last_seen_long: 0,
-    last_seen_lat: 0,
-    last_seen_location: "",
-    last_seen_time: "",
-    features: "",
-    photo: "",
-    contactName: "",
-    contactPhone: "",
-    petBehavior: "",
-    gender: "",
-    note: "",
-    linkedSightingId: "",
-    photoUrl: "",
-    is_lost: false,
-    aiMessage: "",
-    collar: "no",
-    collarDescription: "",
-  } as SightingReport;
+
   const [sightingFormData, setSightingFormData] = useState<SightingReport>(
     defaultSightingFormData,
   );
@@ -245,7 +220,7 @@ export const WizardForm = () => {
           );
         }
 
-        if (petInfo.distinctive_features) {
+        if (petInfo.collar_descriptions) {
           updateSightingData(
             "collarDescription",
             petInfo.collar_descriptions.join(", "),

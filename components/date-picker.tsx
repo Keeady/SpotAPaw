@@ -35,11 +35,12 @@ export default function DatePicker({
   const onTimeChange = (_event: DateTimePickerEvent, selectedTime?: Date) => {
     setShowTime(false);
     if (selectedTime) {
-      currentDate.setHours(selectedTime.getHours());
-      currentDate.setMinutes(selectedTime.getMinutes());
-      currentDate.setSeconds(0);
-      onChange(currentDate);
-      setDate(currentDate);
+      const newDate = new Date(currentDate);
+      newDate.setHours(selectedTime.getHours());
+      newDate.setMinutes(selectedTime.getMinutes());
+      newDate.setSeconds(0);
+      onChange(newDate);
+      setDate(newDate);
     }
   };
 

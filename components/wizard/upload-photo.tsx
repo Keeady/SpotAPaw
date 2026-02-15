@@ -26,7 +26,7 @@ export function UploadPhoto({
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [hasErrors, setHasErrors] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!isValidData) {
       setHasErrors(true);
     } else {
@@ -34,7 +34,7 @@ export function UploadPhoto({
     }
   }, [isValidData]);
 
-  const {photo, photoUrl} = sightingFormData;
+  const { photo, photoUrl } = sightingFormData;
 
   return (
     <View>
