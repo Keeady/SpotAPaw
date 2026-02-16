@@ -3,7 +3,6 @@ import { View, StyleSheet, KeyboardAvoidingView, Keyboard } from "react-native";
 import { Button } from "react-native-paper";
 import { UploadPhoto } from "./upload-photo";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import { log } from "../logs";
 import { AnalysisResponse } from "../analyzer/types";
 import { Step1 } from "./start";
 import { SightingReport } from "./wizard-interface";
@@ -19,7 +18,7 @@ import { saveNewSighting, saveSightingPhoto } from "./submit-handler";
 import { showMessage } from "react-native-flash-message";
 import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
-import { createErrorLogMessage } from "../util";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 
 export type SightingWizardSteps =
   | "start"
@@ -40,6 +39,9 @@ export type SightingWizardStepData = {
   reportType?: SightingReportType;
   aiGenerated?: boolean;
   isValidData?: boolean;
+  errorMessage?: string;
+  onResetErrorMessage?: () => void;
+  onResetAiGeneratedPhoto?: () => void;
 };
 
 export const WizardForm = () => {
@@ -50,7 +52,7 @@ export const WizardForm = () => {
   const [disabledNext, setDisabledNext] = useState(false);
   const [disabledBack, setDisabledBack] = useState(false);
   const [currentStep, setCurrentStep] = useState<SightingWizardSteps>("start");
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [aiGenerated, setAiGenerated] = useState(false);
   const [isValidData, setIsValidData] = useState(true);
@@ -69,6 +71,7 @@ export const WizardForm = () => {
     // reset data
     setSightingFormData(defaultSightingFormData);
     setIsValidData(true);
+    setErrorMessage("");
   }, [reportType]);
 
   const handleBack = useCallback(() => {
@@ -78,6 +81,7 @@ export const WizardForm = () => {
 
     if (prevStep) {
       setCurrentStep(prevStep);
+      setErrorMessage("");
     }
   }, [stepHistory]);
 
@@ -86,14 +90,12 @@ export const WizardForm = () => {
   const processResponse = async () => {
     switch (currentStep) {
       case "upload_photo":
-        if (sightingFormData.photoUrl && isAiFeatureEnabled) {
-          setLoading(true);
+        if (sightingFormData.photoUrl && isAiFeatureEnabled && !aiGenerated) {
           return analyze(sightingFormData.photoUrl);
         }
 
         return Promise.resolve();
       case "submit":
-        setLoading(true);
         if (isAiFeatureEnabled) {
           return saveNewSighting("", sightingFormData);
         }
@@ -119,7 +121,8 @@ export const WizardForm = () => {
     return "submit";
   }, [currentStep, reportType]);
 
-  const handleNext = useCallback(() => {
+  const handleNext = () => {
+    setErrorMessage("");
     setDisabledNext(true);
     setDisabledBack(true);
     setLoading(true);
@@ -135,17 +138,8 @@ export const WizardForm = () => {
     }
 
     processResponse()
-      .then((data) => {
+      .then(() => {
         setLoading(false);
-        if (error) {
-          showMessage({
-            message: "Error saving sighting info. Please try again.",
-            type: "warning",
-            icon: "warning",
-            statusBarHeight: 50,
-          });
-          return;
-        }
 
         if (currentStep !== "submit") {
           const nextStep = getNextStep();
@@ -165,31 +159,29 @@ export const WizardForm = () => {
           router.dismissTo(`/${sightingsRoute}`);
         }
       })
-      .catch((err) => {
-        const error = createErrorLogMessage(err);
-        log(error);
+      .catch(async (err) => {
+        if (currentStep === "upload_photo") {
+          onImageAnalyzeFailure(err);
+        } else if (currentStep === "submit") {
+          showMessage({
+            message: "Error saving sighting info. Please try again.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
         setDisabledNext(false);
         setDisabledBack(false);
       });
-  }, [
-    currentStep,
-    error,
-    getNextStep,
-    processResponse,
-    reportType,
-    router,
-    sightingFormData,
-    sightingsRoute,
-    stepHistory,
-  ]);
+  };
 
   // Update form data
-  const updateSightingData = (field: string, value: string) => {
+  const updateSightingData = useCallback((field: string, value: string) => {
     setSightingFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }, []);
 
   const onImageAnalyzeSuccess = useCallback(
     (data?: AnalysisResponse, publicUrl?: string) => {
@@ -209,45 +201,69 @@ export const WizardForm = () => {
           updateSightingData("breed", petInfo.breed);
         }
 
-        if (petInfo.colors) {
+        if (petInfo.colors && petInfo.colors.length > 0) {
           updateSightingData("colors", petInfo.colors.join(", "));
         }
 
-        if (petInfo.distinctive_features) {
+        if (
+          petInfo.distinctive_features &&
+          petInfo.distinctive_features.length > 0
+        ) {
           updateSightingData(
             "features",
             petInfo.distinctive_features.join(", "),
           );
         }
 
-        if (petInfo.collar_descriptions) {
+        if (
+          petInfo.collar_descriptions &&
+          petInfo.collar_descriptions.length > 0
+        ) {
           updateSightingData(
             "collarDescription",
-            petInfo.collar_descriptions.join(", "),
+            petInfo.collar_descriptions.join(",\n"),
           );
+          updateSightingData("collar", "yes_collar");
         }
 
         if (petInfo.size) {
           updateSightingData("size", petInfo.size);
         }
-
-        // setAiMessage("");
       } else if (data && "note" in data && data.note) {
-        setError(data.note);
-        setAiGenerated(false);
-        updateSightingData("aiMessage", data.note);
+        throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
       }
     },
     [],
   );
 
+  const onImageAnalyzeFailure = async (error: any) => {
+    if (error instanceof FunctionsHttpError) {
+      const errorContext = await error.context.json();
+      if (errorContext.code === "MAX_FILE_SIZE_ERROR") {
+        setErrorMessage("Photo is too large. Please resize.");
+      }
+    } else if (error instanceof Error && error.cause === "NO_PETS_DETECTED") {
+      setErrorMessage("No pets detected in image");
+    } else {
+      setErrorMessage("Failed to process image");
+    }
+
+    setAiGenerated(false);
+    setLoading(false);
+  };
+
   const { analyze } = usePetAnalyzer({
     onSuccess: onImageAnalyzeSuccess,
-    onError: (error: Error) => {
-      log(error.message);
-      setAiGenerated(false);
-    },
   });
+
+  const onResetErrorMessage = () => {
+    setErrorMessage("");
+    setIsValidData(true);
+  };
+
+  const onResetAiGeneratedPhoto = () => {
+    setAiGenerated(false);
+  };
 
   // Render step content
   const renderStep = useCallback(() => {
@@ -271,6 +287,9 @@ export const WizardForm = () => {
             loading={loading}
             setReportType={setReportType}
             isValidData={isValidData}
+            errorMessage={errorMessage}
+            onResetErrorMessage={onResetErrorMessage}
+            onResetAiGeneratedPhoto={onResetAiGeneratedPhoto}
           />
         );
       case "choose_pet":
@@ -371,7 +390,7 @@ export const WizardForm = () => {
           mode="contained"
           onPress={handleNext}
           style={styles.button}
-          disabled={disabledNext || loading}
+          disabled={disabledNext || loading || !!errorMessage}
         >
           {currentStep === "submit" ? "Submit" : "Continue"}
         </Button>

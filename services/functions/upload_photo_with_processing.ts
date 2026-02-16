@@ -8,78 +8,74 @@ interface reqPayload {
   prompt: string;
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = ["image/jpeg"];
+
+function getErrorResponse(error: string, status: number = 400, code?: string) {
+  return new Response(
+    JSON.stringify({
+      error,
+      success: false,
+      code,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status,
+    },
+  );
+}
+
 Deno.serve(async (req: Request) => {
   const { photo, filename, filetype, prompt }: reqPayload = await req.json();
 
   if (!photo || !filename || !filetype || !prompt) {
-    const error = new Error("Missing required parameters");
+    const error = "Missing required parameters";
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    return getErrorResponse(error);
   }
 
-  const photoData = photo.includes(",") ? photo.split(",")[1] : photo;
+  if (!ALLOWED_TYPES.includes(filetype)) {
+    const error = "Invalid file type";
+    return getErrorResponse(error);
+  }
+
+  const base64Regex = /^data:([a-zA-Z0-9+/.-]+);base64,(.+)$/;
+  const match = photo.match(base64Regex);
+
+  if (!match) {
+    const error = "Invalid file format";
+    return getErrorResponse(error);
+  }
+
+  const mimeFromBase64 = match[1];
+  const photoData = match[2];
+
+  if (mimeFromBase64 !== filetype) {
+    const error = "MIME type mismatch";
+    return getErrorResponse(error);
+  }
 
   const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
   if (!geminiApiKey) {
-    const error = new Error(
-      "GOOGLE_GENAI_API_KEY environment variable is not set",
-    );
+    const error = "GOOGLE_GENAI_API_KEY environment variable is not set";
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    return getErrorResponse(error, 500);
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
 
   if (!supabaseUrl) {
-    const error = new Error("SUPABASE_URL environment variable is not set");
+    const error = "SUPABASE_URL environment variable is not set";
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    return getErrorResponse(error, 500);
   }
 
   const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY");
 
   if (!supabaseKey) {
-    const error = new Error(
-      "SUPABASE_ANON_KEY environment variable is not set",
-    );
+    const error = "SUPABASE_ANON_KEY environment variable is not set";
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    return getErrorResponse(error, 500);
   }
 
   let photoPublicUrl = "";
@@ -94,6 +90,11 @@ Deno.serve(async (req: Request) => {
       bytes[i] = binaryString.charCodeAt(i);
     }
 
+    if (bytes.length > MAX_FILE_SIZE) {
+      const error = "File size exceeds max allowed";
+      return getErrorResponse(error, 400, "MAX_FILE_SIZE_ERROR");
+    }
+
     const filePath = `ai_sightings/${filename}`;
     // Upload to Supabase Storage
     const { error } = await supabaseClient.storage
@@ -104,7 +105,9 @@ Deno.serve(async (req: Request) => {
       });
 
     if (error) {
-      throw error;
+      let msg = "Failed to save photo.";
+
+      return getErrorResponse(msg, 500);
     }
 
     // Get public URL
@@ -113,17 +116,9 @@ Deno.serve(async (req: Request) => {
     } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
 
     photoPublicUrl = publicUrl;
-  } catch (error) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to save photo.",
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+  } catch {
+    const error = "Failed to save or get photo.";
+    return getErrorResponse(error, 500);
   }
 
   try {
@@ -155,18 +150,10 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      const responseError = JSON.parse(errorText);
-
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: responseError.error,
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-          status: 200,
-        },
-      );
+      return new Response(errorText, {
+        headers: { "Content-Type": "application/json" },
+        status: 500,
+      });
     }
 
     const responseData = await response.json();
@@ -177,32 +164,14 @@ Deno.serve(async (req: Request) => {
       !responseData.candidates ||
       responseData.candidates.length === 0
     ) {
-      const error = new Error("No response from Gemini API");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error,
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-          status: 200,
-        },
-      );
+      const error = "No response from Gemini API";
+      return getErrorResponse(error, 500);
     }
 
     const textResponse = responseData.candidates[0].content?.parts?.[0].text;
     if (!textResponse) {
-      const error = new Error("Empty response from Gemini API");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error,
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-          status: 200,
-        },
-      );
+      const error = "Empty response from Gemini API";
+      return getErrorResponse(error, 500);
     }
 
     return new Response(
@@ -217,16 +186,6 @@ Deno.serve(async (req: Request) => {
       },
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to process photo.",
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    return getErrorResponse("Failed to process photo", 500);
   }
 });

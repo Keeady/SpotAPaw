@@ -19,6 +19,9 @@ export function UploadPhoto({
   sightingFormData,
   loading,
   isValidData,
+  errorMessage,
+  onResetErrorMessage,
+  onResetAiGeneratedPhoto,
 }: SightingWizardStepData) {
   const router = useRouter();
   const { user } = useContext(AuthContext);
@@ -34,6 +37,11 @@ export function UploadPhoto({
     }
   }, [isValidData]);
 
+  const onReset = () => {
+    onResetErrorMessage?.();
+    onResetAiGeneratedPhoto?.();
+  };
+
   const { photo, photoUrl } = sightingFormData;
 
   return (
@@ -44,14 +52,38 @@ export function UploadPhoto({
       />
       <View style={styles.content}>
         <View style={[styles.verticallySpaced, styles.mb10, styles.mt20]}>
-          <HelperText
-            type="error"
-            visible={hasErrors && !photo && !photoUrl}
-            style={styles.helperText}
-            padding="none"
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            Please add a photo!
-          </HelperText>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 8,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {isAiFeatureEnabled && loading && (
+                <>
+                  <ActivityIndicator size="small" color="#1976d2" />
+                  <Text variant="labelMedium">Analyzing photo with AI...</Text>
+                </>
+              )}
+            </View>
+
+            <HelperText
+              type="error"
+              visible={(hasErrors && !photo && !photoUrl) || !!errorMessage}
+              style={styles.helperText}
+              padding="none"
+            >
+              {!!errorMessage
+                ? errorMessage
+                : hasErrors && !photo && !photoUrl
+                  ? "Please add a photo!"
+                  : ""}
+            </HelperText>
+          </View>
           {sightingFormData.photoUrl ? (
             <Image
               source={{ uri: sightingFormData.photoUrl }}
@@ -71,7 +103,7 @@ export function UploadPhoto({
           <Button
             icon="camera"
             mode="contained"
-            onPress={() => ImagePickerHandler(updateSightingData)}
+            onPress={() => ImagePickerHandler(updateSightingData, onReset)}
             style={{ marginVertical: 10 }}
           >
             {sightingFormData.photoUrl || sightingFormData.photo
@@ -80,47 +112,18 @@ export function UploadPhoto({
           </Button>
 
           <View>
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
               <Icon source={"creation-outline"} size={20} />
-              {isAiFeatureEnabled ? (
-                <Text variant="labelMedium" style={{ flex: 1 }}>
-                  AI will generate a detailed pet description based on this
-                  photo. You can review and edit before submitting.
-                </Text>
-              ) : (
-                <Text variant="labelMedium" style={{ flex: 1 }}>
-                  AI can generate a detailed pet description based on this
-                  photo. You can review and edit before submitting.
-                </Text>
-              )}
+              <Text variant="labelMedium" style={{ flex: 1 }}>
+                AI will fill out a detailed pet description from this photo. You
+                can review and edit before submitting.
+              </Text>
             </View>
 
             <Button mode="text" onPress={() => router.navigate(settingsRoute)}>
-              {isAiFeatureEnabled
-                ? "Manage AI Analysis Settings"
-                : "Enable AI Analysis"}
+              {isAiFeatureEnabled ? "AI Settings" : "Turn AI On"}
             </Button>
           </View>
-          {isAiFeatureEnabled && (
-            <View>
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                {loading && (
-                  <>
-                    <ActivityIndicator size="small" color="#1976d2" />
-                    <Text variant="labelMedium">
-                      Analyzing photo with AI...
-                    </Text>
-                  </>
-                )}
-
-                {!loading && sightingFormData.aiMessage && (
-                  <Text variant="labelMedium">
-                    Note: {sightingFormData.aiMessage}
-                  </Text>
-                )}
-              </View>
-            </View>
-          )}
         </View>
       </View>
     </View>
@@ -188,5 +191,6 @@ const styles = StyleSheet.create({
   },
   helperText: {
     alignSelf: "flex-end",
+    fontWeight: "bold",
   },
 });

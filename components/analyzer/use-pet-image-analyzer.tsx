@@ -4,7 +4,6 @@ import { useCallback, useState } from "react";
 
 interface UsePetAnalyzerOptions {
   onSuccess?: (result?: AnalysisResponse, publicUrl?: string) => void;
-  onError?: (error: Error) => void;
 }
 
 interface UsePetAnalyzerReturn {
@@ -17,7 +16,7 @@ export function usePetAnalyzer(
 ): UsePetAnalyzerReturn {
   const [loading, setLoading] = useState(false);
 
-  const { onSuccess, onError } = options;
+  const { onSuccess } = options;
 
   function createAnalysisPrompt(): string {
     return `Analyze this image and extract detailed information about any pets visible.
@@ -82,39 +81,36 @@ Respond ONLY with valid JSON. Do not include any other text or markdown formatti
     return JSON.parse(cleanText.trim());
   }
 
-  const analyze = useCallback(async (photoUrl: string) => {
-    try {
-      setLoading(true);
-      const prompt = createAnalysisPrompt();
-      const response = await uploadPhotoWithProcessing(photoUrl, prompt);
+  const analyze = useCallback(
+    async (photoUrl: string) => {
+      try {
+        setLoading(true);
+        const prompt = createAnalysisPrompt();
+        const response = await uploadPhotoWithProcessing(photoUrl, prompt);
 
-      if (!response) {
-        return;
+        if (!response) {
+          throw new Error("Failed with no response");
+        }
+
+        const { result, publicUrl } = response;
+
+        if (result) {
+          const data = parseJsonResponse(result);
+          onSuccess?.(data, publicUrl);
+          return;
+        }
+
+        if (publicUrl) {
+          onSuccess?.(undefined, publicUrl);
+        }
+      } catch (error) {
+        throw error;
+      } finally {
+        setLoading(false);
       }
-
-      const { success, result, publicUrl } = response;
-
-      if (success !== true && result && "error" in result) {
-        onError?.(result["error"]);
-        return;
-      }
-
-      if (success === true) {
-        const data = parseJsonResponse(result);
-        onSuccess?.(data, publicUrl);
-        return;
-      }
-
-      if (publicUrl) {
-        onSuccess?.(undefined, publicUrl);
-      }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      onError?.(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [onError, onSuccess]);
+    },
+    [onSuccess],
+  );
 
   return {
     analyze,

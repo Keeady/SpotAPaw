@@ -315,6 +315,8 @@ export function EditPet({
                 updateSightingData("collarDescription", value)
               }
               mode={"outlined"}
+              multiline
+              numberOfLines={3}
             />
           </View>
         )}
