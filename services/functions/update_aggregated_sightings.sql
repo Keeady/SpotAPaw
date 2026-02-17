@@ -64,7 +64,9 @@ BEGIN
       is_active,
       created_at,
       updated_at,
-      owner_id
+      owner_id,
+      reporter_phone,
+      reporter_name
     ) VALUES (
       NEW.id,
       NEW.pet_id,
@@ -84,7 +86,9 @@ BEGIN
       true,
       NOW(),
       NOW(),
-      pet_owner
+      pet_owner,
+      NEW.reporter_phone,
+      NEW.reporter_name
     );
     
   END IF;

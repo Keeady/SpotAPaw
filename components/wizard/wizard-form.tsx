@@ -19,10 +19,7 @@ import { saveNewSighting, saveSightingPhoto } from "./submit-handler";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
 import { SightingReport } from "./wizard-interface";
-import {
-  MAX_FILE_SIZE_ERROR,
-  NO_PETS_DETECTED,
-} from "../constants";
+import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 
 export type SightingWizardSteps =
@@ -95,7 +92,7 @@ export const WizardForm = () => {
   const processResponse = async () => {
     switch (currentStep) {
       case "upload_photo":
-        if (sightingFormData.image && isAiFeatureEnabled && !aiGenerated) {
+        if (sightingFormData.image.uri && isAiFeatureEnabled && !aiGenerated) {
           return analyze(
             sightingFormData.image.uri,
             sightingFormData.image.filename,
@@ -169,6 +166,7 @@ export const WizardForm = () => {
         }
       })
       .catch(async (err) => {
+        console.log("err", err);
         if (currentStep === "upload_photo") {
           await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
@@ -373,7 +371,7 @@ export const WizardForm = () => {
     aiGenerated,
     errorMessage,
     onResetErrorMessage,
-    onResetAiGeneratedPhoto
+    onResetAiGeneratedPhoto,
   ]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, TextInput, HelperText } from "react-native-paper";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import PhoneNumberInput from "../phone-number-util";
@@ -47,15 +47,18 @@ export function AddContact({
         if (data && data.length > 0) {
           updateSightingData("contactName", data[0].firstname);
           updateSightingData("contactPhone", data[0].phone);
-          updateSightingData("contactPhoneCountryCode", data[0].countryCode);
+          updateSightingData("contactPhoneCountryCode", data[0].country_code);
         }
       });
   }, [user?.id, updateSightingData]);
 
-  const handlePhoneNumberChange = (phone: string, countryCode: CountryCode) => {
-    updateSightingData("contactPhoneCountryCode", countryCode);
-    updateSightingData("contactPhone", phone);
-  };
+  const handlePhoneNumberChange = useCallback(
+    (phone: string, countryCode: CountryCode) => {
+      updateSightingData("contactPhoneCountryCode", countryCode);
+      updateSightingData("contactPhone", phone);
+    },
+    [updateSightingData],
+  );
 
   const { contactPhone, contactPhoneCountryCode, contactName } =
     sightingFormData;
