@@ -104,7 +104,6 @@ export const uploadPhotoWithProcessing = async (
   uri: string,
   filename: string,
   filetype: string,
-  prompt: string,
 ) => {
   try {
     const base64Image = await readImageAsBase64(uri);
@@ -115,7 +114,6 @@ export const uploadPhotoWithProcessing = async (
         body: {
           photo: base64Image,
           filename,
-          prompt,
           filetype,
         },
       },
