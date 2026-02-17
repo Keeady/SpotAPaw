@@ -162,7 +162,7 @@ export const WizardForm = () => {
             statusBarHeight: 50,
           });
 
-          router.dismissTo(`/${sightingsRoute}`);
+          router.replace(`/${sightingsRoute}`);
         }
       })
       .catch(async (err) => {

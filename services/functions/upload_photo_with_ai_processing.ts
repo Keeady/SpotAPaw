@@ -30,7 +30,7 @@ For EACH pet in the image, provide the following information in JSON format:
 }
 
 Guidelines:
-- **Species**: The type of animal (dog, cat, bird, rabbit, hamster, etc.)
+- **Species**: The type of animal (dog, cat, bird, rabbit, hamster, horse, etc.)
 - **Breed Identification** (IMPORTANT):
   - Set "breed" to a descriptive format: "[Dominant Breed] mix" or "[Breed 1] [Breed 2] mix"
   - If you can identify 1-2 specific breeds in the mix, name them (e.g., "German Shepherd Husky mix")
