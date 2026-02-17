@@ -1,14 +1,14 @@
+import useUploadPetImageUrl from "@/components/image-upload-handler";
+import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
+import EditPetSightingDetails from "@/components/sightings/sighting-edit";
 import { supabase } from "@/components/supabase-client";
+import { getLastSeenLocation, isValidUuid } from "@/components/util";
 import { Pet } from "@/model/pet";
+import { PetSighting } from "@/model/sighting";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
-import EditPetSightingDetails from "@/components/sightings/sighting-edit";
-import useUploadPetImageUrl from "@/components/image-upload";
-import { PetSighting } from "@/model/sighting";
-import { getLastSeenLocation, isValidUuid } from "@/components/util";
-import { log } from "@/components/logs";
 
 export default function EditPetSighting() {
   const { sightingId, petId } = useLocalSearchParams<{

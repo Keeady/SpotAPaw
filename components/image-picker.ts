@@ -18,6 +18,11 @@ export const ImagePickerHandler = async (
 
   if (result && !result.canceled) {
     handleChange("photoUrl", result.assets[0].uri);
+    handleChange("image", {
+      uri: result.assets[0].uri,
+      filename: result.assets[0].fileName,
+      filetype: result.assets[0].mimeType,
+    } as any);
     callback?.();
   }
 };

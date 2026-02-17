@@ -1,5 +1,6 @@
 import { supabase } from "@/components/supabase-client";
 import { PetSighting } from "@/model/sighting";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -19,17 +20,16 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { pickImage } from "../image-picker";
-import useUploadPetImageUrl from "../image-upload";
-import { getLastSeenLocation, isValidUuid } from "../util";
-import { log } from "../logs";
-import DatePicker from "../date-picker";
-import ShowLocationControls from "../location-util";
-import AppConstants, { SIGHTING_AI_ENABLED_KEY } from "../constants";
-import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import { AnalysisResponse } from "../analyzer/types";
 import AIAnalysisBanner, { AIFieldAnalysisBanner } from "../analyzer/ai-banner";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AnalysisResponse } from "../analyzer/types";
+import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
+import AppConstants, { SIGHTING_AI_ENABLED_KEY } from "../constants";
+import DatePicker from "../date-picker";
+import { pickImage } from "../image-picker";
+import useUploadPetImageUrl from "../image-upload-handler";
+import ShowLocationControls from "../location-util";
+import { log } from "../logs";
+import { getLastSeenLocation, isValidUuid } from "../util";
 
 export default function CreateNewSighting() {
   const theme = useTheme();

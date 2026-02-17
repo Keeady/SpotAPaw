@@ -29,6 +29,7 @@ export const defaultSightingFormData = {
   aiMessage: "",
   collar: "no",
   collarDescription: "",
+  image: {},
 } as SightingReport;
 
 export const validate = (
@@ -81,15 +82,18 @@ export function validateEditPet(
   if (
     reportType === "lost_own" &&
     (!sightingFormData.age ||
-    !sightingFormData.colors ||
-   !sightingFormData.gender ||
-    !sightingFormData.name ||
-    !sightingFormData.size)
+      !sightingFormData.colors ||
+      !sightingFormData.gender ||
+      !sightingFormData.name ||
+      !sightingFormData.size)
   ) {
     isValid = false;
   }
 
-  if (sightingFormData.collar === "yes_collar" && !sightingFormData.collarDescription) {
+  if (
+    sightingFormData.collar === "yes_collar" &&
+    !sightingFormData.collarDescription
+  ) {
     isValid = false;
   }
 
@@ -98,7 +102,7 @@ export function validateEditPet(
 
 export function validateEditPhoto(sightingFormData: SightingReport) {
   let isValid = false;
-  if (sightingFormData.photoUrl || sightingFormData.photo) {
+  if (sightingFormData.image.uri || sightingFormData.photo) {
     isValid = true;
   }
 

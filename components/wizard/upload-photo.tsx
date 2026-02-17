@@ -42,7 +42,7 @@ export function UploadPhoto({
     onResetAiGeneratedPhoto?.();
   };
 
-  const { photo, photoUrl } = sightingFormData;
+  const { photo, image } = sightingFormData;
 
   return (
     <View>
@@ -73,20 +73,20 @@ export function UploadPhoto({
 
             <HelperText
               type="error"
-              visible={(hasErrors && !photo && !photoUrl) || !!errorMessage}
+              visible={(hasErrors && !photo && !image.uri) || !!errorMessage}
               style={styles.helperText}
               padding="none"
             >
               {!!errorMessage
                 ? errorMessage
-                : hasErrors && !photo && !photoUrl
+                : hasErrors && !photo && !image.uri
                   ? "Please add a photo!"
                   : ""}
             </HelperText>
           </View>
-          {sightingFormData.photoUrl ? (
+          {sightingFormData.image.uri ? (
             <Image
-              source={{ uri: sightingFormData.photoUrl }}
+              source={{ uri: sightingFormData.image.uri }}
               style={styles.preview}
             />
           ) : sightingFormData.photo ? (
@@ -106,7 +106,7 @@ export function UploadPhoto({
             onPress={() => ImagePickerHandler(updateSightingData, onReset)}
             style={{ marginVertical: 10 }}
           >
-            {sightingFormData.photoUrl || sightingFormData.photo
+            {sightingFormData.image.uri || sightingFormData.photo
               ? "Change Photo"
               : "Upload Photo"}
           </Button>

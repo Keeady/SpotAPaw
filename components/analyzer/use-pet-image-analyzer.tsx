@@ -1,13 +1,13 @@
-import type { AnalysisResponse } from "./types";
-import { uploadPhotoWithProcessing } from "../image-upload";
 import { useCallback, useState } from "react";
+import { uploadPhotoWithProcessing } from "../image-upload-handler";
+import type { AnalysisResponse } from "./types";
 
 interface UsePetAnalyzerOptions {
   onSuccess?: (result?: AnalysisResponse, publicUrl?: string) => void;
 }
 
 interface UsePetAnalyzerReturn {
-  analyze: (photoUrl: string) => Promise<void>;
+  analyze: (uri: string, filename: string, filetype: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -82,11 +82,16 @@ Respond ONLY with valid JSON. Do not include any other text or markdown formatti
   }
 
   const analyze = useCallback(
-    async (photoUrl: string) => {
+    async (uri: string, filename: string, filetype: string) => {
       try {
         setLoading(true);
         const prompt = createAnalysisPrompt();
-        const response = await uploadPhotoWithProcessing(photoUrl, prompt);
+        const response = await uploadPhotoWithProcessing(
+          uri,
+          filename,
+          filetype,
+          prompt,
+        );
 
         if (!response) {
           throw new Error("Failed with no response");

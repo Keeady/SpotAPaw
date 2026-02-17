@@ -20,7 +20,6 @@ export function EditPet({
   const [hasErrors, setHasErrors] = useState(false);
 
   const {
-    photoUrl,
     photo,
     colors,
     species,
@@ -34,6 +33,7 @@ export function EditPet({
     petBehavior,
     collar,
     collarDescription,
+    image
   } = sightingFormData;
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export function EditPet({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={photoUrl || photo}
+          petPhoto={image.uri || photo}
         />
         <View style={[styles.verticallySpaced, styles.mt10]}>
           <View

@@ -1,24 +1,29 @@
+import { FunctionsHttpError } from "@supabase/supabase-js";
+import { useRouter } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView, Keyboard } from "react-native";
+import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
-import { UploadPhoto } from "./upload-photo";
-import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
 import { AnalysisResponse } from "../analyzer/types";
-import { Step1 } from "./start";
-import { SightingReport } from "./wizard-interface";
+import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
+import useUploadPetImageUrl from "../image-upload-handler";
+import { useAIFeatureContext } from "../Provider/ai-context-provider";
+import { AuthContext } from "../Provider/auth-provider";
+import { AddContact } from "./add-contact";
+import { AddTime } from "./add-time";
 import { ChoosePet } from "./choose-pet";
 import { EditPet } from "./edit-pet";
-import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { LocatePet } from "./locate-pet";
-import { defaultSightingFormData, validate } from "./util";
-import { AddTime } from "./add-time";
-import { AddContact } from "./add-contact";
-import useUploadPetImageUrl from "../image-upload";
+import { Step1 } from "./start";
 import { saveNewSighting, saveSightingPhoto } from "./submit-handler";
-import { showMessage } from "react-native-flash-message";
-import { useRouter } from "expo-router";
-import { AuthContext } from "../Provider/auth-provider";
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import { UploadPhoto } from "./upload-photo";
+import { defaultSightingFormData, validate } from "./util";
+import { SightingReport } from "./wizard-interface";
+import {
+  MAX_FILE_SIZE_ERROR,
+  NO_PETS_DETECTED,
+} from "../constants";
+import { log } from "../logs";
 
 export type SightingWizardSteps =
   | "start"
@@ -90,8 +95,12 @@ export const WizardForm = () => {
   const processResponse = async () => {
     switch (currentStep) {
       case "upload_photo":
-        if (sightingFormData.photoUrl && isAiFeatureEnabled && !aiGenerated) {
-          return analyze(sightingFormData.photoUrl);
+        if (sightingFormData.image && isAiFeatureEnabled && !aiGenerated) {
+          return analyze(
+            sightingFormData.image.uri,
+            sightingFormData.image.filename,
+            sightingFormData.image.filetype,
+          );
         }
 
         return Promise.resolve();
@@ -161,7 +170,7 @@ export const WizardForm = () => {
       })
       .catch(async (err) => {
         if (currentStep === "upload_photo") {
-          onImageAnalyzeFailure(err);
+          await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
           showMessage({
             message: "Error saving sighting info. Please try again.",
@@ -239,13 +248,21 @@ export const WizardForm = () => {
   const onImageAnalyzeFailure = async (error: any) => {
     if (error instanceof FunctionsHttpError) {
       const errorContext = await error.context.json();
-      if (errorContext.code === "MAX_FILE_SIZE_ERROR") {
-        setErrorMessage("Photo is too large. Please resize.");
+      if (errorContext.code === MAX_FILE_SIZE_ERROR) {
+        setErrorMessage("Photo is too large");
       }
-    } else if (error instanceof Error && error.cause === "NO_PETS_DETECTED") {
-      setErrorMessage("No pets detected in image");
+      log(errorContext.message);
+    } else if (error instanceof Error) {
+      if (error.cause === NO_PETS_DETECTED) {
+        setErrorMessage("No pets detected in image");
+      } else if (error.cause === MAX_FILE_SIZE_ERROR) {
+        setErrorMessage("Photo is too large");
+      }
+
+      log(error.message);
     } else {
       setErrorMessage("Failed to process image");
+      log("Failed to process image");
     }
 
     setAiGenerated(false);

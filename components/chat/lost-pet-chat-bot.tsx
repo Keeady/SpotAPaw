@@ -1,38 +1,38 @@
+import { AuthContext } from "@/components/Provider/auth-provider";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { isPossiblePhoneNumber } from "libphonenumber-js";
 import React, {
-  useState,
+  useCallback,
+  useContext,
   useEffect,
   useRef,
-  useContext,
-  useCallback,
+  useState,
 } from "react";
 import {
-  View,
-  ScrollView,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   TextInput as RNTextInput,
-  Keyboard,
+  ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
 import { Button, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import {
   getCurrentUserLocationV3,
   SightingLocation,
 } from "../get-current-location";
-import { AuthContext } from "@/components/Provider/auth-provider";
-import { saveChatBotSighting } from "../sightings/sightings-crud";
-import { PetReportData } from "../sightings/sighting-interface";
 import {
   requestCameraPermission,
   requestMediaLibraryPermission,
   uploadOrTakePhoto,
 } from "../image-picker";
-import useUploadPetImageUrl from "../image-upload";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import useUploadPetImageUrl from "../image-upload-handler";
 import { log } from "../logs";
 import DropPinOnMap from "../map-util";
+import { PetReportData } from "../sightings/sighting-interface";
+import { saveChatBotSighting } from "../sightings/sightings-crud";
 import { supabase } from "../supabase-client";
-import { isPossiblePhoneNumber } from "libphonenumber-js";
 
 type ChatBotActionButton = {
   label: string;
@@ -190,7 +190,7 @@ const LostPetChatbot = () => {
   const addBotMessage = (
     text: string,
     quickReplies: ChatBotQuickReplies[] = [],
-    actionButton?: ChatBotActionButton
+    actionButton?: ChatBotActionButton,
   ) => {
     setMessages((prev) => [
       ...prev,
@@ -260,11 +260,11 @@ const LostPetChatbot = () => {
           gender: pet.gender,
           ownerId: user?.id,
           photo: pet.photo,
-          is_lost: pet.is_lost
+          is_lost: pet.is_lost,
         };
       }
     },
-    [pets, user?.id]
+    [pets, user?.id],
   );
 
   const showBehaviorWarningMsg = useCallback(() => {
@@ -273,8 +273,8 @@ const LostPetChatbot = () => {
         reportData.petBehavior === "injured"
           ? " Note: Since the pet appears injured, please consider contacting local animal control or a vet."
           : reportData.petBehavior === "aggressive"
-          ? " Note: Since the pet seems defensive, please keep a safe distance."
-          : "";
+            ? " Note: Since the pet seems defensive, please keep a safe distance."
+            : "";
 
       if (behaviorWarning) {
         addBotMessage(`${behaviorWarning}`);
@@ -291,7 +291,7 @@ const LostPetChatbot = () => {
           label: "Share My Location",
           icon: "crosshairs-gps",
           action: "shareLocation",
-        }
+        },
       );
     }, 500);
   }, []);
@@ -326,7 +326,7 @@ const LostPetChatbot = () => {
           label: "Take Photo",
           icon: "camera",
           action: "uploadPhoto",
-        }
+        },
       );
     }, 500);
   }, []);
@@ -340,7 +340,7 @@ const LostPetChatbot = () => {
             setTimeout(() => {
               addBotMessage(
                 "I'm so sorry to hear your pet is missing. Which of your pets is missing?",
-                getMissingPetReplies()
+                getMissingPetReplies(),
               );
             }, 500);
           } else {
@@ -352,7 +352,7 @@ const LostPetChatbot = () => {
                   { text: "Dog", value: "Dog" },
                   { text: "Cat", value: "Cat" },
                   { text: "Other", value: "Other" },
-                ]
+                ],
               );
             }, 500);
           }
@@ -365,7 +365,7 @@ const LostPetChatbot = () => {
                 { text: "Dog", value: "Dog" },
                 { text: "Cat", value: "Cat" },
                 { text: "Other", value: "Other" },
-              ]
+              ],
             );
           }, 500);
         }
@@ -394,7 +394,7 @@ const LostPetChatbot = () => {
                 label: "Share My Location",
                 icon: "crosshairs-gps",
                 action: "shareLocation",
-              }
+              },
             );
           }, 500);
           break;
@@ -414,7 +414,7 @@ const LostPetChatbot = () => {
         setCurrentStep("foundBreed");
         setTimeout(() => {
           addBotMessage(
-            "Can you describe the pet's breed or what they look like?"
+            "Can you describe the pet's breed or what they look like?",
           );
         }, 500);
         break;
@@ -424,7 +424,7 @@ const LostPetChatbot = () => {
         setCurrentStep("foundColor");
         setTimeout(() => {
           addBotMessage(
-            "What color is the pet? Include any markings or patterns."
+            "What color is the pet? Include any markings or patterns.",
           );
         }, 500);
         break;
@@ -453,7 +453,7 @@ const LostPetChatbot = () => {
               { text: "Yes, has harness", value: "yes_collar" },
               { text: "Yes, has tags", value: "yes_tags" },
               { text: "None", value: "no" },
-            ]
+            ],
           );
         }, 500);
         break;
@@ -464,7 +464,7 @@ const LostPetChatbot = () => {
           setCurrentStep("collarDescription");
           setTimeout(() => {
             addBotMessage(
-              "Please describe (colors, numbers, markings, brand, etc.)"
+              "Please describe (colors, numbers, markings, brand, etc.)",
             );
           }, 500);
         } else {
@@ -499,7 +499,7 @@ const LostPetChatbot = () => {
         setCurrentStep("foundFeatures");
         setTimeout(() => {
           addBotMessage(
-            "Any distinctive features? (unique markings, scars, missing teeth, etc.)"
+            "Any distinctive features? (unique markings, scars, missing teeth, etc.)",
           );
         }, 500);
 
@@ -530,7 +530,7 @@ const LostPetChatbot = () => {
                 label: "Share Photo",
                 icon: "image",
                 action: "uploadPhoto",
-              }
+              },
             );
           }, 500);
         }
@@ -547,7 +547,7 @@ const LostPetChatbot = () => {
                 icon: "map",
                 action: "closeMap",
                 showMap: true,
-              }
+              },
             );
           }, 500);
         } else if (
@@ -559,7 +559,7 @@ const LostPetChatbot = () => {
             setCurrentStep("typedLocation");
             setTimeout(() => {
               addBotMessage(
-                "Please type the address or area where you found the pet."
+                "Please type the address or area where you found the pet.",
               );
             }, 500);
           } else if (response === "location_shared") {
@@ -592,7 +592,7 @@ const LostPetChatbot = () => {
         setCurrentStep("typedLandmark");
         setTimeout(() => {
           addBotMessage(
-            "Please describe any landmarks around where you found the pet."
+            "Please describe any landmarks around where you found the pet.",
           );
         }, 500);
 
@@ -619,7 +619,7 @@ const LostPetChatbot = () => {
         setCurrentStep("foundNotes");
         setTimeout(() => {
           addBotMessage(
-            "Please provide any additional details you would like to add:"
+            "Please provide any additional details you would like to add:",
           );
         }, 500);
         break;
@@ -630,7 +630,7 @@ const LostPetChatbot = () => {
         setTimeout(() => {
           addBotMessage(
             "What's the best phone number for the owner to reach you?",
-            getContactInfoReplies()
+            getContactInfoReplies(),
           );
         }, 500);
 
@@ -647,9 +647,10 @@ const LostPetChatbot = () => {
           if (!isValid) {
             setCurrentStep("foundPhone");
             setTimeout(() => {
-              addBotMessage("Please enter a valid phone number with country code", [
-                { text: "Skip", value: "Skip" },
-              ]);
+              addBotMessage(
+                "Please enter a valid phone number with country code",
+                [{ text: "Skip", value: "Skip" }],
+              );
             }, 500);
             return;
           }
@@ -681,7 +682,7 @@ const LostPetChatbot = () => {
         setCurrentStep("breed");
         setTimeout(() => {
           addBotMessage(
-            `Got it. What breed is ${response}? (If mixed or unknown, just describe them)`
+            `Got it. What breed is ${response}? (If mixed or unknown, just describe them)`,
           );
         }, 500);
         break;
@@ -691,7 +692,7 @@ const LostPetChatbot = () => {
         setCurrentStep("color");
         setTimeout(() => {
           addBotMessage(
-            "What color(s) is your pet? Include any markings or patterns."
+            "What color(s) is your pet? Include any markings or patterns.",
           );
         }, 500);
         break;
@@ -720,7 +721,7 @@ const LostPetChatbot = () => {
               label: "Upload Photo",
               icon: "camera",
               action: "uploadPhoto",
-            }
+            },
           );
         }, 500);
         break;
@@ -736,13 +737,13 @@ const LostPetChatbot = () => {
           setCurrentStep("features");
           setTimeout(() => {
             addBotMessage(
-              "Are there any distinctive features that would help identify your pet? (scars, collar, tags, unique markings, etc.)"
+              "Are there any distinctive features that would help identify your pet? (scars, collar, tags, unique markings, etc.)",
             );
           }, 500);
         } else if (response === "will_upload") {
           setTimeout(() => {
             addBotMessage(
-              "Great! Please use the button above to upload the photo, or type 'skip' to continue without one."
+              "Great! Please use the button above to upload the photo, or type 'skip' to continue without one.",
             );
           }, 500);
         }
@@ -767,7 +768,7 @@ const LostPetChatbot = () => {
           setCurrentStep("collarTagHarnessDescription");
           setTimeout(() => {
             addBotMessage(
-              "Please describe (colors, numbers, markings, brand, etc.)"
+              "Please describe (colors, numbers, markings, brand, etc.)",
             );
           }, 500);
         } else {
@@ -817,7 +818,7 @@ const LostPetChatbot = () => {
               label: "Share My Location",
               icon: "crosshairs-gps",
               action: "shareLocation",
-            }
+            },
           );
         }, 500);
         break;
@@ -833,7 +834,7 @@ const LostPetChatbot = () => {
                 icon: "map",
                 action: "closeMap",
                 showMap: true,
-              }
+              },
             );
           }, 500);
         } else if (
@@ -844,7 +845,7 @@ const LostPetChatbot = () => {
           if (response === "will_type") {
             setTimeout(() => {
               addBotMessage(
-                "Please type the address or area where your pet was last seen."
+                "Please type the address or area where your pet was last seen.",
               );
             }, 500);
           } else if (response === "location_shared") {
@@ -879,7 +880,7 @@ const LostPetChatbot = () => {
         setCurrentStep("notes");
         setTimeout(() => {
           addBotMessage(
-            "Please provide any additional details you would like to add:"
+            "Please provide any additional details you would like to add:",
           );
         }, 500);
         break;
@@ -890,7 +891,7 @@ const LostPetChatbot = () => {
         setTimeout(() => {
           addBotMessage(
             "What's the best phone number to reach you at? Select or provide a new one:",
-            getContactInfoReplies()
+            getContactInfoReplies(),
           );
         }, 500);
         break;
@@ -907,9 +908,10 @@ const LostPetChatbot = () => {
           if (!isValid) {
             setCurrentStep("phone");
             setTimeout(() => {
-              addBotMessage("Please enter a valid phone number with country code", [
-                { text: "Skip", value: "Skip" },
-              ]);
+              addBotMessage(
+                "Please enter a valid phone number with country code",
+                [{ text: "Skip", value: "Skip" }],
+              );
             }, 500);
             return;
           }
@@ -982,7 +984,7 @@ const LostPetChatbot = () => {
                           value: `view_report-${linkedSightingId ?? reportId}`,
                         },
                         { text: "Done", value: "done" },
-                      ]
+                      ],
                     );
                   }, 500);
                 } else {
@@ -995,14 +997,14 @@ const LostPetChatbot = () => {
                           value: `view_report-${linkedSightingId ?? reportId}`,
                         },
                         { text: "Done", value: "done" },
-                      ]
+                      ],
                     );
                   }, 500);
                 }
               }
             }
           },
-          user?.id
+          user?.id,
         );
         break;
       default:
@@ -1041,7 +1043,7 @@ const LostPetChatbot = () => {
             label: "Enable location sharing",
             icon: "map-marker",
             action: "enableLocation",
-          }
+          },
         );
       }
     } else if (action === "closeMap") {
@@ -1084,7 +1086,7 @@ const LostPetChatbot = () => {
           log(`getCurrentUserLocationV3: ${err.message}`);
           addBotMessage(
             "Unable to get your location. Please type the address instead.",
-            [{ text: "I'll type it", value: "will_type" }]
+            [{ text: "I'll type it", value: "will_type" }],
           );
         });
     }
@@ -1182,8 +1184,8 @@ const LostPetChatbot = () => {
                         setSelectedLocation(location);
                         addUserMessage(
                           `📍 Pin dropped at (${location.lat.toFixed(
-                            6
-                          )}, ${location.lng.toFixed(6)})`
+                            6,
+                          )}, ${location.lng.toFixed(6)})`,
                         );
 
                         setReportData((prev) => ({

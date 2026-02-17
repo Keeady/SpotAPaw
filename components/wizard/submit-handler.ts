@@ -10,8 +10,8 @@ export async function saveSightingPhoto(
     callback: (uri: string, error?: string) => void,
   ) => Promise<void>,
 ) {
-  if (sightingFormData.photoUrl) {
-    await uploadImage(sightingFormData.photoUrl, (photo: string) =>
+  if (sightingFormData.image.uri) {
+    await uploadImage(sightingFormData.image.uri, (photo: string) =>
       saveNewSighting(photo, sightingFormData),
     );
   } else {
@@ -47,11 +47,8 @@ export async function saveNewSighting(
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     payload.pet_id = sightingFormData.id;
   }
-  
-  return await supabase
-    .from("sightings")
-    .insert([payload])
-    .select("id");
+
+  return await supabase.from("sightings").insert([payload]).select("id");
 }
 
 function saveNotes(report: SightingReport) {

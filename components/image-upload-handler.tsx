@@ -3,9 +3,15 @@ import { useCallback, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "./Provider/auth-provider";
 import { supabase } from "./supabase-client";
-import AppConstant from "./constants";
+import AppConstant, {
+  MAX_FILE_SIZE_ERROR,
+  UNSUPPORTED_MIME_TYPE,
+} from "./constants";
 import { log } from "./logs";
 import { createErrorLogMessage } from "./util";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 
 export default function useUploadPetImageUrl() {
   const SUPABASE_URL = AppConstant.EXPO_PUBLIC_SUPABASE_URL;
@@ -69,6 +75,18 @@ async function readImageAsBase64(uri: string): Promise<string> {
   try {
     const response = await fetch(uri);
     const blob = await response.blob();
+
+    if (blob.size > MAX_FILE_SIZE) {
+      throw new Error("File exceeds max size", {
+        cause: MAX_FILE_SIZE_ERROR,
+      });
+    }
+
+    if (!ALLOWED_TYPES.includes(blob.type)) {
+      throw new Error("Unsupported file type", {
+        cause: UNSUPPORTED_MIME_TYPE,
+      });
+    }
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -78,12 +96,14 @@ async function readImageAsBase64(uri: string): Promise<string> {
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    throw new Error(`Failed to read image: ${error}`);
+    throw error;
   }
 }
 
 export const uploadPhotoWithProcessing = async (
   uri: string,
+  filename: string,
+  filetype: string,
   prompt: string,
 ) => {
   try {
@@ -94,9 +114,9 @@ export const uploadPhotoWithProcessing = async (
       {
         body: {
           photo: base64Image,
-          filename: `photo-${uuidv4()}.jpg`,
+          filename,
           prompt,
-          filetype: "image/jpeg",
+          filetype,
         },
       },
     );
