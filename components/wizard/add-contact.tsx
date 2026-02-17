@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, TextInput, HelperText } from "react-native-paper";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import PhoneNumberInput from "../phone-number-util";
@@ -16,7 +16,7 @@ export function AddContact({
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    if (user && user.user_metadata) {
+    if (user?.user_metadata) {
       if (user.user_metadata["firstName"]) {
         updateSightingData("contactName", user.user_metadata["firstName"]);
       }

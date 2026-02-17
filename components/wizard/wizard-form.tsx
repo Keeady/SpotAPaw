@@ -271,14 +271,14 @@ export const WizardForm = () => {
     onSuccess: onImageAnalyzeSuccess,
   });
 
-  const onResetErrorMessage = () => {
+  const onResetErrorMessage = useCallback(() => {
     setErrorMessage("");
     setIsValidData(true);
-  };
+  }, []);
 
-  const onResetAiGeneratedPhoto = () => {
+  const onResetAiGeneratedPhoto = useCallback(() => {
     setAiGenerated(false);
-  };
+  }, []);
 
   // Render step content
   const renderStep = useCallback(() => {
@@ -372,6 +372,7 @@ export const WizardForm = () => {
     errorMessage,
     onResetErrorMessage,
     onResetAiGeneratedPhoto,
+    updateSightingData,
   ]);
 
   useEffect(() => {
