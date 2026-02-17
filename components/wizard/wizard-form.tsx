@@ -242,7 +242,7 @@ export const WizardForm = () => {
         throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
       }
     },
-    [],
+    [updateSightingData],
   );
 
   const onImageAnalyzeFailure = async (error: any) => {
@@ -371,6 +371,9 @@ export const WizardForm = () => {
     isValidData,
     reportType,
     aiGenerated,
+    errorMessage,
+    onResetErrorMessage,
+    onResetAiGeneratedPhoto
   ]);
 
   useEffect(() => {

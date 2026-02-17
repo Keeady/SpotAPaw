@@ -177,7 +177,7 @@ const SettingsScreen = () => {
 
   const handleToggleAIFeature = async (value: boolean) => {
     setAIFeatureEnabled(value);
-    saveAIFeatureContext?.(value)
+    saveAIFeatureContext?.(value);
   };
 
   const handleDistanceChange = async (value: string) => {

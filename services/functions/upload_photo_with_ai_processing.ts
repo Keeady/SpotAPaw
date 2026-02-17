@@ -122,7 +122,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const AiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
+    const AiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 
     const payload = JSON.stringify({
       contents: [
@@ -144,6 +144,7 @@ Deno.serve(async (req: Request) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": geminiApiKey
       },
       body: payload,
     });
@@ -185,7 +186,7 @@ Deno.serve(async (req: Request) => {
         status: 200,
       },
     );
-  } catch (error) {
+  } catch {
     return getErrorResponse("Failed to process photo", 500);
   }
 });
