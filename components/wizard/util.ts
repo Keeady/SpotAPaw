@@ -58,10 +58,7 @@ export const validate = (
       isValid = validateLastSeen(sightingFormData);
       break;
     case "submit":
-      isValid = isValidPhoneNumber(
-        sightingFormData.contactPhone,
-        sightingFormData.contactPhoneCountryCode as CountryCode,
-      );
+      isValid = validateAddContact(sightingFormData);
       break;
     default:
       isValid = true;
@@ -69,6 +66,19 @@ export const validate = (
 
   return isValid;
 };
+
+function validateAddContact(sightingFormData: SightingReport) {
+  let isValid = false;
+  if (!sightingFormData.contactPhone) {
+    isValid = true;
+  } else {
+    isValid = isValidPhoneNumber(
+      sightingFormData.contactPhone,
+      sightingFormData.contactPhoneCountryCode as CountryCode,
+    );
+  }
+  return isValid;
+}
 
 export function validateEditPet(
   sightingFormData: SightingReport,
