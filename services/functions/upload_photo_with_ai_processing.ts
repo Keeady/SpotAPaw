@@ -10,22 +10,7 @@ interface reqPayload {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
-  return new Response(
-    JSON.stringify({
-      error,
-      success: false,
-      code,
-    }),
-    {
-      headers: { "Content-Type": "application/json" },
-      status,
-    },
-  );
-}
-
-function createAnalysisPrompt(): string {
-  return `Analyze this image and extract detailed information about any pets visible.
+const prompt = `Analyze this image and extract detailed information about any pets visible.
 
 For EACH pet in the image, provide the following information in JSON format:
 {
@@ -68,6 +53,19 @@ If NO pets are visible in the image, return:
 }
 
 Respond ONLY with valid JSON. Do not include any other text or markdown formatting.`;
+
+function getErrorResponse(error: string, status: number = 400, code?: string) {
+  return new Response(
+    JSON.stringify({
+      error,
+      success: false,
+      code,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status,
+    },
+  );
 }
 
 Deno.serve(async (req: Request) => {
@@ -167,7 +165,6 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const prompt = createAnalysisPrompt();
     const AiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 
     const payload = JSON.stringify({
