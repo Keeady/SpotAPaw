@@ -9,7 +9,6 @@ import {
 } from "@/components/get-current-location";
 import {
   PREFERRED_LANGUAGE,
-  SIGHTING_AI_ENABLED_KEY,
   SIGHTING_DISTANCE_KEY,
   SIGHTING_LOCATION_KEY,
   SIGHTING_NOTIFICATION_ENABLED_KEY,
@@ -30,6 +29,7 @@ import { onDeleteAccount } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { useRouter } from "expo-router";
 import { PermissionContext } from "./Provider/permission-provider";
+import { useAIFeatureContext } from "./Provider/ai-context-provider";
 
 const SettingsScreen = () => {
   // Define color scheme for icons
@@ -98,6 +98,8 @@ const SettingsScreen = () => {
   const { getSavedLocation, enabledLocationPermission } =
     useContext(PermissionContext);
 
+  const { isAiFeatureEnabled, saveAIFeatureContext } = useAIFeatureContext();
+
   const loadSettings = useCallback(async () => {
     try {
       setLocationLoading(true);
@@ -122,8 +124,8 @@ const SettingsScreen = () => {
       setNotificationsEnabled(notifications === "true");
 
       // Load AI settings
-      const aiFeature = await AsyncStorage.getItem(SIGHTING_AI_ENABLED_KEY);
-      setAIFeatureEnabled(aiFeature === "true" || aiFeature === null);
+      // const aiFeature = await AsyncStorage.getItem(SIGHTING_AI_ENABLED_KEY);
+      setAIFeatureEnabled(!!isAiFeatureEnabled);
 
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
       setDefaultDistance(distance || "5");
@@ -131,7 +133,7 @@ const SettingsScreen = () => {
     } finally {
       setLocationLoading(false);
     }
-  }, [getSavedLocation]);
+  }, [getSavedLocation, isAiFeatureEnabled]);
 
   useEffect(() => {
     loadSettings();
@@ -175,7 +177,7 @@ const SettingsScreen = () => {
 
   const handleToggleAIFeature = async (value: boolean) => {
     setAIFeatureEnabled(value);
-    await AsyncStorage.setItem(SIGHTING_AI_ENABLED_KEY, value.toString());
+    saveAIFeatureContext?.(value);
   };
 
   const handleDistanceChange = async (value: string) => {

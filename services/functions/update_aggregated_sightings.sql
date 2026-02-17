@@ -56,13 +56,17 @@ BEGIN
       gender,
       colors,
       breed,
+      size,
       species,
       features,
+      collar_description,
       name,
       is_active,
       created_at,
       updated_at,
-      owner_id
+      owner_id,
+      reporter_phone,
+      reporter_name
     ) VALUES (
       NEW.id,
       NEW.pet_id,
@@ -74,17 +78,22 @@ BEGIN
       NEW.gender,
       NEW.colors,
       NEW.breed,
+      NEW.size,
       NEW.species,
       NEW.features,
+      NEW.collar_description,
       sighting_name,
       true,
       NOW(),
       NOW(),
-      pet_owner
+      pet_owner,
+      NEW.reporter_phone,
+      NEW.reporter_name
     );
     
   END IF;
   
   RETURN NEW;
 END;
+
 $$ LANGUAGE plpgsql SECURITY DEFINER;

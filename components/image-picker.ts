@@ -3,13 +3,13 @@ import { Alert, Linking } from "react-native";
 import { log } from "./logs";
 
 export const ImagePickerHandler = async (
-  handleChange: (f: string, v: string) => void
+  handleChange: (f: string, v: string) => void,
+  callback?: () => void,
 ) => {
   // No permissions request is necessary for launching the image library
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
-    aspect: [4, 3],
     quality: 1,
   }).catch((err) => {
     log(`launchImageLibraryAsync: ${err.message}`);
@@ -18,11 +18,17 @@ export const ImagePickerHandler = async (
 
   if (result && !result.canceled) {
     handleChange("photoUrl", result.assets[0].uri);
+    handleChange("image", {
+      uri: result.assets[0].uri,
+      filename: result.assets[0].fileName,
+      filetype: result.assets[0].mimeType,
+    } as any);
+    callback?.();
   }
 };
 
 export const pickImage = async (
-  setPhoto?: React.Dispatch<React.SetStateAction<string>>
+  setPhoto?: React.Dispatch<React.SetStateAction<string>>,
 ): Promise<string | null> => {
   // No permissions request is necessary for launching the image library
   let result = await ImagePicker.launchImageLibraryAsync({
@@ -46,7 +52,7 @@ export const pickImage = async (
 };
 
 export const takePhoto = async (
-  setPhoto?: React.Dispatch<React.SetStateAction<string>>
+  setPhoto?: React.Dispatch<React.SetStateAction<string>>,
 ): Promise<string | null> => {
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images", "livePhotos"],
@@ -94,7 +100,7 @@ export const requestCameraPermission = async () => {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
+      ],
     );
     return false;
   }
@@ -118,7 +124,7 @@ export const requestMediaLibraryPermission = async () => {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
+      ],
     );
     return false;
   }
@@ -127,7 +133,7 @@ export const requestMediaLibraryPermission = async () => {
 };
 
 export const uploadOrTakePhoto = async (
-  callback: (uri: string | null) => void
+  callback: (uri: string | null) => void,
 ): Promise<void> => {
   Alert.alert("Add Photo", "Choose an option", [
     { text: "Cancel", style: "cancel" },

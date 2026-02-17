@@ -9,6 +9,7 @@ import styles from "@/components/layout.style";
 import { handleSignIn } from "@/components/util";
 import { PermissionProvider } from "@/components/Provider/permission-provider";
 import { AppLifecycleProvider } from "@/components/Provider/app-lifecycle-provider";
+import { AIFeatureContextProvider } from "@/components/Provider/ai-context-provider";
 
 export default function Layout() {
   const router = useRouter();
@@ -71,6 +72,7 @@ export default function Layout() {
     <PaperProvider theme={MD3LightTheme}>
       <AuthProvider>
         <PermissionProvider>
+          <AIFeatureContextProvider>
           <AppLifecycleProvider>
             <Stack
               screenOptions={{
@@ -101,6 +103,7 @@ export default function Layout() {
             </Stack>
             <FlashMessage position="top" duration={5000} />
           </AppLifecycleProvider>
+          </AIFeatureContextProvider>
         </PermissionProvider>
       </AuthProvider>
     </PaperProvider>

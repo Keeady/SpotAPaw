@@ -1,22 +1,31 @@
 import { Button, Card, Text } from "react-native-paper";
-import { StyleSheet } from "react-native";
+import { StyleSheet, useWindowDimensions } from "react-native";
 import MapView, {
   MapPressEvent,
   Marker,
   PROVIDER_GOOGLE,
 } from "react-native-maps";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { SightingLocation } from "./get-current-location";
+
+type Pin = {
+  latitude: number;
+  longitude: number;
+  title: string;
+};
 
 type DropPinOnMapProps = {
   currentLocation?: SightingLocation;
   handleActionButton: (location?: SightingLocation) => void;
+  pins?: Pin[];
 };
 
 export default function DropPinOnMap({
   currentLocation,
   handleActionButton,
+  pins,
 }: DropPinOnMapProps) {
+  const { width } = useWindowDimensions();
   const [disabled, setDisabled] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     latitude: number;
@@ -36,10 +45,29 @@ export default function DropPinOnMap({
     setDisabled(false);
   };
 
+  const renderMarkerPins = useCallback(() => {
+    if (pins && pins.length > 0) {
+      return pins.map(
+        (pin, i) =>
+          pin.latitude &&
+          pin.longitude && (
+            <Marker
+              key={i}
+              coordinate={{
+                latitude: pin.latitude,
+                longitude: pin.longitude,
+              }}
+              title={pin.title}
+            />
+          ),
+      );
+    }
+  }, [pins]);
+
   return (
     <Card style={styles.mapCard}>
       <MapView
-        style={styles.map}
+        style={{ width, height: 350 }}
         region={initialRegion}
         onPress={handleMapPress}
         provider={PROVIDER_GOOGLE}
@@ -52,6 +80,7 @@ export default function DropPinOnMap({
             pinColor="red"
           />
         )}
+        {pins && renderMarkerPins()}
       </MapView>
       <Card.Content style={styles.mapFooter}>
         <Text style={styles.mapFooterText}>
@@ -80,7 +109,7 @@ export default function DropPinOnMap({
 
 const styles = StyleSheet.create({
   mapCard: {
-    width: 320,
+    marginHorizontal: 10,
     marginTop: 8,
     alignSelf: "center",
   },

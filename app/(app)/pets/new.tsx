@@ -1,4 +1,4 @@
-import useUploadPetImageUrl from "@/components/image-upload";
+import useUploadPetImageUrl from "@/components/image-upload-handler";
 import CreatePetDetails from "@/components/pets/pet-create";
 import { createNewPet } from "@/components/pets/pet-crud";
 import { AuthContext } from "@/components/Provider/auth-provider";
@@ -27,7 +27,7 @@ export default function AddPet() {
 
     if (pet.photoUrl) {
       await uploadImage(pet.photoUrl, (photoUrl: string) =>
-        handleSaveNewPet(pet, photoUrl)
+        handleSaveNewPet(pet, photoUrl),
       );
     } else {
       await handleSaveNewPet(pet, "");

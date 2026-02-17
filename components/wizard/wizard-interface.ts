@@ -1,0 +1,20 @@
+import { Pet } from "@/model/pet";
+
+export type SightingReport = Pet & {
+  size: string;
+  contactName: string;
+  contactPhone: string;
+  contactPhoneCountryCode: string;
+  petBehavior: string;
+  linkedSightingId: string;
+  collar: "yes_collar" | "no";
+  collarDescription: string;
+  aiMessage: string;
+  image: PetImage;
+};
+
+type PetImage = {
+  uri: string;
+  filename: string;
+  filetype: string;
+};

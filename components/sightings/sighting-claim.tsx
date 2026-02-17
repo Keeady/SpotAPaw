@@ -3,8 +3,9 @@ import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
-import { Text, Card, Button, RadioButton } from "react-native-paper";
+import { Text, Card, Button } from "react-native-paper";
 import { isValidUuid } from "../util";
+import { PetSelection } from "./pet-selection";
 
 type ClaimSightingProps = {
   sighting: PetSighting;
@@ -84,34 +85,7 @@ export default function ClaimSighting({
 
         {/* Pet selection */}
         <Text style={styles.sectionTitle}>Select one of your pets</Text>
-        <RadioButton.Group
-          onValueChange={(value) => setSelectedPetId(value)}
-          value={selectedPetId}
-        >
-          {pets.map((pet) => (
-            <Card
-              key={pet.id}
-              style={[
-                styles.petCard,
-                selectedPetId === pet.id && styles.petCardSelected,
-              ]}
-              onPress={() => setSelectedPetId(pet.id)}
-            >
-              <Card.Title
-                title={pet.name}
-                subtitle={`${pet.gender}, ${pet.age} years`}
-                left={(props) =>
-                  pet.photo ? (
-                    <Image
-                      source={{ uri: pet.photo }}
-                      style={styles.petImage}
-                    />
-                  ) : null
-                }
-              />
-            </Card>
-          ))}
-        </RadioButton.Group>
+        <PetSelection selectedPetId={selectedPetId} setSelectedPetId={setSelectedPetId} pets={pets} />
 
         {/* Confirm */}
         <Button
@@ -145,21 +119,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginVertical: 12,
-  },
-  petCard: {
-    marginBottom: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  petCardSelected: {
-    borderColor: "#007bff",
-    borderWidth: 2,
-  },
-  petImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
   },
   confirmButton: {
     marginTop: 20,

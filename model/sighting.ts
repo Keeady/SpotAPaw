@@ -4,6 +4,7 @@ export type PetSighting = {
     created_at: string;
     colors: string;
     features: string;
+    collar_description: string;
     species: string;
     breed: string;
     size: string;
