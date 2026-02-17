@@ -5,7 +5,6 @@ interface reqPayload {
   photo: string;
   filename: string;
   filetype: string;
-  prompt: string;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -25,10 +24,56 @@ function getErrorResponse(error: string, status: number = 400, code?: string) {
   );
 }
 
-Deno.serve(async (req: Request) => {
-  const { photo, filename, filetype, prompt }: reqPayload = await req.json();
+function createAnalysisPrompt(): string {
+  return `Analyze this image and extract detailed information about any pets visible.
 
-  if (!photo || !filename || !filetype || !prompt) {
+For EACH pet in the image, provide the following information in JSON format:
+{
+  "pets": [
+    {
+      "species": "dog/cat/bird/rabbit/etc.",
+      "breed": "breed identification",
+      "colors": ["primary color", "secondary color", "pattern description"],
+      "size": "small/medium/large",
+      "distinctive_features": ["feature 1", "feature 2", "feature 3"],
+      "collar_descriptions": ["description 1", "description 2", "description 3"],
+      "confidence": "high/medium/low"
+    }
+  ],
+  "image_quality": "good/fair/poor",
+  "number_of_pets": 1
+}
+
+Guidelines:
+- **Species**: The type of animal (dog, cat, bird, rabbit, hamster, etc.)
+- **Breed Identification** (IMPORTANT):
+  - Set "breed" to a descriptive format: "[Dominant Breed] mix" or "[Breed 1] [Breed 2] mix"
+  - If you can identify 1-2 specific breeds in the mix, name them (e.g., "German Shepherd Husky mix")
+  - If you can identify only the dominant breed, use that (e.g., "German Shepherd mix")
+  - If completely uncertain, use "Mixed breed" or "unknown"
+- **Colors**: List all visible colors and any patterns (e.g., "brindle", "tabby", "spotted", "merle")
+- **Size**: 
+  - Small: Under 20 lbs (9 kg) for dogs, small cats, small animals
+  - Medium: 20-50 lbs (9-23 kg) for dogs, average cats
+  - Large: Over 50 lbs (23 kg) for dogs, large cats
+- **Distinctive Features**: 
+  - Notable characteristics like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
+- **Collar, Tag, or Harness**:
+  - Describe Collar, tag, or harness found on the pet such as colors, patterns, and extract any visible writings or brandings
+
+If NO pets are visible in the image, return:
+{
+  "pets": [],
+  "note": "No pets detected in image"
+}
+
+Respond ONLY with valid JSON. Do not include any other text or markdown formatting.`;
+}
+
+Deno.serve(async (req: Request) => {
+  const { photo, filename, filetype }: reqPayload = await req.json();
+
+  if (!photo || !filename || !filetype) {
     const error = "Missing required parameters";
 
     return getErrorResponse(error);
@@ -122,6 +167,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    const prompt = createAnalysisPrompt();
     const AiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 
     const payload = JSON.stringify({
@@ -144,7 +190,7 @@ Deno.serve(async (req: Request) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": geminiApiKey
+        "x-goog-api-key": geminiApiKey,
       },
       body: payload,
     });
