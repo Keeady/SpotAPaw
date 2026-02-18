@@ -44,6 +44,7 @@ export async function saveNewSighting(
     last_seen_time: sightingFormData.last_seen_time,
     reporter_name: sightingFormData.contactName,
     reporter_phone: sightingFormData.contactPhone,
+    linked_sighting_id: sightingFormData.linkedSightingId,
   } as PetSighting;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {

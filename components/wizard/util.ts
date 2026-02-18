@@ -33,11 +33,15 @@ export const defaultSightingFormData = {
 } as SightingReport;
 
 export const validate = (
-  currentStep: string,
   sightingFormData: SightingReport,
+  currentStep?: string,
   reportType?: SightingReportType,
 ) => {
   let isValid = false;
+  if (!currentStep) {
+    return isValid;
+  }
+
   switch (currentStep) {
     case "start":
       isValid = !!reportType && validateStart(reportType);
@@ -85,6 +89,10 @@ export function validateEditPet(
   reportType?: SightingReportType,
 ) {
   let isValid = true;
+  if (sightingFormData.linkedSightingId) {
+    return isValid;
+  }
+
   if (!sightingFormData.species || !sightingFormData.colors) {
     isValid = false;
   }

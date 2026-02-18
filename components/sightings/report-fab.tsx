@@ -2,7 +2,6 @@ import * as React from "react";
 import { FAB, Portal } from "react-native-paper";
 
 type ReportLostPetFabProps = {
-  onChatbotPress: () => void;
   onFormPress: () => void;
   title: string;
 };
