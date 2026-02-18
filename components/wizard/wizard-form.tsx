@@ -54,7 +54,7 @@ export const WizardForm = () => {
   const [loading, setLoading] = useState(false);
   const [disabledNext, setDisabledNext] = useState(false);
   const [disabledBack, setDisabledBack] = useState(false);
-  const [currentStep, setCurrentStep] = useState<SightingWizardSteps>();
+  const [currentStep, setCurrentStep] = useState<SightingWizardSteps>("start");
   const [errorMessage, setErrorMessage] = useState("");
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [aiGenerated, setAiGenerated] = useState(false);
@@ -90,8 +90,6 @@ export const WizardForm = () => {
     if (linkedSightingId && isValidUuid(linkedSightingId)) {
       setCurrentStep("upload_photo");
       updateSightingData("linkedSightingId", linkedSightingId);
-    } else {
-      setCurrentStep("start");
     }
   }, [linkedSightingId, updateSightingData]);
 
@@ -138,7 +136,7 @@ export const WizardForm = () => {
 
   const getNextStep = useCallback(() => {
     if (linkedSightingId && isValidUuid(linkedSightingId)) {
-      if (!currentStep || currentStep === "start") {
+      if (currentStep === "start") {
         return "upload_photo";
       } else if (currentStep === "upload_photo") {
         return "edit_pet";
@@ -151,9 +149,7 @@ export const WizardForm = () => {
       return "submit";
     }
 
-    if (!currentStep) {
-      return "start";
-    } else if (currentStep === "start" && reportType === "lost_own") {
+    if (currentStep === "start" && reportType === "lost_own") {
       return "choose_pet";
     } else if (currentStep === "start" || currentStep === "choose_pet") {
       return "upload_photo";
