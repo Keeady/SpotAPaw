@@ -50,6 +50,13 @@ export async function saveNewSighting(
     payload.pet_id = sightingFormData.id;
   }
 
+  if (
+    sightingFormData.linkedSightingId &&
+    isValidUuid(sightingFormData.linkedSightingId)
+  ) {
+    payload.linked_sighting_id = sightingFormData.linkedSightingId;
+  }
+
   return await supabase.from("sightings").insert([payload]).select("id");
 }
 

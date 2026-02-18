@@ -1,5 +1,5 @@
 import { FunctionsHttpError } from "@supabase/supabase-js";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
@@ -21,6 +21,7 @@ import { defaultSightingFormData, validate } from "./util";
 import { SightingReport } from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
+import { isValidUuid } from "../util";
 
 export type SightingWizardSteps =
   | "start"
@@ -69,12 +70,34 @@ export const WizardForm = () => {
     defaultSightingFormData,
   );
 
+  const { id: linkedSightingId, petId } = useLocalSearchParams<{
+    id: string;
+    petId: string;
+  }>();
+
+  const updateSightingData = useCallback((field: string, value: string) => {
+    setSightingFormData((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
   useEffect(() => {
     // reset data
     setSightingFormData(defaultSightingFormData);
     setIsValidData(true);
     setErrorMessage("");
   }, [reportType]);
+
+  useEffect(() => {
+    if (linkedSightingId && isValidUuid(linkedSightingId)) {
+      setCurrentStep("upload_photo");
+      updateSightingData("linkedSightingId", linkedSightingId);
+    }
+  }, [linkedSightingId, updateSightingData]);
+
+  useEffect(() => {
+    if (petId && isValidUuid(petId)) {
+      updateSightingData("id", petId);
+    }
+  }, [petId, updateSightingData]);
 
   const handleBack = useCallback(() => {
     const newHistory = stepHistory.slice(0, stepHistory.length - 1);
@@ -112,6 +135,20 @@ export const WizardForm = () => {
   };
 
   const getNextStep = useCallback(() => {
+    if (linkedSightingId && isValidUuid(linkedSightingId)) {
+      if (currentStep === "start") {
+        return "upload_photo";
+      } else if (currentStep === "upload_photo") {
+        return "edit_pet";
+      } else if (currentStep === "edit_pet") {
+        return "locate_pet";
+      } else if (currentStep === "locate_pet") {
+        return "add_time";
+      }
+
+      return "submit";
+    }
+
     if (currentStep === "start" && reportType === "lost_own") {
       return "choose_pet";
     } else if (currentStep === "start" || currentStep === "choose_pet") {
@@ -125,7 +162,7 @@ export const WizardForm = () => {
     }
 
     return "submit";
-  }, [currentStep, reportType]);
+  }, [currentStep, reportType, linkedSightingId]);
 
   const handleNext = () => {
     setErrorMessage("");
@@ -133,7 +170,7 @@ export const WizardForm = () => {
     setDisabledBack(true);
     setLoading(true);
 
-    const isValid = validate(currentStep, sightingFormData, reportType);
+    const isValid = validate(sightingFormData, currentStep, reportType);
     setIsValidData(isValid);
 
     if (!isValid) {
@@ -147,7 +184,7 @@ export const WizardForm = () => {
       .then(() => {
         setLoading(false);
 
-        if (currentStep !== "submit") {
+        if (currentStep && currentStep !== "submit") {
           const nextStep = getNextStep();
 
           if (nextStep) {
@@ -166,7 +203,6 @@ export const WizardForm = () => {
         }
       })
       .catch(async (err) => {
-        console.log("err", err);
         if (currentStep === "upload_photo") {
           await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
@@ -184,11 +220,6 @@ export const WizardForm = () => {
         setDisabledBack(false);
       });
   };
-
-  // Update form data
-  const updateSightingData = useCallback((field: string, value: string) => {
-    setSightingFormData((prev) => ({ ...prev, [field]: value }));
-  }, []);
 
   const onImageAnalyzeSuccess = useCallback(
     (data?: AnalysisResponse, publicUrl?: string) => {

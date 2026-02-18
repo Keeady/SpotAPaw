@@ -63,12 +63,6 @@ export default function SightingProfile() {
     router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);
   }, [sightingId, petId, router, sightingsRoute]);
 
-  const onChatSighting = useCallback(() => {
-    router.push(
-      `/${sightingsRoute}/chat-bot/?sightingId=${sightingId}&petId=${petId}&petName=${petName}`,
-    );
-  }, [sightingId, petId, router, sightingsRoute, petName]);
-
   const onClaimPet = useCallback(() => {
     router.push(`/pets/claim/?petId=${petId}&sightingId=${sightingId}`);
   }, [sightingId, petId, router]);
@@ -110,7 +104,6 @@ export default function SightingProfile() {
       sightings={timeline}
       petSummary={summary}
       onAddSighting={onAddSighting}
-      onChatSighting={onChatSighting}
       onEdit={isOwner ? onEdit : undefined}
       claimPet={user && !petOwner ? onClaimPet : undefined}
       claimed={claimed && !cleanedPetId}

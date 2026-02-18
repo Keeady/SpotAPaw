@@ -151,7 +151,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         </View>
 
         <ReportLostPetFab
-          onChatbotPress={() => router.navigate(`/${sightingsRoute}/chat-bot`)}
           onFormPress={() => router.navigate(`/${sightingsRoute}/new`)}
           title={"Report New Sighting"}
         />

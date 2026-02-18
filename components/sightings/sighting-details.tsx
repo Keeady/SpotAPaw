@@ -41,7 +41,6 @@ export default function SightingDetail({
   sightings,
   petSummary,
   onAddSighting,
-  onChatSighting,
   onEdit,
   claimPet,
   claimed,
@@ -55,7 +54,6 @@ export default function SightingDetail({
   claimed: boolean;
   onEdit?: () => void;
   onAddSighting: () => void;
-  onChatSighting: () => void;
   claimPet?: () => void;
   hasOwner: boolean;
   isOwner: boolean;
@@ -365,7 +363,6 @@ export default function SightingDetail({
         </ScrollView>
 
         <ReportLostPetFab
-          onChatbotPress={() => onChatSighting()}
           onFormPress={() => onAddSighting()}
           title={"Seen This Pet?"}
         />
