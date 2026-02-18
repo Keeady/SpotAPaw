@@ -16,13 +16,13 @@ Submit false, misleading, or harmful information.
 
 Upload inappropriate, offensive, illegal, or infringing content.
 
-Upload photos you do not have the right to share
+Upload photos you do not have the right to share.
 
-Upload images containing unrelated individuals or private personal information
+Upload photos containing unrelated individuals or private personal information.
 
 Attempt to reverse-engineer, decompile, disrupt, or otherwise interfere with the App’s operation.
 
-Use the App to harm, harass, or impersonate others
+Use the App to harm, harass, or impersonate others.
 
 2. User Content
 
@@ -84,11 +84,11 @@ The App is provided “as is” and “as available.”
 
 We do not guarantee:
 
-The accuracy of user-submitted sightings
+The accuracy of user-submitted sightings.
 
-The accuracy of AI-generated descriptions
+The accuracy of AI-generated descriptions.
 
-That reported pets will be located or reunited
+That reported pets will be located or reunited.
 
 We are not responsible for any loss, injury, or damage resulting from reliance on information provided through the App.
 
@@ -98,11 +98,11 @@ To the fullest extent permitted by law, we disclaim all warranties, express or i
 
 To the fullest extent permitted by law, SpotAPaw and its affiliates shall not be liable for any indirect, incidental, special, or consequential or punitive damages arising from:
 
-- Your use of or inability to use the App
+- Your use of or inability to use the App.
 
-- Reliance on AI-generated descriptions
+- Reliance on AI-generated descriptions.
 
-- Reliance on user-submitted information
+- Reliance on user-submitted information.
 
 8. Termination
 

@@ -94,7 +94,7 @@ To comply with legal obligations
 
 To protect the rights, safety, or property of SpotAPaw or others
 
-5. Data Retention
+4. Data Retention
 
 We retain data only as long as necessary to operate the App.
 
@@ -106,7 +106,7 @@ AI Processing Data – Images may be temporarily processed for AI analysis. Any 
 
 We may retain limited information as required to comply with legal obligations or resolve disputes.
 
-6. Permissions
+5. Permissions
 
 The App requests the following permissions:
 
@@ -116,15 +116,15 @@ Location: Used only at the time you create a sighting report.
 
 You may manage these permissions in the App or your device settings at any time.
 
-7. Security
+6. Security
 
 We take reasonable measures to protect your data from unauthorized access, alteration, disclosure, or destruction. However, no method of transmission or storage is completely secure.
 
-8. Children’s Privacy
+7. Children’s Privacy
 
 Our app is not directed to children under 13. We do not knowingly collect personal information from children under 13. If we learn that we have collected personal information from a child under 13, we will delete it.
 
-9. Your Rights (U.S. Users)
+8. Your Rights (U.S. Users)
 
 Depending on your state of residence, you may have rights to:
 
@@ -136,13 +136,11 @@ Request correction of inaccurate information
 
 To exercise these rights, contact us at the email below.
 
-We do not sell personal information.
-
-10. Changes to this Policy
+9. Changes to this Policy
 
 We may update this Privacy Policy from time to time. We will notify you of significant changes by updating the “Effective Date” at the top of this page.
 
-11. Contact Us
+10. Contact Us
 
 If you have questions about this Privacy Policy, please contact us at:
 [spotapaw@gmail.com](mailto:spotapaw@gmail.com)
