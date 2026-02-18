@@ -1,124 +1,53 @@
-import React, { useCallback, useContext, useState } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Icon, Text } from "react-native-paper";
+import { Icon, Text } from "react-native-paper";
 import { ShowHappyDogAnimation } from "@/components/animate";
-import DropPinOnMap from "../map-util";
-import {
-  getCurrentUserLocationV3,
-  SightingLocation,
-} from "../get-current-location";
-import DividerWithText from "../divider-with-text";
-import { LocationPermissionDeniedDialog } from "../location-request-util";
-import { PermissionContext } from "../Provider/permission-provider";
 
 type EmptySightingProps = {
   error: string;
-  hasLocation: boolean;
 };
 
-export const EmptySighting = ({ error, hasLocation }: EmptySightingProps) => {
-  const [permissionDeniedDialogVisible, setPermissionDeniedDialogVisible] =
-    useState(false);
-  const { saveLocation, setLocation } = useContext(PermissionContext);
-
-  const onLocationPermissionRequested = useCallback(() => {
-    getCurrentUserLocationV3()
-      .then((location) => {
-        if (location) {
-          saveLocation?.(location);
-          setLocation?.(location);
-        }
-      })
-      .catch(() => {
-        setPermissionDeniedDialogVisible(true);
-      });
-  }, [saveLocation, setLocation]);
-
-  const onNewLocationSelected = useCallback((location?: SightingLocation) => {
-    if (location) {
-      saveLocation?.(location);
-      setLocation?.(location);
-    }
-  }, [saveLocation, setLocation]);
-
+export const EmptySighting = ({ error }: EmptySightingProps) => {
   return (
     <View style={styles.container}>
-      {!hasLocation && (
-        <View>
-          <Text variant="titleLarge" style={styles.promptTitle}>
-            Set Your Location
+      <ShowHappyDogAnimation />
+      {error ? (
+        <View style={styles.iconWithText}>
+          <Icon source="alert-circle-outline" size={32} color="red" />
+          <Text variant="bodyLarge" style={styles.errorText}>
+            {error}
           </Text>
-          <View style={styles.mapContainer}>
-            <Text variant="labelLarge" style={styles.infoText}>
-              To show you nearby pet sightings, we need to know your location.
-            </Text>
-            <Button
-              mode="text"
-              onPress={() => onLocationPermissionRequested()}
-              icon={"crosshairs-gps"}
-            >
-              Use My Current Location
-            </Button>
-          </View>
-          <DividerWithText text="or"></DividerWithText>
-          <View style={styles.mapContainer}>
-            <Text variant="labelLarge" style={styles.infoText}>
-              Choose Location Manually
-            </Text>
-            <DropPinOnMap handleActionButton={onNewLocationSelected} />
-          </View>
+        </View>
+      ) : (
+        <View style={styles.iconWithText}>
+          <Icon source="paw-outline" size={32} color="green" />
+          <Text variant="bodyLarge" style={styles.successText}>
+            No pet sightings to display in your area
+          </Text>
         </View>
       )}
-
-      {hasLocation && (
-        <View style={styles.mapContainer}>
-          <ShowHappyDogAnimation />
-          {error ? (
-            <View style={styles.iconWithText}>
-              <Icon source="alert-circle-outline" size={32} color="red" />
-              <Text variant="bodyLarge" style={styles.errorText}>
-                {error}
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.iconWithText}>
-              <Icon source="paw-outline" size={32} color="green" />
-              <Text variant="bodyLarge" style={styles.successText}>
-                No pet sightings to display in your area
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
-      {/* Permission Denied Dialog */}
-      <LocationPermissionDeniedDialog
-        permissionDeniedDialogVisible={permissionDeniedDialogVisible}
-        setPermissionDeniedDialogVisible={setPermissionDeniedDialogVisible}
-      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingTop: 20,
-  },
-  mapContainer: {
     flexDirection: "column",
-    alignItems: "center",
+    justifyContent: "center",
     alignContent: "center",
-    flexWrap: "wrap",
-    flex: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    gap: 8,
+    alignItems: "center",
+  },
+  content: {
+    justifyContent: "center",
+    padding: 24,
+    flexGrow: 1,
   },
   iconWithText: {
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-    flex: 1,
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 8,
@@ -132,13 +61,5 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "red",
     flexWrap: "wrap",
-  },
-  infoText: {
-    flex: 1,
-    flexWrap: "wrap",
-  },
-  promptTitle: {
-    alignSelf: "center",
-    marginBottom: 10,
   },
 });

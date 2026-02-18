@@ -5,7 +5,7 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
 } from "react-native-maps";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SightingLocation } from "./get-current-location";
 
 type Pin = {
@@ -25,7 +25,7 @@ export default function DropPinOnMap({
   handleActionButton,
   pins,
 }: DropPinOnMapProps) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const [disabled, setDisabled] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     latitude: number;
@@ -64,10 +64,14 @@ export default function DropPinOnMap({
     }
   }, [pins]);
 
+  const mapWidth = useMemo(() => {
+    return width - 24;
+  }, [width]);
+
   return (
     <Card style={styles.mapCard}>
       <MapView
-        style={{ width, height: 350 }}
+        style={{ width: mapWidth, height: mapWidth }}
         region={initialRegion}
         onPress={handleMapPress}
         provider={PROVIDER_GOOGLE}
@@ -112,10 +116,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 8,
     alignSelf: "center",
-  },
-  map: {
-    width: "100%",
-    height: 250,
   },
   mapFooter: {
     paddingVertical: 12,
