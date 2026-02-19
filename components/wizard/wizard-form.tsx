@@ -22,12 +22,14 @@ import { SightingReport } from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { isValidUuid } from "../util";
+import { EditPetContinued } from "./edit-pet-continued";
 
 export type SightingWizardSteps =
   | "start"
   | "upload_photo"
   | "choose_pet"
   | "edit_pet"
+  | "edit_pet_continued"
   | "locate_pet"
   | "add_time"
   | "submit";
@@ -94,6 +96,12 @@ export const WizardForm = () => {
   }, [linkedSightingId, updateSightingData]);
 
   useEffect(() => {
+    if (user?.id) {
+      updateSightingData("reporterId", user.id);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
     if (petId && isValidUuid(petId)) {
       updateSightingData("id", petId);
     }
@@ -141,6 +149,8 @@ export const WizardForm = () => {
       } else if (currentStep === "upload_photo") {
         return "edit_pet";
       } else if (currentStep === "edit_pet") {
+        return "edit_pet_continued";
+      } else if (currentStep === "edit_pet_continued") {
         return "locate_pet";
       } else if (currentStep === "locate_pet") {
         return "add_time";
@@ -156,6 +166,8 @@ export const WizardForm = () => {
     } else if (currentStep === "upload_photo") {
       return "edit_pet";
     } else if (currentStep === "edit_pet") {
+      return "edit_pet_continued";
+    } else if (currentStep === "edit_pet_continued") {
       return "locate_pet";
     } else if (currentStep === "locate_pet") {
       return "add_time";
@@ -351,6 +363,17 @@ export const WizardForm = () => {
       case "edit_pet":
         return (
           <EditPet
+            sightingFormData={sightingFormData}
+            updateSightingData={updateSightingData}
+            loading={loading}
+            setReportType={setReportType}
+            aiGenerated={aiGenerated}
+            isValidData={isValidData}
+          />
+        );
+      case "edit_pet_continued":
+        return (
+          <EditPetContinued
             sightingFormData={sightingFormData}
             updateSightingData={updateSightingData}
             loading={loading}

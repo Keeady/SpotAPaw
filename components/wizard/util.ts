@@ -55,6 +55,9 @@ export const validate = (
     case "edit_pet":
       isValid = validateEditPet(sightingFormData, reportType);
       break;
+    case "edit_pet_continued":
+      isValid = validateEditPetContinued(sightingFormData, reportType);
+      break;
     case "locate_pet":
       isValid = validateLocatePet(sightingFormData);
       break;
@@ -102,9 +105,24 @@ export function validateEditPet(
     (!sightingFormData.age ||
       !sightingFormData.colors ||
       !sightingFormData.gender ||
-      !sightingFormData.name ||
-      !sightingFormData.size)
+      !sightingFormData.name)
   ) {
+    isValid = false;
+  }
+
+  return isValid;
+}
+
+export function validateEditPetContinued(
+  sightingFormData: SightingReport,
+  reportType?: SightingReportType,
+) {
+  let isValid = true;
+  if (sightingFormData.linkedSightingId) {
+    return isValid;
+  }
+  
+  if (reportType === "lost_own" && !sightingFormData.size) {
     isValid = false;
   }
 

@@ -11,6 +11,7 @@ export type SightingReport = Pet & {
   collarDescription: string;
   aiMessage: string;
   image: PetImage;
+  reporterId: string;
 };
 
 type PetImage = {
