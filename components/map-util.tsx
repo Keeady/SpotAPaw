@@ -25,7 +25,7 @@ export default function DropPinOnMap({
   handleActionButton,
   pins,
 }: DropPinOnMapProps) {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const [disabled, setDisabled] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     latitude: number;
@@ -71,7 +71,7 @@ export default function DropPinOnMap({
   return (
     <Card style={styles.mapCard}>
       <MapView
-        style={{ width: mapWidth, height: mapWidth }}
+        style={{ width: mapWidth, height: 350 }}
         region={initialRegion}
         onPress={handleMapPress}
         provider={PROVIDER_GOOGLE}

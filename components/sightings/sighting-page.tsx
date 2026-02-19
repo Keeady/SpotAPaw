@@ -64,7 +64,10 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setHasMore(false);
       }
 
-      if (pagination.end < totalCount) {
+      const hasMore = pagination.end < totalCount;
+      setHasMore(hasMore);
+
+      if (hasMore) {
         setPagination(pagination);
       }
     },
@@ -118,7 +121,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       return <></>;
     }
     return <EmptySighting error={error} />;
-  }, [error, location, loading]);
+  }, [error, loading]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 

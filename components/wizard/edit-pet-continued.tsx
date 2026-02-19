@@ -13,6 +13,7 @@ export function EditPetContinued({
   loading: loadingAnalyzer,
   aiGenerated,
   isValidData,
+  reportType,
 }: SightingWizardStepData) {
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [showAiGeneratedFlag, setShowAiGeneratedFlag] = useState(true);
@@ -97,7 +98,7 @@ export function EditPetContinued({
         <View style={[styles.verticallySpaced]}>
           <HelperText
             type="error"
-            visible={hasErrors && !size}
+            visible={hasErrors && !size && reportType === "lost_own"}
             style={styles.helperText}
             padding="none"
           >

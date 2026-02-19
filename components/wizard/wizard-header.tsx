@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#714ea9ff",
     padding: 16,
+    paddingTop: Platform.OS === "ios" ? 50 : 16,
     alignItems: "center",
   },
   headerTitle: {

@@ -276,7 +276,7 @@ export default function PrivacyScreen() {
       <Card style={styles.section}>
         <Card.Content>
           <Text variant="titleMedium" style={styles.sectionTitle}>
-            7. Children's Privacy
+            7. Children&#39;s Privacy
           </Text>
 
           <Text variant="bodyMedium" style={styles.sectionText}>
@@ -318,7 +318,7 @@ export default function PrivacyScreen() {
 
           <Text variant="bodyMedium" style={styles.sectionText}>
             We may update this Privacy Policy from time to time. We will notify
-            you of significant changes by updating the "Effective Date" at the
+            you of significant changes by updating the &#34;Effective Date&#34; at the
             top of this page.
           </Text>
         </Card.Content>

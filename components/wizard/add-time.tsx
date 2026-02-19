@@ -1,4 +1,4 @@
-import { StyleSheet, View, Platform, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { Text, HelperText, TextInput } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { SightingWizardStepData } from "./wizard-form";
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
   },
   helperText: {
     alignSelf: "flex-end",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
 });

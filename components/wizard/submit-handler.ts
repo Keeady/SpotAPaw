@@ -1,4 +1,3 @@
-import { PetSighting } from "@/model/sighting";
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { supabase } from "../supabase-client";

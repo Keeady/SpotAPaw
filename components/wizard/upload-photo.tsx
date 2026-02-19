@@ -2,7 +2,6 @@ import {
   StyleSheet,
   View,
   Image,
-  Platform,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
@@ -56,7 +55,7 @@ export function UploadPhoto({
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.verticallySpaced, styles.mb10/*, styles.mt20*/]}>
+        <View style={[styles.verticallySpaced, styles.mb10]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -144,6 +143,9 @@ const styles = StyleSheet.create({
   },
   mt10: {
     marginTop: 10,
+  },
+  mb10: {
+    marginBottom: 10,
   },
   preview: {
     width: "100%",

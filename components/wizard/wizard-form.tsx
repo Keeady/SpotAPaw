@@ -99,7 +99,7 @@ export const WizardForm = () => {
     if (user?.id) {
       updateSightingData("reporterId", user.id);
     }
-  }, [user?.id]);
+  }, [user?.id, updateSightingData]);
 
   useEffect(() => {
     if (petId && isValidUuid(petId)) {
