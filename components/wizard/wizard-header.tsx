@@ -12,7 +12,6 @@ export function WizardHeader({ title, subTitle }: WizardHeaderProps) {
   return (
     <View
       style={[
-        styles.title,
         styles.header,
         { backgroundColor: theme.colors.primary },
       ]}
@@ -24,11 +23,8 @@ export function WizardHeader({ title, subTitle }: WizardHeaderProps) {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    marginBottom: 20,
-  },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     alignItems: "center",
   },
   header: {

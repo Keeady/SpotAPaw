@@ -1,10 +1,7 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
-import {
-  ActivityIndicator,
-  HelperText,
-} from "react-native-paper";
+import { ActivityIndicator, HelperText } from "react-native-paper";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Provider/auth-provider";
 import { supabase } from "../supabase-client";
@@ -68,7 +65,11 @@ export function ChoosePet({
         title="Select a pet profile"
         subTitle="Sorry to hear your pet is missing. Let's bring them back!"
       />
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         {loading && <ActivityIndicator size={"large"} />}
         <HelperText
           type="error"
@@ -83,7 +84,7 @@ export function ChoosePet({
           setSelectedPetId={setSelectedPetId}
           pets={pets}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -93,35 +94,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    // flexDirection: "row",
-    // justifyContent: "center",
-    padding: 24,
-  },
-  navigationCard: {
-    borderRadius: 16,
-    marginBottom: 10,
-  },
-  navigationItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-  },
-  steps: {
-    padding: 16,
-  },
-  title: {
-    fontSize: 22,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  cardContainer: {
-    // marginBottom: 30,
-  },
-  disabledCard: {
-    opacity: 0.6,
+    paddingHorizontal: 12,
   },
   helperText: {
     alignSelf: "flex-end",
+    fontWeight: "bold",
   },
 });

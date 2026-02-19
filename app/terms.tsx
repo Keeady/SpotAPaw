@@ -200,7 +200,7 @@ export default function TermsScreen() {
           </Text>
 
           <Text variant="bodyMedium" style={styles.sectionText}>
-            The App is provided "as is" and "as available."
+            The App is provided &#34;as is&#34; and &#34;as available&#34;.
           </Text>
 
           <Text variant="bodyMedium" style={styles.sectionText}>

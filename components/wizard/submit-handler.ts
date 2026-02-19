@@ -1,4 +1,3 @@
-import { PetSighting } from "@/model/sighting";
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { supabase } from "../supabase-client";
@@ -29,6 +28,8 @@ export async function saveNewSighting(
     sightingFormData.last_seen_long,
   );
   const payload = {
+    age: sightingFormData.age,
+    name: sightingFormData.name,
     colors: sightingFormData.colors,
     breed: sightingFormData.breed,
     size: sightingFormData.size,
@@ -44,7 +45,7 @@ export async function saveNewSighting(
     last_seen_time: sightingFormData.last_seen_time,
     reporter_name: sightingFormData.contactName,
     reporter_phone: sightingFormData.contactPhone,
-  } as PetSighting;
+  } as any;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     payload.pet_id = sightingFormData.id;
@@ -55,6 +56,10 @@ export async function saveNewSighting(
     isValidUuid(sightingFormData.linkedSightingId)
   ) {
     payload.linked_sighting_id = sightingFormData.linkedSightingId;
+  }
+
+  if (sightingFormData.reporterId && isValidUuid(sightingFormData.reporterId)) {
+    payload.reporter_id = sightingFormData.reporterId;
   }
 
   return await supabase.from("sightings").insert([payload]).select("id");

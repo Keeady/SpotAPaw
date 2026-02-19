@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useEffect, useState } from "react";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
@@ -24,12 +24,16 @@ export function LocatePet({
 
   const { last_seen_lat, last_seen_long } = sightingFormData;
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <WizardHeader
         title="Where was the pet last seen?"
         subTitle="Place a pin on map to share pet's last location."
       />
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <HelperText
           type="error"
           visible={hasErrors && !last_seen_lat && !last_seen_long}
@@ -60,7 +64,7 @@ export function LocatePet({
             }
           }}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -75,41 +79,13 @@ const styles = StyleSheet.create({
   mt10: {
     marginTop: 10,
   },
-  mb10: {
-    marginBottom: 10,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
-    minHeight: "100%",
-    paddingBottom: 40,
-  },
-  title: {
-    marginBottom: 20,
-  },
-  preview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    marginTop: 5,
-  },
-  emptyPreview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ddd",
-    marginTop: 5,
-  },
   content: {
-    // paddingHorizontal: 24,
+    paddingHorizontal: 16,
     alignItems: "center",
   },
   helperText: {
     alignSelf: "flex-end",
     paddingRight: 10,
+    fontWeight: "bold",
   },
 });

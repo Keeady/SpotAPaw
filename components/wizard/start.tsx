@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { SightingReportType, SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import { HelperText, Surface, Text, useTheme } from "react-native-paper";
@@ -38,7 +38,11 @@ export function Step1({
         title="Report a lost pet"
         subTitle="Thank you for helping bring our lost friends home."
       />
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.cardContainer}>
           <HelperText
             type="error"
@@ -90,7 +94,7 @@ export function Step1({
             </TouchableOpacity>
           </Surface>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -100,8 +104,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    paddingHorizontal: 12,
     justifyContent: "center",
-    padding: 24,
   },
   navigationCard: {
     borderRadius: 16,
@@ -116,12 +120,6 @@ const styles = StyleSheet.create({
   steps: {
     padding: 16,
   },
-
-  title: {
-    fontSize: 22,
-    marginBottom: 20,
-    textAlign: "center",
-  },
   cardContainer: {
     marginBottom: 30,
   },
@@ -130,5 +128,6 @@ const styles = StyleSheet.create({
   },
   helperText: {
     alignSelf: "flex-end",
+    fontWeight: "bold",
   },
 });

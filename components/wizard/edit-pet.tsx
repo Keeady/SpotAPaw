@@ -25,15 +25,10 @@ export function EditPet({
     species,
     breed,
     gender,
-    size,
-    features,
     age,
     name,
     id,
-    petBehavior,
-    collar,
-    collarDescription,
-    image
+    image,
   } = sightingFormData;
 
   useEffect(() => {
@@ -167,32 +162,26 @@ export function EditPet({
           />
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt10]}>
+        <View style={[styles.verticallySpaced, styles.mt20]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Distinctive Features:</Text>
+            <Text variant="titleMedium">Age:</Text>
             <HelperText
               type="error"
-              visible={false}
+              visible={hasErrors && !age && reportType === "lost_own"}
               style={styles.helperText}
               padding="none"
             >
-              Feature is required
+              Please provide approximate age!
             </HelperText>
-            <AIFieldAnalysisBanner
-              loading={loadingAnalyzer}
-              aiGenerated={!!showAiGeneratedFlag && !!features}
-            />
           </View>
-
           <TextInput
-            placeholder="Unique markings, scars, missing teeth, etc."
-            value={features}
-            onChangeText={(value) => updateSightingData("features", value)}
-            mode={"outlined"}
-            multiline
-            numberOfLines={3}
+            placeholder={"how old?"}
+            value={age?.toString() || ""}
+            onChangeText={(v) => updateSightingData("age", v)}
+            keyboardType="numeric"
+            mode="outlined"
           />
         </View>
 
@@ -228,128 +217,6 @@ export function EditPet({
             </View>
           </RadioButton.Group>
         </View>
-
-        <View style={[styles.verticallySpaced]}>
-          <HelperText
-            type="error"
-            visible={hasErrors && !size}
-            style={styles.helperText}
-            padding="none"
-          >
-            Please select pet size!
-          </HelperText>
-          <AIFieldAnalysisBanner
-            loading={loadingAnalyzer}
-            aiGenerated={!!showAiGeneratedFlag && !!size}
-          />
-          <Text variant="titleMedium">
-            How would you describe the pet&#39;s size?
-          </Text>
-          <RadioButton.Group
-            onValueChange={(value) => updateSightingData("size", value)}
-            value={size}
-          >
-            <View style={styles.radioGroupCol}>
-              <View style={styles.radioItem}>
-                <RadioButton value="small" />
-                <Text>Small (under 20 lbs)</Text>
-              </View>
-
-              <View style={styles.radioItem}>
-                <RadioButton value="medium" />
-                <Text>Medium (20-50 lbs)</Text>
-              </View>
-
-              <View style={styles.radioItem}>
-                <RadioButton value="large" />
-                <Text>Large (over 50 lbs)</Text>
-              </View>
-            </View>
-          </RadioButton.Group>
-        </View>
-
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="titleMedium">
-            Does the pet have any collars, tags, or harness on?
-          </Text>
-          <RadioButton.Group
-            onValueChange={(value) => updateSightingData("collar", value)}
-            value={collar}
-          >
-            <View style={styles.radioGroupRow}>
-              <View style={styles.radioItem}>
-                <RadioButton value="yes_collar" />
-                <Text>Yes</Text>
-              </View>
-
-              <View style={styles.radioItem}>
-                <RadioButton value="no" />
-                <Text>No</Text>
-              </View>
-            </View>
-          </RadioButton.Group>
-        </View>
-
-        {collar === "yes_collar" && (
-          <View style={[styles.verticallySpaced, styles.mt10]}>
-            <HelperText
-              type="error"
-              visible={hasErrors && !collarDescription}
-              style={styles.helperText}
-              padding="none"
-            >
-              A description is required!
-            </HelperText>
-            <AIFieldAnalysisBanner
-              loading={loadingAnalyzer}
-              aiGenerated={!!showAiGeneratedFlag && !!collarDescription}
-            />
-            <Text variant="labelLarge">
-              Please describe any Collar, Tag, or Harness:
-            </Text>
-            <TextInput
-              label={"Collar, Tag, & Harness"}
-              placeholder="colors, numbers, markings, brand, etc."
-              value={collarDescription}
-              onChangeText={(value) =>
-                updateSightingData("collarDescription", value)
-              }
-              mode={"outlined"}
-              multiline
-              numberOfLines={3}
-            />
-          </View>
-        )}
-
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="titleMedium">How is the pet behaving?</Text>
-          <RadioButton.Group
-            onValueChange={(value) => updateSightingData("petBehavior", value)}
-            value={petBehavior}
-          >
-            <View style={styles.radioGroupCol}>
-              <View style={styles.radioItem}>
-                <RadioButton value="friendly" />
-                <Text>Friendly & approachable</Text>
-              </View>
-
-              <View style={styles.radioItem}>
-                <RadioButton value="scared" />
-                <Text>Scared or skittish</Text>
-              </View>
-
-              <View style={styles.radioItem}>
-                <RadioButton value="aggressive" />
-                <Text>Aggressive or defensive</Text>
-              </View>
-
-              <View style={styles.radioItem}>
-                <RadioButton value="injured" />
-                <Text>Injured</Text>
-              </View>
-            </View>
-          </RadioButton.Group>
-        </View>
       </ScrollView>
     </View>
   );
@@ -357,51 +224,17 @@ export function EditPet({
 
 const styles = StyleSheet.create({
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     alignItems: "center",
-  },
-  stepContent: {
-    // flex: 1,
-    // marginBottom: 16,
   },
   verticallySpaced: {
     alignSelf: "stretch",
-    // backgroundColor: "blue"
   },
   mt20: {
     marginTop: 20,
   },
   mt10: {
     marginTop: 10,
-  },
-  mb10: {
-    marginBottom: 10,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
-    minHeight: "100%",
-    paddingBottom: 40,
-  },
-  title: {
-    marginBottom: 20,
-  },
-  preview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    marginTop: 5,
-  },
-  emptyPreview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ddd",
-    marginTop: 5,
   },
   radioGroupRow: {
     flexDirection: "row",
@@ -416,9 +249,9 @@ const styles = StyleSheet.create({
   radioItem: {
     flexDirection: "row",
     alignItems: "center",
-    // justifyContent: "flex-start"
   },
   helperText: {
     alignSelf: "flex-end",
+    fontWeight: "bold",
   },
 });

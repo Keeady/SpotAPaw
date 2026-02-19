@@ -12,6 +12,7 @@ import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
 import { PermissionContext } from "../Provider/permission-provider";
+import { SightingLocationManager } from "./sighting-location-manager";
 
 type SightingPageProps = {
   renderer: (
@@ -37,6 +38,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     start: 0,
     end: MAX_SIGHTINGS,
   });
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { location, isLoadingLocation } = useContext(PermissionContext);
@@ -46,6 +48,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       newSightings: PetSighting[],
       error: string | null,
       pagination: SightingPagination,
+      totalCount: number,
     ) => {
       if (error) {
         setError(error);
@@ -56,7 +59,17 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       }
       setLoading(false);
       setRefreshing(false);
-      setPagination(pagination);
+
+      if (totalCount === 0) {
+        setHasMore(false);
+      }
+
+      const hasMore = pagination.end < totalCount;
+      setHasMore(hasMore);
+
+      if (hasMore) {
+        setPagination(pagination);
+      }
     },
     [],
   );
@@ -88,7 +101,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   }, [fetch, location, isLoadingLocation]);
 
   const onEndReached = useCallback(() => {
-    if (loading) {
+    if (loading || error || !hasMore) {
       return;
     }
 
@@ -96,7 +109,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       start: pagination.end + 1,
       end: pagination.end + MAX_SIGHTINGS,
     });
-  }, [location, pagination, loading, fetch]);
+  }, [location, pagination, loading, fetch, error, hasMore]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -107,8 +120,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     if (loading) {
       return <></>;
     }
-    return <EmptySighting error={error} hasLocation={!!location} />;
-  }, [error, location, loading]);
+    return <EmptySighting error={error} />;
+  }, [error, loading]);
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -140,7 +153,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
             />
           )}
         </View>
-        <View style={{ flex: 1 }}>
+        {!location && <SightingLocationManager />}
+        <View>
           {renderer(
             sightings,
             onEndReached,
@@ -166,6 +180,7 @@ const fetchSightings = async (
     newSightings: PetSighting[],
     error: string | null,
     pagination: SightingPagination,
+    totalCount: number,
   ) => void,
 ) => {
   fetchSightingsWithLocation(location, pagination, onFetchComplete);
@@ -178,6 +193,7 @@ const fetchSightingsByUser = async (
     newSightings: PetSighting[],
     error: string | null,
     pagination: SightingPagination,
+    totalCount: number,
   ) => void,
 ) => {
   fetchSightingsByUserWithLocation(location, pagination, onFetchComplete);
@@ -190,10 +206,11 @@ const fetchSightingsWithLocation = async (
     newSightings: PetSighting[],
     error: string | null,
     pagination: SightingPagination,
+    totalCount: number,
   ) => void,
 ) => {
   if (!location) {
-    return onFetchComplete([], null, pagination);
+    return onFetchComplete([], null, pagination, 0);
   }
 
   const { lat, lng } = location;
@@ -208,9 +225,9 @@ const fetchSightingsWithLocation = async (
   const maxLng = lng + lngDegree;
 
   // Default: fetch all sightings
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("aggregated_sightings")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
@@ -225,9 +242,10 @@ const fetchSightingsWithLocation = async (
       [],
       "An error occurred while fetching sightings.",
       pagination,
+      0,
     );
   } else {
-    onFetchComplete(data || [], null, pagination);
+    onFetchComplete(data || [], null, pagination, count || 0);
   }
 };
 
@@ -238,10 +256,11 @@ const fetchSightingsByUserWithLocation = async (
     newSightings: PetSighting[],
     error: string | null,
     pagination: SightingPagination,
+    totalCount: number,
   ) => void,
 ) => {
   if (!location) {
-    return onFetchComplete([], null, pagination);
+    return onFetchComplete([], null, pagination, 0);
   }
 
   const { lat, lng } = location;
@@ -256,9 +275,9 @@ const fetchSightingsByUserWithLocation = async (
   const maxLng = lng + lngDegree;
 
   // Default: fetch all sightings
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("aggregated_sightings")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("is_active", true)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
@@ -273,8 +292,9 @@ const fetchSightingsByUserWithLocation = async (
       [],
       "An error occurred while fetching sightings.",
       pagination,
+      0,
     );
   } else {
-    onFetchComplete(data || [], null, pagination);
+    onFetchComplete(data || [], null, pagination, count || 0);
   }
 };

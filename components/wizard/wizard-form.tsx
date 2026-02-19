@@ -22,12 +22,14 @@ import { SightingReport } from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { isValidUuid } from "../util";
+import { EditPetContinued } from "./edit-pet-continued";
 
 export type SightingWizardSteps =
   | "start"
   | "upload_photo"
   | "choose_pet"
   | "edit_pet"
+  | "edit_pet_continued"
   | "locate_pet"
   | "add_time"
   | "submit";
@@ -94,6 +96,12 @@ export const WizardForm = () => {
   }, [linkedSightingId, updateSightingData]);
 
   useEffect(() => {
+    if (user?.id) {
+      updateSightingData("reporterId", user.id);
+    }
+  }, [user?.id, updateSightingData]);
+
+  useEffect(() => {
     if (petId && isValidUuid(petId)) {
       updateSightingData("id", petId);
     }
@@ -141,6 +149,8 @@ export const WizardForm = () => {
       } else if (currentStep === "upload_photo") {
         return "edit_pet";
       } else if (currentStep === "edit_pet") {
+        return "edit_pet_continued";
+      } else if (currentStep === "edit_pet_continued") {
         return "locate_pet";
       } else if (currentStep === "locate_pet") {
         return "add_time";
@@ -156,6 +166,8 @@ export const WizardForm = () => {
     } else if (currentStep === "upload_photo") {
       return "edit_pet";
     } else if (currentStep === "edit_pet") {
+      return "edit_pet_continued";
+    } else if (currentStep === "edit_pet_continued") {
       return "locate_pet";
     } else if (currentStep === "locate_pet") {
       return "add_time";
@@ -359,6 +371,17 @@ export const WizardForm = () => {
             isValidData={isValidData}
           />
         );
+      case "edit_pet_continued":
+        return (
+          <EditPetContinued
+            sightingFormData={sightingFormData}
+            updateSightingData={updateSightingData}
+            loading={loading}
+            setReportType={setReportType}
+            aiGenerated={aiGenerated}
+            isValidData={isValidData}
+          />
+        );
       case "locate_pet":
         return (
           <LocatePet
@@ -429,17 +452,15 @@ export const WizardForm = () => {
       <View style={styles.content}>{renderStep()}</View>
       <View style={styles.buttonContainer}>
         <Button
-          mode="outlined"
+          mode="text"
           onPress={handleBack}
           disabled={loading || disabledBack || currentStep === "start"}
-          style={styles.button}
         >
           Back
         </Button>
         <Button
-          mode="contained"
+          mode={currentStep === "submit" ? "contained" : "text"}
           onPress={handleNext}
-          style={styles.button}
           disabled={disabledNext || loading || !!errorMessage}
         >
           {currentStep === "submit" ? "Submit" : "Continue"}
@@ -452,47 +473,14 @@ export const WizardForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 16,
   },
   content: {
     flex: 1,
-  },
-  card: {
-    flex: 1,
-  },
-  progressContainer: {
-    marginBottom: 24,
-  },
-  stepTitle: {
-    marginBottom: 8,
-    fontWeight: "bold",
-  },
-  progressBar: {
-    height: 8,
-    borderRadius: 4,
-  },
-  stepContent: {
-    flex: 1,
-    marginBottom: 16,
-  },
-  stepHeader: {
-    marginBottom: 8,
-    fontWeight: "bold",
-  },
-  stepDescription: {
-    marginBottom: 24,
-    color: "#666",
-  },
-  input: {
-    marginBottom: 4,
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 12,
-    padding: 16,
-  },
-  button: {
-    flex: 1,
+    paddingHorizontal: 16,
   },
 });
