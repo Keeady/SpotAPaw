@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
     flexGrow: 1,
+    paddingBottom: 50,
   },
   mapContainer: {
     flexDirection: "column",

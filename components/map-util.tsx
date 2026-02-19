@@ -65,7 +65,7 @@ export default function DropPinOnMap({
   }, [pins]);
 
   const mapWidth = useMemo(() => {
-    return width - 24;
+    return width - 48;
   }, [width]);
 
   return (
@@ -113,7 +113,7 @@ export default function DropPinOnMap({
 
 const styles = StyleSheet.create({
   mapCard: {
-    marginHorizontal: 10,
+    marginHorizontal: 24,
     marginTop: 8,
     alignSelf: "center",
   },

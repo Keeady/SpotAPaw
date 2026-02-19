@@ -33,7 +33,7 @@ export function EditPet({
     petBehavior,
     collar,
     collarDescription,
-    image
+    image,
   } = sightingFormData;
 
   useEffect(() => {
@@ -357,51 +357,17 @@ export function EditPet({
 
 const styles = StyleSheet.create({
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     alignItems: "center",
-  },
-  stepContent: {
-    // flex: 1,
-    // marginBottom: 16,
   },
   verticallySpaced: {
     alignSelf: "stretch",
-    // backgroundColor: "blue"
   },
   mt20: {
     marginTop: 20,
   },
   mt10: {
     marginTop: 10,
-  },
-  mb10: {
-    marginBottom: 10,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
-    minHeight: "100%",
-    paddingBottom: 40,
-  },
-  title: {
-    marginBottom: 20,
-  },
-  preview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    marginTop: 5,
-  },
-  emptyPreview: {
-    width: "100%",
-    height: 300,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ddd",
-    marginTop: 5,
   },
   radioGroupRow: {
     flexDirection: "row",
@@ -416,9 +382,9 @@ const styles = StyleSheet.create({
   radioItem: {
     flexDirection: "row",
     alignItems: "center",
-    // justifyContent: "flex-start"
   },
   helperText: {
     alignSelf: "flex-end",
+    fontWeight: "bold",
   },
 });

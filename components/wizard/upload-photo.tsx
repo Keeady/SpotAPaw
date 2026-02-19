@@ -4,6 +4,7 @@ import {
   Image,
   Platform,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { Text, Button, Icon, HelperText } from "react-native-paper";
 import { ImagePickerHandler } from "../image-picker";
@@ -45,13 +46,17 @@ export function UploadPhoto({
   const { photo, image } = sightingFormData;
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <WizardHeader
         title="Upload a photo"
         subTitle="A photo would really help identify this pet faster."
       />
-      <View style={styles.content}>
-        <View style={[styles.verticallySpaced, styles.mb10, styles.mt20]}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={[styles.verticallySpaced, styles.mb10/*, styles.mt20*/]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -125,7 +130,7 @@ export function UploadPhoto({
             </Button>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -139,18 +144,6 @@ const styles = StyleSheet.create({
   },
   mt10: {
     marginTop: 10,
-  },
-  mb10: {
-    marginBottom: 10,
-  },
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#fff",
-    minHeight: "100%",
-    paddingBottom: 40,
-  },
-  title: {
-    marginBottom: 20,
   },
   preview: {
     width: "100%",
@@ -170,24 +163,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     alignItems: "center",
-  },
-  header: {
-    backgroundColor: "#714ea9ff",
-    padding: 16,
-    paddingTop: Platform.OS === "ios" ? 50 : 16,
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "#BBDEFB",
-    marginTop: 4,
   },
   helperText: {
     alignSelf: "flex-end",

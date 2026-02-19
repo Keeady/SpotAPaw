@@ -429,17 +429,15 @@ export const WizardForm = () => {
       <View style={styles.content}>{renderStep()}</View>
       <View style={styles.buttonContainer}>
         <Button
-          mode="outlined"
+          mode="text"
           onPress={handleBack}
           disabled={loading || disabledBack || currentStep === "start"}
-          style={styles.button}
         >
           Back
         </Button>
         <Button
-          mode="contained"
+          mode={currentStep === "submit" ? "contained" : "text"}
           onPress={handleNext}
-          style={styles.button}
           disabled={disabledNext || loading || !!errorMessage}
         >
           {currentStep === "submit" ? "Submit" : "Continue"}
@@ -452,47 +450,14 @@ export const WizardForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 16,
   },
   content: {
     flex: 1,
-  },
-  card: {
-    flex: 1,
-  },
-  progressContainer: {
-    marginBottom: 24,
-  },
-  stepTitle: {
-    marginBottom: 8,
-    fontWeight: "bold",
-  },
-  progressBar: {
-    height: 8,
-    borderRadius: 4,
-  },
-  stepContent: {
-    flex: 1,
-    marginBottom: 16,
-  },
-  stepHeader: {
-    marginBottom: 8,
-    fontWeight: "bold",
-  },
-  stepDescription: {
-    marginBottom: 24,
-    color: "#666",
-  },
-  input: {
-    marginBottom: 4,
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 12,
-    padding: 16,
-  },
-  button: {
-    flex: 1,
+    paddingHorizontal: 16,
   },
 });
