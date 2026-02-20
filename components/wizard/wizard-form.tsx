@@ -38,7 +38,7 @@ export type SightingReportType = "lost_own" | "found_stray";
 
 export type SightingWizardStepData = {
   sightingFormData: SightingReport;
-  updateSightingData: (field: string, value: string) => void;
+  updateSightingData: (field: string, value: any) => void;
   loading: boolean;
   setReportType: (type: SightingReportType) => void;
   reportType?: SightingReportType;
@@ -77,7 +77,7 @@ export const WizardForm = () => {
     petId: string;
   }>();
 
-  const updateSightingData = useCallback((field: string, value: string) => {
+  const updateSightingData = useCallback((field: string, value: any) => {
     setSightingFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 

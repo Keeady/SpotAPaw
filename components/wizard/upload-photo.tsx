@@ -6,13 +6,14 @@ import {
   ScrollView,
 } from "react-native";
 import { Text, Button, Icon, HelperText } from "react-native-paper";
-import { ImagePickerHandler } from "../image-picker";
+import { uploadOrTakePhoto } from "../image-picker";
 import { useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { SightingWizardStepData } from "./wizard-form";
 import { AuthContext } from "../Provider/auth-provider";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
+import { PetImage } from "./wizard-interface";
 
 export function UploadPhoto({
   updateSightingData,
@@ -37,10 +38,18 @@ export function UploadPhoto({
     }
   }, [isValidData]);
 
-  const onReset = () => {
-    onResetErrorMessage?.();
-    onResetAiGeneratedPhoto?.();
-  };
+  const onAddPhoto = useCallback(
+    (uri: string | null, fileName: string | null, mimeType: string | null) => {
+      updateSightingData("image", {
+        uri,
+        filename: fileName,
+        filetype: mimeType,
+      } as PetImage);
+      onResetErrorMessage?.();
+      onResetAiGeneratedPhoto?.();
+    },
+    [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
+  );
 
   const { photo, image } = sightingFormData;
 
@@ -107,7 +116,7 @@ export function UploadPhoto({
           <Button
             icon="camera"
             mode="contained"
-            onPress={() => ImagePickerHandler(updateSightingData, onReset)}
+            onPress={() => uploadOrTakePhoto(onAddPhoto)}
             style={{ marginVertical: 10 }}
           >
             {sightingFormData.image.uri || sightingFormData.photo

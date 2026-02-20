@@ -14,7 +14,7 @@ export type SightingReport = Pet & {
   reporterId: string;
 };
 
-type PetImage = {
+export type PetImage = {
   uri: string;
   filename: string;
   filetype: string;
