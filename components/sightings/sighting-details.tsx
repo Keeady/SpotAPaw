@@ -75,23 +75,18 @@ export default function SightingDetail({
   return (
     <Portal.Host>
       <View style={{ flex: 1 }}>
-        {/* Scrollable list */}
-        <ScrollView style={{ flex: 1, backgroundColor: "#fff", padding: 16 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            backgroundColor: "#fff",
+            padding: 16,
+            paddingBottom: 50,
+          }}
+        >
           <Card>
             <Card.Title
               title={petSummary?.name || petName || "Unknown"}
               titleVariant="titleLarge"
-              right={() => (
-                <View style={{ flexDirection: "row" }}>
-                  {onAddSighting && (
-                    <IconButton
-                      icon="pencil-plus"
-                      iconColor="blue"
-                      onPress={() => onAddSighting()}
-                    />
-                  )}
-                </View>
-              )}
             />
             <Card.Content>
               {petSummary?.photo ? (
@@ -116,6 +111,7 @@ export default function SightingDetail({
                   marginTop: 10,
                   marginBottom: 10,
                   flexDirection: "row",
+                  flexWrap: "wrap",
                 }}
               >
                 {petSummary?.colors && <Text>{petSummary?.colors}, </Text>}
@@ -130,7 +126,7 @@ export default function SightingDetail({
                     flexDirection: "row",
                   }}
                 >
-                  <Text style={{ wordWrap: "wrap" }}>
+                  <Text style={{ flexWrap: "wrap" }}>
                     {petSummary?.features}
                   </Text>
                 </View>
@@ -274,6 +270,7 @@ export default function SightingDetail({
                           marginTop: 6,
                           marginBottom: 6,
                           flexDirection: "row",
+                          flexWrap: "wrap",
                         }}
                       >
                         {sighting?.colors && (

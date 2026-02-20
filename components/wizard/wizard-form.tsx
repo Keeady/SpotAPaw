@@ -369,6 +369,7 @@ export const WizardForm = () => {
             setReportType={setReportType}
             aiGenerated={aiGenerated}
             isValidData={isValidData}
+            reportType={reportType}
           />
         );
       case "edit_pet_continued":
@@ -380,6 +381,7 @@ export const WizardForm = () => {
             setReportType={setReportType}
             aiGenerated={aiGenerated}
             isValidData={isValidData}
+            reportType={reportType}
           />
         );
       case "locate_pet":
