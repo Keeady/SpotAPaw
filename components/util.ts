@@ -5,6 +5,7 @@ import * as Location from "expo-location";
 import * as chrono from "chrono-node";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppConstants, { GOOGLE_GEOCODE_URL } from "./constants";
+import { log } from "./logs";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -20,10 +21,10 @@ export const isValidUuid = (id: string | null | undefined) => {
 export async function handleSignOut(router: Router) {
   let { error } = await supabase.auth.signOut();
   if (error) {
-    Alert.alert(error.message);
-  } else {
-    router.navigate("/");
+    log(error.message);
   }
+  
+  router.navigate("/");
 }
 
 export async function handleSignIn(router: Router) {
