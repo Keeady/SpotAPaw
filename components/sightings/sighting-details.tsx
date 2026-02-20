@@ -12,7 +12,6 @@ import {
   Avatar,
   Text,
   Divider,
-  IconButton,
   Button,
   Chip,
   Portal,
