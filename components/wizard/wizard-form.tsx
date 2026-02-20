@@ -456,7 +456,7 @@ export const WizardForm = () => {
         <Button
           mode="text"
           onPress={handleBack}
-          disabled={loading || disabledBack || currentStep === "start"}
+          disabled={loading || disabledBack || stepHistory.length === 0}
         >
           Back
         </Button>
