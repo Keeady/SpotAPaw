@@ -64,7 +64,7 @@ export function UploadPhoto({
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.verticallySpaced, styles.mb10]}>
+        <View style={[styles.verticallySpaced, styles.mb10, styles.mt5]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
   mt20: {
     marginTop: 20,
   },
-  mt10: {
-    marginTop: 10,
+  mt5: {
+    marginTop: 5,
   },
   mb10: {
     marginBottom: 10,
