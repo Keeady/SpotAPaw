@@ -1,7 +1,6 @@
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { supabase } from "../supabase-client";
-import { log } from "../logs";
 
 export async function saveSightingPhoto(
   sightingFormData: SightingReport,

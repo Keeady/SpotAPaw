@@ -1,4 +1,3 @@
-import { Alert } from "react-native";
 import { supabase } from "./supabase-client";
 import { Router } from "expo-router";
 import * as Location from "expo-location";
