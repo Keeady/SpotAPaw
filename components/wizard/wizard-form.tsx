@@ -1,4 +1,4 @@
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import { FunctionsHttpError, PostgrestError } from "@supabase/supabase-js";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
@@ -218,12 +218,7 @@ export const WizardForm = () => {
         if (currentStep === "upload_photo") {
           await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
-          showMessage({
-            message: "Error saving sighting info. Please try again.",
-            type: "warning",
-            icon: "warning",
-            statusBarHeight: 50,
-          });
+          onSubmitFailure(err);
         }
       })
       .finally(() => {
@@ -308,6 +303,21 @@ export const WizardForm = () => {
 
     setAiGenerated(false);
     setLoading(false);
+  };
+
+  const onSubmitFailure = (error: any) => {
+    if (error instanceof Error || error instanceof PostgrestError) {
+      log(error.message);
+    } else {
+      log("Failed to submit sighting.");
+    }
+
+    showMessage({
+      message: "Error saving sighting info. Please try again.",
+      type: "warning",
+      icon: "warning",
+      statusBarHeight: 100,
+    });
   };
 
   const { analyze } = usePetAnalyzer({

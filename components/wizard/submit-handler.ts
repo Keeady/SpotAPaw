@@ -1,6 +1,7 @@
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { supabase } from "../supabase-client";
+import { log } from "../logs";
 
 export async function saveSightingPhoto(
   sightingFormData: SightingReport,
@@ -28,7 +29,7 @@ export async function saveNewSighting(
     sightingFormData.last_seen_long,
   );
   const payload = {
-    age: sightingFormData.age,
+    age: sightingFormData.age ? sightingFormData.age : null,
     name: sightingFormData.name,
     colors: sightingFormData.colors,
     breed: sightingFormData.breed,
@@ -62,7 +63,16 @@ export async function saveNewSighting(
     payload.reporter_id = sightingFormData.reporterId;
   }
 
-  return await supabase.from("sightings").insert([payload]).select("id");
+  const { data, error } = await supabase
+    .from("sightings")
+    .insert([payload])
+    .select("id");
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 }
 
 function saveNotes(report: SightingReport) {
