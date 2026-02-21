@@ -285,19 +285,24 @@ export const WizardForm = () => {
     if (error instanceof FunctionsHttpError) {
       const errorContext = await error.context.json();
       if (errorContext.code === MAX_FILE_SIZE_ERROR) {
-        setErrorMessage("Photo is too large");
+        setErrorMessage("Photo is too large.");
+      } else {
+        setErrorMessage("Failed to process image. Please try again.");
       }
+
       log(errorContext.message);
     } else if (error instanceof Error) {
       if (error.cause === NO_PETS_DETECTED) {
-        setErrorMessage("No pets detected in image");
+        setErrorMessage("No pets detected in image.");
       } else if (error.cause === MAX_FILE_SIZE_ERROR) {
-        setErrorMessage("Photo is too large");
+        setErrorMessage("Photo is too large.");
+      } else {
+        setErrorMessage("Failed to process image. Please try again.");
       }
 
       log(error.message);
     } else {
-      setErrorMessage("Failed to process image");
+      setErrorMessage("Failed to process image. Please try again.");
       log("Failed to process image");
     }
 
