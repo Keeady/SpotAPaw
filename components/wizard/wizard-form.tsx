@@ -18,7 +18,7 @@ import { Step1 } from "./start";
 import { saveNewSighting, saveSightingPhoto } from "./submit-handler";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
-import { SightingReport } from "./wizard-interface";
+import { PetImage, SightingReport } from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { isValidUuid } from "../util";
@@ -38,7 +38,10 @@ export type SightingReportType = "lost_own" | "found_stray";
 
 export type SightingWizardStepData = {
   sightingFormData: SightingReport;
-  updateSightingData: (field: string, value: any) => void;
+  updateSightingData: (
+    field: string,
+    value: string | number | PetImage,
+  ) => void;
   loading: boolean;
   setReportType: (type: SightingReportType) => void;
   reportType?: SightingReportType;
@@ -77,9 +80,12 @@ export const WizardForm = () => {
     petId: string;
   }>();
 
-  const updateSightingData = useCallback((field: string, value: any) => {
-    setSightingFormData((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const updateSightingData = useCallback(
+    (field: string, value: string | number | PetImage) => {
+      setSightingFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
   useEffect(() => {
     // reset data
@@ -321,7 +327,7 @@ export const WizardForm = () => {
       message: "Error saving sighting info. Please try again.",
       type: "warning",
       icon: "warning",
-      statusBarHeight: 100,
+      statusBarHeight: 50,
     });
   };
 
