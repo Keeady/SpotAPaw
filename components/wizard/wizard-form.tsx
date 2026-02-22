@@ -1,4 +1,4 @@
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import { FunctionsHttpError, PostgrestError } from "@supabase/supabase-js";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
@@ -18,7 +18,7 @@ import { Step1 } from "./start";
 import { saveNewSighting, saveSightingPhoto } from "./submit-handler";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
-import { SightingReport } from "./wizard-interface";
+import { PetImage, SightingReport } from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { isValidUuid } from "../util";
@@ -38,7 +38,10 @@ export type SightingReportType = "lost_own" | "found_stray";
 
 export type SightingWizardStepData = {
   sightingFormData: SightingReport;
-  updateSightingData: (field: string, value: string) => void;
+  updateSightingData: (
+    field: string,
+    value: string | number | PetImage,
+  ) => void;
   loading: boolean;
   setReportType: (type: SightingReportType) => void;
   reportType?: SightingReportType;
@@ -77,9 +80,12 @@ export const WizardForm = () => {
     petId: string;
   }>();
 
-  const updateSightingData = useCallback((field: string, value: string) => {
-    setSightingFormData((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const updateSightingData = useCallback(
+    (field: string, value: string | number | PetImage) => {
+      setSightingFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
   useEffect(() => {
     // reset data
@@ -218,12 +224,7 @@ export const WizardForm = () => {
         if (currentStep === "upload_photo") {
           await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
-          showMessage({
-            message: "Error saving sighting info. Please try again.",
-            type: "warning",
-            icon: "warning",
-            statusBarHeight: 50,
-          });
+          onSubmitFailure(err);
         }
       })
       .finally(() => {
@@ -290,24 +291,44 @@ export const WizardForm = () => {
     if (error instanceof FunctionsHttpError) {
       const errorContext = await error.context.json();
       if (errorContext.code === MAX_FILE_SIZE_ERROR) {
-        setErrorMessage("Photo is too large");
+        setErrorMessage("Photo is too large.");
+      } else {
+        setErrorMessage("Failed to process image. Please try again.");
       }
+
       log(errorContext.message);
     } else if (error instanceof Error) {
       if (error.cause === NO_PETS_DETECTED) {
-        setErrorMessage("No pets detected in image");
+        setErrorMessage("No pets detected in image.");
       } else if (error.cause === MAX_FILE_SIZE_ERROR) {
-        setErrorMessage("Photo is too large");
+        setErrorMessage("Photo is too large.");
+      } else {
+        setErrorMessage("Failed to process image. Please try again.");
       }
 
       log(error.message);
     } else {
-      setErrorMessage("Failed to process image");
+      setErrorMessage("Failed to process image. Please try again.");
       log("Failed to process image");
     }
 
     setAiGenerated(false);
     setLoading(false);
+  };
+
+  const onSubmitFailure = (error: any) => {
+    if (error instanceof Error || error instanceof PostgrestError) {
+      log(error.message);
+    } else {
+      log("Failed to submit sighting.");
+    }
+
+    showMessage({
+      message: "Error saving sighting info. Please try again.",
+      type: "warning",
+      icon: "warning",
+      statusBarHeight: 50,
+    });
   };
 
   const { analyze } = usePetAnalyzer({
@@ -369,6 +390,7 @@ export const WizardForm = () => {
             setReportType={setReportType}
             aiGenerated={aiGenerated}
             isValidData={isValidData}
+            reportType={reportType}
           />
         );
       case "edit_pet_continued":
@@ -380,6 +402,7 @@ export const WizardForm = () => {
             setReportType={setReportType}
             aiGenerated={aiGenerated}
             isValidData={isValidData}
+            reportType={reportType}
           />
         );
       case "locate_pet":
@@ -454,7 +477,7 @@ export const WizardForm = () => {
         <Button
           mode="text"
           onPress={handleBack}
-          disabled={loading || disabledBack || currentStep === "start"}
+          disabled={loading || disabledBack || stepHistory.length === 0}
         >
           Back
         </Button>

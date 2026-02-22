@@ -118,6 +118,7 @@ export default function EditPetDetails(
               label={"Pet Name"}
               value={pet?.name}
               onChangeText={(v) => handleChange("name", v)}
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -125,6 +126,7 @@ export default function EditPetDetails(
               label={"Species (e.g., Dog, Cat)"}
               value={pet?.species}
               onChangeText={(v) => handleChange("species", v)}
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -132,6 +134,7 @@ export default function EditPetDetails(
               label={"Breed"}
               value={pet?.breed}
               onChangeText={(v) => handleChange("breed", v)}
+              mode="outlined"
             />
           </View>
 
@@ -141,6 +144,7 @@ export default function EditPetDetails(
               value={pet?.age?.toString() || ""}
               onChangeText={(v) => handleChange("age", v)}
               keyboardType="numeric"
+              mode="outlined"
             />
           </View>
 
@@ -171,6 +175,7 @@ export default function EditPetDetails(
               label={"Colors"}
               value={pet?.colors}
               onChangeText={(v) => handleChange("colors", v)}
+              mode="outlined"
             />
           </View>
 
@@ -180,6 +185,7 @@ export default function EditPetDetails(
               value={pet?.features}
               onChangeText={(v) => handleChange("features", v)}
               multiline
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -188,6 +194,7 @@ export default function EditPetDetails(
               value={pet?.note}
               onChangeText={(v) => handleChange("note", v)}
               multiline
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>

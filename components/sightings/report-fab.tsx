@@ -15,7 +15,7 @@ export default function ReportLostPetFab({
       <FAB
         visible
         icon={"plus"}
-        style={{ position: "absolute", bottom: 20, right: 5 }}
+        style={{ position: "absolute", bottom: 16, right: 16 }}
         variant={"primary"}
         label={title}
         onPress={onFormPress}

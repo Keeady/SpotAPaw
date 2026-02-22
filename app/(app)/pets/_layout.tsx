@@ -20,7 +20,7 @@ export default function PetLayout() {
         ),
         headerLeft: () => (
           <Image
-            source={require("../../../assets/images/logosmall.png")}
+            source={require("../../../assets/images/spotapaw-text-logo-v2.png")}
             style={styles.logo}
           />
         ),

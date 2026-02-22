@@ -22,21 +22,21 @@ export default function EditPetSightingDetails(
   >,
   pet?: Pet,
   sighting?: PetSighting,
-  is_lost?: boolean
+  is_lost?: boolean,
 ) {
   const theme = useTheme();
   const [extra_info, setExtraInfo] = useState("");
 
   const handleProfileChange = (
     fieldName: string,
-    fieldValue: string | number
+    fieldValue: string | number,
   ) => {
     setProfileInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
   const handleSightingChange = (
     fieldName: string,
-    fieldValue: string | number
+    fieldValue: string | number,
   ) => {
     setSightingInfo((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
@@ -110,6 +110,7 @@ export default function EditPetSightingDetails(
               label={"Pet Name"}
               value={pet?.name}
               onChangeText={(v) => handleProfileChange("name", v)}
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -117,6 +118,7 @@ export default function EditPetSightingDetails(
               label={"Species (e.g., Dog, Cat)"}
               value={pet?.species}
               onChangeText={(v) => handleProfileChange("species", v)}
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -124,6 +126,7 @@ export default function EditPetSightingDetails(
               label={"Breed"}
               value={pet?.breed}
               onChangeText={(v) => handleProfileChange("breed", v)}
+              mode="outlined"
             />
           </View>
 
@@ -133,6 +136,7 @@ export default function EditPetSightingDetails(
               value={pet?.age?.toString() || ""}
               onChangeText={(v) => handleProfileChange("age", v)}
               keyboardType="numeric"
+              mode="outlined"
             />
           </View>
 
@@ -163,6 +167,7 @@ export default function EditPetSightingDetails(
               label={"Colors"}
               value={pet?.colors}
               onChangeText={(v) => handleProfileChange("colors", v)}
+              mode="outlined"
             />
           </View>
 
@@ -172,6 +177,7 @@ export default function EditPetSightingDetails(
               value={pet?.features}
               onChangeText={(v) => handleProfileChange("features", v)}
               multiline
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -180,6 +186,7 @@ export default function EditPetSightingDetails(
               value={pet?.note}
               onChangeText={(v) => handleProfileChange("note", v)}
               multiline
+              mode="outlined"
             />
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>

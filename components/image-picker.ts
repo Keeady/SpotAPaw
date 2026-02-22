@@ -29,8 +29,7 @@ export const ImagePickerHandler = async (
 
 export const pickImage = async (
   setPhoto?: React.Dispatch<React.SetStateAction<string>>,
-): Promise<string | null> => {
-  // No permissions request is necessary for launching the image library
+): Promise<ImagePicker.ImagePickerAsset | null> => {
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
@@ -48,12 +47,12 @@ export const pickImage = async (
     setPhoto(photUri);
   }
 
-  return photUri;
+  return result.assets[0];
 };
 
 export const takePhoto = async (
   setPhoto?: React.Dispatch<React.SetStateAction<string>>,
-): Promise<string | null> => {
+): Promise<ImagePicker.ImagePickerAsset | null> => {
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images", "livePhotos"],
     allowsEditing: true,
@@ -72,7 +71,7 @@ export const takePhoto = async (
     setPhoto(photUri);
   }
 
-  return photUri;
+  return result.assets[0];
 };
 
 const checkCameraPermission = async () => {
@@ -133,7 +132,11 @@ export const requestMediaLibraryPermission = async () => {
 };
 
 export const uploadOrTakePhoto = async (
-  callback: (uri: string | null) => void,
+  callback: (
+    uri: string | null,
+    fileName: string | null,
+    mimeType: string | null,
+  ) => void,
 ): Promise<void> => {
   Alert.alert("Add Photo", "Choose an option", [
     { text: "Cancel", style: "cancel" },
@@ -141,14 +144,18 @@ export const uploadOrTakePhoto = async (
       text: "Take Photo",
       onPress: async () => {
         const result = await takePhoto();
-        callback(result);
+        if (result) {
+          callback(result.uri, result.fileName || "", result?.mimeType || "");
+        }
       },
     },
     {
       text: "Choose from Library",
       onPress: async () => {
         const result = await pickImage();
-        callback(result);
+        if (result) {
+          callback(result.uri, result.fileName || "", result?.mimeType || "");
+        }
       },
     },
   ]);
