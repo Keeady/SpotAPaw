@@ -485,6 +485,7 @@ export const WizardForm = () => {
           mode={currentStep === "submit" ? "contained" : "text"}
           onPress={handleNext}
           disabled={disabledNext || loading || !!errorMessage}
+          style={user ? {} : { paddingBottom: 20 }}
         >
           {currentStep === "submit" ? "Submit" : "Continue"}
         </Button>
