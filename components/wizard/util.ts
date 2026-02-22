@@ -121,7 +121,7 @@ export function validateEditPetContinued(
   if (sightingFormData.linkedSightingId) {
     return isValid;
   }
-  
+
   if (reportType === "lost_own" && !sightingFormData.size) {
     isValid = false;
   }
@@ -139,6 +139,8 @@ export function validateEditPetContinued(
 export function validateEditPhoto(sightingFormData: SightingReport) {
   let isValid = false;
   if (sightingFormData.image.uri || sightingFormData.photo) {
+    isValid = true;
+  } else if (sightingFormData.linkedSightingId) {
     isValid = true;
   }
 

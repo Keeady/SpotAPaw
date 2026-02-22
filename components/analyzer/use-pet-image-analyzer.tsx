@@ -38,6 +38,10 @@ export function usePetAnalyzer(
   const analyze = useCallback(
     async (uri: string, filename: string, filetype: string) => {
       try {
+        if (!uri || !filename || !filetype) {
+          throw new Error("Missing required parameters uri or filename or filetype.");
+        }
+
         setLoading(true);
         const response = await uploadPhotoWithProcessing(
           uri,
