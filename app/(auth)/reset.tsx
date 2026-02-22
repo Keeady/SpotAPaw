@@ -42,7 +42,7 @@ export default function Reset() {
     }
 
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         shouldCreateUser: false,
