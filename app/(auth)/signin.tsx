@@ -1,8 +1,9 @@
+import DividerWithText from "@/components/divider-with-text";
 import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
@@ -93,72 +94,99 @@ export default function SignInScreen() {
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
         <Text style={styles.headerTitle}>Welcome Back!</Text>
         <Text style={styles.headerSubtitle}>
-          Find and protect your furry friend
+          Help find and protect our furry friends
         </Text>
       </View>
-      <View style={styles.content}>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="labelSmall" style={{ color: "red" }}>
-            {hasEmailError ? "Invalid email address." : ""}
-          </Text>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+        <View style={styles.buttonContainer}>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Text variant="labelSmall" style={{ color: "red" }}>
+              {hasEmailError ? "Invalid email address." : ""}
+            </Text>
+            <TextInput
+              label="Email"
+              left={<TextInput.Icon icon="mail" />}
+              onChangeText={(text) => {
+                setEmail(text);
+              }}
+              value={email}
+              placeholder="email@address.com"
+              autoCapitalize={"none"}
+              mode="outlined"
+              keyboardType="email-address"
+              error={hasEmailError}
+            />
+          </View>
+          <View style={styles.verticallySpaced}>
+            <TextInput
+              label="Password"
+              left={<TextInput.Icon icon="lock" />}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              secureTextEntry={isHidden}
+              placeholder="Password"
+              autoCapitalize={"none"}
+              mode="outlined"
+              right={
+                <TextInput.Icon
+                  icon={isHidden ? "eye" : "eye-off"}
+                  onPress={() => setHidden(!isHidden)}
+                />
+              }
+              textContentType="password"
+            />
+          </View>
+          <View style={{ alignSelf: "flex-end" }}>
+            <Button
+              mode="text"
+              onPress={() => {
+                console.log("fogot my password");
+              }}
+            >
+              Forgot Password?
+            </Button>
+          </View>
+          <View style={[styles.verticallySpaced]}>
+            <Button
+              mode="contained"
+              disabled={loading || hasEmailError}
+              onPress={() => signInWithEmail()}
+              style={styles.button}
+            >
+              Sign in
+            </Button>
+          </View>
+          <DividerWithText text="OR" />
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Button
+              icon="google"
+              mode="outlined"
+              onPress={() => router.push("/(auth)/oauth")}
+              style={styles.button}
+            >
+              Continue with Google
+            </Button>
+          </View>
+        </View>
+
+        <View style={styles.bottomSection}>
+          <View style={styles.secondary}>
+            <Text>{"Don't have an account?"}</Text>
+            <Button
+              mode="text"
+              disabled={loading}
+              onPress={() => router.push("/(auth)/signup")}
+            >
+              Register
+            </Button>
+          </View>
           <TextInput
-            label="Email"
-            left={<TextInput.Icon icon="mail" />}
-            onChangeText={(text) => {
-              setEmail(text);
-            }}
-            value={email}
-            placeholder="email@address.com"
-            autoCapitalize={"none"}
-            mode="outlined"
-            keyboardType="email-address"
-            error={hasEmailError}
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
           />
         </View>
-        <View style={styles.verticallySpaced}>
-          <TextInput
-            label="Password"
-            left={<TextInput.Icon icon="lock" />}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry={isHidden}
-            placeholder="Password"
-            autoCapitalize={"none"}
-            mode="outlined"
-            right={
-              <TextInput.Icon
-                icon={isHidden ? "eye" : "eye-off"}
-                onPress={() => setHidden(!isHidden)}
-              />
-            }
-            textContentType="password"
-          />
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Button
-            mode="contained"
-            disabled={loading || !email || !password || hasEmailError}
-            onPress={() => signInWithEmail()}
-          >
-            Sign in
-          </Button>
-        </View>
-        <View style={styles.secondary}>
-          <Text>{"Don't have an account?"}</Text>
-          <Button
-            mode="text"
-            disabled={loading}
-            onPress={() => router.push("/(auth)/signup")}
-          >
-            Register
-          </Button>
-        </View>
-        <TextInput
-          style={{ height: 0, opacity: 0 }}
-          value={extra_info}
-          onChangeText={setExtraInfo}
-        />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -176,16 +204,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10,
     backgroundColor: "#fff",
+    flexDirection: "column",
+  },
+  content: {
+    justifyContent: "space-between",
+    flexGrow: 1,
+    paddingHorizontal: 24,
   },
   secondary: {
     flexDirection: "row",
     alignItems: "baseline",
     paddingTop: 4,
     paddingBottom: 4,
-  },
-  content: {
-    paddingHorizontal: 24,
-    alignItems: "center",
+    alignSelf: "center",
   },
   header: {
     backgroundColor: "#714ea9ff",
@@ -204,4 +235,14 @@ const styles = StyleSheet.create({
     color: "#BBDEFB",
     marginTop: 4,
   },
+  button: {
+    width: "100%",
+    marginBottom: 16,
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  buttonContainer: {
+    width: "100%",
+  },
+  bottomSection: {},
 });

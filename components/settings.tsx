@@ -461,6 +461,9 @@ const SettingsScreen = () => {
           <Text variant="bodySmall" style={styles.footerText}>
             Version 1.0.0
           </Text>
+          <Text variant="bodySmall">
+            SpotAPaw &#169; {new Date().getFullYear()}
+          </Text>
         </View>
       </ScrollView>
 

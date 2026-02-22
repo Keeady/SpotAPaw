@@ -1,4 +1,3 @@
-import DividerWithText from "@/components/divider-with-text";
 import HomePageHeader from "@/components/header/homepage-header";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, useRouter } from "expo-router";
@@ -22,13 +21,13 @@ export default function PublicHome() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.logoContainer}>
         <HomePageHeader />
+        <View>
+          <Text variant="titleMedium" style={styles.largeText}>
+            A community helping lost pets find their way home.
+          </Text>
+        </View>
       </View>
 
-      <View>
-        <Text variant="titleMedium" style={styles.largeText}>
-          A community helping lost pets find their way home.
-        </Text>
-      </View>
       <View style={styles.buttonContainer}>
         <Button
           icon="login"
@@ -46,18 +45,6 @@ export default function PublicHome() {
         >
           Create an account
         </Button>
-        <DividerWithText text="OR" />
-
-        <Button
-          icon="google"
-          mode="contained-tonal"
-          onPress={() => router.push("/(auth)/oauth")}
-          style={styles.button}
-        >
-          Continue with Google
-        </Button>
-
-        <DividerWithText text="OR" />
 
         <Button
           icon=""
@@ -67,12 +54,9 @@ export default function PublicHome() {
         >
           Continue as Guest
         </Button>
-      </View>
-      <View style={styles.bottomSection}>
+
         <View style={styles.usageText}>
-          <Text variant="bodySmall" style={{ textAlign: "center" }}>
-            By continuing, you agree to our
-          </Text>
+          <Text variant="bodySmall">By continuing, you agree to our</Text>
           <Button mode="text" onPress={() => router.push("/privacy")} compact>
             <Text
               variant="bodySmall"
@@ -81,9 +65,7 @@ export default function PublicHome() {
               Privacy Policy
             </Text>
           </Button>
-          <Text variant="bodySmall" style={{ textAlign: "center" }}>
-            and
-          </Text>
+          <Text variant="bodySmall">and</Text>
           <Button mode="text" onPress={() => router.push("/terms")} compact>
             <Text
               variant="bodySmall"
@@ -93,10 +75,6 @@ export default function PublicHome() {
             </Text>
           </Button>
         </View>
-
-        <Text variant="bodySmall">
-          SpotAPaw &#169; {new Date().getFullYear()}
-        </Text>
       </View>
     </ScrollView>
   );
@@ -106,6 +84,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
+    paddingBottom: 24,
     backgroundColor: "#fff",
     flexDirection: "column",
   },
@@ -115,7 +94,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    marginBottom: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderRadius: 12,
   },
@@ -125,17 +104,11 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
+    flexGrow: 2,
   },
   largeText: {
     textAlign: "center",
-    marginBottom: 40,
-  },
-  bottomSection: {
-    marginBottom: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 16,
-    gap: 8,
   },
   usageText: {
     flexDirection: "row",
@@ -143,5 +116,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignItems: "center",
     flexWrap: "wrap",
+    marginTop: 16,
   },
 });
