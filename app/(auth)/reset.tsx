@@ -1,34 +1,33 @@
-import DividerWithText from "@/components/divider-with-text";
 import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Platform, View, StyleSheet, ScrollView } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 
-export default function SignInScreen() {
+export default function Reset() {
   const theme = useTheme();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  const [code, setCode] = useState("");
   const [hasEmailError, setHasEmailError] = useState(false);
+  const [showCodeVerification, setShowCodeVerification] = useState(false);
+  const router = useRouter();
+  const [disable, setDisabled] = useState(false);
 
   const debounceTimer = useRef<number>(null);
 
-  async function signInWithEmail() {
+  async function resetWithEmail() {
     if (extra_info.trim()) {
       return;
     }
 
-    if (!email || !password) {
+    if (!email) {
       showMessage({
-        message: "Email and password are required. Please try again.",
+        message: "Email is required. Please try again.",
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -43,12 +42,40 @@ export default function SignInScreen() {
     }
 
     setLoading(true);
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false,
+      },
+    });
+    console.log(data, error);
+
+    if (error) {
+      log(error.message);
+      showMessage({
+        message: "An error occurred. Please try again.",
+        type: "warning",
+        icon: "warning",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
+    } else {
+      setShowCodeVerification(true);
+    }
+
+    setLoading(false);
+  }
+
+  async function verify() {
+    setLoading(true);
+    setDisabled(true);
     const {
-      error,
       data: { session },
-    } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+      error,
+    } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: "email",
     });
 
     if (session) {
@@ -59,7 +86,7 @@ export default function SignInScreen() {
     if (error) {
       log(error.message);
       showMessage({
-        message: "Invalid email or password. Please try again.",
+        message: "Invalid code. Please try again.",
         type: "danger",
         icon: "danger",
         autoHide: true,
@@ -99,69 +126,71 @@ export default function SignInScreen() {
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.buttonContainer}>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text variant="labelSmall" style={{ color: "red" }}>
-              {hasEmailError ? "Invalid email address." : ""}
-            </Text>
-            <TextInput
-              label="Email"
-              left={<TextInput.Icon icon="mail" />}
-              onChangeText={(text) => {
-                setEmail(text);
-              }}
-              value={email}
-              placeholder="email@address.com"
-              autoCapitalize={"none"}
-              mode="outlined"
-              keyboardType="email-address"
-              error={hasEmailError}
-            />
-          </View>
-          <View style={styles.verticallySpaced}>
-            <TextInput
-              label="Password"
-              left={<TextInput.Icon icon="lock" />}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              secureTextEntry={isHidden}
-              placeholder="Password"
-              autoCapitalize={"none"}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  icon={isHidden ? "eye" : "eye-off"}
-                  onPress={() => setHidden(!isHidden)}
+          <Text variant="titleMedium" style={styles.largeText}>
+            Login with a one time passcode.
+          </Text>
+          {!showCodeVerification && (
+            <View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <Text variant="labelSmall" style={{ color: "red" }}>
+                  {hasEmailError ? "Invalid email address." : ""}
+                </Text>
+                <TextInput
+                  label="Email"
+                  left={<TextInput.Icon icon="mail" />}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                  }}
+                  value={email}
+                  placeholder="email@address.com"
+                  autoCapitalize={"none"}
+                  mode="outlined"
+                  keyboardType="email-address"
+                  error={hasEmailError}
                 />
-              }
-              textContentType="password"
-            />
-          </View>
-          <View style={{ alignSelf: "flex-end" }}>
-            <Button mode="text" onPress={() => router.push("/(auth)/reset")}>
-              Forgot Password?
-            </Button>
-          </View>
-          <View style={[styles.verticallySpaced]}>
-            <Button
-              mode="contained"
-              disabled={loading || hasEmailError}
-              onPress={() => signInWithEmail()}
-              style={styles.button}
-            >
-              Sign in
-            </Button>
-          </View>
-          <DividerWithText text="OR" />
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Button
-              icon="google"
-              mode="outlined"
-              onPress={() => router.push("/(auth)/oauth")}
-              style={styles.button}
-            >
-              Continue with Google
-            </Button>
-          </View>
+              </View>
+
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <Button
+                  mode="contained"
+                  disabled={loading || hasEmailError}
+                  onPress={() => resetWithEmail()}
+                  style={styles.button}
+                >
+                  Send code
+                </Button>
+              </View>
+            </View>
+          )}
+
+          {showCodeVerification && (
+            <View>
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <TextInput
+                  label="Verification Code"
+                  onChangeText={(text) => {
+                    setCode(text);
+                  }}
+                  value={code}
+                  placeholder="Enter verification code sent to your email"
+                  autoCapitalize={"none"}
+                  mode="outlined"
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View style={[styles.verticallySpaced, styles.mt20]}>
+                <Button
+                  mode="contained"
+                  disabled={loading}
+                  onPress={() => verify()}
+                  style={styles.button}
+                >
+                  Verify code
+                </Button>
+              </View>
+            </View>
+          )}
         </View>
 
         <View>
@@ -238,5 +267,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
+  },
+  largeText: {
+    textAlign: "center",
+    paddingTop: 24,
   },
 });

@@ -57,7 +57,7 @@ export default function SignUpScreen() {
       return;
     }
 
-    if (!password !== !rePassword) {
+    if (password !== rePassword) {
       showMessage({
         message: "Passwords do not match. Please try again.",
         type: "warning",
@@ -212,12 +212,6 @@ export default function SignUpScreen() {
               secureTextEntry={isHidden}
               placeholder="Confirm Password"
               autoCapitalize={"none"}
-              right={
-                <TextInput.Icon
-                  icon={isHidden ? "eye" : "eye-off"}
-                  onPress={() => setHidden(!isHidden)}
-                />
-              }
               mode="outlined"
               textContentType="password"
             />
