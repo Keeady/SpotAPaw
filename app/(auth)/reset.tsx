@@ -48,7 +48,6 @@ export default function Reset() {
         shouldCreateUser: false,
       },
     });
-    console.log(data, error);
 
     if (error) {
       log(error.message);
@@ -189,7 +188,7 @@ export default function Reset() {
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Button
                   mode="contained"
-                  disabled={loading}
+                  disabled={loading || disable}
                   onPress={() => verify()}
                   style={styles.button}
                 >
