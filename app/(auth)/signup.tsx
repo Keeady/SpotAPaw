@@ -4,6 +4,7 @@ import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -22,6 +23,7 @@ import isEmail from "validator/es/lib/isEmail";
 
 export default function SignUpScreen() {
   const theme = useTheme();
+  const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -141,10 +143,24 @@ export default function SignUpScreen() {
     };
   }, [email]);
 
+  useEffect(() => {
+    const showListener = Keyboard.addListener("keyboardDidShow", () => {
+      setBehavior("padding");
+    });
+    const hideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setBehavior(undefined);
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={"padding"}
+      behavior={behavior}
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>

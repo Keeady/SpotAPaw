@@ -60,6 +60,13 @@ export default function Reset() {
         statusBarHeight: 50,
       });
     } else {
+      showMessage({
+        message: "Please check your email for a verification code.",
+        type: "success",
+        icon: "success",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
       setShowCodeVerification(true);
     }
 
