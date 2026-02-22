@@ -1,12 +1,18 @@
 import { View, StyleSheet, ScrollView } from "react-native";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
-import { ActivityIndicator, HelperText } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  HelperText,
+  Text,
+} from "react-native-paper";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Provider/auth-provider";
 import { supabase } from "../supabase-client";
 import { Pet } from "@/model/pet";
 import { PetSelection } from "../sightings/pet-selection";
+import { useRouter } from "expo-router";
 
 export function ChoosePet({
   updateSightingData,
@@ -14,7 +20,7 @@ export function ChoosePet({
   isValidData,
 }: SightingWizardStepData) {
   const { user } = useContext(AuthContext);
-
+  const router = useRouter();
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPetId, setSelectedPetId] = useState<string>("");
   const [hasErrors, setHasErrors] = useState(false);
@@ -66,19 +72,34 @@ export function ChoosePet({
         subTitle="Sorry to hear your pet is missing. Let's bring them back!"
       />
       <ScrollView
+        style={{flex: 1}}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {!user && (
+          <View style={{flexGrow: 1, justifyContent: "center"}}>
+            
+            <Button
+              mode="contained"
+              onPress={() => router.navigate("/")}
+              style={styles.button}
+            >
+              Sign in or create an account
+            </Button>
+          </View>
+        )}
         {loading && <ActivityIndicator size={"large"} />}
-        <HelperText
-          type="error"
-          visible={hasErrors && !id}
-          style={styles.helperText}
-          padding="none"
-        >
-          Please select a pet!
-        </HelperText>
+        {user && (
+          <HelperText
+            type="error"
+            visible={hasErrors && !id}
+            style={styles.helperText}
+            padding="none"
+          >
+            Please select a pet!
+          </HelperText>
+        )}
         <PetSelection
           selectedPetId={selectedPetId || sightingFormData.id}
           setSelectedPetId={setSelectedPetId}
@@ -95,9 +116,16 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 12,
+    flexGrow: 1
   },
   helperText: {
     alignSelf: "flex-end",
     fontWeight: "bold",
+  },
+  button: {
+    width: "100%",
+    marginBottom: 16,
+    borderWidth: 1,
+    borderRadius: 12,
   },
 });
