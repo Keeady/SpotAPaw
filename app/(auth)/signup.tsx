@@ -33,6 +33,8 @@ export default function SignUpScreen() {
   const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
   const [hasEmailError, setHasEmailError] = useState(false);
+  const [showResend, setShowResend] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState("");
 
   const debounceTimer = useRef<number>(null);
 
@@ -42,6 +44,55 @@ export default function SignUpScreen() {
 
     return passwordRegex.test(password);
   }, []);
+
+  async function resendVerificationWithEmail() {
+    if (extra_info.trim()) {
+      return;
+    }
+
+    if (!confirmationEmail) {
+      showMessage({
+        message: "Email is required. Please try again.",
+        type: "warning",
+        icon: "warning",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
+      return;
+    }
+
+    if (!confirmationEmail || !isEmail(confirmationEmail)) {
+      setHasEmailError(true);
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: confirmationEmail,
+    });
+
+    if (error) {
+      log(error.message);
+      showMessage({
+        message: "An error occurred. Please try again.",
+        type: "warning",
+        icon: "warning",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
+    } else {
+      showMessage({
+        message: "Please check your email for the confirmation URL.",
+        type: "success",
+        icon: "success",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
+    }
+
+    setLoading(false);
+  }
 
   async function signUpWithEmail() {
     if (extra_info.trim()) {
@@ -120,7 +171,7 @@ export default function SignUpScreen() {
     }
 
     setLoading(false);
-    router.navigate("/");
+    setShowResend(true);
   }
 
   useEffect(() => {
@@ -134,6 +185,12 @@ export default function SignUpScreen() {
       } else {
         setHasEmailError(false);
       }
+
+      if (confirmationEmail) {
+        setHasEmailError(!isEmail(confirmationEmail));
+      } else {
+        setHasEmailError(false);
+      }
     }, 500);
 
     return () => {
@@ -141,7 +198,7 @@ export default function SignUpScreen() {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [email]);
+  }, [email, confirmationEmail]);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -176,91 +233,130 @@ export default function SignUpScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.buttonContainer}>
-          <View style={[styles.verticallySpaced]}>
-            <HelperText
-              type="error"
-              visible={hasEmailError}
-              style={{ color: theme.colors.error }}
-              padding="none"
-            >
-              Invalid email address.
-            </HelperText>
-            <TextInput
-              label="Email"
-              left={<TextInput.Icon icon="mail" />}
-              onChangeText={(text) => {
-                setEmail(text);
-              }}
-              value={email}
-              placeholder="email@address.com"
-              autoCapitalize={"none"}
-              mode="outlined"
-              keyboardType="email-address"
-              error={hasEmailError}
-            />
-          </View>
-          <View style={styles.verticallySpaced}>
-            <TextInput
-              label="Password"
-              left={<TextInput.Icon icon="lock" />}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              secureTextEntry={isHidden}
-              placeholder="Password"
-              autoCapitalize={"none"}
-              right={
-                <TextInput.Icon
-                  icon={isHidden ? "eye" : "eye-off"}
-                  onPress={() => setHidden(!isHidden)}
-                />
-              }
-              mode="outlined"
-              textContentType="password"
-            />
-          </View>
-          <View style={styles.verticallySpaced}>
-            <TextInput
-              label="Confirm Password"
-              left={<TextInput.Icon icon="lock" />}
-              onChangeText={(text) => setRePassword(text)}
-              value={rePassword}
-              secureTextEntry={isHidden}
-              placeholder="Confirm Password"
-              autoCapitalize={"none"}
-              mode="outlined"
-              textContentType="password"
-            />
-            <HelperText visible={true} type="info" padding="none">
-              Password must be at least 8 characters long, include one uppercase
-              letter, one lowercase letter, one number, and one special
-              character.
-            </HelperText>
-          </View>
-          <View style={[styles.verticallySpaced]}>
-            <Button
-              mode="contained"
-              disabled={loading || hasEmailError}
-              onPress={() => signUpWithEmail()}
-              style={styles.button}
-            >
-              Create an account
-            </Button>
-          </View>
+        {!showResend && (
+          <View style={styles.buttonContainer}>
+            <View style={[styles.verticallySpaced]}>
+              <HelperText
+                type="error"
+                visible={hasEmailError}
+                style={{ color: theme.colors.error }}
+                padding="none"
+              >
+                Invalid email address.
+              </HelperText>
+              <TextInput
+                label="Email"
+                left={<TextInput.Icon icon="mail" />}
+                onChangeText={(text) => {
+                  setEmail(text);
+                }}
+                value={email}
+                placeholder="email@address.com"
+                autoCapitalize={"none"}
+                mode="outlined"
+                keyboardType="email-address"
+                error={hasEmailError}
+              />
+            </View>
+            <View style={styles.verticallySpaced}>
+              <TextInput
+                label="Password"
+                left={<TextInput.Icon icon="lock" />}
+                onChangeText={(text) => setPassword(text)}
+                value={password}
+                secureTextEntry={isHidden}
+                placeholder="Password"
+                autoCapitalize={"none"}
+                right={
+                  <TextInput.Icon
+                    icon={isHidden ? "eye" : "eye-off"}
+                    onPress={() => setHidden(!isHidden)}
+                  />
+                }
+                mode="outlined"
+                textContentType="password"
+              />
+            </View>
+            <View style={styles.verticallySpaced}>
+              <TextInput
+                label="Confirm Password"
+                left={<TextInput.Icon icon="lock" />}
+                onChangeText={(text) => setRePassword(text)}
+                value={rePassword}
+                secureTextEntry={isHidden}
+                placeholder="Confirm Password"
+                autoCapitalize={"none"}
+                mode="outlined"
+                textContentType="password"
+              />
+              <HelperText visible={true} type="info" padding="none">
+                Password must be at least 8 characters long, include one
+                uppercase letter, one lowercase letter, one number, and one
+                special character.
+              </HelperText>
+            </View>
+            <View style={[styles.verticallySpaced]}>
+              <Button
+                mode="contained"
+                disabled={loading || hasEmailError}
+                onPress={() => signUpWithEmail()}
+                style={styles.button}
+              >
+                Create an account
+              </Button>
+            </View>
 
-          <DividerWithText text="OR" />
+            <DividerWithText text="OR" />
 
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Button
-              icon="google"
-              mode="outlined"
-              onPress={() => router.push("/(auth)/oauth")}
-              style={styles.button}
-            >
-              Continue with Google
-            </Button>
+            <View style={[styles.verticallySpaced, styles.mt20]}>
+              <Button
+                icon="google"
+                mode="outlined"
+                onPress={() => router.push("/(auth)/oauth")}
+                style={styles.button}
+              >
+                Continue with Google
+              </Button>
+            </View>
           </View>
-        </View>
+        )}
+
+        {showResend && (
+          <View style={{ paddingVertical: 20 }}>
+            <Text variant="titleLarge" style={{ textAlign: "center" }}>
+              Check your email for confirmation link or re-enter email to resend confirmation
+            </Text>
+            <View style={[styles.verticallySpaced, styles.mt10]}>
+              <Text variant="labelSmall" style={{ color: "red" }}>
+                {hasEmailError ? "Invalid email address." : ""}
+              </Text>
+              <TextInput
+                label="Email"
+                left={<TextInput.Icon icon="mail" />}
+                onChangeText={(text) => {
+                  setConfirmationEmail(text);
+                }}
+                value={confirmationEmail}
+                placeholder="email@address.com"
+                autoCapitalize={"none"}
+                mode="outlined"
+                keyboardType="email-address"
+                error={hasEmailError}
+              />
+            </View>
+
+            <View style={[styles.verticallySpaced, styles.mt20]}>
+              <Button
+                mode="contained"
+                disabled={loading || hasEmailError}
+                onPress={() => resendVerificationWithEmail()}
+                style={styles.button}
+              >
+                Resend
+              </Button>
+            </View>
+          </View>
+        )}
 
         <View>
           <View style={styles.secondary}>
@@ -297,6 +393,9 @@ const styles = StyleSheet.create({
   },
   mt20: {
     marginTop: 20,
+  },
+  mt10: {
+    marginTop: 10,
   },
   secondary: {
     flexDirection: "row",
