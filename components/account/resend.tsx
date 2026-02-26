@@ -1,34 +1,44 @@
-import DividerWithText from "@/components/divider-with-text";
 import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 
-export default function SignInScreen() {
+export default function ResendEmailScreen() {
   const theme = useTheme();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
-
   const [hasEmailError, setHasEmailError] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState("");
 
   const debounceTimer = useRef<number>(null);
 
-  async function signInWithEmail() {
+  async function resendVerificationWithEmail() {
     if (extra_info.trim()) {
       return;
     }
 
-    if (!email || !password) {
+    if (!confirmationEmail) {
       showMessage({
-        message: "Email and password are required. Please try again.",
+        message: "Email is required. Please try again.",
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -37,35 +47,36 @@ export default function SignInScreen() {
       return;
     }
 
-    if (!email || !isEmail(email)) {
+    if (!confirmationEmail || !isEmail(confirmationEmail)) {
       setHasEmailError(true);
       return;
     }
 
     setLoading(true);
-    const {
-      error,
-      data: { session },
-    } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: confirmationEmail,
     });
-
-    if (session) {
-      router.dismissTo("/(app)/my-sightings");
-      return;
-    }
 
     if (error) {
       log(error.message);
       showMessage({
-        message: "Invalid email or password. Please try again.",
-        type: "danger",
-        icon: "danger",
+        message: "An error occurred. Please try again.",
+        type: "warning",
+        icon: "warning",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
+    } else {
+      showMessage({
+        message: "Please check your email for the confirmation URL.",
+        type: "success",
+        icon: "success",
         autoHide: true,
         statusBarHeight: 50,
       });
     }
+
     setLoading(false);
   }
 
@@ -75,31 +86,59 @@ export default function SignInScreen() {
     }
 
     debounceTimer.current = setTimeout(() => {
-      if (email) {
-        setHasEmailError(!isEmail(email));
+      if (confirmationEmail) {
+        setHasEmailError(!isEmail(confirmationEmail));
       } else {
         setHasEmailError(false);
       }
-    }, 1000);
+    }, 500);
 
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [email]);
+  }, [confirmationEmail]);
+
+  useEffect(() => {
+    const showListener = Keyboard.addListener("keyboardDidShow", () => {
+      setBehavior("padding");
+    });
+    const hideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setBehavior(undefined);
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={behavior}
+      keyboardVerticalOffset={100}
+    >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome Back!</Text>
+        <Text style={styles.headerTitle}>Welcome!</Text>
         <Text style={styles.headerSubtitle}>
-          Help find and protect our furry friends
+          Join a community of pets and pet lovers
         </Text>
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
-        <View style={styles.buttonContainer}>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ paddingVertical: 20 }}>
+          <Text variant="titleLarge" style={{ textAlign: "center" }}>
+            Check your email for confirmation link or re-enter email to resend
+            confirmation
+          </Text>
+          <View style={[styles.verticallySpaced, styles.mt10]}>
             <Text variant="labelSmall" style={{ color: "red" }}>
               {hasEmailError ? "Invalid email address." : ""}
             </Text>
@@ -107,9 +146,9 @@ export default function SignInScreen() {
               label="Email"
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
-                setEmail(text);
+                setConfirmationEmail(text);
               }}
-              value={email}
+              value={confirmationEmail}
               placeholder="email@address.com"
               autoCapitalize={"none"}
               mode="outlined"
@@ -117,62 +156,28 @@ export default function SignInScreen() {
               error={hasEmailError}
             />
           </View>
-          <View style={styles.verticallySpaced}>
-            <TextInput
-              label="Password"
-              left={<TextInput.Icon icon="lock" />}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              secureTextEntry={isHidden}
-              placeholder="Password"
-              autoCapitalize={"none"}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  icon={isHidden ? "eye" : "eye-off"}
-                  onPress={() => setHidden(!isHidden)}
-                />
-              }
-              textContentType="password"
-            />
-          </View>
-          <View style={{ alignSelf: "flex-end" }}>
-            <Button mode="text" onPress={() => router.push("/(auth)/forgot")}>
-              Forgot Password?
-            </Button>
-          </View>
-          <View style={[styles.verticallySpaced]}>
+
+          <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button
               mode="contained"
               disabled={loading || hasEmailError}
-              onPress={() => signInWithEmail()}
+              onPress={() => resendVerificationWithEmail()}
               style={styles.button}
             >
-              Sign in
-            </Button>
-          </View>
-          <DividerWithText text="OR" />
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Button
-              icon="google"
-              mode="outlined"
-              onPress={() => router.push("/(auth)/oauth")}
-              style={styles.button}
-            >
-              Continue with Google
+              Resend
             </Button>
           </View>
         </View>
 
         <View>
           <View style={styles.secondary}>
-            <Text>{"Don't have an account?"}</Text>
+            <Text>Already have an account?</Text>
             <Button
               mode="text"
               disabled={loading}
-              onPress={() => router.push("/(auth)/signup")}
+              onPress={() => router.push("/(auth)/signin")}
             >
-              Register
+              Sign in
             </Button>
           </View>
           <TextInput
@@ -182,11 +187,16 @@ export default function SignInScreen() {
           />
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 10,
+    backgroundColor: "#fff",
+  },
   verticallySpaced: {
     paddingTop: 4,
     paddingBottom: 4,
@@ -195,16 +205,8 @@ const styles = StyleSheet.create({
   mt20: {
     marginTop: 20,
   },
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    backgroundColor: "#fff",
-    flexDirection: "column",
-  },
-  content: {
-    justifyContent: "space-between",
-    flexGrow: 1,
-    paddingHorizontal: 24,
+  mt10: {
+    marginTop: 10,
   },
   secondary: {
     flexDirection: "row",
@@ -212,6 +214,11 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 4,
     alignSelf: "center",
+  },
+  content: {
+    paddingHorizontal: 16,
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
   header: {
     backgroundColor: "#714ea9ff",
