@@ -33,8 +33,6 @@ export default function SignUpScreen() {
   const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
   const [hasEmailError, setHasEmailError] = useState(false);
-  const [showResend, setShowResend] = useState(false);
-  const [confirmationEmail, setConfirmationEmail] = useState("");
 
   const debounceTimer = useRef<number>(null);
 
@@ -44,55 +42,6 @@ export default function SignUpScreen() {
 
     return passwordRegex.test(password);
   }, []);
-
-  async function resendVerificationWithEmail() {
-    if (extra_info.trim()) {
-      return;
-    }
-
-    if (!confirmationEmail) {
-      showMessage({
-        message: "Email is required. Please try again.",
-        type: "warning",
-        icon: "warning",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-      return;
-    }
-
-    if (!confirmationEmail || !isEmail(confirmationEmail)) {
-      setHasEmailError(true);
-      return;
-    }
-
-    setLoading(true);
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: confirmationEmail,
-    });
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "An error occurred. Please try again.",
-        type: "warning",
-        icon: "warning",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-    } else {
-      showMessage({
-        message: "Please check your email for the confirmation URL.",
-        type: "success",
-        icon: "success",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-    }
-
-    setLoading(false);
-  }
 
   async function signUpWithEmail() {
     if (extra_info.trim()) {
@@ -171,7 +120,7 @@ export default function SignUpScreen() {
     }
 
     setLoading(false);
-    setShowResend(true);
+    router.navigate("/(auth)/resend")
   }
 
   useEffect(() => {
@@ -185,12 +134,6 @@ export default function SignUpScreen() {
       } else {
         setHasEmailError(false);
       }
-
-      if (confirmationEmail) {
-        setHasEmailError(!isEmail(confirmationEmail));
-      } else {
-        setHasEmailError(false);
-      }
     }, 500);
 
     return () => {
@@ -198,7 +141,7 @@ export default function SignUpScreen() {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [email, confirmationEmail]);
+  }, [email]);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -233,7 +176,6 @@ export default function SignUpScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {!showResend && (
           <View style={styles.buttonContainer}>
             <View style={[styles.verticallySpaced]}>
               <HelperText
@@ -318,46 +260,7 @@ export default function SignUpScreen() {
                 Continue with Google
               </Button>
             </View>
-          </View>
-        )}
-
-        {showResend && (
-          <View style={{ paddingVertical: 20 }}>
-            <Text variant="titleLarge" style={{ textAlign: "center" }}>
-              Check your email for confirmation link or re-enter email to resend confirmation
-            </Text>
-            <View style={[styles.verticallySpaced, styles.mt10]}>
-              <Text variant="labelSmall" style={{ color: "red" }}>
-                {hasEmailError ? "Invalid email address." : ""}
-              </Text>
-              <TextInput
-                label="Email"
-                left={<TextInput.Icon icon="mail" />}
-                onChangeText={(text) => {
-                  setConfirmationEmail(text);
-                }}
-                value={confirmationEmail}
-                placeholder="email@address.com"
-                autoCapitalize={"none"}
-                mode="outlined"
-                keyboardType="email-address"
-                error={hasEmailError}
-              />
-            </View>
-
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-              <Button
-                mode="contained"
-                disabled={loading || hasEmailError}
-                onPress={() => resendVerificationWithEmail()}
-                style={styles.button}
-              >
-                Resend
-              </Button>
-            </View>
-          </View>
-        )}
-
+          </View>       
         <View>
           <View style={styles.secondary}>
             <Text>Already have an account?</Text>

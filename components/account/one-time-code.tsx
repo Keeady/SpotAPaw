@@ -7,7 +7,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 
-export default function Reset() {
+export default function OneTimePasscodeScreen() {
   const theme = useTheme();
   const [email, setEmail] = useState("");
   const [extra_info, setExtraInfo] = useState("");

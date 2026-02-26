@@ -1,32 +1,40 @@
-import DividerWithText from "@/components/divider-with-text";
 import { log } from "@/components/logs";
 import { supabase } from "@/components/supabase-client";
-import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  HelperText,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 
-export default function SignInScreen() {
+export default function ResetPasswordForEmailScreen() {
   const theme = useTheme();
+  const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const [isHidden, setHidden] = useState(true);
   const [extra_info, setExtraInfo] = useState("");
-
   const [hasEmailError, setHasEmailError] = useState(false);
 
   const debounceTimer = useRef<number>(null);
 
-  async function signInWithEmail() {
+  async function signUpWithEmail() {
     if (extra_info.trim()) {
       return;
     }
 
-    if (!email || !password) {
+    if (!email) {
       showMessage({
         message: "Email and password are required. Please try again.",
         type: "warning",
@@ -43,29 +51,29 @@ export default function SignInScreen() {
     }
 
     setLoading(true);
-    const {
-      error,
-      data: { session },
-    } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "spotapaw://auth/reset",
     });
-
-    if (session) {
-      router.dismissTo("/(app)/my-sightings");
-      return;
-    }
 
     if (error) {
       log(error.message);
       showMessage({
-        message: "Invalid email or password. Please try again.",
+        message: "An error occured. Please try again.",
         type: "danger",
         icon: "danger",
         autoHide: true,
         statusBarHeight: 50,
       });
+    } else {
+      showMessage({
+        message: "Please check your inbox for password link.",
+        type: "success",
+        icon: "success",
+        autoHide: true,
+        statusBarHeight: 50,
+      });
     }
+
     setLoading(false);
   }
 
@@ -80,7 +88,7 @@ export default function SignInScreen() {
       } else {
         setHasEmailError(false);
       }
-    }, 1000);
+    }, 500);
 
     return () => {
       if (debounceTimer.current) {
@@ -89,20 +97,49 @@ export default function SignInScreen() {
     };
   }, [email]);
 
+  useEffect(() => {
+    const showListener = Keyboard.addListener("keyboardDidShow", () => {
+      setBehavior("padding");
+    });
+    const hideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setBehavior(undefined);
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={behavior}
+      keyboardVerticalOffset={100}
+    >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome Back!</Text>
+        <Text style={styles.headerTitle}>Welcome!</Text>
         <Text style={styles.headerSubtitle}>
-          Help find and protect our furry friends
+          Join a community of pets and pet lovers
         </Text>
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.buttonContainer}>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Text variant="labelSmall" style={{ color: "red" }}>
-              {hasEmailError ? "Invalid email address." : ""}
-            </Text>
+          <View style={[styles.verticallySpaced]}>
+            <HelperText
+              type="error"
+              visible={hasEmailError}
+              style={{ color: theme.colors.error }}
+              padding="none"
+            >
+              Invalid email address.
+            </HelperText>
             <TextInput
               label="Email"
               left={<TextInput.Icon icon="mail" />}
@@ -117,62 +154,15 @@ export default function SignInScreen() {
               error={hasEmailError}
             />
           </View>
-          <View style={styles.verticallySpaced}>
-            <TextInput
-              label="Password"
-              left={<TextInput.Icon icon="lock" />}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              secureTextEntry={isHidden}
-              placeholder="Password"
-              autoCapitalize={"none"}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  icon={isHidden ? "eye" : "eye-off"}
-                  onPress={() => setHidden(!isHidden)}
-                />
-              }
-              textContentType="password"
-            />
-          </View>
-          <View style={{ alignSelf: "flex-end" }}>
-            <Button mode="text" onPress={() => router.push("/(auth)/forgot")}>
-              Forgot Password?
-            </Button>
-          </View>
+
           <View style={[styles.verticallySpaced]}>
             <Button
               mode="contained"
               disabled={loading || hasEmailError}
-              onPress={() => signInWithEmail()}
+              onPress={() => signUpWithEmail()}
               style={styles.button}
             >
-              Sign in
-            </Button>
-          </View>
-          <DividerWithText text="OR" />
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <Button
-              icon="google"
-              mode="outlined"
-              onPress={() => router.push("/(auth)/oauth")}
-              style={styles.button}
-            >
-              Continue with Google
-            </Button>
-          </View>
-        </View>
-
-        <View>
-          <View style={styles.secondary}>
-            <Text>{"Don't have an account?"}</Text>
-            <Button
-              mode="text"
-              disabled={loading}
-              onPress={() => router.push("/(auth)/signup")}
-            >
-              Register
+              Reset your password
             </Button>
           </View>
           <TextInput
@@ -182,36 +172,25 @@ export default function SignInScreen() {
           />
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 10,
+    backgroundColor: "#fff",
+  },
   verticallySpaced: {
     paddingTop: 4,
     paddingBottom: 4,
     alignSelf: "stretch",
   },
-  mt20: {
-    marginTop: 20,
-  },
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    backgroundColor: "#fff",
-    flexDirection: "column",
-  },
   content: {
-    justifyContent: "space-between",
+    paddingHorizontal: 16,
     flexGrow: 1,
-    paddingHorizontal: 24,
-  },
-  secondary: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "center",
+    justifyContent: "space-between",
   },
   header: {
     backgroundColor: "#714ea9ff",

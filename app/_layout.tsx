@@ -43,10 +43,34 @@ export default function Layout() {
       }
     };
 
+    const handleResetRedirect = async (url: string) => {
+      const parsedUrl = new URL(url);
+      const code = parsedUrl.searchParams.get("code");
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          showMessage({
+            message: "Authentication failed. Please try again.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
+        } else {
+          router.replace("/(auth)/reset-password");
+        }
+      }
+    };
+
     // Listener for when app is already open
     const subscription = Linking.addEventListener("url", ({ url }) => {
       if (url && url.indexOf("auth/verify") > -1) {
         handleRedirect(url);
+      }
+
+      if (url && url.indexOf("auth/reset") > -1) {
+        handleResetRedirect(url);
       }
 
       if (url && url.indexOf("auth/v1/callback") > -1) {
@@ -58,6 +82,10 @@ export default function Layout() {
     Linking.getInitialURL().then((url) => {
       if (url && url.indexOf("auth/verify") > -1) {
         handleRedirect(url);
+      }
+
+      if (url && url.indexOf("auth/reset") > -1) {
+        handleResetRedirect(url);
       }
 
       if (url && url.indexOf("auth/v1/callback") > -1) {
