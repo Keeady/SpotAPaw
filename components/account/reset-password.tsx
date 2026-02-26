@@ -39,7 +39,6 @@ export default function ResetPasswordScreen() {
   }, []);
 
   async function resetPassword() {
-    setDisabled(true);
     if (extra_info.trim()) {
       return;
     }
@@ -104,6 +103,8 @@ export default function ResetPasswordScreen() {
     }
 
     setLoading(false);
+    setDisabled(true);
+
     router.navigate("/(auth)/signin");
   }
 

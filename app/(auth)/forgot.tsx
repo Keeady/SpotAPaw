@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   content: {
-    justifyContent: "space-between",
+    justifyContent: "center",
     flexGrow: 1,
     paddingHorizontal: 24,
   },
@@ -102,5 +102,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
+    justifyContent: "center",
   },
 });

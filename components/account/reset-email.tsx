@@ -26,6 +26,7 @@ export default function ResetPasswordForEmailScreen() {
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
   const [hasEmailError, setHasEmailError] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const debounceTimer = useRef<number>(null);
 
@@ -75,6 +76,7 @@ export default function ResetPasswordForEmailScreen() {
     }
 
     setLoading(false);
+    setDisabled(true);
   }
 
   useEffect(() => {
@@ -131,6 +133,9 @@ export default function ResetPasswordForEmailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.buttonContainer}>
+          <Text variant="titleMedium" style={styles.largeText}>
+            Enter account email to reset your password.
+          </Text>
           <View style={[styles.verticallySpaced]}>
             <HelperText
               type="error"
@@ -158,7 +163,7 @@ export default function ResetPasswordForEmailScreen() {
           <View style={[styles.verticallySpaced]}>
             <Button
               mode="contained"
-              disabled={loading || hasEmailError}
+              disabled={loading || hasEmailError || disabled}
               onPress={() => signUpWithEmail()}
               style={styles.button}
             >
@@ -217,5 +222,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
+  },
+  largeText: {
+    textAlign: "center",
+    paddingTop: 24,
   },
 });
