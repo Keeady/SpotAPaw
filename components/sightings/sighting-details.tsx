@@ -147,13 +147,11 @@ export default function SightingDetail({
                     marginTop: 10,
                     marginBottom: 10,
                     flexDirection: "row",
-                    flexWrap: "wrap"
+                    flexWrap: "wrap",
                   }}
                 >
                   <Text variant="labelLarge">Features: </Text>
-                  <Text>
-                    {petSummary?.features}
-                  </Text>
+                  <Text>{petSummary?.features}</Text>
                   <Divider />
                 </View>
               )}
@@ -164,7 +162,7 @@ export default function SightingDetail({
                     marginTop: 10,
                     marginBottom: 10,
                     flexDirection: "row",
-                    flexWrap: "wrap"
+                    flexWrap: "wrap",
                   }}
                 >
                   <Text variant="labelLarge">Notes: </Text>
@@ -244,15 +242,16 @@ export default function SightingDetail({
                       title={getLastSeenTimeDistance(sighting.last_seen_time)}
                       titleVariant="labelLarge"
                       subtitle={
-                        <View style={{flexDirection: "row", gap: 8}}>
+                        <View style={{ flexDirection: "row", gap: 8 }}>
                           <Icon source={"map-marker-path"} size={20} />
                           <Text variant={"labelLarge"}>
-                            {userCurrentLocation &&
-                              getLastSeenLocationDistance(
-                                userCurrentLocation,
-                                sighting.last_seen_lat,
-                                sighting.last_seen_long,
-                              )}
+                            {userCurrentLocation
+                              ? getLastSeenLocationDistance(
+                                  userCurrentLocation,
+                                  sighting.last_seen_lat,
+                                  sighting.last_seen_long,
+                                )
+                              : "No distance"}
                           </Text>
                         </View>
                       }
@@ -270,7 +269,11 @@ export default function SightingDetail({
                       }
                       right={() => (
                         <TouchableOpacity
-                          disabled={!sighting.last_seen_location}
+                          disabled={
+                            !sighting.last_seen_location &&
+                            (!sighting.last_seen_lat ||
+                              !sighting.last_seen_long)
+                          }
                           onPress={() =>
                             Linking.openURL(
                               getLastSeenLocationURLMap(
@@ -285,7 +288,7 @@ export default function SightingDetail({
                             padding: 10,
                             borderRadius: 50,
                             backgroundColor: theme.colors.inversePrimary,
-                            marginRight: 16
+                            marginRight: 16,
                           }}
                         >
                           <Icon source={"arrow-top-right"} size={30} />
@@ -305,16 +308,11 @@ export default function SightingDetail({
                         )}
 
                         {sighting?.colors && (
-                          <Text style={styles.detail}>
-                            {sighting?.colors}
-                          </Text>
+                          <Text style={styles.detail}>{sighting?.colors}</Text>
                         )}
                         {sighting?.gender && (
-                          <Text style={styles.detail}>
-                            {sighting?.gender}
-                          </Text>
+                          <Text style={styles.detail}>{sighting?.gender}</Text>
                         )}
-                        
                       </View>
                       {sighting.features && (
                         <Text

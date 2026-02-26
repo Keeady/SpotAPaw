@@ -144,47 +144,49 @@ export function RenderSightingProfile(data) {
               />
               <Text variant="labelLarge">Last Seen:</Text>
             </View>
-            <View style={{flexDirection: "row", justifyContent: "space-around"}}>
             <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 2,
-              }}
+              style={{ flexDirection: "row", justifyContent: "space-around" }}
             >
-              <Icon
-                source={"calendar"}
-                size={25}
-                color={theme.colors.primary}
-              />
-              <Text variant="bodyLarge" style={styles.title}>
-                {getLastSeenTimeDistance(pet.last_seen_time)}
-              </Text>
-            </View>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+              >
+                <Icon
+                  source={"calendar"}
+                  size={25}
+                  color={theme.colors.primary}
+                />
+                <Text variant="bodyLarge" style={styles.title}>
+                  {getLastSeenTimeDistance(pet.last_seen_time)}
+                </Text>
+              </View>
 
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 2,
-              }}
-            >
-              <Icon
-                source={"map-marker-path"}
-                size={25}
-                color={theme.colors.primary}
-              />
-              <Text variant="bodyLarge" style={styles.title}>
-                {userCurrentLocation &&
-                  getLastSeenLocationDistance(
-                    userCurrentLocation,
-                    pet.last_seen_lat,
-                    pet.last_seen_long,
-                  )}
-              </Text>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+              >
+                <Icon
+                  source={"map-marker-path"}
+                  size={25}
+                  color={theme.colors.primary}
+                />
+                <Text variant="bodyLarge" style={styles.title}>
+                  {userCurrentLocation
+                    ? getLastSeenLocationDistance(
+                        userCurrentLocation,
+                        pet.last_seen_lat,
+                        pet.last_seen_long,
+                      )
+                    : "No distance"}
+                </Text>
+              </View>
             </View>
-            </View>
-
           </View>
         )}
 

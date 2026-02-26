@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Text } from "react-native-paper";
 
 export default function SightingAnonList() {
   const router = useRouter();
@@ -54,6 +55,13 @@ export default function SightingAnonList() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          ListFooterComponent={() => {
+            return (
+              <View style={{ paddingVertical: 25 }}>
+                <Text style={{ textAlign: "center" }}> </Text>
+              </View>
+            );
+          }}
         />
       </View>
     ),

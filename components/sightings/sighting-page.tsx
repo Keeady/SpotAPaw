@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { Button, IconButton, Portal } from "react-native-paper";
+import { Button, IconButton, Portal, Text } from "react-native-paper";
 import { SightingLocation } from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
