@@ -22,7 +22,7 @@ export async function handleSignOut(router: Router) {
   if (error) {
     log(error.message);
   }
-  
+
   router.navigate("/");
 }
 
@@ -76,7 +76,21 @@ export function getIconByAnimalSpecies(species: string) {
     case "cat":
       return "cat";
     case "rabbit":
-      return "rabbit";
+      return "rabbit-variant";
+    case "horse":
+      return "horse-variant";
+    case "snake":
+      return "snake";
+    case "cow":
+      return "cow";
+    case "pig":
+      return "pig";
+    case "bird":
+      return "bird";
+    case "donkey":
+      return "donkey";
+    case "elephant":
+      return "elephant";
     default:
       return "paw";
   }

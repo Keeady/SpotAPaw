@@ -2,7 +2,11 @@ import React from "react";
 import { Image, View, StyleSheet } from "react-native";
 import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
 import { getIconByAnimalSpecies } from "./util";
-import { formatDistanceToNow } from "date-fns";
+import {
+  getLastSeenLocationDistance,
+  getLastSeenTimeDistance,
+} from "./sightings/util";
+import { usePermission } from "./Provider/permission-provider";
 
 export function RenderPetProfile(data) {
   const pet = data.pet;
@@ -49,6 +53,7 @@ export function RenderPetProfile(data) {
 
 export function RenderSightingProfile(data) {
   const theme = useTheme();
+  const { location: userCurrentLocation } = usePermission();
   const pet = data.pet;
   return (
     <Card
@@ -86,28 +91,30 @@ export function RenderSightingProfile(data) {
         </View>
       )}
       <Card.Content style={{ alignItems: "left" }}>
-        <View style={styles.header}>
-          <Text variant="labelMedium" style={{ alignSelf: "center" }}>
-            {"Name"}:
-          </Text>
-          <Chip
-            style={{
-              backgroundColor: pet?.name ? "#E6F7E6" : "#FFF4E5",
-              marginVertical: 10,
-              alignSelf: "flex-start",
-              paddingHorizontal: 10,
-              paddingVertical: 2,
-              borderRadius: 12,
-            }}
-            textStyle={{
-              color: pet?.name ? "#2E7D32" : "#D84315",
-              fontWeight: "600",
-            }}
-            mode="outlined"
-          >
-            {pet?.name || "Unknown"}
-          </Chip>
-        </View>
+        {pet?.name && (
+          <View style={styles.header}>
+            <Text variant="labelLarge" style={{ alignSelf: "center" }}>
+              Name:
+            </Text>
+            <Chip
+              style={{
+                backgroundColor: pet?.name ? "#E6F7E6" : "#FFF4E5",
+                marginVertical: 10,
+                alignSelf: "flex-start",
+                paddingHorizontal: 10,
+                paddingVertical: 2,
+                borderRadius: 12,
+              }}
+              textStyle={{
+                color: pet?.name ? "#2E7D32" : "#D84315",
+                fontWeight: "600",
+              }}
+              mode="outlined"
+            >
+              {pet.name}
+            </Chip>
+          </View>
+        )}
 
         <Divider />
         <View style={styles.line}>
@@ -117,22 +124,11 @@ export function RenderSightingProfile(data) {
               size={25}
               color={theme.colors.primary}
             />
-            <Text variant="labelMedium">{"Type"}:</Text>
+            <Text variant="labelLarge">Type:</Text>
           </View>
           <Text variant="bodyLarge" style={styles.title}>
-            {pet.species}
-          </Text>
-        </View>
-
-        <Divider />
-
-        <View style={styles.line}>
-          <View style={styles.header}>
-            <Icon source={"tag"} size={25} color={theme.colors.primary} />
-            <Text variant="labelMedium">{"Breed"}:</Text>
-          </View>
-          <Text variant="bodyLarge" style={styles.title}>
-            {pet.breed}
+            {pet.breed}{" "}
+            {pet.species.charAt(0).toUpperCase() + pet.species.slice(1)}
           </Text>
         </View>
 
@@ -146,14 +142,51 @@ export function RenderSightingProfile(data) {
                 size={25}
                 color={theme.colors.primary}
               />
-              <Text variant="labelMedium">{"Last Seen"}:</Text>
+              <Text variant="labelLarge">Last Seen:</Text>
             </View>
-            <Text variant="bodyLarge" style={styles.title}>
-              {formatDistanceToNow(new Date(pet.last_seen_time), { addSuffix: true })}
-            </Text>
-            <Text variant="bodyLarge" style={styles.title}>
-              {pet.last_seen_location}
-            </Text>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-around" }}
+            >
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+              >
+                <Icon
+                  source={"calendar"}
+                  size={25}
+                  color={theme.colors.primary}
+                />
+                <Text variant="bodyLarge" style={styles.title}>
+                  {getLastSeenTimeDistance(pet.last_seen_time)}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+              >
+                <Icon
+                  source={"map-marker-path"}
+                  size={25}
+                  color={theme.colors.primary}
+                />
+                <Text variant="bodyLarge" style={styles.title}>
+                  {userCurrentLocation
+                    ? getLastSeenLocationDistance(
+                        userCurrentLocation,
+                        pet.last_seen_lat,
+                        pet.last_seen_long,
+                      )
+                    : "No distance"}
+                </Text>
+              </View>
+            </View>
           </View>
         )}
 
@@ -167,12 +200,12 @@ export function RenderSightingProfile(data) {
                 size={25}
                 color={theme.colors.primary}
               />
-              <Text variant="labelMedium">{"Features"}:</Text>
+              <Text variant="labelLarge">Features:</Text>
             </View>
             <Text variant="bodyLarge" style={styles.title}>
-              {pet.colors}
-              {pet.gender ? `, ${pet.gender}` : ""}
-              {pet.age ? `, ${pet.age} years old` : ""}
+              {pet.colors && `Colors: ${pet.colors}`}
+              {pet.gender && `\nGender: ${pet.gender}`}
+              {pet.age && `\nAge: ${pet.age} years old`}
             </Text>
             <Divider />
             <Text variant="bodyLarge" style={styles.title}>
@@ -189,6 +222,11 @@ const styles = StyleSheet.create({
   line: {
     paddingVertical: 5,
   },
-  header: { flexDirection: "row", alignContent: "center", gap: 5 },
+  header: {
+    flexDirection: "row",
+    alignContent: "center",
+    gap: 5,
+    alignItems: "center",
+  },
   title: { paddingHorizontal: 25 },
 });
