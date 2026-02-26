@@ -1,12 +1,7 @@
 import { View, StyleSheet, ScrollView } from "react-native";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
-import {
-  ActivityIndicator,
-  Button,
-  HelperText,
-  Text,
-} from "react-native-paper";
+import { ActivityIndicator, Button, HelperText } from "react-native-paper";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Provider/auth-provider";
 import { supabase } from "../supabase-client";
@@ -72,14 +67,13 @@ export function ChoosePet({
         subTitle="Sorry to hear your pet is missing. Let's bring them back!"
       />
       <ScrollView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         {!user && (
-          <View style={{flexGrow: 1, justifyContent: "center"}}>
-            
+          <View style={{ flexGrow: 1, justifyContent: "center" }}>
             <Button
               mode="contained"
               onPress={() => router.navigate("/")}
@@ -116,7 +110,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 12,
-    flexGrow: 1
+    flexGrow: 1,
   },
   helperText: {
     alignSelf: "flex-end",

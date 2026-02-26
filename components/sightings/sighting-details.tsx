@@ -15,12 +15,19 @@ import {
   Button,
   Chip,
   Portal,
+  Icon,
+  useTheme,
 } from "react-native-paper";
-import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import ImageViewing from "react-native-image-viewing";
 import { PetSighting } from "@/model/sighting";
 import ReportLostPetFab from "./report-fab";
+import {
+  getLastSeenLocationDistance,
+  getLastSeenLocationURLMap,
+  getLastSeenTimeDistance,
+} from "./util";
+import { usePermission } from "../Provider/permission-provider";
 
 function dedupPhotos(sightings: PetSighting[]) {
   const seen = new Set();
@@ -59,9 +66,11 @@ export default function SightingDetail({
   onPetFound?: () => void;
   petName: string;
 }) {
+  const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
   const images = uniquePhotos?.map((url) => ({ uri: url })) || [];
+  const { location: userCurrentLocation } = usePermission();
 
   const handleCall = (phone: string) => {
     if (phone) Linking.openURL(`tel:${phone}`);
@@ -95,7 +104,7 @@ export default function SightingDetail({
                     resizeMode="cover"
                     style={{
                       width: "100%",
-                      height: 300,
+                      height: 350,
                     }}
                   />
                 </TouchableOpacity>
@@ -105,40 +114,61 @@ export default function SightingDetail({
                 </View>
               )}
               <Divider />
-              <View
-                style={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-              >
-                {petSummary?.colors && <Text>{petSummary?.colors}, </Text>}
-                {petSummary?.gender && <Text>{petSummary?.gender}, </Text>}
-                {petSummary?.breed && <Text>{petSummary?.breed}</Text>}
-              </View>
+              {petSummary?.breed && (
+                <Text variant="titleLarge" style={styles.title}>
+                  {petSummary.breed}{" "}
+                  {petSummary.species.charAt(0).toUpperCase() +
+                    petSummary.species.slice(1)}
+                </Text>
+              )}
+              {petSummary?.colors && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginBottom: 10,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <Text variant="labelLarge">Colors: </Text>
+                  <Text>{petSummary?.colors}</Text>
+                </View>
+              )}
+              {petSummary?.gender && (
+                <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                  <Text variant="labelLarge">Gender: </Text>
+                  <Text>{petSummary?.gender}</Text>
+                </View>
+              )}
+              <Divider />
+
               {petSummary?.features && (
                 <View
                   style={{
                     marginTop: 10,
                     marginBottom: 10,
                     flexDirection: "row",
+                    flexWrap: "wrap"
                   }}
                 >
-                  <Text style={{ flexWrap: "wrap" }}>
+                  <Text variant="labelLarge">Features: </Text>
+                  <Text>
                     {petSummary?.features}
                   </Text>
+                  <Divider />
                 </View>
               )}
+
               {petSummary?.note && (
                 <View
                   style={{
                     marginTop: 10,
                     marginBottom: 10,
                     flexDirection: "row",
+                    flexWrap: "wrap"
                   }}
                 >
-                  <Text style={{ wordWrap: "wrap" }}>{petSummary?.note}</Text>
+                  <Text variant="labelLarge">Notes: </Text>
+                  <Text>{petSummary?.note}</Text>
                 </View>
               )}
             </Card.Content>
@@ -185,9 +215,7 @@ export default function SightingDetail({
             const isLatest = index === 0; // assuming sightings sorted DESC by created_at
             return (
               <View key={sighting.id} style={{ flexDirection: "row" }}>
-                {/* Timeline column */}
                 <View style={{ alignItems: "center", width: 20 }}>
-                  {/* Dot */}
                   <View
                     style={{
                       width: 14,
@@ -197,7 +225,6 @@ export default function SightingDetail({
                       marginVertical: 4,
                     }}
                   />
-                  {/* Line */}
                   {index < sightings.length - 1 && (
                     <View
                       style={{
@@ -214,41 +241,20 @@ export default function SightingDetail({
                 <View style={{ flex: 1, marginBottom: 16 }}>
                   <Card style={{ elevation: isLatest ? 4 : 1 }}>
                     <Card.Title
-                      title={formatDistanceToNow(
-                        new Date(sighting.last_seen_time),
-                        {
-                          addSuffix: true,
-                        },
-                      )}
+                      title={getLastSeenTimeDistance(sighting.last_seen_time)}
+                      titleVariant="labelLarge"
                       subtitle={
-                        <TouchableOpacity
-                          disabled={!sighting.last_seen_location}
-                          onPress={() =>
-                            Linking.openURL(
-                              `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                sighting.last_seen_location,
-                              )}`,
-                            )
-                          }
-                          style={{
-                            flexDirection: "row",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: sighting.last_seen_location
-                                ? "#1E88E5"
-                                : "#666", // blue if clickable
-                              textDecorationLine: sighting.last_seen_location
-                                ? "underline"
-                                : "none",
-                            }}
-                          >
-                            {sighting.last_seen_location?.substring(0, 35) ||
-                              "Location not provided"}
-                            ...
+                        <View style={{flexDirection: "row", gap: 8}}>
+                          <Icon source={"map-marker-path"} size={20} />
+                          <Text variant={"labelLarge"}>
+                            {userCurrentLocation &&
+                              getLastSeenLocationDistance(
+                                userCurrentLocation,
+                                sighting.last_seen_lat,
+                                sighting.last_seen_long,
+                              )}
                           </Text>
-                        </TouchableOpacity>
+                        </View>
                       }
                       left={(props) =>
                         sighting.photo ? (
@@ -262,29 +268,53 @@ export default function SightingDetail({
                           <Avatar.Icon {...props} icon="paw" />
                         )
                       }
+                      right={() => (
+                        <TouchableOpacity
+                          disabled={!sighting.last_seen_location}
+                          onPress={() =>
+                            Linking.openURL(
+                              getLastSeenLocationURLMap(
+                                sighting.last_seen_location,
+                                sighting.last_seen_lat,
+                                sighting.last_seen_long,
+                              ),
+                            )
+                          }
+                          style={{
+                            flexDirection: "row",
+                            padding: 10,
+                            borderRadius: 50,
+                            backgroundColor: theme.colors.inversePrimary,
+                            marginRight: 16
+                          }}
+                        >
+                          <Icon source={"arrow-top-right"} size={30} />
+                        </TouchableOpacity>
+                      )}
                     />
                     <Card.Content>
                       <View
                         style={{
                           marginTop: 6,
                           marginBottom: 6,
-                          flexDirection: "row",
                           flexWrap: "wrap",
                         }}
                       >
+                        {sighting?.breed && (
+                          <Text style={styles.detail}>{sighting?.breed}</Text>
+                        )}
+
                         {sighting?.colors && (
                           <Text style={styles.detail}>
-                            {sighting?.colors},{" "}
+                            {sighting?.colors}
                           </Text>
                         )}
                         {sighting?.gender && (
                           <Text style={styles.detail}>
-                            {sighting?.gender},{" "}
+                            {sighting?.gender}
                           </Text>
                         )}
-                        {sighting?.breed && (
-                          <Text style={styles.detail}>{sighting?.breed}</Text>
-                        )}
+                        
                       </View>
                       {sighting.features && (
                         <Text
@@ -338,7 +368,6 @@ export default function SightingDetail({
             );
           })}
           <View>
-            {/* Fullscreen Viewer */}
             <ImageViewing
               images={images}
               imageIndex={0}
@@ -368,13 +397,6 @@ export default function SightingDetail({
 }
 
 const styles = StyleSheet.create({
-  // card styles unused
-  card: {
-    margin: 12,
-    borderRadius: 16,
-    overflow: "hidden",
-    elevation: 3,
-  },
   image: {
     width: "100%",
     height: 180,
@@ -397,5 +419,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
     marginTop: 2,
+  },
+  title: {
+    paddingHorizontal: 25,
+    textAlign: "center",
+    marginTop: 10,
+    marginBottom: 10,
+    flexWrap: "wrap",
   },
 });
