@@ -2,23 +2,85 @@ import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { supabase } from "../supabase-client";
 
+export type WizardFormAction = "edit" | "new";
+
 export async function saveSightingPhoto(
   sightingFormData: SightingReport,
   uploadImage: (
     uri: string,
     callback: (uri: string, error?: string) => void,
   ) => Promise<void>,
+  action: WizardFormAction,
 ) {
   if (sightingFormData.image.uri) {
     await uploadImage(sightingFormData.image.uri, (photo: string) =>
-      saveNewSighting(photo, sightingFormData),
+      action === "new"
+        ? saveNewSighting(photo, sightingFormData)
+        : updateSighting(photo, sightingFormData),
     );
   } else {
-    await saveNewSighting("", sightingFormData);
+    if (action === "new") {
+      await saveNewSighting("", sightingFormData);
+    } else {
+      await updateSighting("", sightingFormData);
+    }
   }
 }
 
 export async function saveNewSighting(
+  photo: string,
+  sightingFormData: SightingReport,
+) {
+  const payload = await buildSightingPayload(photo, sightingFormData);
+  const { data, error } = await supabase
+    .from("sightings")
+    .insert([payload])
+    .select("id");
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function updateSighting(
+  photo: string,
+  sightingFormData: SightingReport,
+) {
+  if (
+    !sightingFormData.linkedSightingId ||
+    !isValidUuid(sightingFormData.linkedSightingId)
+  ) {
+    return;
+  }
+
+  const payload = await buildSightingPayload(photo, sightingFormData);
+
+  const { data, error } = await supabase
+    .from("aggregated_sightings")
+    .update([payload])
+    .eq("linked_sighting_id", sightingFormData.linkedSightingId);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+function saveNotes(report: SightingReport) {
+  let notes = report.note || "";
+
+  if (report.petBehavior) {
+    notes = notes.concat("\n");
+    notes = notes.concat(`Pet behavior: ${report.petBehavior}`);
+  }
+
+  return notes;
+}
+
+async function buildSightingPayload(
   photo: string,
   sightingFormData: SightingReport,
 ) {
@@ -62,25 +124,5 @@ export async function saveNewSighting(
     payload.reporter_id = sightingFormData.reporterId;
   }
 
-  const { data, error } = await supabase
-    .from("sightings")
-    .insert([payload])
-    .select("id");
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-function saveNotes(report: SightingReport) {
-  let notes = report.note || "";
-
-  if (report.petBehavior) {
-    notes = notes.concat("\n");
-    notes = notes.concat(`Pet behavior: ${report.petBehavior}`);
-  }
-
-  return notes;
+  return payload;
 }
