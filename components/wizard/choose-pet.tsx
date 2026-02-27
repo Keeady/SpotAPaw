@@ -45,8 +45,11 @@ export function ChoosePet({
         .select("*")
         .eq("owner_id", user.id)
         .then(({ data }) => {
+          if (!isMountedRef.current) {
+            return;
+          }
           setLoading(false);
-          if (isMountedRef.current && data && data.length > 0) {
+          if (data && data.length > 0) {
             setPets(data);
           }
         });
@@ -54,7 +57,10 @@ export function ChoosePet({
   }, [user?.id]);
 
   useEffect(() => {
-    if (isMountedRef.current && selectedPetId) {
+    if (!isMountedRef.current) {
+      return;
+    }
+    if (selectedPetId) {
       const pet = pets.find((p) => p.id === selectedPetId);
       if (pet) {
         Object.keys(pet).map((key) => {

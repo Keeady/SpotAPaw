@@ -32,7 +32,10 @@ export function AddContact({
       .select("*")
       .eq("owner_id", user.id)
       .then(({ data }) => {
-        if (isMountedRef.current && data && data.length > 0) {
+        if (!isMountedRef.current) {
+          return;
+        }
+        if (data && data.length > 0) {
           updateSightingData("contactName", data[0].firstname);
           updateSightingData("contactPhone", data[0].phone);
           updateSightingData("contactPhoneCountryCode", data[0].country_code);
