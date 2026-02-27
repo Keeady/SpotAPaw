@@ -126,7 +126,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         .from("aggregated_sightings")
         .select("*")
         .eq("linked_sighting_id", linkedSightingId)
-        .then(({ data, error }) => {
+        .then(({ data }) => {
           if (!isMountedRef.current) {
             return;
           }
@@ -281,9 +281,18 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             setStepHistory([...stepHistory, currentStep]);
             setCurrentStep(nextStep);
           }
-        } else if (currentStep === "submit") {
+        } else if (currentStep === "submit" && action === "new") {
           showMessage({
             message: "Successfully added pet sighting.",
+            type: "success",
+            icon: "success",
+            statusBarHeight: 50,
+          });
+
+          router.replace(`/${sightingsRoute}`);
+        } else if (currentStep === "submit" && action === "edit") {
+          showMessage({
+            message: "Successfully updated pet sighting.",
             type: "success",
             icon: "success",
             statusBarHeight: 50,

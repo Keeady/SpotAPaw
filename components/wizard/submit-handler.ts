@@ -52,14 +52,14 @@ export async function updateSighting(
     !sightingFormData.linkedSightingId ||
     !isValidUuid(sightingFormData.linkedSightingId)
   ) {
-    return;
+    throw new Error("Missing or invalid linked sighting id");
   }
 
   const payload = await buildSightingPayload(photo, sightingFormData);
 
   const { data, error } = await supabase
     .from("aggregated_sightings")
-    .update([payload])
+    .update(payload)
     .eq("linked_sighting_id", sightingFormData.linkedSightingId);
 
   if (error) {
