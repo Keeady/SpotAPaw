@@ -21,7 +21,12 @@ import { ChoosePet } from "./choose-pet";
 import { EditPet } from "./edit-pet";
 import { LocatePet } from "./locate-pet";
 import { Step1 } from "./start";
-import { saveNewSighting, saveSightingPhoto } from "./submit-handler";
+import {
+  saveNewSighting,
+  saveSightingPhoto,
+  updateSighting,
+  WizardFormAction,
+} from "./submit-handler";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
 import { PetImage, SightingReport } from "./wizard-interface";
@@ -29,6 +34,7 @@ import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { isValidUuid } from "../util";
 import { EditPetContinued } from "./edit-pet-continued";
+import { supabase } from "../supabase-client";
 
 export type SightingWizardSteps =
   | "start"
@@ -58,7 +64,11 @@ export type SightingWizardStepData = {
   onResetAiGeneratedPhoto?: () => void;
 };
 
-export const WizardForm = () => {
+type WizardFormProps = {
+  action: WizardFormAction;
+};
+
+export const WizardForm = ({ action }: WizardFormProps) => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const isMountedRef = useRef(true);
@@ -111,8 +121,50 @@ export const WizardForm = () => {
     if (linkedSightingId && isValidUuid(linkedSightingId)) {
       setCurrentStep("upload_photo");
       updateSightingData("linkedSightingId", linkedSightingId);
+
+      supabase
+        .from("aggregated_sightings")
+        .select("*")
+        .eq("linked_sighting_id", linkedSightingId)
+        .then(({ data }) => {
+          if (!isMountedRef.current) {
+            return;
+          }
+
+          if (!data || data.length === 0) {
+            return;
+          }
+
+          const sighting = data[0];
+
+          if (action === "edit") {
+            updateSightingData("last_seen_long", sighting.last_seen_long);
+            updateSightingData("last_seen_lat", sighting.last_seen_lat);
+            updateSightingData(
+              "last_seen_location",
+              sighting.last_seen_location,
+            );
+            updateSightingData("last_seen_time", sighting.last_seen_time);
+            updateSightingData("features", sighting.features);
+            updateSightingData("photo", sighting.photo);
+            updateSightingData("note", sighting.note);
+            updateSightingData(
+              "collarDescription",
+              sighting.collar_description,
+            );
+          }
+
+          updateSightingData("id", sighting.pet_id);
+          updateSightingData("species", sighting.species);
+          updateSightingData("age", sighting.age);
+          updateSightingData("name", sighting.name);
+          updateSightingData("breed", sighting.breed);
+          updateSightingData("colors", sighting.colors);
+          updateSightingData("size", sighting.size);
+          updateSightingData("gender", sighting.gender);
+        });
     }
-  }, [linkedSightingId, updateSightingData]);
+  }, [linkedSightingId, updateSightingData, action]);
 
   useEffect(() => {
     if (user?.id) {
@@ -153,9 +205,12 @@ export const WizardForm = () => {
         return Promise.resolve();
       case "submit":
         if (isAiFeatureEnabled) {
-          return saveNewSighting("", sightingFormData);
+          if (action === "new") {
+            return saveNewSighting("", sightingFormData);
+          }
+          return updateSighting("", sightingFormData);
         }
-        return saveSightingPhoto(sightingFormData, uploadImage);
+        return saveSightingPhoto(sightingFormData, uploadImage, action);
       default:
         return Promise.resolve();
     }
@@ -226,9 +281,18 @@ export const WizardForm = () => {
             setStepHistory([...stepHistory, currentStep]);
             setCurrentStep(nextStep);
           }
-        } else if (currentStep === "submit") {
+        } else if (currentStep === "submit" && action === "new") {
           showMessage({
             message: "Successfully added pet sighting.",
+            type: "success",
+            icon: "success",
+            statusBarHeight: 50,
+          });
+
+          router.replace(`/${sightingsRoute}`);
+        } else if (currentStep === "submit" && action === "edit") {
+          showMessage({
+            message: "Successfully updated pet sighting.",
             type: "success",
             icon: "success",
             statusBarHeight: 50,

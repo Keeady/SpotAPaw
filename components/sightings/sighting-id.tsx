@@ -72,7 +72,7 @@ export default function SightingProfile() {
       return;
     }
     router.push(
-      `/${sightingsRoute}/edit/?petId=${petId}&sightingId=${sightingId}`,
+      `/${sightingsRoute}/edit/?petId=${petId}&id=${sightingId}`,
     );
   }, [petId, sightingId, router, sightingsRoute]);
 

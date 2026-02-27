@@ -186,7 +186,7 @@ export default function SightingDetail({
                   <Button onPress={() => onPetFound()}>Pet Found</Button>
                 )}
                 {onEdit && (
-                  <Button onPress={() => onEdit()}>Edit Pet details</Button>
+                  <Button onPress={() => onEdit()}>Edit Sighting</Button>
                 )}
               </View>
             </Card.Actions>
@@ -304,14 +304,20 @@ export default function SightingDetail({
                         }}
                       >
                         {sighting?.breed && (
-                          <Text style={styles.detail}>{sighting?.breed}</Text>
+                          <Text style={styles.detail}>
+                            Breed: {sighting?.breed}
+                          </Text>
                         )}
 
                         {sighting?.colors && (
-                          <Text style={styles.detail}>{sighting?.colors}</Text>
+                          <Text style={styles.detail}>
+                            Colors: {sighting?.colors}
+                          </Text>
                         )}
                         {sighting?.gender && (
-                          <Text style={styles.detail}>{sighting?.gender}</Text>
+                          <Text style={styles.detail}>
+                            Gender: {sighting?.gender}
+                          </Text>
                         )}
                       </View>
                       {sighting.features && (
@@ -319,7 +325,7 @@ export default function SightingDetail({
                           variant="bodyMedium"
                           style={{ marginTop: 6, marginBottom: 6 }}
                         >
-                          {sighting.features}
+                          Features: {sighting.features}
                         </Text>
                       )}
                       {sighting.note && (
@@ -327,20 +333,23 @@ export default function SightingDetail({
                           variant="bodyMedium"
                           style={{ marginTop: 6, marginBottom: 6 }}
                         >
-                          {sighting.note}
+                          Notes: {sighting.note}
                         </Text>
                       )}
+
+                      <Divider />
+
                       {isOwner && (phone || reporterPhone) && (
                         <View
                           style={{
+                            alignItems: "center",
                             flexDirection: "row",
-                            justifyContent: "flex-end",
-                            gap: 4,
+                            flexWrap: "wrap",
+                            marginTop: 10,
                           }}
                         >
-                          <Text style={{ alignSelf: "center" }}>
-                            Reported by {name ?? reportName}
-                          </Text>
+                          <Text variant="labelLarge">Reported by: </Text>
+                          <Text>{name ?? reportName}</Text>
                           <Button
                             mode="text"
                             icon="phone"

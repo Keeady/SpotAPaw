@@ -86,7 +86,7 @@ export function EditPetContinued({
           </View>
 
           <TextInput
-            placeholder="Unique markings, scars, missing teeth, etc."
+            placeholder="Describe unique markings, scars, missing teeth, etc."
             value={features}
             onChangeText={(value) => updateSightingData("features", value)}
             mode={"outlined"}
@@ -175,7 +175,7 @@ export function EditPetContinued({
             </Text>
             <TextInput
               label={"Collar, Tag, & Harness"}
-              placeholder="colors, numbers, markings, brand, etc."
+              placeholder="Describe colors, numbers, markings, brand, etc."
               value={collarDescription}
               onChangeText={(value) =>
                 updateSightingData("collarDescription", value)
