@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, TextInput, HelperText } from "react-native-paper";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import PhoneNumberInput from "../phone-number-util";
@@ -14,25 +14,13 @@ export function AddContact({
   reportType,
 }: SightingWizardStepData) {
   const { user } = useContext(AuthContext);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
-    if (user?.user_metadata) {
-      if (user.user_metadata["firstName"]) {
-        updateSightingData("contactName", user.user_metadata["firstName"]);
-      }
-
-      if (user.user_metadata["phone"]) {
-        updateSightingData("contactPhone", user.user_metadata["phone"]);
-      }
-
-      if (user.user_metadata["countryCode"]) {
-        updateSightingData(
-          "contactPhoneCountryCode",
-          user.user_metadata["countryCode"],
-        );
-      }
-    }
-  }, [user?.user_metadata, updateSightingData]);
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!user?.id) {
@@ -44,6 +32,9 @@ export function AddContact({
       .select("*")
       .eq("owner_id", user.id)
       .then(({ data }) => {
+        if (!isMountedRef.current) {
+          return;
+        }
         if (data && data.length > 0) {
           updateSightingData("contactName", data[0].firstname);
           updateSightingData("contactPhone", data[0].phone);

@@ -1,6 +1,12 @@
 import { FunctionsHttpError, PostgrestError } from "@supabase/supabase-js";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
@@ -55,6 +61,7 @@ export type SightingWizardStepData = {
 export const WizardForm = () => {
   const router = useRouter();
   const { user } = useContext(AuthContext);
+  const isMountedRef = useRef(true);
 
   const [loading, setLoading] = useState(false);
   const [disabledNext, setDisabledNext] = useState(false);
@@ -86,6 +93,12 @@ export const WizardForm = () => {
     },
     [],
   );
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     // reset data
@@ -200,6 +213,10 @@ export const WizardForm = () => {
 
     processResponse()
       .then(() => {
+        if (!isMountedRef.current) {
+          return;
+        }
+
         setLoading(false);
 
         if (currentStep && currentStep !== "submit") {
@@ -221,6 +238,10 @@ export const WizardForm = () => {
         }
       })
       .catch(async (err) => {
+        if (!isMountedRef.current) {
+          return;
+        }
+
         if (currentStep === "upload_photo") {
           await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
@@ -228,6 +249,10 @@ export const WizardForm = () => {
         }
       })
       .finally(() => {
+        if (!isMountedRef.current) {
+          return;
+        }
+
         setLoading(false);
         setDisabledNext(false);
         setDisabledBack(false);
@@ -236,6 +261,10 @@ export const WizardForm = () => {
 
   const onImageAnalyzeSuccess = useCallback(
     (data?: AnalysisResponse, publicUrl?: string) => {
+      if (!isMountedRef.current) {
+        return;
+      }
+
       if (publicUrl) {
         updateSightingData("photo", publicUrl);
       }
