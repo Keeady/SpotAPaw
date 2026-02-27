@@ -2,7 +2,7 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import { ActivityIndicator, Button, HelperText } from "react-native-paper";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../Provider/auth-provider";
 import { supabase } from "../supabase-client";
 import { Pet } from "@/model/pet";
@@ -21,6 +21,14 @@ export function ChoosePet({
   const [hasErrors, setHasErrors] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   useEffect(() => {
     if (!isValidData) {
       setHasErrors(true);
@@ -38,7 +46,7 @@ export function ChoosePet({
         .eq("owner_id", user.id)
         .then(({ data }) => {
           setLoading(false);
-          if (data && data.length > 0) {
+          if (isMountedRef.current && data && data.length > 0) {
             setPets(data);
           }
         });
@@ -46,7 +54,7 @@ export function ChoosePet({
   }, [user?.id]);
 
   useEffect(() => {
-    if (selectedPetId) {
+    if (isMountedRef.current && selectedPetId) {
       const pet = pets.find((p) => p.id === selectedPetId);
       if (pet) {
         Object.keys(pet).map((key) => {
