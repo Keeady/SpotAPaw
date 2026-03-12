@@ -6,7 +6,7 @@ import {
   Text,
   TextInput,
 } from "react-native-paper";
-import { Linking, View, StyleSheet, ScrollView } from "react-native";
+import { Linking, View, StyleSheet, ScrollView, Platform } from "react-native";
 
 type LocationPermissionDeniedDialogProps = {
   permissionDeniedDialogVisible: boolean;
@@ -26,22 +26,31 @@ export const LocationPermissionDeniedDialog = ({
         <Dialog.Title>Grant Location Permission</Dialog.Title>
         <Dialog.Content>
           <Text variant="bodyMedium">
-            Location permission is required for the best experience. You can
-            enable it in your device settings.
+            {Platform.OS === "web"
+              ? "Please open your browser settings manually to update location setting."
+              : "Location permission is required for the best experience. You can enable it in your device settings."}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setPermissionDeniedDialogVisible(false)}>
-            Cancel
-          </Button>
-          <Button
-            onPress={() => {
-              setPermissionDeniedDialogVisible(false);
-              Linking.openSettings();
-            }}
-          >
-            Open Settings
-          </Button>
+          {Platform.OS === "web" ? (
+            <Button onPress={() => setPermissionDeniedDialogVisible(false)}>
+              OK
+            </Button>
+          ) : (
+            <>
+              <Button onPress={() => setPermissionDeniedDialogVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                onPress={() => {
+                  setPermissionDeniedDialogVisible(false);
+                  Linking.openSettings();
+                }}
+              >
+                Open Settings
+              </Button>
+            </>
+          )}
         </Dialog.Actions>
       </Dialog>
     </Portal>

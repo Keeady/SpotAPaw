@@ -34,8 +34,8 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "server",
+      "favicon": "./assets/images/spotapaw-icon.png"
     },
     "plugins": [
       "expo-font",

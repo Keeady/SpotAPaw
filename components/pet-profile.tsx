@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, StyleSheet } from "react-native";
+import { Image, View, StyleSheet, Platform } from "react-native";
 import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
 import { getIconByAnimalSpecies } from "./util";
 import {
@@ -67,7 +67,7 @@ export function RenderSightingProfile(data) {
       {pet.photo ? (
         <Image
           source={{ uri: pet.photo }}
-          resizeMode="cover"
+          resizeMode={Platform.OS === "web" ? "center" : "cover"}
           style={{
             width: "100%",
             height: 300,
