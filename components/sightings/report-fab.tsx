@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Platform } from "react-native";
 import { FAB, Portal } from "react-native-paper";
 
 type ReportLostPetFabProps = {
@@ -10,6 +11,10 @@ export default function ReportLostPetFab({
   onFormPress,
   title,
 }: ReportLostPetFabProps) {
+  if (Platform.OS === "web") {
+    return null;
+  }
+  
   return (
     <Portal>
       <FAB

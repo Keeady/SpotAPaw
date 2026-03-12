@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
-  Image,
 } from "react-native";
 import {
   Card,
@@ -19,7 +18,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import { useState } from "react";
-import ImageViewing from "react-native-image-viewing";
 import { PetSighting } from "@/model/sighting";
 import ReportLostPetFab from "./report-fab";
 import {
@@ -28,6 +26,7 @@ import {
   getLastSeenTimeDistance,
 } from "./util";
 import { usePermission } from "../Provider/permission-provider";
+import SightingGallery from "./gallery";
 
 function dedupPhotos(sightings: PetSighting[]) {
   const seen = new Set();
@@ -97,22 +96,13 @@ export default function SightingDetail({
               titleVariant="titleLarge"
             />
             <Card.Content>
-              {petSummary?.photo ? (
-                <TouchableOpacity onPress={() => setIsVisible(true)}>
-                  <Image
-                    source={{ uri: petSummary?.photo }}
-                    resizeMode="cover"
-                    style={{
-                      width: "100%",
-                      height: 350,
-                    }}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <View style={[styles.image, styles.placeholder]}>
-                  <Text style={styles.placeholderText}>No Photo</Text>
-                </View>
-              )}
+              <SightingGallery
+                images={images}
+                isVisible={isVisible}
+                setIsVisible={setIsVisible}
+                mainPhoto={petSummary?.photo}
+              />
+
               <Divider />
               {petSummary?.breed && (
                 <Text variant="titleLarge" style={styles.title}>
@@ -374,24 +364,6 @@ export default function SightingDetail({
               </View>
             );
           })}
-          <View>
-            <ImageViewing
-              images={images}
-              imageIndex={0}
-              visible={isVisible}
-              onRequestClose={() => setIsVisible(false)}
-              FooterComponent={({ imageIndex }) => {
-                return (
-                  <View style={{ padding: 20, alignItems: "center" }}>
-                    <Text style={{ color: "#fff" }}>
-                      {imageIndex + 1}/{images.length}
-                    </Text>
-                  </View>
-                );
-              }}
-              presentationStyle={"overFullScreen"}
-            />
-          </View>
         </ScrollView>
 
         <ReportLostPetFab
@@ -404,20 +376,6 @@ export default function SightingDetail({
 }
 
 const styles = StyleSheet.create({
-  image: {
-    width: "100%",
-    height: 180,
-    resizeMode: "cover",
-  },
-  placeholder: {
-    backgroundColor: "#CFD8DC",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderText: {
-    color: "#546E7A",
-    fontSize: 14,
-  },
   name: {
     fontSize: 20,
     fontWeight: "bold",

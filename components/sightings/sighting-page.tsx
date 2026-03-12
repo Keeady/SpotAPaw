@@ -154,15 +154,17 @@ export default function SightingPage({ renderer }: SightingPageProps) {
           )}
         </View>
         {!location && <SightingLocationManager />}
-        <View>
-          {renderer(
-            sightings,
-            onEndReached,
-            ListEmptyComponent,
-            onRefresh,
-            refreshing,
-          )}
-        </View>
+        {location && (
+          <View style={{flex:  1}}>
+            {renderer(
+              sightings,
+              onEndReached,
+              ListEmptyComponent,
+              onRefresh,
+              refreshing,
+            )}
+          </View>
+        )}
 
         <ReportLostPetFab
           onFormPress={() => router.navigate(`/${sightingsRoute}/new`)}

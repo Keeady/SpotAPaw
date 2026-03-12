@@ -53,7 +53,7 @@ export const SightingLocationManager = () => {
             To show you nearby pet sightings, we need to know your location.
           </Text>
           <Button
-            mode="text"
+            mode="contained"
             onPress={() => onLocationPermissionRequested()}
             icon={"crosshairs-gps"}
           >
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignContent: "center",
     flexWrap: "wrap",
-    flex: 1,
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 8,

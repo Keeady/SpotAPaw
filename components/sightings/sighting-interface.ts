@@ -22,3 +22,10 @@ export type PetReportData = {
   photoUrl?: string | null;
   is_lost?: boolean;
 };
+
+export type SightingGalleryProps = {
+  images: { uri: string }[];
+  isVisible: boolean;
+  setIsVisible: (value: boolean) => void;
+  mainPhoto?: string;
+};
