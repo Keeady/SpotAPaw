@@ -163,19 +163,21 @@ export default function SignInScreen() {
               Continue with Google
             </Button>
           </View>
-          <View style={[styles.verticallySpaced, styles.mt20]}>
-            <AppleAuthentication.AppleAuthenticationButton
-              buttonType={
-                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-              }
-              buttonStyle={
-                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-              }
-              cornerRadius={12}
-              style={styles.button}
-              onPress={() => router.push("/(auth)/apple")}
-            />
-          </View>
+          {Platform.OS === "ios" && (
+            <View style={[styles.verticallySpaced, styles.mt20]}>
+              <AppleAuthentication.AppleAuthenticationButton
+                buttonType={
+                  AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+                }
+                buttonStyle={
+                  AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+                }
+                cornerRadius={12}
+                style={styles.button}
+                onPress={() => router.push("/(auth)/apple")}
+              />
+            </View>
+          )}
         </View>
 
         <View>

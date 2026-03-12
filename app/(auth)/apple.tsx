@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { makeRedirectUri } from "expo-auth-session";
 import { supabase } from "@/components/supabase-client";
 import { showMessage } from "react-native-flash-message";
 import * as AppleAuthentication from "expo-apple-authentication";
@@ -21,11 +20,18 @@ export default function Auth() {
         });
         if (error) {
           log(error.message);
+          showMessage({
+          message: "Authentication failed. Please try again.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
           return;
         }
 
         router.replace("/(app)/my-sightings");
       } else {
+        log("No credential found.")
         showMessage({
           message: "Authentication failed. Please try again.",
           type: "warning",
@@ -34,6 +40,7 @@ export default function Auth() {
         });
       }
     } catch {
+      log("Apple login failed.")
       showMessage({
         message: "Authentication failed. Please try again.",
         type: "warning",

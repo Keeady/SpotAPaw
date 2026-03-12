@@ -64,7 +64,7 @@
           "cameraPermission": "Allow SpotAPaw to use your camera to take pet photos."
         }
       ],
-      ["expo-apple-authentication"]
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true
