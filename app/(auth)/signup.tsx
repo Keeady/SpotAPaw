@@ -20,6 +20,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 export default function SignUpScreen() {
   const theme = useTheme();
@@ -120,7 +121,7 @@ export default function SignUpScreen() {
     }
 
     setLoading(false);
-    router.navigate("/(auth)/resend")
+    router.navigate("/(auth)/resend");
   }
 
   useEffect(() => {
@@ -176,91 +177,104 @@ export default function SignUpScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-          <View style={styles.buttonContainer}>
-            <View style={[styles.verticallySpaced]}>
-              <HelperText
-                type="error"
-                visible={hasEmailError}
-                style={{ color: theme.colors.error }}
-                padding="none"
-              >
-                Invalid email address.
-              </HelperText>
-              <TextInput
-                label="Email"
-                left={<TextInput.Icon icon="mail" />}
-                onChangeText={(text) => {
-                  setEmail(text);
-                }}
-                value={email}
-                placeholder="email@address.com"
-                autoCapitalize={"none"}
-                mode="outlined"
-                keyboardType="email-address"
-                error={hasEmailError}
-              />
-            </View>
-            <View style={styles.verticallySpaced}>
-              <TextInput
-                label="Password"
-                left={<TextInput.Icon icon="lock" />}
-                onChangeText={(text) => setPassword(text)}
-                value={password}
-                secureTextEntry={isHidden}
-                placeholder="Password"
-                autoCapitalize={"none"}
-                right={
-                  <TextInput.Icon
-                    icon={isHidden ? "eye" : "eye-off"}
-                    onPress={() => setHidden(!isHidden)}
-                  />
-                }
-                mode="outlined"
-                textContentType="password"
-              />
-            </View>
-            <View style={styles.verticallySpaced}>
-              <TextInput
-                label="Confirm Password"
-                left={<TextInput.Icon icon="lock" />}
-                onChangeText={(text) => setRePassword(text)}
-                value={rePassword}
-                secureTextEntry={isHidden}
-                placeholder="Confirm Password"
-                autoCapitalize={"none"}
-                mode="outlined"
-                textContentType="password"
-              />
-              <HelperText visible={true} type="info" padding="none">
-                Password must be at least 8 characters long, include one
-                uppercase letter, one lowercase letter, one number, and one
-                special character.
-              </HelperText>
-            </View>
-            <View style={[styles.verticallySpaced]}>
-              <Button
-                mode="contained"
-                disabled={loading || hasEmailError}
-                onPress={() => signUpWithEmail()}
-                style={styles.button}
-              >
-                Create an account
-              </Button>
-            </View>
+        <View style={styles.buttonContainer}>
+          <View style={[styles.verticallySpaced]}>
+            <HelperText
+              type="error"
+              visible={hasEmailError}
+              style={{ color: theme.colors.error }}
+              padding="none"
+            >
+              Invalid email address.
+            </HelperText>
+            <TextInput
+              label="Email"
+              left={<TextInput.Icon icon="mail" />}
+              onChangeText={(text) => {
+                setEmail(text);
+              }}
+              value={email}
+              placeholder="email@address.com"
+              autoCapitalize={"none"}
+              mode="outlined"
+              keyboardType="email-address"
+              error={hasEmailError}
+            />
+          </View>
+          <View style={styles.verticallySpaced}>
+            <TextInput
+              label="Password"
+              left={<TextInput.Icon icon="lock" />}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              secureTextEntry={isHidden}
+              placeholder="Password"
+              autoCapitalize={"none"}
+              right={
+                <TextInput.Icon
+                  icon={isHidden ? "eye" : "eye-off"}
+                  onPress={() => setHidden(!isHidden)}
+                />
+              }
+              mode="outlined"
+              textContentType="password"
+            />
+          </View>
+          <View style={styles.verticallySpaced}>
+            <TextInput
+              label="Confirm Password"
+              left={<TextInput.Icon icon="lock" />}
+              onChangeText={(text) => setRePassword(text)}
+              value={rePassword}
+              secureTextEntry={isHidden}
+              placeholder="Confirm Password"
+              autoCapitalize={"none"}
+              mode="outlined"
+              textContentType="password"
+            />
+            <HelperText visible={true} type="info" padding="none">
+              Password must be at least 8 characters long, include one uppercase
+              letter, one lowercase letter, one number, and one special
+              character.
+            </HelperText>
+          </View>
+          <View style={[styles.verticallySpaced]}>
+            <Button
+              mode="contained"
+              disabled={loading || hasEmailError}
+              onPress={() => signUpWithEmail()}
+              style={styles.button}
+            >
+              Create an account
+            </Button>
+          </View>
 
-            <DividerWithText text="OR" />
+          <DividerWithText text="OR" />
 
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-              <Button
-                icon="google"
-                mode="outlined"
-                onPress={() => router.push("/(auth)/oauth")}
-                style={styles.button}
-              >
-                Continue with Google
-              </Button>
-            </View>
-          </View>       
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <Button
+              icon="google"
+              mode="outlined"
+              onPress={() => router.push("/(auth)/oauth")}
+              style={styles.button}
+            >
+              Continue with Google
+            </Button>
+          </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              cornerRadius={12}
+              style={styles.button}
+              onPress={() => router.push("/(auth)/apple")}
+            />
+          </View>
+        </View>
         <View>
           <View style={styles.secondary}>
             <Text>Already have an account?</Text>
@@ -331,6 +345,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
+    height: 48,
     marginBottom: 16,
     borderWidth: 1,
     borderRadius: 12,

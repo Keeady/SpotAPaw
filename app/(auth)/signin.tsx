@@ -7,6 +7,7 @@ import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 export default function SignInScreen() {
   const theme = useTheme();
@@ -162,6 +163,19 @@ export default function SignInScreen() {
               Continue with Google
             </Button>
           </View>
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              cornerRadius={12}
+              style={styles.button}
+              onPress={() => router.push("/(auth)/apple")}
+            />
+          </View>
         </View>
 
         <View>
@@ -232,6 +246,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
+    height: 48,
     marginBottom: 16,
     borderWidth: 1,
     borderRadius: 12,
