@@ -19,7 +19,6 @@ export default function PublicHome() {
 
       <View>
         <Button
-          icon=""
           mode="contained"
           style={styles.button}
           onPress={() => router.push("/sightings/")}
