@@ -1,5 +1,3 @@
-// import { Pet } from "@/model/pet";
-
 import { Pet } from "@/db/models/pet";
 
 export type SightingPet = Pet & {

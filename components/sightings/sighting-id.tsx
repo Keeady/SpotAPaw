@@ -8,6 +8,7 @@ import { supabase } from "@/components/supabase-client";
 import { useConfirmPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
 import { log } from "../logs";
+import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function SightingProfile() {
     petId: string;
   }>(); // pet id
   const [claimed, setClaimed] = useState(false);
-  const [petOwner, setPetOwner] = useState();
+  const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
 
   const { loading, error, timeline, summary } = usePetSightings(
@@ -28,6 +29,7 @@ export default function SightingProfile() {
   const { user } = useContext(AuthContext);
   const onPetFound = useConfirmPetFound();
   const sightingsRoute = user ? "my-sightings" : "sightings";
+  const petRepository = new SupabasePetRepository(supabase);
 
   useEffect(() => {
     if (user?.id && sightingId && isValidUuid(sightingId)) {
@@ -45,17 +47,12 @@ export default function SightingProfile() {
 
   useEffect(() => {
     if ((!summary?.name || !summary.owner_id) && petId && isValidUuid(petId)) {
-      supabase
-        .from("pets")
-        .select("*")
-        .eq("id", petId)
-        .single()
-        .then(({ data }) => {
-          if (data) {
-            setPetOwner(data.owner_id);
-            setPetName(data.name);
-          }
-        });
+      petRepository.getPet(petId).then((data) => {
+        if (data) {
+          setPetOwner(data.ownerId);
+          setPetName(data.name);
+        }
+      });
     }
   }, [petId, summary?.name, summary?.owner_id]);
 
@@ -71,9 +68,7 @@ export default function SightingProfile() {
     if (!petId) {
       return;
     }
-    router.push(
-      `/${sightingsRoute}/edit/?petId=${petId}&id=${sightingId}`,
-    );
+    router.push(`/${sightingsRoute}/edit/?petId=${petId}&id=${sightingId}`);
   }, [petId, sightingId, router, sightingsRoute]);
 
   const handlePetFound = useCallback(() => {

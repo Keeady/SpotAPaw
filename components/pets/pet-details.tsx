@@ -1,9 +1,10 @@
 import { Text } from "react-native-paper";
 import { Pet } from "@/model/pet";
 import PetProfileCard from "./profile";
+import { SightingPet } from "../wizard/wizard-interface";
 
 type RenderPetDetailsProps = {
-  pet: Pet;
+  pet: SightingPet;
   onDeletePet: () => void;
   onEditPet: () => void;
   onPetLost: () => void;
@@ -25,7 +26,7 @@ export default function RenderPetDetails({
 
   return (
     <PetProfileCard
-      petProfile={{ ...pet, status: pet.is_lost ? "lost" : "safe" }}
+      petProfile={{ ...pet, status: pet.isLost ? "lost" : "safe" }}
       onEditPet={onEditPet}
       onPetFound={onPetFound}
       onPetLost={onPetLost}

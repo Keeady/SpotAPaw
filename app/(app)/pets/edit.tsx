@@ -4,6 +4,8 @@ import EditPetDetails from "@/components/pets/pet-edit";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { getLastSeenLocation, isValidUuid } from "@/components/util";
+import { SightingPet } from "@/components/wizard/wizard-interface";
+import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
 import { Pet } from "@/model/pet";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -15,26 +17,25 @@ export default function EditPet() {
     is_lost: string;
   }>();
   const { user } = useContext(AuthContext);
-  const [profileInfo, setProfileInfo] = useState<Pet>();
+  const [profileInfo, setProfileInfo] = useState<SightingPet>();
   const router = useRouter();
   const uploadImage = useUploadPetImageUrl();
   const isLost = Boolean(is_lost);
+  const petRepository = new SupabasePetRepository(supabase);
 
   useEffect(() => {
     if (!id || !isValidUuid(id)) {
       return;
     }
 
-    supabase
-      .from("pets")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data, error }) => {
-        if (error) {
-          log(error?.message || "");
-        }
+    supabase;
+    petRepository
+      .getPet(id)
+      .then((data) => {
         setProfileInfo(data);
+      })
+      .catch((error) => {
+        log(error?.message || "");
       });
   }, [id]);
 
@@ -52,41 +53,37 @@ export default function EditPet() {
       colors: profileInfo.colors,
       features: profileInfo.features,
       note: profileInfo.note,
-      owner_id: user?.id,
-      is_lost: isLost,
+      ownerId: user?.id,
+      isLost: isLost,
     };
 
     if (photoUrl !== "") {
       payload.photo = photoUrl;
     }
 
-    const { error } = await supabase
-      .from("pets")
-      .update(payload)
-      .eq("id", id)
-      .select();
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "Error updating pet profile.",
-        type: "warning",
-        icon: "warning",
-        statusBarHeight: 50,
+    await petRepository
+      .updatePet(id, payload)
+      .then(() => {
+        showMessage({
+          message: "Successfully updated pet profile.",
+          type: "success",
+          icon: "success",
+          statusBarHeight: 50,
+        });
+        if (isLost) {
+          handleLostPet(photoUrl);
+        } else {
+          router.replace(`/(app)/pets`);
+        }
+      })
+      .catch(() => {
+        showMessage({
+          message: "Error updating pet profile.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
       });
-    } else {
-      showMessage({
-        message: "Successfully updated pet profile.",
-        type: "success",
-        icon: "success",
-        statusBarHeight: 50,
-      });
-      if (isLost) {
-        handleLostPet(photoUrl);
-      } else {
-        router.replace(`/(app)/pets`);
-      }
-    }
   };
 
   async function savePetInfo() {
@@ -106,9 +103,9 @@ export default function EditPet() {
     }
 
     const lastSeenFormatted = await getLastSeenLocation(
-      profileInfo.last_seen_location,
-      profileInfo.last_seen_lat,
-      profileInfo.last_seen_long,
+      profileInfo.lastSeenLocation,
+      profileInfo.lastSeenLat,
+      profileInfo.lastSeenLong,
     );
 
     const payload = {
@@ -120,10 +117,10 @@ export default function EditPet() {
       features: profileInfo.features,
       note: profileInfo.note,
       reporter_id: user?.id,
-      last_seen_time: profileInfo.last_seen_time || new Date().toISOString(),
+      last_seen_time: profileInfo.lastSeenTime || new Date().toISOString(),
       last_seen_location: lastSeenFormatted,
-      last_seen_lat: profileInfo.last_seen_lat,
-      last_seen_long: profileInfo.last_seen_long,
+      last_seen_lat: profileInfo.lastSeenLat,
+      last_seen_long: profileInfo.lastSeenLong,
       pet_id: id,
     };
 

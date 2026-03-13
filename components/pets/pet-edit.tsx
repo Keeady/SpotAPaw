@@ -12,17 +12,18 @@ import {
 import DatePicker from "../date-picker";
 import { ImagePickerHandler } from "../image-picker";
 import ShowLocationControls from "../location-util";
+import { SightingPet } from "../wizard/wizard-interface";
 
 export default function EditPetDetails(
   handleSubmit: () => Promise<void>,
-  setProfileInfo: (v: Pet) => void,
-  pet?: Pet,
+  setProfileInfo: (v: SightingPet) => void,
+  pet?: SightingPet,
   is_lost?: boolean,
 ) {
   const theme = useTheme();
   const [isDisabled, setDisabled] = React.useState(false);
   const handleChange = (fieldName: string, fieldValue: string | number) => {
-    setProfileInfo((prev: Pet) => ({ ...prev, [fieldName]: fieldValue }));
+    setProfileInfo((prev: SightingPet) => ({ ...prev, [fieldName]: fieldValue }));
   };
   const [extra_info, setExtraInfo] = React.useState("");
 
@@ -88,8 +89,8 @@ export default function EditPetDetails(
                   dateLabel="Last Seen Date"
                   timeLabel="Last Seen Time"
                   value={
-                    pet?.last_seen_time
-                      ? new Date(pet?.last_seen_time)
+                    pet?.lastSeenTime
+                      ? new Date(pet?.lastSeenTime)
                       : new Date()
                   }
                   onChange={(v) =>

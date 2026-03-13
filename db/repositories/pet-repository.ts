@@ -3,21 +3,25 @@ import { Pet } from "../models/pet";
 export interface PetRepository {
   getPet(id: string): Promise<Pet>;
   createPet(data: Pet): Promise<string>;
-  updatePet(data: Pet): Promise<void>
+  updatePet(id: string, data: Pet): Promise<void>
   getPets(ownerId: string): Promise<Pet[]>;
+  deletePet(id: string, ownerId: string): Promise<void>;
 }
 
 export class BasePetRepository implements PetRepository {
-    getPet(id: string): Promise<Pet> {
+    deletePet(_id: string, _ownerId: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    createPet(data: Pet): Promise<string> {
+    getPet(_id: string): Promise<Pet> {
         throw new Error("Method not implemented.");
     }
-    updatePet(data: Pet): Promise<void> {
+    createPet(_data: Pet): Promise<string> {
         throw new Error("Method not implemented.");
     }
-    getPets(ownerId: string): Promise<Pet[]> {
+    updatePet(_id: string, _data: Pet): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    getPets(_ownerId: string): Promise<Pet[]> {
         throw new Error("Method not implemented.");
     }
     
