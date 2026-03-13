@@ -11,7 +11,7 @@ export class SupabasePetRepository extends BasePetRepository {
 
   async getPet(id: string): Promise<Pet> {
     if (!this.supabaseClient) {
-      throw "Undefined supabase client";
+      throw new Error("Undefined supabase client");
     }
 
     const { error, data } = await this.supabaseClient
@@ -29,7 +29,7 @@ export class SupabasePetRepository extends BasePetRepository {
 
   async getPets(ownerId: string): Promise<Pet[]> {
     if (!this.supabaseClient) {
-      throw "Undefined supabase client";
+      throw new Error("Undefined supabase client");
     }
 
     const { error, data } = await this.supabaseClient
@@ -46,27 +46,32 @@ export class SupabasePetRepository extends BasePetRepository {
 
   async createPet(pet: Pet): Promise<string> {
     if (!this.supabaseClient) {
-      throw "Undefined supabase client";
+      throw new Error("Undefined supabase client");
     }
 
     const normalizedPet = this.normalizePayload(pet);
     const { error, data } = await this.supabaseClient
       .from("pets")
       .insert(normalizedPet)
-      .select("id");
+      .select("id")
+      .single();
 
     if (error) {
       throw error;
     }
 
-    const id = data[0].id;
+    if (!data) {
+      throw new Error("No pet returned");
+    }
+
+    const id = data.id;
 
     return id;
   }
 
   async deletePet(id: string, ownerId: string): Promise<void> {
     if (!this.supabaseClient) {
-      throw "Undefined supabase client";
+      throw new Error("Undefined supabase client");
     }
     const { error } = await this.supabaseClient
       .from("pets")
@@ -81,7 +86,7 @@ export class SupabasePetRepository extends BasePetRepository {
 
   async updatePet(id: string, payload: Partial<Pet>): Promise<void> {
     if (!this.supabaseClient) {
-      throw "Undefined supabase client";
+      throw new Error("Undefined supabase client");
     }
     const normalizedPayload = this.normalizePayload(payload);
     const { error } = await this.supabaseClient

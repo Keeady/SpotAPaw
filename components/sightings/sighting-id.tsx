@@ -29,7 +29,6 @@ export default function SightingProfile() {
   const { user } = useContext(AuthContext);
   const onPetFound = useConfirmPetFound();
   const sightingsRoute = user ? "my-sightings" : "sightings";
-  const petRepository = new SupabasePetRepository(supabase);
 
   useEffect(() => {
     if (user?.id && sightingId && isValidUuid(sightingId)) {
@@ -47,6 +46,7 @@ export default function SightingProfile() {
 
   useEffect(() => {
     if ((!summary?.name || !summary.owner_id) && petId && isValidUuid(petId)) {
+      const petRepository = new SupabasePetRepository(supabase);
       petRepository.getPet(petId).then((data) => {
         if (data) {
           setPetOwner(data.ownerId);

@@ -1,4 +1,3 @@
-import { Pet } from "@/model/pet";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";

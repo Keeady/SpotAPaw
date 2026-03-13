@@ -23,10 +23,11 @@ export default function PetProfile() {
   const { user } = useContext(AuthContext);
   const onConfirmDelete = useConfirmDelete();
   const onPetFound = useConfirmPetFound();
-  const petRepository = new SupabasePetRepository(supabase);
+  
 
   useEffect(() => {
     setLoading(true);
+    const petRepository = new SupabasePetRepository(supabase);
     petRepository.getPet(id)
       .then(( data ) => {
         setLoading(false);

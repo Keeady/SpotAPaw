@@ -1,4 +1,3 @@
-import { Pet } from "@/model/pet";
 import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";

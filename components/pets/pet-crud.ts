@@ -3,7 +3,6 @@ import { showMessage } from "react-native-flash-message";
 import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
-import { Pet } from "@/model/pet";
 import { log } from "../logs";
 import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
 import { SightingPet } from "../wizard/wizard-interface";

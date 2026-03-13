@@ -3,7 +3,6 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
-import { Pet } from "@/model/pet";
 import { useContext, useEffect, useState } from "react";
 
 export default function PetListScreen() {
@@ -11,11 +10,11 @@ export default function PetListScreen() {
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const petRepository = new SupabasePetRepository(supabase);
-
   useEffect(() => {
     if (user?.id) {
       setLoading(true);
+      const petRepository = new SupabasePetRepository(supabase);
+
       petRepository.getPets(user.id).then((data) => {
         if (data && data.length > 0) {
           setPets(data);

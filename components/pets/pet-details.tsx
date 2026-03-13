@@ -1,5 +1,4 @@
 import { Text } from "react-native-paper";
-import { Pet } from "@/model/pet";
 import PetProfileCard from "./profile";
 import { SightingPet } from "../wizard/wizard-interface";
 

@@ -16,7 +16,6 @@ export default function ClaimLostPet() {
   const [sighting, setSighting] = useState();
   const [loadingPet, setLoadingPet] = useState(false);
   const [loadingSighting, setLoadingSighting] = useState(false);
-  const petRepository = new SupabasePetRepository(supabase);
 
   const { petId, sightingId } = useLocalSearchParams<{
     petId: string;
@@ -26,6 +25,7 @@ export default function ClaimLostPet() {
   useEffect(() => {
     if (user?.id) {
       setLoadingPet(true);
+      const petRepository = new SupabasePetRepository(supabase);
       petRepository.getPets(user.id).then((data) => {
         setPets(data);
         setLoadingPet(false);

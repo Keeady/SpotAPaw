@@ -21,7 +21,6 @@ export function ChoosePet({
   const [selectedPetId, setSelectedPetId] = useState<string>("");
   const [hasErrors, setHasErrors] = useState(false);
   const [loading, setLoading] = useState(false);
-  const petRepository = new SupabasePetRepository(supabase);
 
   const isMountedRef = useRef(true);
 
@@ -42,6 +41,7 @@ export function ChoosePet({
   useEffect(() => {
     if (user?.id) {
       setLoading(true);
+      const petRepository = new SupabasePetRepository(supabase);
       petRepository.getPets(user.id).then((data) => {
         if (!isMountedRef.current) {
           return;
