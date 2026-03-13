@@ -14,7 +14,8 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location.",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "permissions": [
@@ -62,7 +63,8 @@
           "photosPermission": "Allow SpotAPaw to access your photos to upload pet images.",
           "cameraPermission": "Allow SpotAPaw to use your camera to take pet photos."
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true
