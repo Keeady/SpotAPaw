@@ -1,5 +1,4 @@
 import { supabase } from "@/components/supabase-client";
-import { Pet } from "@/model/pet";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
@@ -13,24 +12,24 @@ import {
   useConfirmPetFound,
 } from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
+import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
+import { SightingPet } from "@/components/wizard/wizard-interface";
 
 export default function PetProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [pet, setPet] = useState<Pet | undefined>(undefined);
+  const [pet, setPet] = useState<SightingPet | undefined>(undefined);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
   const onConfirmDelete = useConfirmDelete();
   const onPetFound = useConfirmPetFound();
+  
 
   useEffect(() => {
     setLoading(true);
-    supabase
-      .from("pets")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data }) => {
+    const petRepository = new SupabasePetRepository(supabase);
+    petRepository.getPet(id)
+      .then(( data ) => {
         setLoading(false);
         setPet(data);
       });

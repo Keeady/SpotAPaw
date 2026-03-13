@@ -1,4 +1,3 @@
-import { Pet } from "@/model/pet";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -10,9 +9,10 @@ import {
   useTheme,
 } from "react-native-paper";
 import { ImagePickerHandler } from "../image-picker";
+import { SightingPet } from "../wizard/wizard-interface";
 
 type CreatePetDetailsProps = {
-  handleSubmit: (petData: Pet) => Promise<void>;
+  handleSubmit: (petData: SightingPet) => Promise<void>;
 };
 
 export default function CreatePetDetails({
@@ -22,7 +22,7 @@ export default function CreatePetDetails({
 
   const [disabled, setDisabled] = useState(true);
 
-  const [pet, setPet] = useState<Pet>();
+  const [pet, setPet] = useState<SightingPet>();
   const handleChange = (fieldName: string, fieldValue: string) => {
     setPet((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };

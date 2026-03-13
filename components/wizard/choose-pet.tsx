@@ -4,10 +4,11 @@ import { WizardHeader } from "./wizard-header";
 import { ActivityIndicator, Button, HelperText } from "react-native-paper";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../Provider/auth-provider";
-import { supabase } from "../supabase-client";
-import { Pet } from "@/model/pet";
 import { PetSelection } from "../sightings/pet-selection";
 import { useRouter } from "expo-router";
+import { SightingPet } from "./wizard-interface";
+import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
+import { supabase } from "../supabase-client";
 
 export function ChoosePet({
   updateSightingData,
@@ -16,7 +17,7 @@ export function ChoosePet({
 }: SightingWizardStepData) {
   const { user } = useContext(AuthContext);
   const router = useRouter();
-  const [pets, setPets] = useState<Pet[]>([]);
+  const [pets, setPets] = useState<SightingPet[]>([]);
   const [selectedPetId, setSelectedPetId] = useState<string>("");
   const [hasErrors, setHasErrors] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,19 +41,16 @@ export function ChoosePet({
   useEffect(() => {
     if (user?.id) {
       setLoading(true);
-      supabase
-        .from("pets")
-        .select("*")
-        .eq("owner_id", user.id)
-        .then(({ data }) => {
-          if (!isMountedRef.current) {
-            return;
-          }
-          setLoading(false);
-          if (data && data.length > 0) {
-            setPets(data);
-          }
-        });
+      const petRepository = new SupabasePetRepository(supabase);
+      petRepository.getPets(user.id).then((data) => {
+        if (!isMountedRef.current) {
+          return;
+        }
+        setLoading(false);
+        if (data && data.length > 0) {
+          setPets(data);
+        }
+      });
     }
   }, [user?.id]);
 

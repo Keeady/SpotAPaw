@@ -1,6 +1,10 @@
-import { Pet } from "@/model/pet";
+import { Pet } from "@/db/models/pet";
 
-export type SightingReport = Pet & {
+export type SightingPet = Pet & {
+  photoUrl?: string;
+}
+
+export type SightingReport = SightingPet & {
   size: string;
   contactName: string;
   contactPhone: string;

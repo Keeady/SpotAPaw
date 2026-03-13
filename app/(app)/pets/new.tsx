@@ -2,7 +2,7 @@ import useUploadPetImageUrl from "@/components/image-upload-handler";
 import CreatePetDetails from "@/components/pets/pet-create";
 import { createNewPet } from "@/components/pets/pet-crud";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { Pet } from "@/model/pet";
+import { SightingPet } from "@/components/wizard/wizard-interface";
 import { useContext } from "react";
 
 export default function AddPet() {
@@ -13,14 +13,14 @@ export default function AddPet() {
     return;
   }
 
-  async function handleSaveNewPet(pet: Pet, photoUrl: string) {
+  async function handleSaveNewPet(pet: SightingPet, photoUrl: string) {
     if (!pet || !user) {
       return;
     }
-    createNewPet({ ...pet, photo: photoUrl }, user.id);
+    createNewPet({ ...pet, photo: photoUrl, ownerId: user.id });
   }
 
-  async function saveNewPet(pet: Pet) {
+  async function saveNewPet(pet: SightingPet) {
     if (!pet || !user) {
       return;
     }
