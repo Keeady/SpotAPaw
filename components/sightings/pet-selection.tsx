@@ -1,11 +1,11 @@
-import { Pet } from "@/model/pet";
 import { Card, RadioButton } from "react-native-paper";
 import { StyleSheet, Image } from "react-native";
+import { SightingPet } from "../wizard/wizard-interface";
 
 type PetSelectionProps = {
   setSelectedPetId: (value: string) => void;
   selectedPetId: string;
-  pets: Pet[];
+  pets: SightingPet[];
 };
 
 export function PetSelection({

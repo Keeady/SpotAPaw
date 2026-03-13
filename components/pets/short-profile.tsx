@@ -1,10 +1,10 @@
-import { Pet } from "@/model/pet";
 import React from "react";
 import { Image, View } from "react-native";
 import { Card, Divider, Text } from "react-native-paper";
+import { SightingPet } from "../wizard/wizard-interface";
 
 type ShortProfileProp = {
-  pet: Pet;
+  pet: SightingPet;
 };
 
 export default function RenderShortProfile({ pet }: ShortProfileProp) {

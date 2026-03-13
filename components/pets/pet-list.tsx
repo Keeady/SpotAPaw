@@ -1,11 +1,11 @@
 import RenderShortProfile from "@/components/pets/short-profile";
-import { Pet } from "@/model/pet";
 import { useRouter } from "expo-router";
 import { FlatList, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
+import { SightingPet } from "../wizard/wizard-interface";
 
 type PetListRendererProp = {
-  pets: Pet[];
+  pets: SightingPet[];
 };
 
 export default function PetListRenderer({ pets }: PetListRendererProp) {

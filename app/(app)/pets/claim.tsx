@@ -3,6 +3,8 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import ClaimSighting from "@/components/sightings/sighting-claim";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
+import { SightingPet } from "@/components/wizard/wizard-interface";
+import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -10,10 +12,11 @@ import { showMessage } from "react-native-flash-message";
 export default function ClaimLostPet() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
-  const [pets, setPets] = useState([]);
+  const [pets, setPets] = useState<SightingPet[]>([]);
   const [sighting, setSighting] = useState();
   const [loadingPet, setLoadingPet] = useState(false);
   const [loadingSighting, setLoadingSighting] = useState(false);
+  const petRepository = new SupabasePetRepository(supabase);
 
   const { petId, sightingId } = useLocalSearchParams<{
     petId: string;
@@ -21,15 +24,13 @@ export default function ClaimLostPet() {
   }>();
 
   useEffect(() => {
-    setLoadingPet(true);
-    supabase
-      .from("pets")
-      .select("*")
-      .eq("owner_id", user?.id)
-      .then(({ data }) => {
+    if (user?.id) {
+      setLoadingPet(true);
+      petRepository.getPets(user.id).then((data) => {
         setPets(data);
         setLoadingPet(false);
       });
+    }
   }, [user?.id]);
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function ClaimLostPet() {
         router.replace(`/(app)/my-sightings`);
       }
     },
-    [user?.id, router, sightingId]
+    [user?.id, router, sightingId],
   );
 
   if (loadingPet || loadingSighting || !sighting) {

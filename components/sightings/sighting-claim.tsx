@@ -6,10 +6,11 @@ import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { Text, Card, Button } from "react-native-paper";
 import { isValidUuid } from "../util";
 import { PetSelection } from "./pet-selection";
+import { SightingPet } from "../wizard/wizard-interface";
 
 type ClaimSightingProps = {
   sighting: PetSighting;
-  pets: Pet[];
+  pets: SightingPet[];
   onConfirm: (selectedPetId: string, sightingId: string) => void;
 };
 
