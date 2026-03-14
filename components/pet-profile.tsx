@@ -7,6 +7,7 @@ import {
   getLastSeenTimeDistance,
 } from "./sightings/util";
 import { usePermission } from "./Provider/permission-provider";
+import { AggregatedSighting } from "@/db/models/sighting";
 
 export function RenderPetProfile(data) {
   const pet = data.pet;
@@ -51,10 +52,9 @@ export function RenderPetProfile(data) {
   );
 }
 
-export function RenderSightingProfile(data) {
+export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
   const theme = useTheme();
   const { location: userCurrentLocation } = usePermission();
-  const pet = data.pet;
   return (
     <Card
       style={{
@@ -134,7 +134,7 @@ export function RenderSightingProfile(data) {
 
         <Divider />
 
-        {pet.last_seen_time && (
+        {pet.lastSeenTime && (
           <View style={styles.line}>
             <View style={styles.header}>
               <Icon
@@ -160,7 +160,7 @@ export function RenderSightingProfile(data) {
                   color={theme.colors.primary}
                 />
                 <Text variant="bodyLarge" style={styles.title}>
-                  {getLastSeenTimeDistance(pet.last_seen_time)}
+                  {getLastSeenTimeDistance(pet.lastSeenTime)}
                 </Text>
               </View>
 
@@ -180,8 +180,8 @@ export function RenderSightingProfile(data) {
                   {userCurrentLocation
                     ? getLastSeenLocationDistance(
                         userCurrentLocation,
-                        pet.last_seen_lat,
-                        pet.last_seen_long,
+                        pet.lastSeenLat,
+                        pet.lastSeenLong,
                       )
                     : "No distance"}
                 </Text>

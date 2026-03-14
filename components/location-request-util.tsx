@@ -37,7 +37,7 @@ export const LocationPermissionDeniedDialog = ({
               OK
             </Button>
           ) : (
-            <>
+            <View style={{flexDirection: "row"}}>
               <Button onPress={() => setPermissionDeniedDialogVisible(false)}>
                 Cancel
               </Button>
@@ -49,7 +49,7 @@ export const LocationPermissionDeniedDialog = ({
               >
                 Open Settings
               </Button>
-            </>
+            </View>
           )}
         </Dialog.Actions>
       </Dialog>

@@ -4,19 +4,19 @@ import { Button, IconButton, Portal } from "react-native-paper";
 import { SightingLocation } from "../get-current-location";
 import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
-import { PetSighting } from "@/model/sighting";
 import { AuthContext } from "../Provider/auth-provider";
 import { MAX_SIGHTINGS, SIGHTING_RADIUSKM } from "../constants";
 import { EmptySighting } from "@/components/sightings/empty-sighting";
 import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
-import { log } from "../logs";
 import { PermissionContext } from "../Provider/permission-provider";
 import { SightingLocationManager } from "./sighting-location-manager";
+import { SupabaseSightingRepository } from "@/db/repositories/supabase/sighting-repository";
+import { AggregatedSighting } from "@/db/models/sighting";
 
 type SightingPageProps = {
   renderer: (
-    sightings: PetSighting[],
+    sightings: AggregatedSighting[],
     onEndReached: () => void,
     ListEmptyComponent: () => JSX.Element,
     onRefresh: () => void,
@@ -31,7 +31,7 @@ type SightingPagination = {
 
 export default function SightingPage({ renderer }: SightingPageProps) {
   const router = useRouter();
-  const [sightings, setSightings] = useState<PetSighting[]>([]);
+  const [sightings, setSightings] = useState<AggregatedSighting[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
   const [pagination, setPagination] = useState({
@@ -45,7 +45,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
 
   const onFetchComplete = useCallback(
     (
-      newSightings: PetSighting[],
+      newSightings: AggregatedSighting[],
       error: string | null,
       pagination: SightingPagination,
       totalCount: number,
@@ -80,13 +80,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination: SightingPagination,
     ) => {
       setLoading(true);
-      if (user) {
-        fetchSightingsByUser(location, pagination, onFetchComplete);
-      } else {
-        fetchSightings(location, pagination, onFetchComplete);
-      }
+      fetchSightingsWithLocation(location, pagination, onFetchComplete);
     },
-    [user, onFetchComplete],
+    [onFetchComplete],
   );
 
   // Refetch when filter changes
@@ -155,7 +151,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         </View>
         {!location && <SightingLocationManager />}
         {location && (
-          <View style={{flex:  1}}>
+          <View style={{ flex: 1 }}>
             {renderer(
               sightings,
               onEndReached,
@@ -175,37 +171,11 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   );
 }
 
-const fetchSightings = async (
-  location: SightingLocation | undefined,
-  pagination: { start: number; end: number },
-  onFetchComplete: (
-    newSightings: PetSighting[],
-    error: string | null,
-    pagination: SightingPagination,
-    totalCount: number,
-  ) => void,
-) => {
-  fetchSightingsWithLocation(location, pagination, onFetchComplete);
-};
-
-const fetchSightingsByUser = async (
-  location: SightingLocation | undefined,
-  pagination: { start: number; end: number },
-  onFetchComplete: (
-    newSightings: PetSighting[],
-    error: string | null,
-    pagination: SightingPagination,
-    totalCount: number,
-  ) => void,
-) => {
-  fetchSightingsByUserWithLocation(location, pagination, onFetchComplete);
-};
-
 const fetchSightingsWithLocation = async (
   location: SightingLocation | undefined,
   pagination: { start: number; end: number },
   onFetchComplete: (
-    newSightings: PetSighting[],
+    newSightings: AggregatedSighting[],
     error: string | null,
     pagination: SightingPagination,
     totalCount: number,
@@ -227,76 +197,25 @@ const fetchSightingsWithLocation = async (
   const maxLng = lng + lngDegree;
 
   // Default: fetch all sightings
-  const { data, error, count } = await supabase
-    .from("aggregated_sightings")
-    .select("*", { count: "exact" })
-    .eq("is_active", true)
-    .gte("last_seen_lat", minLat)
-    .lte("last_seen_lat", maxLat)
-    .gte("last_seen_long", minLng)
-    .lte("last_seen_long", maxLng)
-    .order("updated_at", { ascending: false })
-    .range(pagination.start, pagination.end);
-
-  if (error) {
-    log(error.message);
-    onFetchComplete(
-      [],
-      "An error occurred while fetching sightings.",
-      pagination,
-      0,
-    );
-  } else {
-    onFetchComplete(data || [], null, pagination, count || 0);
-  }
-};
-
-const fetchSightingsByUserWithLocation = async (
-  location: SightingLocation | undefined,
-  pagination: { start: number; end: number },
-  onFetchComplete: (
-    newSightings: PetSighting[],
-    error: string | null,
-    pagination: SightingPagination,
-    totalCount: number,
-  ) => void,
-) => {
-  if (!location) {
-    return onFetchComplete([], null, pagination, 0);
-  }
-
-  const { lat, lng } = location;
-  // ~111 km per 1 degree latitude
-  const latDegree = SIGHTING_RADIUSKM / 111;
-  // adjust longitude scaling by latitude
-  const lngDegree = SIGHTING_RADIUSKM / (111 * Math.cos(lat * (Math.PI / 180)));
-
-  const minLat = lat - latDegree;
-  const maxLat = lat + latDegree;
-  const minLng = lng - lngDegree;
-  const maxLng = lng + lngDegree;
-
-  // Default: fetch all sightings
-  const { data, error, count } = await supabase
-    .from("aggregated_sightings")
-    .select("*", { count: "exact" })
-    .eq("is_active", true)
-    .gte("last_seen_lat", minLat)
-    .lte("last_seen_lat", maxLat)
-    .gte("last_seen_long", minLng)
-    .lte("last_seen_long", maxLng)
-    .order("updated_at", { ascending: false })
-    .range(pagination.start, pagination.end);
-
-  if (error) {
-    log(error.message);
-    onFetchComplete(
-      [],
-      "An error occurred while fetching sightings.",
-      pagination,
-      0,
-    );
-  } else {
-    onFetchComplete(data || [], null, pagination, count || 0);
-  }
+  const repository = new SupabaseSightingRepository(supabase);
+  repository
+    .getSightings({
+      minLat,
+      maxLat,
+      minLng,
+      maxLng,
+      paginationEnd: pagination.end,
+      paginationStart: pagination.start,
+    })
+    .then(({ data, count }) => {
+      onFetchComplete(data || [], null, pagination, count || 0);
+    })
+    .catch(() => {
+      onFetchComplete(
+        [],
+        "An error occurred while fetching sightings.",
+        pagination,
+        0,
+      );
+    });
 };
