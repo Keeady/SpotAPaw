@@ -1,7 +1,6 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
 import SightingPage from "@/components/sightings/sighting-page";
 import { AggregatedSighting } from "@/db/models/sighting";
-import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
 import {
