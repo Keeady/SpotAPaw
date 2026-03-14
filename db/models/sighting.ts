@@ -15,7 +15,7 @@ export interface Sighting {
     features: string;
     name: string;
     linkedSightingId: string;
-    isActive: string;
+    isActive: boolean;
     reporterName: string;
     reporterPhone: string;
     reporterId: string;

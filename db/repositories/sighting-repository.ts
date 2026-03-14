@@ -1,8 +1,7 @@
-import { Pet } from "../models/pet";
 import { AggregatedSighting, Sighting } from "../models/sighting";
 
 export interface SightingRepository {
-  getSighting(id: string): Promise<Pet>;
+  getSighting(id: string): Promise<AggregatedSighting>;
   createSighting(data: Sighting): Promise<string>;
   updateSighting(id: string, data: AggregatedSighting): Promise<void>;
   getSightings(filters: SightingFilters): Promise<SightingRepositoryResponse>;
@@ -23,7 +22,7 @@ export interface SightingFilters {
 }
 
 export class BaseSightingRepository implements SightingRepository {
-  getSighting(_id: string): Promise<Pet> {
+  getSighting(_id: string): Promise<AggregatedSighting> {
     throw new Error("Method not implemented.");
   }
   createSighting(_data: Sighting): Promise<string> {

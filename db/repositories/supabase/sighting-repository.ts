@@ -38,7 +38,11 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw error;
     }
 
-    const deNormalizedData = data.map(d => this.denormalizePayload(d))    
+    if (!data) {
+      return { data, count };
+    }
+
+    const deNormalizedData = data.map((d) => this.denormalizePayload(d));
     return { data: deNormalizedData, count };
   }
 
@@ -76,7 +80,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       linkedSightings: "linked_sightings",
     };
 
-    const normalizedPayload = {} as AggregatedSighting;
+    const normalizedPayload = {};
 
     Object.keys(payload).map((key) => {
       const dbKey = key in dbKeys && dbKeys[key as keyOfPet];
