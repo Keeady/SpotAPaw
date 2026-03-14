@@ -1,6 +1,6 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
 import SightingPage from "@/components/sightings/sighting-page";
-import { PetSighting } from "@/model/sighting";
+import { AggregatedSighting } from "@/db/models/sighting";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
 import {
@@ -16,12 +16,12 @@ export default function SightingList() {
   const router = useRouter();
 
   const rendererItem = useCallback(
-    ({ item }: { item: PetSighting }) => (
+    ({ item }: { item: AggregatedSighting }) => (
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() =>
           router.push(
-            `/(app)/my-sightings/${item.linked_sighting_id}/?petId=${item.pet_id}`,
+            `/(app)/my-sightings/${item.linkedSightingId}/?petId=${item.petId}`,
           )
         }
       >
@@ -33,7 +33,7 @@ export default function SightingList() {
 
   const renderer = useCallback(
     (
-      sightings: PetSighting[],
+      sightings: AggregatedSighting[],
       onEndReached: () => void,
       ListEmptyComponent: () => JSX.Element,
       onRefresh: () => void,

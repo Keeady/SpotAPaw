@@ -47,12 +47,15 @@ export default function SightingProfile() {
   useEffect(() => {
     if ((!summary?.name || !summary.owner_id) && petId && isValidUuid(petId)) {
       const petRepository = new SupabasePetRepository(supabase);
-      petRepository.getPet(petId).then((data) => {
-        if (data) {
-          setPetOwner(data.ownerId);
-          setPetName(data.name);
-        }
-      });
+      petRepository
+        .getPet(petId)
+        .then((data) => {
+          if (data) {
+            setPetOwner(data.ownerId);
+            setPetName(data.name);
+          }
+        })
+        .catch(() => {});
     }
   }, [petId, summary?.name, summary?.owner_id]);
 
