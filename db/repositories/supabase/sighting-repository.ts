@@ -131,7 +131,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     Object.keys(dbKeys).map((key) => {
       const dbKey = dbKeys[key as keyOfPet];
       const dbValue = dbKey in payload && payload[dbKey as keyOfPet];
-      if (dbValue) {
+      if (dbValue !== undefined) {
         deNormalizedPayload[key] = dbValue;
       }
     });
