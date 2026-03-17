@@ -2,10 +2,7 @@ import React, { useCallback, useContext, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import DropPinOnMap from "../map-util";
-import {
-  getCurrentUserLocationV3,
-  SightingLocation,
-} from "../get-current-location";
+import { SightingLocation } from "../get-current-location";
 import DividerWithText from "../divider-with-text";
 import { LocationPermissionDeniedDialog } from "../location-request-util";
 import { PermissionContext } from "../Provider/permission-provider";
@@ -13,20 +10,8 @@ import { PermissionContext } from "../Provider/permission-provider";
 export const SightingLocationManager = () => {
   const [permissionDeniedDialogVisible, setPermissionDeniedDialogVisible] =
     useState(false);
-  const { saveLocation, setLocation } = useContext(PermissionContext);
-
-  const onLocationPermissionRequested = useCallback(() => {
-    getCurrentUserLocationV3()
-      .then((location) => {
-        if (location) {
-          saveLocation?.(location);
-          setLocation?.(location);
-        }
-      })
-      .catch(() => {
-        setPermissionDeniedDialogVisible(true);
-      });
-  }, [saveLocation, setLocation]);
+  const { saveLocation, setLocation, refreshPermission } =
+    useContext(PermissionContext);
 
   const onNewLocationSelected = useCallback(
     (location?: SightingLocation) => {
@@ -54,7 +39,7 @@ export const SightingLocationManager = () => {
           </Text>
           <Button
             mode="contained"
-            onPress={() => onLocationPermissionRequested()}
+            onPress={() => refreshPermission?.()}
             icon={"crosshairs-gps"}
           >
             Use My Current Location

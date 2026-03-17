@@ -5,13 +5,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { log } from "../logs";
 import {
   getCurrentUserLocationV3,
+  getExistingUserLocation,
   SightingLocation,
 } from "../get-current-location";
 import { getStorageItem, saveStorageItem } from "../util";
 import { SIGHTING_LOCATION_KEY } from "../constants";
+import { LocationPermissionDeniedDialog } from "../location-request-util";
 type ContextProps = {
   enabledLocationPermission?: boolean;
   location?: SightingLocation;
@@ -29,10 +30,12 @@ interface Props {
 }
 
 const PermissionProvider = (props: Props) => {
+  const [permissionDeniedDialogVisible, setPermissionDeniedDialogVisible] =
+    useState(false);
   const [enabledLocationPermission, setEnabledLocationPermission] =
     useState<boolean>(false);
   const [location, setLocation] = useState<SightingLocation>();
-  const [isLoadingLocation, setLoadingLocation] = useState(true);
+  const [isLoadingLocation, setLoadingLocation] = useState(false);
 
   const getSavedLocation = useCallback(async () => {
     try {
@@ -49,38 +52,56 @@ const PermissionProvider = (props: Props) => {
     saveStorageItem(SIGHTING_LOCATION_KEY, JSON.stringify(location));
   }, []);
 
+  const getExistingPermission = useCallback(async () => {
+    setLoadingLocation(true);
+    getExistingUserLocation()
+      .then((location) => {
+        setEnabledLocationPermission(true);
+        if (location) {
+          setLocation(location);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setLoadingLocation(false);
+      });
+  }, []);
+
   const refreshPermission = useCallback(async () => {
+    setLoadingLocation(true);
     getCurrentUserLocationV3()
       .then((location) => {
         setEnabledLocationPermission(true);
         if (location) {
           setLocation(location);
           saveLocation(location);
-          setLoadingLocation(false);
         } else {
           getSavedLocation().then((location) => {
             if (location) {
               setLocation(location);
-              setLoadingLocation(false);
+            } else {
+              setPermissionDeniedDialogVisible(true);
             }
           });
         }
       })
-      .catch((err) => {
+      .catch(() => {
         getSavedLocation().then((location) => {
           if (location) {
             setLocation(location);
           } else {
-            log(`getCurrentUserLocationV3 ${err.message}`);
+            setPermissionDeniedDialogVisible(true);
           }
-          setLoadingLocation(false);
         });
+      })
+      .finally(() => {
+        setLoadingLocation(false);
       });
   }, [getSavedLocation, saveLocation]);
 
   useEffect(() => {
-    refreshPermission();
-  }, [refreshPermission]);
+    getExistingPermission();
+  }, [getExistingPermission]);
 
   return (
     <PermissionContext.Provider
@@ -95,14 +116,18 @@ const PermissionProvider = (props: Props) => {
       }}
     >
       {props.children}
+      {/* Permission Denied Dialog */}
+      <LocationPermissionDeniedDialog
+        permissionDeniedDialogVisible={permissionDeniedDialogVisible}
+        setPermissionDeniedDialogVisible={setPermissionDeniedDialogVisible}
+      />
     </PermissionContext.Provider>
   );
 };
 
 export function usePermission() {
   const ctx = useContext(PermissionContext);
-  if (!ctx)
-    throw new Error("Context unavailable.");
+  if (!ctx) throw new Error("Context unavailable.");
   return ctx;
 }
 

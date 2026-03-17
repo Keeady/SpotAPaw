@@ -309,7 +309,6 @@ const ProfileScreen = () => {
               autoCapitalize={"none"}
               mode="outlined"
               disabled={!isEditing}
-              // style={styles.input}
             />
             <View>
               <Text variant="labelSmall" style={{ color: theme.colors.error }}>
@@ -326,7 +325,6 @@ const ProfileScreen = () => {
                 mode="outlined"
                 keyboardType="email-address"
                 disabled={!isEditing}
-                // style={styles.input}
               />
             </View>
 
@@ -339,20 +337,6 @@ const ProfileScreen = () => {
                 phone={phone}
               />
             </View>
-
-            <TextInput
-              label="Address"
-              left={<TextInput.Icon icon="map-marker" />}
-              onChangeText={(text) => setAddress(text)}
-              value={address}
-              placeholder="Street, City"
-              autoCapitalize={"none"}
-              mode="outlined"
-              multiline={true}
-              disabled={!isEditing}
-              numberOfLines={3}
-              style={styles.input}
-            />
 
             {isEditing && (
               <View style={styles.buttonContainer}>
