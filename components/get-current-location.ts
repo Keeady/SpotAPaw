@@ -6,7 +6,9 @@ export type SightingLocation = {
   locationAddress?: string;
 };
 
-export async function getExistingUserLocation() {
+export async function getExistingUserLocation(): Promise<
+  SightingLocation | undefined
+> {
   // Check current status first
   const { status: existingStatus } =
     await Location.getForegroundPermissionsAsync();

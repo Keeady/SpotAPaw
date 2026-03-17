@@ -30,6 +30,7 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { useRouter } from "expo-router";
 import { PermissionContext } from "./Provider/permission-provider";
 import { useAIFeatureContext } from "./Provider/ai-context-provider";
+import * as Application from "expo-application";
 
 const SettingsScreen = () => {
   // Define color scheme for icons
@@ -459,7 +460,7 @@ const SettingsScreen = () => {
 
         <View style={styles.footer}>
           <Text variant="bodySmall" style={styles.footerText}>
-            Version 1.0.0
+            Version {Application.nativeApplicationVersion}
           </Text>
           <Text variant="bodySmall">
             SpotAPaw &#169; {new Date().getFullYear()}

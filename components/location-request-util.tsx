@@ -27,7 +27,7 @@ export const LocationPermissionDeniedDialog = ({
         <Dialog.Content>
           <Text variant="bodyMedium">
             {Platform.OS === "web"
-              ? "Turning on your location will allow us to show you nearby pet sightings. Please open your browser settings manually to update location setting."
+              ? "Turning on your location will allow us to show you nearby pet sightings. Please open your browser settings manually to update location settings."
               : "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings."}
           </Text>
         </Dialog.Content>

@@ -1,15 +1,12 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import DropPinOnMap from "../map-util";
 import { SightingLocation } from "../get-current-location";
 import DividerWithText from "../divider-with-text";
-import { LocationPermissionDeniedDialog } from "../location-request-util";
 import { PermissionContext } from "../Provider/permission-provider";
 
 export const SightingLocationManager = () => {
-  const [permissionDeniedDialogVisible, setPermissionDeniedDialogVisible] =
-    useState(false);
   const { saveLocation, setLocation, refreshPermission } =
     useContext(PermissionContext);
 
@@ -53,12 +50,6 @@ export const SightingLocationManager = () => {
           <DropPinOnMap handleActionButton={onNewLocationSelected} />
         </View>
       </View>
-
-      {/* Permission Denied Dialog */}
-      <LocationPermissionDeniedDialog
-        permissionDeniedDialogVisible={permissionDeniedDialogVisible}
-        setPermissionDeniedDialogVisible={setPermissionDeniedDialogVisible}
-      />
     </ScrollView>
   );
 };
