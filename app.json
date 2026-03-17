@@ -12,8 +12,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.bcamaria.SpotAPaw",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app needs access to your location.",
-        "ITSAppUsesNonExemptEncryption": false
+        "NSLocationWhenInUseUsageDescription": "Turning on your location will allow us to show you nearby pet sightings.",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationUsageDescription": "Turning on your location will allow us to show you nearby pet sightings.",
+        "NSPhotoLibraryUsageDescription": "Allow access to photos to upload a photo from your library.",
+        "NSCameraUsageDescription": "Allow access to camera to snap a photo of a lost pet."
       },
       "usesAppleSignIn": true
     },
@@ -54,14 +57,14 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow SpotAPaw to use your location."
+          "locationWhenInUsePermission": "Allow SpotAPaw to use your location."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow SpotAPaw to access your photos to upload pet images.",
-          "cameraPermission": "Allow SpotAPaw to use your camera to take pet photos."
+          "photosPermission": "Allow SpotAPaw to access your photos.",
+          "cameraPermission": "Allow SpotAPaw to use your camera."
         }
       ],
       "expo-apple-authentication"

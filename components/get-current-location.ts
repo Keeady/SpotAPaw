@@ -6,6 +6,21 @@ export type SightingLocation = {
   locationAddress?: string;
 };
 
+export async function getExistingUserLocation(): Promise<
+  SightingLocation | undefined
+> {
+  // Check current status first
+  const { status: existingStatus } =
+    await Location.getForegroundPermissionsAsync();
+
+  if (existingStatus === "granted") {
+    const location = await getUserLocationFast();
+    if (location) {
+      return { lat: location.coords.latitude, lng: location.coords.longitude };
+    }
+  }
+}
+
 export async function getCurrentLocationV4() {
   try {
     const granted = await getUserLocationPermission();

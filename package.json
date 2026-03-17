@@ -24,6 +24,7 @@
     "date-fns": "^4.1.0",
     "expo": "~54.0.30",
     "expo-apple-authentication": "~8.0.8",
+    "expo-application": "~7.0.8",
     "expo-auth-session": "~7.0.10",
     "expo-blur": "~15.0.8",
     "expo-constants": "~18.0.12",
