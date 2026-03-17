@@ -1,0 +1,21 @@
+create table public.pets (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  owner_id uuid not null default auth.uid (),
+  name text not null default ''::text,
+  species text null,
+  breed text null,
+  gender text null,
+  age smallint null,
+  colors text null,
+  features text null,
+  is_lost boolean null default false,
+  last_seen_time timestamp without time zone null,
+  photo text null,
+  note text null,
+  last_seen_lat text null,
+  last_seen_long text null,
+  last_seen_location text null,
+  constraint pets_pkey primary key (id),
+  constraint pets_owner_id_fkey foreign KEY (owner_id) references auth.users (id)
+) TABLESPACE pg_default;

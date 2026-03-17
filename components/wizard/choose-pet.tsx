@@ -1,14 +1,13 @@
-import { View, StyleSheet, ScrollView } from "react-native";
-import { SightingWizardStepData } from "./wizard-form";
-import { WizardHeader } from "./wizard-header";
-import { ActivityIndicator, Button, HelperText } from "react-native-paper";
+import { useRouter } from "expo-router";
 import { useContext, useEffect, useRef, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Button, HelperText } from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
 import { PetSelection } from "../sightings/pet-selection";
-import { useRouter } from "expo-router";
+import { SightingWizardStepData } from "./wizard-form";
+import { WizardHeader } from "./wizard-header";
 import { SightingPet } from "./wizard-interface";
-import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
-import { supabase } from "../supabase-client";
+import { PetRepository } from "@/db/repositories/pet-repository";
 
 export function ChoosePet({
   updateSightingData,
@@ -41,7 +40,7 @@ export function ChoosePet({
   useEffect(() => {
     if (user?.id) {
       setLoading(true);
-      const petRepository = new SupabasePetRepository(supabase);
+      const petRepository = new PetRepository();
       petRepository.getPets(user.id).then((data) => {
         if (!isMountedRef.current) {
           return;

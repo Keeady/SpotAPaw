@@ -1,37 +1,20 @@
+import { supabase } from "@/components/supabase-client";
+import { ISightingRepository, SightingFilters } from "./base-sighting-repository";
+import { SupabaseSightingRepository } from "./supabase/sighting-repository";
 import { AggregatedSighting, Sighting } from "../models/sighting";
 
-export interface SightingRepository {
-  getSighting(id: string): Promise<AggregatedSighting>;
-  createSighting(data: Sighting): Promise<string>;
-  updateSighting(id: string, data: AggregatedSighting): Promise<void>;
-  getSightings(filters: SightingFilters): Promise<SightingRepositoryResponse>;
-}
-
-export interface SightingRepositoryResponse {
-  data: AggregatedSighting[];
-  count: number | null;
-}
-
-export interface SightingFilters {
-  minLat: number;
-  maxLat: number;
-  minLng: number;
-  maxLng: number;
-  paginationStart: number;
-  paginationEnd: number;
-}
-
-export class BaseSightingRepository implements SightingRepository {
-  getSighting(_id: string): Promise<AggregatedSighting> {
+export class SightingRepository implements ISightingRepository {
+  getSighting(id: string): Promise<AggregatedSighting> {
     throw new Error("Method not implemented.");
   }
-  createSighting(_data: Sighting): Promise<string> {
+  createSighting(data: Sighting): Promise<string> {
     throw new Error("Method not implemented.");
   }
-  updateSighting(_id: string, _data: AggregatedSighting): Promise<void> {
+  updateSighting(id: string, data: AggregatedSighting): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  getSightings(filters: SightingFilters): Promise<SightingRepositoryResponse> {
-    throw new Error("Method not implemented.");
+  getSightings(filters: SightingFilters) {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getSightings(filters);
   }
 }

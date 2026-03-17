@@ -2,7 +2,6 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Button, IconButton, Portal } from "react-native-paper";
 import { SightingLocation } from "../get-current-location";
-import { supabase } from "../supabase-client";
 import { JSX } from "react/jsx-runtime";
 import { AuthContext } from "../Provider/auth-provider";
 import { MAX_SIGHTINGS, SIGHTING_RADIUSKM } from "../constants";
@@ -11,8 +10,8 @@ import ReportLostPetFab from "./report-fab";
 import { useRouter } from "expo-router";
 import { PermissionContext } from "../Provider/permission-provider";
 import { SightingLocationManager } from "./sighting-location-manager";
-import { SupabaseSightingRepository } from "@/db/repositories/supabase/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 
 type SightingPageProps = {
   renderer: (
@@ -197,7 +196,7 @@ const fetchSightingsWithLocation = async (
   const maxLng = lng + lngDegree;
 
   // Default: fetch all sightings
-  const repository = new SupabaseSightingRepository(supabase);
+  const repository = new SightingRepository();
   repository
     .getSightings({
       minLat,

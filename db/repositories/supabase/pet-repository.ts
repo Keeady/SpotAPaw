@@ -1,5 +1,5 @@
 import { Pet } from "@/db/models/pet";
-import { BasePetRepository } from "../pet-repository";
+import { BasePetRepository } from "../base-pet-repository";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabasePetRepository extends BasePetRepository {

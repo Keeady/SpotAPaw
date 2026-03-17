@@ -3,7 +3,7 @@ import {
   BaseSightingRepository,
   SightingFilters,
   SightingRepositoryResponse,
-} from "../sighting-repository";
+} from "../base-sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
 
 export class SupabaseSightingRepository extends BaseSightingRepository {
