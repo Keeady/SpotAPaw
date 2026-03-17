@@ -1,14 +1,14 @@
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { showMessage } from "react-native-flash-message";
+import { AuthContext } from "@/components/Provider/auth-provider";
 import SightingDetail from "@/components/sightings/sighting-details";
 import { usePetSightings } from "@/components/sightings/use-sighting-details";
-import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { showMessage } from "react-native-flash-message";
+import { log } from "../logs";
 import { useConfirmPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
-import { log } from "../logs";
-import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
+import { PetRepository } from "@/db/repositories/pet-repository";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export default function SightingProfile() {
 
   useEffect(() => {
     if ((!summary?.name || !summary.owner_id) && petId && isValidUuid(petId)) {
-      const petRepository = new SupabasePetRepository(supabase);
+      const petRepository = new PetRepository();
       petRepository
         .getPet(petId)
         .then((data) => {

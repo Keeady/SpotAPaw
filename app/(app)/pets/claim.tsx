@@ -4,7 +4,7 @@ import ClaimSighting from "@/components/sightings/sighting-claim";
 import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
-import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
+import { PetRepository } from "@/db/repositories/pet-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -25,7 +25,7 @@ export default function ClaimLostPet() {
   useEffect(() => {
     if (user?.id) {
       setLoadingPet(true);
-      const petRepository = new SupabasePetRepository(supabase);
+      const petRepository = new PetRepository();
       petRepository.getPets(user.id).then((data) => {
         setPets(data);
         setLoadingPet(false);

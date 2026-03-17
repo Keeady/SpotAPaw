@@ -1,28 +1,27 @@
+import { supabase } from "@/components/supabase-client";
 import { Pet } from "../models/pet";
+import { SupabasePetRepository } from "./supabase/pet-repository";
+import { IPetRepository } from "./base-pet-repository";
 
-export interface PetRepository {
-  getPet(id: string): Promise<Pet>;
-  createPet(data: Pet): Promise<string>;
-  updatePet(id: string, data: Pet): Promise<void>
-  getPets(ownerId: string): Promise<Pet[]>;
-  deletePet(id: string, ownerId: string): Promise<void>;
-}
-
-export class BasePetRepository implements PetRepository {
-    deletePet(_id: string, _ownerId: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    getPet(_id: string): Promise<Pet> {
-        throw new Error("Method not implemented.");
-    }
-    createPet(_data: Pet): Promise<string> {
-        throw new Error("Method not implemented.");
-    }
-    updatePet(_id: string, _data: Pet): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    getPets(_ownerId: string): Promise<Pet[]> {
-        throw new Error("Method not implemented.");
-    }
-    
+export class PetRepository implements IPetRepository {
+  deletePet(id: string, ownerId: string): Promise<void> {
+    const petRepository = new SupabasePetRepository(supabase);
+    return petRepository.deletePet(id, ownerId);
+  }
+  getPet(id: string): Promise<Pet> {
+    const petRepository = new SupabasePetRepository(supabase);
+    return petRepository.getPet(id);
+  }
+  createPet(data: Pet): Promise<string> {
+    const petRepository = new SupabasePetRepository(supabase);
+    return petRepository.createPet(data);
+  }
+  updatePet(id: string, data: Partial<Pet>): Promise<void> {
+    const petRepository = new SupabasePetRepository(supabase);
+    return petRepository.updatePet(id, data);
+  }
+  getPets(ownerId: string): Promise<Pet[]> {
+    const petRepository = new SupabasePetRepository(supabase);
+    return petRepository.getPets(ownerId);
+  }
 }

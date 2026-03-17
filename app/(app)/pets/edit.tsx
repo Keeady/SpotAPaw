@@ -5,7 +5,7 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { supabase } from "@/components/supabase-client";
 import { getLastSeenLocation, isValidUuid } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
-import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
+import { PetRepository } from "@/db/repositories/pet-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -25,7 +25,7 @@ export default function EditPet() {
     if (!id || !isValidUuid(id)) {
       return;
     }
-    const petRepository = new SupabasePetRepository(supabase);
+    const petRepository = new PetRepository();
     petRepository
       .getPet(id)
       .then((data) => {
@@ -57,8 +57,8 @@ export default function EditPet() {
     if (photoUrl !== "") {
       payload.photo = photoUrl;
     }
-    
-    const petRepository = new SupabasePetRepository(supabase);
+
+    const petRepository = new PetRepository();
     await petRepository
       .updatePet(id, payload)
       .then(() => {

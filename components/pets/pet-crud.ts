@@ -1,11 +1,11 @@
-import { supabase } from "../supabase-client";
-import { showMessage } from "react-native-flash-message";
 import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
-import { SupabasePetRepository } from "@/db/repositories/supabase/pet-repository";
+import { supabase } from "../supabase-client";
 import { SightingPet } from "../wizard/wizard-interface";
+import { PetRepository } from "@/db/repositories/pet-repository";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -54,7 +54,7 @@ export const useConfirmPetFound = () =>
   );
 
 export async function onDeletePet(id: string, userId: string) {
-  const petRepository = new SupabasePetRepository(supabase);
+  const petRepository = new PetRepository();
   await petRepository
     .deletePet(id, userId)
     .then(() => {
@@ -85,7 +85,7 @@ export function onPetLost(id: string) {
 }
 
 async function onPetFound(id: string) {
-  const petRepository = new SupabasePetRepository(supabase);
+  const petRepository = new PetRepository();
   await petRepository
     .updatePet(id, { isLost: false })
     .then(async () => {
@@ -135,7 +135,7 @@ export async function createNewPet(profileInfo: SightingPet) {
     return;
   }
 
-  const petRepository = new SupabasePetRepository(supabase);
+  const petRepository = new PetRepository();
 
   try {
     await petRepository.createPet(profileInfo);
