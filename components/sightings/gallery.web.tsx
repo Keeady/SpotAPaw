@@ -11,7 +11,7 @@ export default function SightingGallery({ images }: SightingGalleryProps) {
             key={key}
             src={img.uri}
             width={350}
-            alt={`Pet sighting photo ${key} of ${length}`}
+            alt={`Pet sighting photo ${key} of ${length}`}            
           />
         );
       })}

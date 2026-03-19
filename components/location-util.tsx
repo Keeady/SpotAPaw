@@ -18,9 +18,9 @@ export default function ShowLocationControls({
   async function getCurrentLocation() {
     const location = await getCurrentLocationV4();
     if (location) {
-      const lastSeenLocation = location.last_seen_location;
-      const lastSeenLocationLat = location.last_seen_lat;
-      const lastSeenLocationLong = location.last_seen_long;
+      const lastSeenLocation = location.lastSeenLocation;
+      const lastSeenLocationLat = location.lastSeenLat;
+      const lastSeenLocationLong = location.lastSeenLong;
       setSightingLocation({
         lat: lastSeenLocationLat,
         lng: lastSeenLocationLong,
@@ -37,11 +37,11 @@ export default function ShowLocationControls({
     if (sightingLocation) {
       setLastSeenLocation(sightingLocation.locationAddress || "");
       handleChange(
-        "last_seen_location",
+        "lastSeenLocation",
         sightingLocation?.locationAddress || "",
       );
-      handleChange("last_seen_long", sightingLocation.lng);
-      handleChange("last_seen_lat", sightingLocation.lat);
+      handleChange("lastSeenLong", sightingLocation.lng);
+      handleChange("lastSeenLat", sightingLocation.lat);
     }
   }, [sightingLocation, handleChange]);
 
@@ -54,9 +54,9 @@ export default function ShowLocationControls({
         currentLocation={sightingLocation}
         handleActionButton={(location) => {
           if (location) {
-            handleChange("last_seen_long", location?.lng);
-            handleChange("last_seen_lat", location?.lat);
-            handleChange("last_seen_location", "");
+            handleChange("lastSeenLong", location?.lng);
+            handleChange("lastSeenLat", location?.lat);
+            handleChange("lastSeenLocation", "");
           }
         }}
       />

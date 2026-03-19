@@ -22,7 +22,7 @@ export function LocatePet({
     }
   }, [isValidData]);
 
-  const { last_seen_lat, last_seen_long } = sightingFormData;
+  const { lastSeenLat, lastSeenLong } = sightingFormData;
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
@@ -36,7 +36,7 @@ export function LocatePet({
       >
         <HelperText
           type="error"
-          visible={hasErrors && !last_seen_lat && !last_seen_long}
+          visible={hasErrors && !lastSeenLat && !lastSeenLong}
           style={styles.helperText}
           padding="none"
         >
@@ -46,11 +46,11 @@ export function LocatePet({
         <DropPinOnMap
           currentLocation={location}
           pins={
-            last_seen_lat && last_seen_long
+            lastSeenLat && lastSeenLong
               ? [
                   {
-                    latitude: last_seen_lat,
-                    longitude: last_seen_long,
+                    latitude: lastSeenLat,
+                    longitude: lastSeenLong,
                     title: "pet's last seen location",
                   },
                 ]
@@ -58,9 +58,9 @@ export function LocatePet({
           }
           handleActionButton={(location) => {
             if (location) {
-              updateSightingData("last_seen_long", location?.lng);
-              updateSightingData("last_seen_lat", location?.lat);
-              updateSightingData("last_seen_location", "");
+              updateSightingData("lastSeenLong", location?.lng);
+              updateSightingData("lastSeenLat", location?.lat);
+              updateSightingData("lastSeenLocation", "");
             }
           }}
         />

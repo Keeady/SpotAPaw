@@ -142,7 +142,11 @@ export default function CreatePetDetails({
             style={[styles.verticallySpaced, styles.mt20, { marginBottom: 20 }]}
           >
             {pet?.photoUrl ? (
-              <Image source={{ uri: pet?.photoUrl }} style={styles.preview} />
+              <Image
+                source={{ uri: pet?.photoUrl }}
+                style={styles.preview}
+                resizeMode="contain"
+              />
             ) : (
               <View style={styles.emptyPreview}>
                 <Text>Add Photo</Text>
@@ -192,10 +196,11 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: "100%",
-    height: 300,
+    height: "auto",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
+    aspectRatio: 1.5,
   },
   emptyPreview: {
     width: "100%",

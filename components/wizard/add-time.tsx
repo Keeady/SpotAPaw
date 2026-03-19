@@ -20,7 +20,7 @@ export function AddTime({
     }
   }, [isValidData]);
 
-  const { note, last_seen_time } = sightingFormData;
+  const { note, lastSeenTime } = sightingFormData;
 
   return (
     <View style={{ flex: 1 }}>
@@ -55,9 +55,9 @@ export function AddTime({
           <DatePicker
             dateLabel="Last Seen Date"
             timeLabel="Last Seen Time"
-            value={last_seen_time ? new Date(last_seen_time) : new Date()}
+            value={lastSeenTime ? new Date(lastSeenTime) : new Date()}
             onChange={(v) =>
-              updateSightingData("last_seen_time", v.toISOString())
+              updateSightingData("lastSeenTime", v.toISOString())
             }
           />
         </View>

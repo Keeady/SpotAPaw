@@ -28,6 +28,7 @@ export function PetSelection({
           petGender={pet.gender}
           petAge={pet.age}
           petPhoto={pet.photo}
+          showDetails={true}
         />
       ))}
     </RadioButton.Group>
@@ -42,6 +43,7 @@ type PetThumbnailProps = {
   petGender: string;
   petAge: string;
   petPhoto: string;
+  showDetails: boolean
 };
 
 export function PetThumbnail({
@@ -52,6 +54,7 @@ export function PetThumbnail({
   petGender,
   petAge,
   petPhoto,
+  showDetails
 }: PetThumbnailProps) {
   return (
     <Card
@@ -63,9 +66,9 @@ export function PetThumbnail({
       onPress={() => setSelectedPetId(petId)}
     >
       <Card.Title
-        title={petName}
-        subtitle={`${petGender}, ${petAge} years`}
-        left={(props) =>
+        title={showDetails && petName}
+        subtitle={showDetails && `${petGender}, ${petAge} years`}
+        left={() =>
           petPhoto ? (
             <Image source={{ uri: petPhoto }} style={styles.petImage} />
           ) : null

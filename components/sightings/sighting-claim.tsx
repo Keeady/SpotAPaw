@@ -1,4 +1,3 @@
-import { PetSighting } from "@/model/sighting";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
@@ -6,9 +5,10 @@ import { Text, Card, Button } from "react-native-paper";
 import { isValidUuid } from "../util";
 import { PetSelection } from "./pet-selection";
 import { SightingPet } from "../wizard/wizard-interface";
+import { AggregatedSighting } from "@/db/models/sighting";
 
 type ClaimSightingProps = {
-  sighting: PetSighting;
+  sighting: AggregatedSighting;
   pets: SightingPet[];
   onConfirm: (selectedPetId: string, sightingId: string) => void;
 };
@@ -78,8 +78,8 @@ export default function ClaimSighting({
           )}
           <Card.Content>
             <Text>{sighting.features}</Text>
-            <Text>{sighting.last_seen_location}</Text>
-            <Text>{new Date(sighting.created_at).toLocaleString()}</Text>
+            <Text>{sighting.lastSeenLocation}</Text>
+            <Text>{new Date(sighting.createdAt).toLocaleString()}</Text>
           </Card.Content>
         </Card>
 
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sightingImage: {
-    width: "100%",
+    width: 200,
     height: 200,
     borderRadius: 8,
     marginBottom: 8,

@@ -18,7 +18,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import { useState } from "react";
-import { PetSighting } from "@/model/sighting";
 import ReportLostPetFab from "./report-fab";
 import {
   getLastSeenLocationDistance,
@@ -27,8 +26,9 @@ import {
 } from "./util";
 import { usePermission } from "../Provider/permission-provider";
 import SightingGallery from "./gallery";
+import { AggregatedSighting } from "@/db/models/sighting";
 
-function dedupPhotos(sightings: PetSighting[]) {
+function dedupPhotos(sightings: AggregatedSighting[]) {
   const seen = new Set();
   const photos: string[] = [];
 
@@ -54,8 +54,8 @@ export default function SightingDetail({
   onPetFound,
   petName,
 }: {
-  sightings: PetSighting[];
-  petSummary: PetSighting;
+  sightings: AggregatedSighting[];
+  petSummary: AggregatedSighting;
   claimed: boolean;
   onEdit?: () => void;
   onAddSighting: () => void;
@@ -195,11 +195,8 @@ export default function SightingDetail({
           </Text>
 
           {sightings.map((sighting, index) => {
-            const phone = sighting.sighting_contact?.[0]?.phone;
-            const name = sighting.sighting_contact?.[0]?.name;
-
-            const reportName = sighting.reporter_name;
-            const reporterPhone = sighting.reporter_phone;
+            const reportName = sighting.reporterName;
+            const reporterPhone = sighting.reporterPhone;
             const isLatest = index === 0; // assuming sightings sorted DESC by created_at
             return (
               <View key={sighting.id} style={{ flexDirection: "row" }}>
@@ -229,7 +226,7 @@ export default function SightingDetail({
                 <View style={{ flex: 1, marginBottom: 16 }}>
                   <Card style={{ elevation: isLatest ? 4 : 1 }}>
                     <Card.Title
-                      title={getLastSeenTimeDistance(sighting.last_seen_time)}
+                      title={getLastSeenTimeDistance(sighting.lastSeenTime)}
                       titleVariant="labelLarge"
                       subtitle={
                         <View style={{ flexDirection: "row", gap: 8 }}>
@@ -238,8 +235,8 @@ export default function SightingDetail({
                             {userCurrentLocation
                               ? getLastSeenLocationDistance(
                                   userCurrentLocation,
-                                  sighting.last_seen_lat,
-                                  sighting.last_seen_long,
+                                  sighting.lastSeenLat,
+                                  sighting.lastSeenLong,
                                 )
                               : "No distance"}
                           </Text>
@@ -260,16 +257,15 @@ export default function SightingDetail({
                       right={() => (
                         <TouchableOpacity
                           disabled={
-                            !sighting.last_seen_location &&
-                            (!sighting.last_seen_lat ||
-                              !sighting.last_seen_long)
+                            !sighting.lastSeenLocation &&
+                            (!sighting.lastSeenLat || !sighting.lastSeenLong)
                           }
                           onPress={() =>
                             Linking.openURL(
                               getLastSeenLocationURLMap(
-                                sighting.last_seen_location,
-                                sighting.last_seen_lat,
-                                sighting.last_seen_long,
+                                sighting.lastSeenLocation,
+                                sighting.lastSeenLat,
+                                sighting.lastSeenLong,
                               ),
                             )
                           }
@@ -329,7 +325,7 @@ export default function SightingDetail({
 
                       <Divider />
 
-                      {isOwner && (phone || reporterPhone) && (
+                      {isOwner && reporterPhone && (
                         <View
                           style={{
                             alignItems: "center",
@@ -339,11 +335,11 @@ export default function SightingDetail({
                           }}
                         >
                           <Text variant="labelLarge">Reported by: </Text>
-                          <Text>{name ?? reportName}</Text>
+                          <Text>{reportName}</Text>
                           <Button
                             mode="text"
                             icon="phone"
-                            onPress={() => handleCall(phone || reporterPhone)}
+                            onPress={() => handleCall(reporterPhone)}
                             compact
                           >
                             Call
@@ -351,7 +347,7 @@ export default function SightingDetail({
                           <Button
                             mode="text"
                             icon="message-text"
-                            onPress={() => handleText(phone || reporterPhone)}
+                            onPress={() => handleText(reporterPhone)}
                             compact
                           >
                             Text

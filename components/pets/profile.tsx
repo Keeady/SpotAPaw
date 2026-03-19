@@ -62,7 +62,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     <ScrollView>
       <Card style={styles.card}>
         {photo ? (
-          <Image source={{ uri: photo }} style={styles.image} />
+          <Image source={{ uri: photo }} style={styles.image} resizeMode="contain" />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
             <Text style={styles.placeholderText}>No Photo</Text>
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 300,
-    resizeMode: "cover",
+    height: "auto",
+    aspectRatio: 1.5,
   },
   placeholder: {
     backgroundColor: "#CFD8DC",

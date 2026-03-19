@@ -8,6 +8,7 @@ import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import { SightingPet } from "./wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { showMessage } from "react-native-flash-message";
 
 export function ChoosePet({
   updateSightingData,
@@ -41,15 +42,25 @@ export function ChoosePet({
     if (user?.id) {
       setLoading(true);
       const petRepository = new PetRepository();
-      petRepository.getPets(user.id).then((data) => {
-        if (!isMountedRef.current) {
-          return;
-        }
-        setLoading(false);
-        if (data && data.length > 0) {
-          setPets(data);
-        }
-      });
+      petRepository
+        .getPets(user.id)
+        .then((data) => {
+          if (!isMountedRef.current) {
+            return;
+          }
+          setLoading(false);
+          if (data && data.length > 0) {
+            setPets(data);
+          }
+        })
+        .catch(() => {
+          showMessage({
+            message: "Error fetching pets info.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
+        });
     }
   }, [user?.id]);
 

@@ -1,7 +1,6 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import SightingDetail from "@/components/sightings/sighting-details";
 import { usePetSightings } from "@/components/sightings/use-sighting-details";
-import { supabase } from "@/components/supabase-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -9,6 +8,7 @@ import { log } from "../logs";
 import { useConfirmPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { ClaimRepository } from "@/db/repositories/claim-repository";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -21,10 +21,7 @@ export default function SightingProfile() {
   const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
 
-  const { loading, error, timeline, summary } = usePetSightings(
-    petId,
-    sightingId,
-  );
+  const { loading, error, timeline, summary } = usePetSightings(sightingId);
 
   const { user } = useContext(AuthContext);
   const onPetFound = useConfirmPetFound();
@@ -32,20 +29,20 @@ export default function SightingProfile() {
 
   useEffect(() => {
     if (user?.id && sightingId && isValidUuid(sightingId)) {
-      supabase
-        .from("pet_claims")
-        .select("*")
-        .eq("sighting_id", sightingId)
-        .then(({ data }) => {
+      const repository = new ClaimRepository();
+      repository
+        .getClaims(sightingId)
+        .then((data) => {
           if (data && data.length > 0) {
             setClaimed(true);
           }
-        });
+        })
+        .catch(() => {});
     }
   }, [user?.id, petId, sightingId]);
 
   useEffect(() => {
-    if ((!summary?.name || !summary.owner_id) && petId && isValidUuid(petId)) {
+    if ((!summary?.name || !summary.ownerId) && petId && isValidUuid(petId)) {
       const petRepository = new PetRepository();
       petRepository
         .getPet(petId)
@@ -57,7 +54,7 @@ export default function SightingProfile() {
         })
         .catch(() => {});
     }
-  }, [petId, summary?.name, summary?.owner_id]);
+  }, [petId, summary?.name, summary?.ownerId]);
 
   const onAddSighting = useCallback(() => {
     router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);

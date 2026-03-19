@@ -1,99 +1,53 @@
-import { useContext, useEffect, useState } from "react";
-import { supabase } from "../supabase-client";
-import { PetSighting, PetSightingSummary } from "@/model/sighting";
-import { AuthContext } from "../Provider/auth-provider";
-import { log } from "../logs";
+import { useCallback, useEffect, useState } from "react";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
+import { AggregatedSighting } from "@/db/models/sighting";
 
-export function usePetSightings(petId: string, sightingId: string) {
+export function usePetSightings(sightingId: string) {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [timeline, setTimeline] = useState<PetSighting[]>([]);
-  const [summary, setSummary] = useState<PetSightingSummary>();
-  const { user } = useContext(AuthContext);
+  const [error, setError] = useState<string>("");
+  const [timeline, setTimeline] = useState<AggregatedSighting[]>([]);
+  const [summary, setSummary] = useState<AggregatedSighting>();
 
-  async function fetchSummary(sightingId: string) {
+  const fetchSummary = useCallback(async (sightingId: string) => {
     setLoading(true);
-    setError(null);
+    setError("");
 
-    const { data, error } = await supabase
-      .from("aggregated_sightings")
-      .select("*")
-      .eq("is_active", true)
-      .eq("linked_sighting_id", sightingId);
+    const repository = new SightingRepository();
+    repository
+      .getSighting(sightingId)
+      .then((data) => {
+        setSummary(data);
+      })
+      .catch(() => {
+        setError("Error fetching sighting info.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-    if (error) {
-      log(error.message);
-      setError(error);
-      setLoading(false);
-      return;
-    }
-
-    if (data) {
-      setSummary(data[0]);
-    }
-
-    setLoading(false);
-  }
-
-  async function fetchSightingsBySightingId(sightingId: string) {
+  const fetchSightingsBySightingId = useCallback(async (sightingId: string) => {
     setLoading(true);
-    setError(null);
+    setError("");
 
-    const { data, error } = await supabase
-      .from("sightings")
-      .select("*")
-      .eq("is_active", true)
-      .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
-      .order("last_seen_time", { ascending: false });
-
-    if (error) {
-      log(error.message);
-      setError(error);
-      setLoading(false);
-      return;
-    }
-
-    if (data) {
-      setTimeline(data);
-    }
-
-    setLoading(false);
-  }
-
-  async function fetchSightingsBySightingIdForUser(sightingId: string) {
-    setLoading(true);
-    setError(null);
-
-    const { data, error } = await supabase
-      .from("sightings")
-      .select("*, sighting_contact(name, phone)")
-      .is("is_active", true)
-      .or(`linked_sighting_id.eq.${sightingId}, id.eq.${sightingId}`)
-      .order("last_seen_time", { ascending: false });
-
-    if (error) {
-      log(error.message);
-      setError(error);
-      setLoading(false);
-      return;
-    }
-
-    if (data) {
-      setTimeline(data);
-    }
-
-    setLoading(false);
-  }
+    const repository = new SightingRepository();
+    repository
+      .getLinkedSightings(sightingId)
+      .then((data) => {
+        setTimeline(data);
+      })
+      .catch(() => {
+        setError("Error fetching sighting info.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     fetchSummary(sightingId);
-
-    if (user) {
-      fetchSightingsBySightingIdForUser(sightingId);
-    } else {
-      fetchSightingsBySightingId(sightingId);
-    }
-  }, [petId, sightingId, user]);
+    fetchSightingsBySightingId(sightingId);
+  }, [sightingId, fetchSummary, fetchSightingsBySightingId]);
 
   return { loading, error, timeline, summary };
 }

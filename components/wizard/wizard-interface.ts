@@ -1,21 +1,17 @@
 import { Pet } from "@/db/models/pet";
+import { AggregatedSighting } from "@/db/models/sighting";
 
 export type SightingPet = Pet & {
   photoUrl?: string;
-}
+};
 
-export type SightingReport = SightingPet & {
-  size: string;
-  contactName: string;
-  contactPhone: string;
+export type SightingReport = AggregatedSighting & {
   contactPhoneCountryCode: string;
-  petBehavior: string;
-  linkedSightingId: string;
-  collar: "yes_collar" | "no";
   collarDescription: string;
   aiMessage: string;
   image: PetImage;
-  reporterId: string;
+  collar: "yes_collar" | "no";
+  petBehavior: string;
 };
 
 export type PetImage = {

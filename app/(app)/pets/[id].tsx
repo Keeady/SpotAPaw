@@ -12,6 +12,7 @@ import { PetRepository } from "@/db/repositories/pet-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { Button, Text } from "react-native-paper";
 
 export default function PetProfile() {
@@ -26,10 +27,20 @@ export default function PetProfile() {
   useEffect(() => {
     setLoading(true);
     const petRepository = new PetRepository();
-    petRepository.getPet(id).then((data) => {
-      setLoading(false);
-      setPet(data);
-    });
+    petRepository
+      .getPet(id)
+      .then((data) => {
+        setLoading(false);
+        setPet(data);
+      })
+      .catch(() => {
+        showMessage({
+          message: "Error fetch pet profile.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
+      });
   }, [id]);
 
   if (!user) {

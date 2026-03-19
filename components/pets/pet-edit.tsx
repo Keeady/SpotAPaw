@@ -22,7 +22,10 @@ export default function EditPetDetails(
   const theme = useTheme();
   const [isDisabled, setDisabled] = React.useState(false);
   const handleChange = (fieldName: string, fieldValue: string | number) => {
-    setProfileInfo((prev: SightingPet) => ({ ...prev, [fieldName]: fieldValue }));
+    setProfileInfo((prev: SightingPet) => ({
+      ...prev,
+      [fieldName]: fieldValue,
+    }));
   };
   const [extra_info, setExtraInfo] = React.useState("");
 
@@ -88,12 +91,10 @@ export default function EditPetDetails(
                   dateLabel="Last Seen Date"
                   timeLabel="Last Seen Time"
                   value={
-                    pet?.lastSeenTime
-                      ? new Date(pet?.lastSeenTime)
-                      : new Date()
+                    pet?.lastSeenTime ? new Date(pet?.lastSeenTime) : new Date()
                   }
                   onChange={(v) =>
-                    handleChange("last_seen_time", v.toISOString())
+                    handleChange("lastSeenTime", v.toISOString())
                   }
                 />
               </View>
@@ -199,9 +200,17 @@ export default function EditPetDetails(
           </View>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             {pet?.photoUrl ? (
-              <Image source={{ uri: pet?.photoUrl }} style={styles.preview} />
+              <Image
+                source={{ uri: pet?.photoUrl }}
+                style={styles.preview}
+                resizeMode="contain"
+              />
             ) : pet?.photo ? (
-              <Image source={{ uri: pet?.photo }} style={styles.preview} />
+              <Image
+                source={{ uri: pet?.photo }}
+                style={styles.preview}
+                resizeMode="contain"
+              />
             ) : (
               <View style={styles.emptyPreview}>
                 <Text>Add Photo</Text>
@@ -254,10 +263,11 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: "100%",
-    height: 300,
+    height: "auto",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
+    aspectRatio: 1.5,
   },
   emptyPreview: {
     width: "100%",
