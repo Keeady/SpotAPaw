@@ -4,7 +4,7 @@ import {
   SightingFilters,
   SightingRepositoryResponse,
 } from "../base-sighting-repository";
-import { AggregatedSighting } from "@/db/models/sighting";
+import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 
 export class SupabaseSightingRepository extends BaseSightingRepository {
   supabaseClient: SupabaseClient | undefined;
@@ -44,6 +44,132 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
 
     const deNormalizedData = data.map((d) => this.denormalizePayload(d));
     return { data: deNormalizedData, count };
+  }
+
+  async getSighting(id: string): Promise<AggregatedSighting> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { data, error } = await this.supabaseClient
+      .from("aggregated_sightings")
+      .select("*")
+      .eq("is_active", true)
+      .eq("linked_sighting_id", id)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error("No sightings found.");
+    }
+
+    return this.denormalizePayload(data);
+  }
+
+  async updateSighting(
+    id: string,
+    payload: Partial<AggregatedSighting>,
+  ): Promise<void> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const normalizedPayload = this.normalizePayload(payload);
+
+    const { error } = await this.supabaseClient
+      .from("aggregated_sightings")
+      .update(normalizedPayload)
+      .eq("linked_sighting_id", id);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async updateSightingStatusByPet(id: string): Promise<void> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { error } = await this.supabaseClient
+      .from("aggregated_sightings")
+      .update({
+        is_active: false,
+      })
+      .eq("pet_id", id);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async getLinkedSightings(id: string): Promise<AggregatedSighting[]> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { data, error } = await this.supabaseClient
+      .from("sightings")
+      .select("*")
+      .eq("is_active", true)
+      .or(`linked_sighting_id.eq.${id}, id.eq.${id}`)
+      .order("last_seen_time", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error("No sightings found.");
+    }
+
+    return data.map((d) => this.denormalizePayload(d));
+  }
+
+  async createSighting(payload: Partial<Sighting>): Promise<string> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const normalizedPayload = this.normalizePayload(payload);
+    
+    const { data, error } = await this.supabaseClient
+      .from("sightings")
+      .insert(normalizedPayload)
+      .select("id")
+      .single();
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw "No data returned";
+    }
+
+    return data["id"];
+  }
+
+  async getSightingsByReporter(
+    reporterId: string,
+  ): Promise<AggregatedSighting[]> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { data, error } = await this.supabaseClient
+      .from("sightings")
+      .select("*")
+      .eq("reporter_id", reporterId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return data.map((d) => this.denormalizePayload(d));
   }
 
   protected normalizePayload(payload: Partial<AggregatedSighting>) {
