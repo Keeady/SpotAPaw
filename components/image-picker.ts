@@ -6,6 +6,8 @@ export const ImagePickerHandler = async (
   handleChange: (f: string, v: string) => void,
   callback?: () => void,
 ) => {
+  await requestMediaLibraryPermission();
+  
   // No permissions request is necessary for launching the image library
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -30,6 +32,8 @@ export const ImagePickerHandler = async (
 export const pickImage = async (
   setPhoto?: React.Dispatch<React.SetStateAction<string>>,
 ): Promise<ImagePicker.ImagePickerAsset | null> => {
+  await requestMediaLibraryPermission();
+
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
@@ -53,6 +57,8 @@ export const pickImage = async (
 export const takePhoto = async (
   setPhoto?: React.Dispatch<React.SetStateAction<string>>,
 ): Promise<ImagePicker.ImagePickerAsset | null> => {
+  await requestCameraPermission();
+
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images", "livePhotos"],
     allowsEditing: true,
@@ -95,7 +101,7 @@ export const requestCameraPermission = async () => {
   if (status === "denied") {
     Alert.alert(
       "Camera Permission Required",
-      "Please enable camera access in your device settings to take photos.",
+      "Please enable camera access in your device settings to take a pet photo to help identify pets faster.",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
@@ -119,7 +125,7 @@ export const requestMediaLibraryPermission = async () => {
   if (status === "denied") {
     Alert.alert(
       "Photo Library Permission Required",
-      "Please enable photo library access in your device settings to upload photos.",
+      "Please enable photo library access in your device settings to share a pet photo to help identify pets faster.",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },

@@ -21,6 +21,7 @@ type ContextProps = {
   getSavedLocation: () => Promise<any>;
   setLocation: (value: SightingLocation) => void;
   isLoadingLocation: boolean;
+  getExistingPermission: () => Promise<void>;
 };
 
 const PermissionContext = createContext<Partial<ContextProps>>({});
@@ -113,6 +114,7 @@ const PermissionProvider = (props: Props) => {
         getSavedLocation,
         setLocation,
         isLoadingLocation,
+        getExistingPermission
       }}
     >
       {props.children}

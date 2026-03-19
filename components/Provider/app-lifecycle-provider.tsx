@@ -9,7 +9,7 @@ interface Props {
 
 function AppLifecycleProvider({ children }: Props) {
   const appState = useRef(AppState.currentState);
-  const { refreshPermission } = usePermission();
+  const { getExistingPermission } = usePermission();
 
   const subscribe = useCallback(() => {
     return AppState.addEventListener("change", (nextAppState) => {
@@ -18,13 +18,13 @@ function AppLifecycleProvider({ children }: Props) {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-        if (refreshPermission) {
-          refreshPermission();
+        if (getExistingPermission) {
+          getExistingPermission();
         }
       }
       appState.current = nextAppState;
     });
-  }, [refreshPermission]);
+  }, [getExistingPermission]);
 
   useEffect(() => {
     const subscription = subscribe();

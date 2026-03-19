@@ -15,8 +15,8 @@
         "NSLocationWhenInUseUsageDescription": "Turning on your location will allow us to show you nearby pet sightings.",
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationUsageDescription": "Turning on your location will allow us to show you nearby pet sightings.",
-        "NSPhotoLibraryUsageDescription": "Allow access to photos to upload a photo from your library.",
-        "NSCameraUsageDescription": "Allow access to camera to snap a photo of a lost pet."
+        "NSPhotoLibraryUsageDescription": "Allow SpotAPaw to access your photos so you can share a pet photo and help identify pets more quickly",
+        "NSCameraUsageDescription": "Allow SpotAPaw to access your camera so you can take a pet photo and help identify pets more quickly."
       },
       "usesAppleSignIn": true
     },
@@ -57,14 +57,14 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow SpotAPaw to use your location."
+          "locationWhenInUsePermission": "Turning on your location will allow us to show you nearby pet sightings."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow SpotAPaw to access your photos.",
-          "cameraPermission": "Allow SpotAPaw to use your camera."
+          "photosPermission": "Allow SpotAPaw to access your photos so you can share a pet photo and help identify pets more quickly.",
+          "cameraPermission": "Allow SpotAPaw to access your camera so you can take a pet photo and help identify pets more quickly."
         }
       ],
       "expo-apple-authentication"
