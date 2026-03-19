@@ -1,5 +1,4 @@
-import { log } from "@/components/logs";
-import { supabase } from "@/components/supabase-client";
+import { AuthHandler } from "@/auth/auth";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
@@ -52,31 +51,31 @@ export default function ResetPasswordForEmailScreen() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "spotapaw://auth/reset",
-    });
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "An error occured. Please try again.",
-        type: "danger",
-        icon: "danger",
-        autoHide: true,
-        statusBarHeight: 50,
+    const authHandler = new AuthHandler();
+    authHandler
+      .resetPasswordForEmail(email)
+      .then(() => {
+        showMessage({
+          message: "Please check your inbox for password link.",
+          type: "success",
+          icon: "success",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .catch(() => {
+        showMessage({
+          message: "An error occured. Please try again.",
+          type: "danger",
+          icon: "danger",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        setDisabled(true);
       });
-    } else {
-      showMessage({
-        message: "Please check your inbox for password link.",
-        type: "success",
-        icon: "success",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-    }
-
-    setLoading(false);
-    setDisabled(true);
   }
 
   useEffect(() => {

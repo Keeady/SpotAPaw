@@ -1,5 +1,4 @@
-import { log } from "@/components/logs";
-import { supabase } from "@/components/supabase-client";
+import { AuthHandler } from "@/auth/auth";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform, View, StyleSheet, ScrollView } from "react-native";
@@ -42,64 +41,56 @@ export default function OneTimePasscodeScreen() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-      },
-    });
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "An error occurred. Please try again.",
-        type: "warning",
-        icon: "warning",
-        autoHide: true,
-        statusBarHeight: 50,
+    const authHandler = new AuthHandler();
+    authHandler
+      .signInWithOtp(email)
+      .then(() => {
+        showMessage({
+          message: "Please check your email for a verification code.",
+          type: "success",
+          icon: "success",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+        setShowCodeVerification(true);
+      })
+      .catch(() => {
+        showMessage({
+          message: "An error occurred. Please try again.",
+          type: "warning",
+          icon: "warning",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    } else {
-      showMessage({
-        message: "Please check your email for a verification code.",
-        type: "success",
-        icon: "success",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-      setShowCodeVerification(true);
-    }
-
-    setLoading(false);
   }
 
   async function verify() {
     setLoading(true);
     setDisabled(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.verifyOtp({
-      email,
-      token: code,
-      type: "email",
-    });
-
-    if (session) {
-      router.dismissTo("/(app)/my-sightings");
-      return;
-    }
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "Invalid code. Please try again.",
-        type: "danger",
-        icon: "danger",
-        autoHide: true,
-        statusBarHeight: 50,
+    const authHandler = new AuthHandler();
+    authHandler
+      .verifyOtp(email, code)
+      .then((session) => {
+        if (session) {
+          router.dismissTo("/(app)/my-sightings");
+        }
+      })
+      .catch(() => {
+        showMessage({
+          message: "Invalid code. Please try again.",
+          type: "danger",
+          icon: "danger",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }
-    setLoading(false);
   }
 
   useEffect(() => {

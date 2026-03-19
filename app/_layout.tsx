@@ -3,21 +3,22 @@ import { Stack, useRouter } from "expo-router";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { Image, Linking } from "react-native";
 import { useEffect } from "react";
-import { supabase } from "@/components/supabase-client";
 import { Button, MD3LightTheme, PaperProvider } from "react-native-paper";
 import styles from "@/components/layout.style";
 import { handleSignIn } from "@/components/util";
 import { PermissionProvider } from "@/components/Provider/permission-provider";
 import { AppLifecycleProvider } from "@/components/Provider/app-lifecycle-provider";
 import { AIFeatureContextProvider } from "@/components/Provider/ai-context-provider";
+import { AuthHandler } from "@/auth/auth";
 
 export default function Layout() {
   const router = useRouter();
 
   useEffect(() => {
+    const authHandler = new AuthHandler();
     const handleRedirect = async (url: string) => {
       // Let Supabase verify the confirmation link
-      await supabase.auth.exchangeCodeForSession(url);
+      await authHandler.exchangeCodeForSession(url);
 
       // Then send user to the login screen (no auto-login)
       router.replace("/(auth)/signin");
@@ -28,7 +29,7 @@ export default function Layout() {
       const code = parsedUrl.searchParams.get("code");
 
       if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        const { error } = await authHandler.exchangeCodeForSession(code);
 
         if (error) {
           showMessage({
@@ -48,7 +49,7 @@ export default function Layout() {
       const code = parsedUrl.searchParams.get("code");
 
       if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        const { error } = await authHandler.exchangeCodeForSession(code);
 
         if (error) {
           showMessage({
@@ -101,36 +102,36 @@ export default function Layout() {
       <AuthProvider>
         <PermissionProvider>
           <AIFeatureContextProvider>
-          <AppLifecycleProvider>
-            <Stack
-              screenOptions={{
-                headerShown: true,
-                headerBackVisible: true,
-                headerBackButtonDisplayMode: "minimal",
-                headerTitle: () => (
-                  <Image
-                    source={require("../assets/images/spotapaw-text-logo-v2.png")}
-                    style={styles.logo}
-                  />
-                ),
-                headerRight: () => (
-                  <Button
-                    mode="text"
-                    onPress={() => handleSignIn(router)}
-                    style={styles.button}
-                  >
-                    Sign In
-                  </Button>
-                ),
-              }}
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
-              <Stack.Screen name="terms" options={{ headerShown: true }} />
-              <Stack.Screen name="privacy" options={{ headerShown: true }} />
-            </Stack>
-            <FlashMessage position="top" duration={5000} />
-          </AppLifecycleProvider>
+            <AppLifecycleProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: true,
+                  headerBackVisible: true,
+                  headerBackButtonDisplayMode: "minimal",
+                  headerTitle: () => (
+                    <Image
+                      source={require("../assets/images/spotapaw-text-logo-v2.png")}
+                      style={styles.logo}
+                    />
+                  ),
+                  headerRight: () => (
+                    <Button
+                      mode="text"
+                      onPress={() => handleSignIn(router)}
+                      style={styles.button}
+                    >
+                      Sign In
+                    </Button>
+                  ),
+                }}
+              >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                <Stack.Screen name="terms" options={{ headerShown: true }} />
+                <Stack.Screen name="privacy" options={{ headerShown: true }} />
+              </Stack>
+              <FlashMessage position="top" duration={5000} />
+            </AppLifecycleProvider>
           </AIFeatureContextProvider>
         </PermissionProvider>
       </AuthProvider>

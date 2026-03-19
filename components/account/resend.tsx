@@ -1,5 +1,4 @@
-import { log } from "@/components/logs";
-import { supabase } from "@/components/supabase-client";
+import { AuthHandler } from "@/auth/auth";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -11,12 +10,7 @@ import {
   View,
 } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import {
-  Button,
-  Text,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
+import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 
 export default function ResendEmailScreen() {
@@ -24,12 +18,14 @@ export default function ResendEmailScreen() {
   const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
   const [loading, setLoading] = useState(false);
+  const [disableButton, setDisableButton] = useState(true);
   const router = useRouter();
   const [extra_info, setExtraInfo] = useState("");
   const [hasEmailError, setHasEmailError] = useState(false);
   const [confirmationEmail, setConfirmationEmail] = useState("");
 
   const debounceTimer = useRef<number>(null);
+  const timeout = useRef<number>(null);
 
   async function resendVerificationWithEmail() {
     if (extra_info.trim()) {
@@ -53,31 +49,30 @@ export default function ResendEmailScreen() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: confirmationEmail,
-    });
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "An error occurred. Please try again.",
-        type: "warning",
-        icon: "warning",
-        autoHide: true,
-        statusBarHeight: 50,
+    const authHandler = new AuthHandler();
+    authHandler
+      .resend(confirmationEmail)
+      .then(() => {
+        showMessage({
+          message: "Please check your email for the confirmation URL.",
+          type: "success",
+          icon: "success",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .catch(() => {
+        showMessage({
+          message: "An error occurred. Please try again.",
+          type: "warning",
+          icon: "warning",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    } else {
-      showMessage({
-        message: "Please check your email for the confirmation URL.",
-        type: "success",
-        icon: "success",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-    }
-
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -99,6 +94,22 @@ export default function ResendEmailScreen() {
       }
     };
   }, [confirmationEmail]);
+
+  useEffect(() => {
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+    }
+
+    timeout.current = setTimeout(() => {
+      setDisableButton(false);
+    }, 600000);
+
+    return () => {
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const showListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -160,7 +171,7 @@ export default function ResendEmailScreen() {
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button
               mode="contained"
-              disabled={loading || hasEmailError}
+              disabled={loading || hasEmailError || disableButton}
               onPress={() => resendVerificationWithEmail()}
               style={styles.button}
             >
