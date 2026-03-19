@@ -1,6 +1,4 @@
 import DividerWithText from "@/components/divider-with-text";
-import { log } from "@/components/logs";
-import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -21,6 +19,7 @@ import {
 } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import * as AppleAuthentication from "expo-apple-authentication";
+import { AuthHandler } from "@/auth/auth";
 
 export default function SignUpScreen() {
   const theme = useTheme();
@@ -89,39 +88,33 @@ export default function SignUpScreen() {
     }
 
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        emailRedirectTo: "spotapaw://auth/verify",
-      },
-    });
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "An error occured. Please try again.",
-        type: "danger",
-        icon: "danger",
-        autoHide: true,
-        statusBarHeight: 50,
+    const authHandler = new AuthHandler();
+    authHandler
+      .signUp(email, password)
+      .then((session) => {
+        if (!session) {
+          showMessage({
+            message: "Please check your inbox for email verification!",
+            type: "success",
+            icon: "success",
+            autoHide: true,
+            statusBarHeight: 50,
+          });
+        }
+      })
+      .catch(() => {
+        showMessage({
+          message: "An error occured. Please try again.",
+          type: "danger",
+          icon: "danger",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        router.navigate("/(auth)/resend");
       });
-    }
-    if (!session) {
-      showMessage({
-        message: "Please check your inbox for email verification!",
-        type: "success",
-        icon: "success",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-    }
-
-    setLoading(false);
-    router.navigate("/(auth)/resend");
   }
 
   useEffect(() => {

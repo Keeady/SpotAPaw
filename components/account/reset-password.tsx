@@ -1,5 +1,4 @@
-import { log } from "@/components/logs";
-import { supabase } from "@/components/supabase-client";
+import { AuthHandler } from "@/auth/auth";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -78,34 +77,33 @@ export default function ResetPasswordScreen() {
     }
 
     setLoading(true);
-    const { data, error } = await supabase.auth.updateUser({
-      password,
-    });
+    const authHandler = new AuthHandler();
+    authHandler
+      .updatePassword(password)
+      .then(() => {
+        showMessage({
+          message: "Successfully reset your password!",
+          type: "success",
+          icon: "success",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .catch(() => {
+        showMessage({
+          message: "An error occured. Please try again.",
+          type: "danger",
+          icon: "danger",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        setDisabled(true);
 
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "An error occured. Please try again.",
-        type: "danger",
-        icon: "danger",
-        autoHide: true,
-        statusBarHeight: 50,
+        router.navigate("/(auth)/signin");
       });
-    }
-    if (data) {
-      showMessage({
-        message: "Successfully reset your password!",
-        type: "success",
-        icon: "success",
-        autoHide: true,
-        statusBarHeight: 50,
-      });
-    }
-
-    setLoading(false);
-    setDisabled(true);
-
-    router.navigate("/(auth)/signin");
   }
 
   useEffect(() => {

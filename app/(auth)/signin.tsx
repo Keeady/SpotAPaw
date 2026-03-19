@@ -1,6 +1,4 @@
 import DividerWithText from "@/components/divider-with-text";
-import { log } from "@/components/logs";
-import { supabase } from "@/components/supabase-client";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -8,6 +6,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import * as AppleAuthentication from "expo-apple-authentication";
+import { AuthHandler } from "@/auth/auth";
 
 export default function SignInScreen() {
   const theme = useTheme();
@@ -44,30 +43,27 @@ export default function SignInScreen() {
     }
 
     setLoading(true);
-    const {
-      error,
-      data: { session },
-    } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (session) {
-      router.dismissTo("/(app)/my-sightings");
-      return;
-    }
-
-    if (error) {
-      log(error.message);
-      showMessage({
-        message: "Invalid email or password. Please try again.",
-        type: "danger",
-        icon: "danger",
-        autoHide: true,
-        statusBarHeight: 50,
+    const authHandler = new AuthHandler();
+    authHandler
+      .signInWithPassword(email, password)
+      .then((session) => {
+        if (session) {
+          router.dismissTo("/(app)/my-sightings");
+          return;
+        }
+      })
+      .catch(() => {
+        showMessage({
+          message: "Invalid email or password. Please try again.",
+          type: "danger",
+          icon: "danger",
+          autoHide: true,
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }
-    setLoading(false);
   }
 
   useEffect(() => {
