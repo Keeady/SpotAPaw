@@ -102,7 +102,7 @@ export default function ResendEmailScreen() {
 
     timeout.current = setTimeout(() => {
       setDisableButton(false);
-    }, 60000);
+    }, 600000);
 
     return () => {
       if (timeout.current) {
