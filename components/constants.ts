@@ -6,6 +6,7 @@ const AppConstants = {
   EXPO_PUBLIC_SUPABASE_URL:
     Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL,
   EXPO_GOOGLE_MAP_API_KEY: Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY,
+  EXPO_GOOGLE_MAP_API_KEY_WEB: Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY_WEB,
   EXPO_GOOGLE_GEOCODE_API_KEY:
     Constants.expoConfig?.extra?.EXPO_GOOGLE_GEOCODE_API_KEY,
   EXPO_GOOGLE_GENAI_API_KEY:

@@ -11,6 +11,12 @@ export default ({ config }) => {
           },
         },
       },
+      ios: {
+        ...(config.ios || {}),
+        config: {
+          googleMapsApiKey: process.env.EXPO_GOOGLE_MAP_API_KEY_IOS
+        },
+      },
     },
     extra: {
       eas: {
@@ -21,6 +27,8 @@ export default ({ config }) => {
       EXPO_GOOGLE_MAP_API_KEY: process.env.EXPO_GOOGLE_MAP_API_KEY,
       EXPO_GOOGLE_GEOCODE_API_KEY: process.env.EXPO_GOOGLE_GEOCODE_API_KEY,
       EXPO_GOOGLE_GENAI_API_KEY: process.env.EXPO_GOOGLE_GENAI_API_KEY,
+      EXPO_GOOGLE_MAP_API_KEY_IOS: process.env.EXPO_GOOGLE_MAP_API_KEY_IOS,
+      EXPO_GOOGLE_MAP_API_KEY_WEB: process.env.EXPO_GOOGLE_MAP_API_KEY_WEB,
     },
   };
 };
