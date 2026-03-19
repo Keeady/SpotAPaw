@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, StyleSheet, Platform } from "react-native";
+import { Image, View, StyleSheet } from "react-native";
 import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
 import { getIconByAnimalSpecies } from "./util";
 import {
@@ -8,49 +8,6 @@ import {
 } from "./sightings/util";
 import { usePermission } from "./Provider/permission-provider";
 import { AggregatedSighting } from "@/db/models/sighting";
-
-export function RenderPetProfile(data) {
-  const pet = data.pet;
-
-  return (
-    <Card>
-      {pet.photo && (
-        <Image
-          source={{ uri: pet.photo }}
-          resizeMode="cover"
-          style={{
-            height: 200,
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-          }}
-        />
-      )}
-      <Card.Content>
-        <Text variant="headlineLarge">{pet.name}</Text>
-        <Divider />
-        <Text variant="bodyLarge">
-          <Text variant="labelLarge">Species: </Text> {pet.species}
-        </Text>
-        <Text variant="bodyLarge">
-          <Text variant="labelLarge">Breed: </Text> {pet.breed}
-        </Text>
-        <Text variant="bodyLarge">
-          <Text variant="labelLarge">Age: </Text> {pet.age}
-        </Text>
-        <Text variant="bodyLarge">
-          <Text variant="labelLarge">Gender: </Text> {pet.gender}
-        </Text>
-        <Text variant="bodyLarge">
-          <Text variant="labelLarge">Colors: </Text> {pet.colors}
-        </Text>
-        <Text variant="bodyLarge">
-          <Text variant="labelLarge">Distinctive Features: </Text>{" "}
-          {pet.features}
-        </Text>
-      </Card.Content>
-    </Card>
-  );
-}
 
 export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
   const theme = useTheme();
@@ -67,12 +24,13 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
       {pet.photo ? (
         <Image
           source={{ uri: pet.photo }}
-          resizeMode={Platform.OS === "web" ? "center" : "cover"}
+          resizeMode={"contain"}
           style={{
             width: "100%",
-            height: 300,
+            height: "auto",
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
+            aspectRatio: 1.5
           }}
         />
       ) : (

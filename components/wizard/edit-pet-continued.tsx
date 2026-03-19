@@ -52,6 +52,7 @@ export function EditPetContinued({
         subTitle="Review and edit pet description"
       />
       <ScrollView
+        style={{ backgroundColor: "blue" }}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -64,6 +65,7 @@ export function EditPetContinued({
           petGender={gender}
           petAge={age}
           petPhoto={image.uri || photo}
+          showDetails={false}
         />
 
         <View style={[styles.verticallySpaced, styles.mt10]}>
@@ -225,6 +227,8 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 12,
     alignItems: "center",
+    backgroundColor: "red",
+    flexGrow: 1,
   },
   verticallySpaced: {
     alignSelf: "stretch",

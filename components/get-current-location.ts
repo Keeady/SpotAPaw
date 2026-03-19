@@ -30,9 +30,9 @@ export async function getCurrentLocationV4() {
       if (location) {
         const address = await Location.reverseGeocodeAsync(location.coords);
         return {
-          last_seen_location: address?.[0].formattedAddress || "",
-          last_seen_long: location.coords.longitude,
-          last_seen_lat: location.coords.latitude,
+          lastSeenLocation: address?.[0].formattedAddress || "",
+          lastSeenLong: location.coords.longitude,
+          lastSeenLat: location.coords.latitude,
         };
       }
     }

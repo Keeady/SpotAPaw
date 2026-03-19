@@ -68,7 +68,7 @@ export default function DropPinOnMap({
   }, [pins]);
 
   return (
-    <APIProvider apiKey={AppConstants.EXPO_GOOGLE_MAP_API_KEY}>
+    <APIProvider apiKey={AppConstants.EXPO_GOOGLE_MAP_API_KEY_WEB}>
       <Card style={styles.mapCard}>
         <Map
           style={{ width: "90vw", height: "50vh" }}

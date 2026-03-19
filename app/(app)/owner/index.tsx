@@ -1,9 +1,8 @@
-import { log } from "@/components/logs";
 import PhoneNumberInput from "@/components/phone-number-util";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { supabase } from "@/components/supabase-client";
 import { isValidUuid } from "@/components/util";
-import { Person } from "@/model/person";
+import { Owner } from "@/db/models/owner";
+import { OwnerRepository } from "@/db/repositories/owner-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -34,12 +33,11 @@ const ProfileScreen = () => {
 
   const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
-  const ownerInfo = useRef<Person>(undefined);
+  const ownerInfo = useRef<Owner>(undefined);
   const [phone, setPhone] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState<CountryCode>();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [extra_info, setExtraInfo] = useState("");
   const [id, setId] = useState("");
@@ -81,39 +79,46 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     if (
-      (firstName && ownerInfo.current?.firstname !== firstName) ||
-      (lastName && ownerInfo.current?.lastname !== lastName) ||
-      (address && ownerInfo.current?.address !== address) ||
+      (firstName && ownerInfo.current?.firstName !== firstName) ||
+      (lastName && ownerInfo.current?.lastName !== lastName) ||
       (phone && ownerInfo.current?.phone !== phone) ||
       (email && ownerInfo.current?.email !== email)
     ) {
       setDisableSubmitBtn(false);
     }
-  }, [firstName, lastName, address, phone, email]);
+  }, [firstName, lastName, phone, email]);
 
   useEffect(() => {
     if (!user?.id) {
       return;
     }
 
+    const repository = new OwnerRepository();
     setLoading(true);
-    supabase
-      .from("owner")
-      .select("*")
-      .eq("owner_id", user.id)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          ownerInfo.current = data[0];
-          setFirstName(data[0].firstname);
-          setLastName(data[0].lastname);
-          setPhone(data[0].phone);
-          setAddress(data[0].address);
-          setId(data[0].id);
-          setEmail(data[0].email);
-          setPhoneCountryCode(data[0].country_code);
+    repository
+      .getOwner(user.id)
+      .then((data) => {
+        if (data) {
+          ownerInfo.current = data;
+          setFirstName(data.firstName);
+          setLastName(data.lastName);
+          setPhone(data.phone);
+          setId(data.id);
+          setEmail(data.email);
+          setPhoneCountryCode(data.countryCode as CountryCode);
         }
+      })
+      .catch(() => {
+        showMessage({
+          message: "Error fetching account info.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    setLoading(false);
   }, [user?.id]);
 
   useEffect(() => {
@@ -165,57 +170,31 @@ const ProfileScreen = () => {
       return;
     }
 
+    const repository = new OwnerRepository();
+
     setLoading(true);
     let result;
-    if (id && isValidUuid(id)) {
-      result = await supabase
-        .from("owner")
-        .update([
-          {
-            firstname: firstName,
-            lastname: lastName,
-            phone,
-            address,
-            email,
-            id,
-            country_code: selectedCountryCode,
-          },
-        ])
-        .eq("id", id)
-        .select();
-    } else {
-      result = await supabase
-        .from("owner")
-        .insert([
-          {
-            firstname: firstName,
-            lastname: lastName,
-            phone,
-            address,
-            email,
-            country_code: selectedCountryCode,
-          },
-        ])
-        .select();
-    }
-
-    const { error, data } = result;
-    setLoading(false);
-
-    if (error) {
-      log(error.message)
-      showMessage({
-        message: "Error saving owner profile.",
-        type: "warning",
-        icon: "warning",
-        statusBarHeight: 50,
-      });
-    } else {
-      setIsEditing(false);
-
-      if (data && !id) {
-        setId(data[0].id);
+    try {
+      if (id && isValidUuid(id)) {
+        await repository.updateOwner(id, {
+          firstName,
+          lastName,
+          phone,
+          email,
+          countryCode: selectedCountryCode,
+        });
+      } else {
+        result = await repository.createOwner({
+          firstName,
+          lastName,
+          phone,
+          email,
+          countryCode: selectedCountryCode,
+        });
+        setId(result);
       }
+
+      setIsEditing(false);
       showMessage({
         message: "Successfully saved owner profile.",
         type: "success",
@@ -226,6 +205,15 @@ const ProfileScreen = () => {
       if (sightingId) {
         router.replace(`/my-sightings`);
       }
+    } catch {
+      showMessage({
+        message: "Error saving owner profile.",
+        type: "warning",
+        icon: "warning",
+        statusBarHeight: 50,
+      });
+    } finally {
+      setLoading(false);
     }
   }
 

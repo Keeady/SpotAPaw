@@ -6,30 +6,37 @@ import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 export const defaultSightingFormData = {
   id: "",
   species: "",
-  age: "",
+  age: 0,
   name: "",
   breed: "",
   colors: "",
   size: "",
-  last_seen_long: 0,
-  last_seen_lat: 0,
-  last_seen_location: "",
-  last_seen_time: "",
+  lastSeenLong: 0,
+  lastSeenLat: 0,
+  lastSeenLocation: "",
+  lastSeenTime: "",
   features: "",
   photo: "",
-  contactName: "",
-  contactPhone: "",
+  reporterName: "",
+  reporterPhone: "",
   contactPhoneCountryCode: "US",
   petBehavior: "",
   gender: "",
   note: "",
   linkedSightingId: "",
   photoUrl: "",
-  is_lost: false,
+  isLost: false,
   aiMessage: "",
   collar: "no",
   collarDescription: "",
-  image: {},
+  image: { uri: "", filename: "", filetype: "" },
+  updatedAt: "",
+  ownerId: "",
+  linkedSightings: [],
+  createdAt: "",
+  petId: "",
+  isActive: true,
+  reporterId: "",
 } as SightingReport;
 
 export const validate = (
@@ -76,11 +83,11 @@ export const validate = (
 
 function validateAddContact(sightingFormData: SightingReport) {
   let isValid = false;
-  if (!sightingFormData.contactPhone) {
+  if (!sightingFormData.reporterPhone) {
     isValid = true;
   } else {
     isValid = isValidPhoneNumber(
-      sightingFormData.contactPhone,
+      sightingFormData.reporterPhone,
       sightingFormData.contactPhoneCountryCode as CountryCode,
     );
   }
@@ -167,7 +174,7 @@ export function validateStart(reportType: SightingReportType) {
 
 export function validateLocatePet(sightingFormData: SightingReport) {
   let isValid = false;
-  if (sightingFormData.last_seen_long && sightingFormData.last_seen_lat) {
+  if (sightingFormData.lastSeenLong && sightingFormData.lastSeenLat) {
     isValid = true;
   }
 
@@ -177,8 +184,8 @@ export function validateLocatePet(sightingFormData: SightingReport) {
 export function validateLastSeen(sightingFormData: SightingReport) {
   let isValid = false;
   if (
-    sightingFormData.last_seen_time &&
-    !isFuture(sightingFormData.last_seen_time)
+    sightingFormData.lastSeenTime &&
+    !isFuture(sightingFormData.lastSeenTime)
   ) {
     isValid = true;
   }

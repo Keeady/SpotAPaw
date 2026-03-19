@@ -2,10 +2,12 @@ import useUploadPetImageUrl from "@/components/image-upload-handler";
 import { log } from "@/components/logs";
 import EditPetDetails from "@/components/pets/pet-edit";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { supabase } from "@/components/supabase-client";
 import { getLastSeenLocation, isValidUuid } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
+import { Pet } from "@/db/models/pet";
+import { Sighting } from "@/db/models/sighting";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -52,7 +54,7 @@ export default function EditPet() {
       note: profileInfo.note,
       ownerId: user?.id,
       isLost: isLost,
-    };
+    } as Partial<Pet>;
 
     if (photoUrl !== "") {
       payload.photo = photoUrl;
@@ -106,7 +108,7 @@ export default function EditPet() {
       profileInfo.lastSeenLong,
     );
 
-    const payload = {
+    const payload: Partial<Sighting> = {
       name: profileInfo.name,
       species: profileInfo.species,
       breed: profileInfo.breed,
@@ -114,12 +116,12 @@ export default function EditPet() {
       colors: profileInfo.colors,
       features: profileInfo.features,
       note: profileInfo.note,
-      reporter_id: user?.id,
-      last_seen_time: profileInfo.lastSeenTime || new Date().toISOString(),
-      last_seen_location: lastSeenFormatted,
-      last_seen_lat: profileInfo.lastSeenLat,
-      last_seen_long: profileInfo.lastSeenLong,
-      pet_id: id,
+      reporterId: user?.id,
+      lastSeenTime: profileInfo.lastSeenTime || new Date().toISOString(),
+      lastSeenLocation: lastSeenFormatted,
+      lastSeenLat: profileInfo.lastSeenLat,
+      lastSeenLong: profileInfo.lastSeenLong,
+      petId: id,
     };
 
     if (photoUrl !== "") {
@@ -128,34 +130,30 @@ export default function EditPet() {
       payload.photo = profileInfo.photo;
     }
 
-    const { error, data } = await supabase
-      .from("sightings")
-      .insert(payload)
-      .select();
-
-    if (error) {
-      log(error.message);
-
-      showMessage({
-        message: "Error updating pet sighting.",
-        type: "warning",
-        icon: "warning",
-        statusBarHeight: 50,
+    const sightingRepository = new SightingRepository();
+    sightingRepository
+      .createSighting(payload)
+      .then((sightingId) => {
+        showMessage({
+          message: "Successfully updated pet sighting.",
+          type: "success",
+          icon: "success",
+          statusBarHeight: 50,
+        });
+        if (isLost) {
+          router.navigate(`/owner?sightingId=${sightingId}`);
+        } else {
+          router.replace(`/(app)/pets`);
+        }
+      })
+      .catch(() => {
+        showMessage({
+          message: "Error updating pet sighting.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
       });
-    } else {
-      showMessage({
-        message: "Successfully updated pet sighting.",
-        type: "success",
-        icon: "success",
-        statusBarHeight: 50,
-      });
-      if (isLost) {
-        const sightingId = data && data[0]["id"];
-        router.navigate(`/owner?sightingId=${sightingId}`);
-      } else {
-        router.replace(`/(app)/pets`);
-      }
-    }
   };
 
   return EditPetDetails(savePetInfo, setProfileInfo, profileInfo, !!isLost);

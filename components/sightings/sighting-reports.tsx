@@ -16,11 +16,11 @@ import {
   useTheme,
 } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supabase } from "../supabase-client";
 import { AuthContext } from "../Provider/auth-provider";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 
 interface Report {
   id: string;
@@ -47,19 +47,12 @@ const ReportListPage = () => {
 
   // Fetch reports from Supabase (authenticated users)
   const fetchReportsFromSupabase = useCallback(async () => {
-    try {
-      const { data, error } = await supabase
-        .from("sightings")
-        .select("*")
-        .eq("reporter_id", userId)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      const message = createErrorLogMessage(error);
-      log(`Error fetching reports: ${message}`);
+    if (!userId) {
       return [];
     }
+
+    const repository = new SightingRepository();
+    return await repository.getSightingsByReporter(userId);
   }, [userId]);
 
   // Fetch reports from AsyncStorage (guest users)
@@ -181,12 +174,12 @@ const ReportListPage = () => {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Text variant="titleMedium" style={styles.emptyText}>
-        No reports found
+        No sighting reports found
       </Text>
       <Text variant="bodyMedium" style={styles.emptySubtext}>
         {isGuest
           ? "Your reports will appear here"
-          : "Start creating reports to see them here"}
+          : "Start creating sightings to see them here"}
       </Text>
     </View>
   );

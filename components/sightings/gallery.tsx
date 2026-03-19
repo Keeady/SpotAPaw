@@ -15,10 +15,11 @@ export default function SightingGallery({
         <TouchableOpacity onPress={() => setIsVisible(true)}>
           <Image
             source={{ uri: mainPhoto }}
-            resizeMode={"cover"}
+            resizeMode={"contain"}
             style={{
               width: "100%",
-              height: 350,
+              height: "auto",
+              aspectRatio: 1.5
             }}
           />
         </TouchableOpacity>

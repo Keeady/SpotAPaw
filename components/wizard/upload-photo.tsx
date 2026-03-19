@@ -101,11 +101,13 @@ export function UploadPhoto({
             <Image
               source={{ uri: sightingFormData.image.uri }}
               style={styles.preview}
+              resizeMode="contain"
             />
           ) : sightingFormData.photo ? (
             <Image
               source={{ uri: sightingFormData.photo }}
               style={styles.preview}
+              resizeMode="contain"
             />
           ) : (
             <View style={styles.emptyPreview}>
@@ -158,10 +160,11 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: "100%",
-    height: 300,
+    height: "auto",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
+    aspectRatio: 1.5
   },
   emptyPreview: {
     width: "100%",

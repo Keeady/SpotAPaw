@@ -4,14 +4,29 @@ import { SupabaseSightingRepository } from "./supabase/sighting-repository";
 import { AggregatedSighting, Sighting } from "../models/sighting";
 
 export class SightingRepository implements ISightingRepository {
+  getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getSightingsByReporter(reporterId);
+  }
+  updateSightingStatusByPet(id: string): Promise<void> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.updateSightingStatusByPet(id);
+  }
+  getLinkedSightings(id: string): Promise<AggregatedSighting[]> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getLinkedSightings(id);
+  }
   getSighting(id: string): Promise<AggregatedSighting> {
-    throw new Error("Method not implemented.");
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getSighting(id);
   }
-  createSighting(data: Sighting): Promise<string> {
-    throw new Error("Method not implemented.");
+  createSighting(data: Partial<Sighting>): Promise<string> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.createSighting(data);
   }
-  updateSighting(id: string, data: AggregatedSighting): Promise<void> {
-    throw new Error("Method not implemented.");
+  updateSighting(id: string, data: Partial<AggregatedSighting>): Promise<void> {
+     const repository = new SupabaseSightingRepository(supabase);
+    return repository.updateSighting(id, data);
   }
   getSightings(filters: SightingFilters) {
     const repository = new SupabaseSightingRepository(supabase);

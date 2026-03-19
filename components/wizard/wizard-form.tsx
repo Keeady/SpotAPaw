@@ -34,7 +34,7 @@ import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { isValidUuid } from "../util";
 import { EditPetContinued } from "./edit-pet-continued";
-import { supabase } from "../supabase-client";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 
 export type SightingWizardSteps =
   | "start"
@@ -51,7 +51,7 @@ export type SightingReportType = "lost_own" | "found_stray";
 export type SightingWizardStepData = {
   sightingFormData: SightingReport;
   updateSightingData: (
-    field: string,
+    field: keyof SightingReport,
     value: string | number | PetImage,
   ) => void;
   loading: boolean;
@@ -98,7 +98,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   }>();
 
   const updateSightingData = useCallback(
-    (field: string, value: string | number | PetImage) => {
+    (field: keyof SightingReport, value: string | number | PetImage) => {
       setSightingFormData((prev) => ({ ...prev, [field]: value }));
     },
     [],
@@ -122,39 +122,32 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       setCurrentStep("upload_photo");
       updateSightingData("linkedSightingId", linkedSightingId);
 
-      supabase
-        .from("aggregated_sightings")
-        .select("*")
-        .eq("linked_sighting_id", linkedSightingId)
-        .then(({ data }) => {
+      const repository = new SightingRepository();
+      repository
+        .getSighting(linkedSightingId)
+        .then((data) => {
           if (!isMountedRef.current) {
             return;
           }
 
-          if (!data || data.length === 0) {
+          if (!data) {
             return;
           }
 
-          const sighting = data[0];
+          const sighting = data;
 
           if (action === "edit") {
-            updateSightingData("last_seen_long", sighting.last_seen_long);
-            updateSightingData("last_seen_lat", sighting.last_seen_lat);
-            updateSightingData(
-              "last_seen_location",
-              sighting.last_seen_location,
-            );
-            updateSightingData("last_seen_time", sighting.last_seen_time);
+            updateSightingData("lastSeenLong", sighting.lastSeenLong);
+            updateSightingData("lastSeenLat", sighting.lastSeenLat);
+            updateSightingData("lastSeenLocation", sighting.lastSeenLocation);
+            updateSightingData("lastSeenTime", sighting.lastSeenTime);
             updateSightingData("features", sighting.features);
             updateSightingData("photo", sighting.photo);
             updateSightingData("note", sighting.note);
-            updateSightingData(
-              "collarDescription",
-              sighting.collar_description,
-            );
+            updateSightingData("collarDescription", sighting.collarDescription);
           }
 
-          updateSightingData("id", sighting.pet_id);
+          updateSightingData("id", sighting.petId);
           updateSightingData("species", sighting.species);
           updateSightingData("age", sighting.age);
           updateSightingData("name", sighting.name);
@@ -162,6 +155,14 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("colors", sighting.colors);
           updateSightingData("size", sighting.size);
           updateSightingData("gender", sighting.gender);
+        })
+        .catch(() => {
+          showMessage({
+            message: "Error fetching pet sighting.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
         });
     }
   }, [linkedSightingId, updateSightingData, action]);

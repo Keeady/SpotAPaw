@@ -1,6 +1,6 @@
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
-import { supabase } from "../supabase-client";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 
 export type WizardFormAction = "edit" | "new";
 
@@ -32,16 +32,9 @@ export async function saveNewSighting(
   sightingFormData: SightingReport,
 ) {
   const payload = await buildSightingPayload(photo, sightingFormData);
-  const { data, error } = await supabase
-    .from("sightings")
-    .insert([payload])
-    .select("id");
 
-  if (error) {
-    throw error;
-  }
-
-  return data;
+  const repository = new SightingRepository();
+  return await repository.createSighting(payload);
 }
 
 export async function updateSighting(
@@ -56,17 +49,8 @@ export async function updateSighting(
   }
 
   const payload = await buildSightingPayload(photo, sightingFormData);
-
-  const { data, error } = await supabase
-    .from("aggregated_sightings")
-    .update(payload)
-    .eq("linked_sighting_id", sightingFormData.linkedSightingId);
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
+  const sightingRepository = new SightingRepository();
+  return await sightingRepository.updateSighting(sightingFormData.linkedSightingId, payload);
 }
 
 function saveNotes(report: SightingReport) {
@@ -85,9 +69,9 @@ async function buildSightingPayload(
   sightingFormData: SightingReport,
 ) {
   const lastSeenFormatted = await getLastSeenLocation(
-    sightingFormData.last_seen_location,
-    sightingFormData.last_seen_lat,
-    sightingFormData.last_seen_long,
+    sightingFormData.lastSeenLocation,
+    sightingFormData.lastSeenLat,
+    sightingFormData.lastSeenLong,
   );
   const payload = {
     age: sightingFormData.age ? sightingFormData.age : null,
@@ -98,30 +82,30 @@ async function buildSightingPayload(
     species: sightingFormData.species,
     gender: sightingFormData.gender,
     features: sightingFormData.features,
-    collar_description: sightingFormData.collarDescription,
+    collarDescription: sightingFormData.collarDescription,
     photo: photo ? photo : sightingFormData.photo,
     note: saveNotes(sightingFormData),
-    last_seen_location: lastSeenFormatted,
-    last_seen_long: sightingFormData.last_seen_long,
-    last_seen_lat: sightingFormData.last_seen_lat,
-    last_seen_time: sightingFormData.last_seen_time,
-    reporter_name: sightingFormData.contactName,
-    reporter_phone: sightingFormData.contactPhone,
+    lastSeenLocation: lastSeenFormatted,
+    lastSeenLong: sightingFormData.lastSeenLong,
+    lastSeenLat: sightingFormData.lastSeenLat,
+    lastSeenTime: sightingFormData.lastSeenTime,
+    reporterName: sightingFormData.reporterName,
+    reporterPhone: sightingFormData.reporterPhone,
   } as any;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
-    payload.pet_id = sightingFormData.id;
+    payload.petId = sightingFormData.id;
   }
 
   if (
     sightingFormData.linkedSightingId &&
     isValidUuid(sightingFormData.linkedSightingId)
   ) {
-    payload.linked_sighting_id = sightingFormData.linkedSightingId;
+    payload.linkedSightingId = sightingFormData.linkedSightingId;
   }
 
   if (sightingFormData.reporterId && isValidUuid(sightingFormData.reporterId)) {
-    payload.reporter_id = sightingFormData.reporterId;
+    payload.reporterId = sightingFormData.reporterId;
   }
 
   return payload;

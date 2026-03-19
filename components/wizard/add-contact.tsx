@@ -6,7 +6,8 @@ import { WizardHeader } from "./wizard-header";
 import PhoneNumberInput from "../phone-number-util";
 import { CountryCode } from "libphonenumber-js";
 import { AuthContext } from "../Provider/auth-provider";
-import { supabase } from "../supabase-client";
+import { OwnerRepository } from "@/db/repositories/owner-repository";
+import { showMessage } from "react-native-flash-message";
 
 export function AddContact({
   updateSightingData,
@@ -27,31 +28,38 @@ export function AddContact({
       return;
     }
 
-    supabase
-      .from("owner")
-      .select("*")
-      .eq("owner_id", user.id)
-      .then(({ data }) => {
+    const repository = new OwnerRepository();
+    repository
+      .getOwner(user.id)
+      .then((data) => {
         if (!isMountedRef.current) {
           return;
         }
-        if (data && data.length > 0) {
-          updateSightingData("contactName", data[0].firstname);
-          updateSightingData("contactPhone", data[0].phone);
-          updateSightingData("contactPhoneCountryCode", data[0].country_code);
+        if (data) {
+          updateSightingData("reporterName", data.firstName);
+          updateSightingData("reporterPhone", data.phone);
+          updateSightingData("contactPhoneCountryCode", data.countryCode);
         }
+      })
+      .catch(() => {
+        showMessage({
+          message: "Error fetching contact info.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
       });
   }, [user?.id, updateSightingData]);
 
   const handlePhoneNumberChange = useCallback(
     (phone: string, countryCode: CountryCode) => {
       updateSightingData("contactPhoneCountryCode", countryCode);
-      updateSightingData("contactPhone", phone);
+      updateSightingData("reporterPhone", phone);
     },
     [updateSightingData],
   );
 
-  const { contactPhone, contactPhoneCountryCode, contactName } =
+  const { reporterPhone, contactPhoneCountryCode, reporterName } =
     sightingFormData;
 
   return (
@@ -81,8 +89,8 @@ export function AddContact({
           <Text variant="titleMedium">Contact Name:</Text>
           <TextInput
             left={<TextInput.Icon icon="account" />}
-            onChangeText={(text) => updateSightingData("contactName", text)}
-            value={contactName}
+            onChangeText={(text) => updateSightingData("reporterName", text)}
+            value={reporterName}
             placeholder="First & Last Name"
             autoCapitalize={"none"}
             mode="outlined"
@@ -109,7 +117,7 @@ export function AddContact({
           <PhoneNumberInput
             onPhoneNumberChange={handlePhoneNumberChange}
             disabled={false}
-            phone={contactPhone}
+            phone={reporterPhone}
             phoneCountryCode={contactPhoneCountryCode as CountryCode}
           />
         </View>

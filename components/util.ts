@@ -1,10 +1,9 @@
-import { supabase } from "./supabase-client";
 import { Router } from "expo-router";
 import * as Location from "expo-location";
 import * as chrono from "chrono-node";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppConstants, { GOOGLE_GEOCODE_URL } from "./constants";
-import { log } from "./logs";
+import { AuthHandler } from "@/auth/auth";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -18,10 +17,8 @@ export const isValidUuid = (id: string | null | undefined) => {
 };
 
 export async function handleSignOut(router: Router) {
-  let { error } = await supabase.auth.signOut();
-  if (error) {
-    log(error.message);
-  }
+  const authHandler = new AuthHandler();
+  await authHandler.signOut().catch(() => {});
 
   router.navigate("/");
 }

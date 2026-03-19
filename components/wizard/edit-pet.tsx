@@ -62,6 +62,7 @@ export function EditPet({
           petGender={gender}
           petAge={age}
           petPhoto={image.uri || photo}
+          showDetails={false}
         />
         <View style={[styles.verticallySpaced, styles.mt10]}>
           <View

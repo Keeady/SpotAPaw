@@ -47,7 +47,7 @@ export default function PetListRenderer({ pets }: PetListRendererProp) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingHorizontal: 12,
+    // paddingHorizontal: 12,
     backgroundColor: "#fff",
     alignContent: "center",
   },

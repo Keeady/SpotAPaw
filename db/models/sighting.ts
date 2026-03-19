@@ -27,5 +27,5 @@ export interface Sighting {
 export interface AggregatedSighting extends Sighting {
     updatedAt: string;
     ownerId: string;
-    linkedSightings: Sighting[]
+    linkedSightings: Sighting[];
 }

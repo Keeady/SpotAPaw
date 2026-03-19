@@ -15,29 +15,32 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
         margin: 5,
         marginBottom: 20,
         backgroundColor: "#fff",
+        paddingVertical: 12
       }}
     >
       {pet.photo ? (
         <Image
           source={{ uri: pet.photo }}
-          resizeMode="cover"
+          resizeMode="contain"
           style={{
             width: "100%",
-            height: 300,
+            height: "auto",
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
+            aspectRatio: 1.5
           }}
         />
       ) : (
         <View
           style={{
-            width: "100%",
+            // width: "100%",
             height: 300,
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
             alignItems: "center",
             justifyContent: "center",
             backgroundColor: "#ddd",
+            margin: 12
           }}
         >
           <Text>No photo</Text>

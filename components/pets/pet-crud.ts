@@ -2,10 +2,9 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { log } from "../logs";
-import { supabase } from "../supabase-client";
 import { SightingPet } from "../wizard/wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -86,33 +85,28 @@ export function onPetLost(id: string) {
 
 async function onPetFound(id: string) {
   const petRepository = new PetRepository();
-  await petRepository
+  const sightingRepository = new SightingRepository();
+  petRepository
     .updatePet(id, { isLost: false })
     .then(async () => {
-      const { error } = await supabase
-        .from("aggregated_sightings")
-        .update({
-          is_active: false,
+      sightingRepository
+        .updateSightingStatusByPet(id)
+        .then(() => {
+          showMessage({
+            message: "Successfully updated pet profile.",
+            type: "success",
+            icon: "success",
+            statusBarHeight: 50,
+          });
         })
-        .eq("pet_id", id);
-
-      if (error) {
-        log(error.message);
-        showMessage({
-          message: "Error updating pet profile.",
-          type: "warning",
-          icon: "warning",
-          statusBarHeight: 50,
+        .catch(() => {
+          showMessage({
+            message: "Error updating pet profile.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
         });
-        return;
-      } else {
-        showMessage({
-          message: "Successfully updated pet profile.",
-          type: "success",
-          icon: "success",
-          statusBarHeight: 50,
-        });
-      }
 
       router.replace(`/(app)/pets`);
     })
