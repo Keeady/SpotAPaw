@@ -2,9 +2,10 @@ import { isFuture } from "date-fns";
 import { SightingReportType } from "./wizard-form";
 import { SightingReport } from "./wizard-interface";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
+import { isValidUuid } from "../util";
 
 export const defaultSightingFormData = {
-  id: "",
+  id: "", // pet id
   species: "",
   age: 0,
   name: "",
@@ -23,7 +24,7 @@ export const defaultSightingFormData = {
   petBehavior: "",
   gender: "",
   note: "",
-  linkedSightingId: "",
+  linkedSightingId: "", // aggregate sighting id
   photoUrl: "",
   isLost: false,
   aiMessage: "",
@@ -34,7 +35,7 @@ export const defaultSightingFormData = {
   ownerId: "",
   linkedSightings: [],
   createdAt: "",
-  petId: "",
+  petId: "", // pet id
   isActive: true,
   reporterId: "",
 } as SightingReport;
@@ -156,7 +157,7 @@ export function validateEditPhoto(sightingFormData: SightingReport) {
 
 export function validateChoosePet(sightingFormData: SightingReport) {
   let isValid = false;
-  if (sightingFormData.id) {
+  if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     isValid = true;
   }
 

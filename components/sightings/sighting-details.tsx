@@ -232,13 +232,13 @@ export default function SightingDetail({
                         <View style={{ flexDirection: "row", gap: 8 }}>
                           <Icon source={"map-marker-path"} size={20} />
                           <Text variant={"labelLarge"}>
-                            {userCurrentLocation
+                            {userCurrentLocation && sighting.lastSeenLat && sighting.lastSeenLong
                               ? getLastSeenLocationDistance(
                                   userCurrentLocation,
                                   sighting.lastSeenLat,
                                   sighting.lastSeenLong,
                                 )
-                              : "No distance"}
+                              : "No distance data"}
                           </Text>
                         </View>
                       }

@@ -54,10 +54,9 @@ export async function updateSighting(
 }
 
 function saveNotes(report: SightingReport) {
-  let notes = report.note || "";
+  let notes = `${report.note}\n` || "";
 
   if (report.petBehavior) {
-    notes = notes.concat("\n");
     notes = notes.concat(`Pet behavior: ${report.petBehavior}`);
   }
 

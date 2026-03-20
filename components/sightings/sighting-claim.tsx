@@ -74,6 +74,7 @@ export default function ClaimSighting({
             <Image
               source={{ uri: sighting.photo }}
               style={styles.sightingImage}
+              resizeMode="contain"
             />
           )}
           <Card.Content>
@@ -114,6 +115,8 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 8,
     marginBottom: 8,
+    aspectRatio: 1.5,
+    alignSelf: "center"
   },
   sectionTitle: {
     fontSize: 18,

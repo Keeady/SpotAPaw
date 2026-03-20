@@ -28,6 +28,7 @@ export function AddContact({
       return;
     }
 
+    updateSightingData("reporterId", user.id);
     const repository = new OwnerRepository();
     repository
       .getOwner(user.id)

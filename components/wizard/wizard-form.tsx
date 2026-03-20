@@ -168,12 +168,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   }, [linkedSightingId, updateSightingData, action]);
 
   useEffect(() => {
-    if (user?.id) {
-      updateSightingData("reporterId", user.id);
-    }
-  }, [user?.id, updateSightingData]);
-
-  useEffect(() => {
     if (petId && isValidUuid(petId)) {
       updateSightingData("id", petId);
     }
@@ -579,7 +573,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           mode={currentStep === "submit" ? "contained" : "text"}
           onPress={handleNext}
           disabled={disabledNext || loading || !!errorMessage}
-          style={user ? {} : { paddingBottom: 20 }}
+          style={user ? {} : { marginBottom: 20 }}
         >
           {currentStep === "submit" ? "Submit" : "Continue"}
         </Button>

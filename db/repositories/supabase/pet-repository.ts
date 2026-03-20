@@ -41,7 +41,7 @@ export class SupabasePetRepository extends BasePetRepository {
       throw error;
     }
 
-    return data;
+    return data.map(d => this.denormalizePayload(d));
   }
 
   async createPet(pet: Pet): Promise<string> {

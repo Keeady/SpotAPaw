@@ -21,24 +21,14 @@ import { useRouter } from "expo-router";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
-
-interface Report {
-  id: string;
-  reporter_id: string | null;
-  species: string;
-  is_active: boolean;
-  photo: string;
-  created_at: string;
-  features?: string;
-  linked_sighting_id?: string;
-}
+import { AggregatedSighting } from "@/db/models/sighting";
 
 const GUEST_REPORTS_KEY = "@guest_reports";
 
 const ReportListPage = () => {
   const router = useRouter();
   const theme = useTheme();
-  const [reports, setReports] = useState<Report[]>([]);
+  const [reports, setReports] = useState<AggregatedSighting[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(AuthContext);
@@ -109,19 +99,19 @@ const ReportListPage = () => {
     return status === true ? theme.colors.primary : "green";
   };
 
-  const onNavigateReport = (is_active: boolean, sightingId: string) => {
-    if (is_active) {
+  const onNavigateReport = (isActive: boolean, sightingId: string) => {
+    if (isActive) {
       return router.navigate(`/(app)/my-sightings/${sightingId}`);
     }
   };
 
   // Render individual report item
-  const renderReportItem = ({ item }: { item: Report }) => (
+  const renderReportItem = ({ item }: { item: AggregatedSighting }) => (
     <Card
       style={styles.card}
       mode="elevated"
       onPress={() =>
-        onNavigateReport(item.is_active, item.linked_sighting_id ?? item.id)
+        onNavigateReport(item.isActive, item.linkedSightingId ?? item.id)
       }
     >
       <View style={styles.cardContent}>
@@ -145,15 +135,15 @@ const ReportListPage = () => {
               textStyle={[styles.chipText, { color: theme.colors.onPrimary }]}
               style={[
                 styles.statusChip,
-                { backgroundColor: getStatusColor(item.is_active) },
+                { backgroundColor: getStatusColor(item.isActive) },
               ]}
             >
-              {item.is_active ? "ACTIVE" : "RESOLVED"}
+              {item.isActive ? "ACTIVE" : "RESOLVED"}
             </Chip>
           </View>
 
           <Text variant="bodySmall" style={styles.date}>
-            {formatDate(item.created_at)}
+            {formatDate(item.createdAt)}
           </Text>
 
           {item.features && (

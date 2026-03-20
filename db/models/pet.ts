@@ -6,7 +6,7 @@ export interface Pet {
     species: string;
     breed: string;
     gender: string;
-    age: string;
+    age: number;
     colors: string;
     features: string;
     isLost: boolean;
