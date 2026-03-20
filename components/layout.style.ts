@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginRight: 12,
+    alignSelf: "flex-end",
   },
 });
 

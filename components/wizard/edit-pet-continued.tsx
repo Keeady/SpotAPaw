@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 12,
     alignItems: "center",
-    backgroundColor: "red",
+    backgroundColor: "#fff",
     flexGrow: 1,
   },
   verticallySpaced: {

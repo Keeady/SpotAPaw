@@ -63,7 +63,7 @@ const SettingsScreen = () => {
 
   // Future features states (placeholders)
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [defaultDistance, setDefaultDistance] = useState("5");
+  const [defaultDistance, setDefaultDistance] = useState("25");
 
   // languages
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -125,7 +125,6 @@ const SettingsScreen = () => {
       setNotificationsEnabled(notifications === "true");
 
       // Load AI settings
-      // const aiFeature = await AsyncStorage.getItem(SIGHTING_AI_ENABLED_KEY);
       setAIFeatureEnabled(!!isAiFeatureEnabled);
 
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);

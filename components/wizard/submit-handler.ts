@@ -50,14 +50,16 @@ export async function updateSighting(
 
   const payload = await buildSightingPayload(photo, sightingFormData);
   const sightingRepository = new SightingRepository();
-  return await sightingRepository.updateSighting(sightingFormData.linkedSightingId, payload);
+  return await sightingRepository.updateSighting(
+    sightingFormData.linkedSightingId,
+    payload,
+  );
 }
 
 function saveNotes(report: SightingReport) {
-  let notes = report.note || "";
+  let notes = report.note ? `${report.note}\n` : "";
 
   if (report.petBehavior) {
-    notes = notes.concat("\n");
     notes = notes.concat(`Pet behavior: ${report.petBehavior}`);
   }
 

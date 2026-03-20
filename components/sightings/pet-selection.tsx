@@ -41,7 +41,7 @@ type PetThumbnailProps = {
   petId: string;
   petName: string;
   petGender: string;
-  petAge: string;
+  petAge: number;
   petPhoto: string;
   showDetails: boolean
 };
