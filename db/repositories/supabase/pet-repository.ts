@@ -41,7 +41,11 @@ export class SupabasePetRepository extends BasePetRepository {
       throw error;
     }
 
-    return data.map(d => this.denormalizePayload(d));
+    if (!data) {
+      throw new Error("No pet returned");
+    }
+
+    return data.map((d) => this.denormalizePayload(d));
   }
 
   async createPet(pet: Pet): Promise<string> {
@@ -137,7 +141,7 @@ export class SupabasePetRepository extends BasePetRepository {
   }
 
   protected denormalizePayload(payload: any): Pet {
-     type keyOfPet = keyof Pet;
+    type keyOfPet = keyof Pet;
     type DBKey = {
       [key in keyof Pet]: string;
     };
@@ -162,7 +166,6 @@ export class SupabasePetRepository extends BasePetRepository {
     };
 
     const deNormalizedPayload = {} as Pet;
-
 
     Object.keys(dbKeys).map((key) => {
       const dbKey = dbKeys[key as keyOfPet];
