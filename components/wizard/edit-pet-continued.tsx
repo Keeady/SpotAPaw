@@ -52,7 +52,6 @@ export function EditPetContinued({
         subTitle="Review and edit pet description"
       />
       <ScrollView
-        style={{ backgroundColor: "blue" }}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"

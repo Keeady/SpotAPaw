@@ -53,6 +53,7 @@ export default function SightingDetail({
   isOwner,
   onPetFound,
   petName,
+  onShareSighting,
 }: {
   sightings: AggregatedSighting[];
   petSummary: AggregatedSighting;
@@ -64,6 +65,7 @@ export default function SightingDetail({
   isOwner: boolean;
   onPetFound?: () => void;
   petName: string;
+  onShareSighting: () => void;
 }) {
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
@@ -232,7 +234,9 @@ export default function SightingDetail({
                         <View style={{ flexDirection: "row", gap: 8 }}>
                           <Icon source={"map-marker-path"} size={20} />
                           <Text variant={"labelLarge"}>
-                            {userCurrentLocation && sighting.lastSeenLat && sighting.lastSeenLong
+                            {userCurrentLocation &&
+                            sighting.lastSeenLat &&
+                            sighting.lastSeenLong
                               ? getLastSeenLocationDistance(
                                   userCurrentLocation,
                                   sighting.lastSeenLat,
@@ -363,8 +367,10 @@ export default function SightingDetail({
         </ScrollView>
 
         <ReportLostPetFab
-          onFormPress={() => onAddSighting()}
-          title={"Seen This Pet?"}
+          onFormPress={onAddSighting}
+          handleShare={onShareSighting}
+          title={"I've seen This Pet!"}
+          showGroup={true}
         />
       </View>
     </Portal.Host>

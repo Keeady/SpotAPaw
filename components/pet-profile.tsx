@@ -30,7 +30,8 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
             height: "auto",
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
-            aspectRatio: 1.5
+            aspectRatio: 1.5,
+            maxWidth: 800,
           }}
         />
       ) : (

@@ -12,6 +12,7 @@ import { PermissionContext } from "../Provider/permission-provider";
 import { SightingLocationManager } from "./sighting-location-manager";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
+import { handleAddingSighting } from "./sighting-handler";
 
 type SightingPageProps = {
   renderer: (
@@ -41,6 +42,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { location, isLoadingLocation } = useContext(PermissionContext);
+  const sightingsRoute = user ? "my-sightings" : "sightings";
 
   const onFetchComplete = useCallback(
     (
@@ -118,7 +120,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
     return <EmptySighting error={error} />;
   }, [error, loading]);
 
-  const sightingsRoute = user ? "my-sightings" : "sightings";
+  const onAddSighting = useCallback(() => {
+    handleAddingSighting(router, sightingsRoute, undefined, undefined);
+  }, [router, sightingsRoute]);
 
   return (
     <Portal.Host>
@@ -162,8 +166,10 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         )}
 
         <ReportLostPetFab
-          onFormPress={() => router.navigate(`/${sightingsRoute}/new`)}
+          onFormPress={onAddSighting}
           title={"Report New Sighting"}
+          showGroup={false}
+          handleShare={() => void 0}
         />
       </View>
     </Portal.Host>

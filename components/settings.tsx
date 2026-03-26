@@ -45,6 +45,7 @@ const SettingsScreen = () => {
     privacy: "#3F51B5", // Indigo
     terms: "#607D8B", // Blue Grey
     delete: "#d32f2f", // Red
+    information: "#009688", // Teal
   };
 
   // Available languages
@@ -254,6 +255,23 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        {/* About Section */}
+        <List.Section>
+          <List.Subheader>About</List.Subheader>
+          <List.Item
+            title="About SpotAPaw"
+            description="Learn more about the app"
+            left={(props) => (
+              <List.Icon
+                {...props}
+                icon="information"
+                color={iconColors.information}
+              />
+            )}
+            onPress={() => router.push("/about")}
+          />
+        </List.Section>
+
         {/* Location Settings Section */}
         <List.Section>
           <List.Subheader>Location</List.Subheader>

@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Image } from "react-native";
 import { SightingGalleryProps } from "./sighting-interface";
 
 export default function SightingGallery({ images }: SightingGalleryProps) {
@@ -7,11 +7,17 @@ export default function SightingGallery({ images }: SightingGalleryProps) {
     <View style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}>
       {images.map((img, key) => {
         return (
-          <img
+          <Image
             key={key}
-            src={img.uri}
-            width={350}
-            alt={`Pet sighting photo ${key} of ${length}`}            
+            source={img}
+            style={{
+              width: 350,
+              height: "auto",
+              aspectRatio: 1
+            }}
+            alt={`Pet sighting photo ${key} of ${length}`}    
+            resizeMode="contain"
+
           />
         );
       })}

@@ -1,19 +1,16 @@
-import { StyleSheet, Image, useWindowDimensions } from "react-native";
+import { Image } from "react-native";
 
 export default function HomePageHeader() {
-  const { width } = useWindowDimensions();
-
   return (
     <Image
       source={require("../../assets/images/spotapaw-text-logo-large-v2.png")}
-      style={[styles.logo, { width }]}
+      style={{
+        width: "100%",
+        height: "auto",
+        aspectRatio: 970 / 250,
+        maxWidth: 800
+      }}
+      resizeMode="contain"
     />
   );
 }
-
-const styles = StyleSheet.create({
-  logo: {
-    resizeMode: "contain",
-    height: 250,
-  },
-});
