@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from "@/components/constants";
 import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { Text, Card } from "react-native-paper";
@@ -309,7 +310,7 @@ export default function TermsScreen() {
 
           <Text variant="bodyMedium" style={styles.sectionText}>
             If you have questions about these Terms, please contact us at:{"\n"}
-            📧 spotapaw@spotapaw.com
+            📧 {SUPPORT_EMAIL}
           </Text>
         </Card.Content>
       </Card>
