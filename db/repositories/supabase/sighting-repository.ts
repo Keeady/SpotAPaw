@@ -1,10 +1,10 @@
+import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 import { SupabaseClient } from "@supabase/supabase-js";
 import {
   BaseSightingRepository,
   SightingFilters,
   SightingRepositoryResponse,
 } from "../base-sighting-repository";
-import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 
 export class SupabaseSightingRepository extends BaseSightingRepository {
   supabaseClient: SupabaseClient | undefined;
@@ -135,7 +135,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     const normalizedPayload = this.normalizePayload(payload);
-    
+
     const { data, error } = await this.supabaseClient
       .from("sightings")
       .insert(normalizedPayload)
@@ -172,7 +172,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     return data.map((d) => this.denormalizePayload(d));
   }
 
-  async getSightingByPetId(petId: string): Promise<AggregatedSighting[]> {
+  async getSightingsByPetId(petId: string): Promise<AggregatedSighting[]> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
@@ -194,7 +194,6 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
 
     return data.map((d) => this.denormalizePayload(d));
   }
-
 
   protected normalizePayload(payload: Partial<AggregatedSighting>) {
     type keyOfPet = keyof AggregatedSighting;

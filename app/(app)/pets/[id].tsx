@@ -49,7 +49,7 @@ export default function PetProfile() {
 
     const sightingRepository = new SightingRepository();
     sightingRepository
-      .getSightingByPetId(id)
+      .getSightingsByPetId(id)
       .then((data) => {
         if (data.length > 0) {
           setSighting(data[0]);

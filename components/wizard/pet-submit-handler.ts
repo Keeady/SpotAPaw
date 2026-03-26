@@ -8,7 +8,6 @@ export async function saveNewPetPhoto(
     uri: string,
     callback: (photoUrl: string) => void,
   ) => Promise<void>,
-  action: "add-pet" | "edit-pet",
   userId: string,
   onPetCreated?: (
     newPetId: string,
@@ -20,9 +19,7 @@ export async function saveNewPetPhoto(
       saveNewPet(photoUrl, sightingFormData, userId, onPetCreated),
     );
   } else {
-    if (action === "add-pet") {
-      await saveNewPet("", sightingFormData, userId, onPetCreated);
-    }
+    await saveNewPet("", sightingFormData, userId, onPetCreated);
   }
 }
 
@@ -46,7 +43,7 @@ export async function updateNewPetPhoto(
       updatePet(photoUrl, sightingFormData, onPetUpdated),
     );
   } else {
-    updatePet("", sightingFormData, onPetUpdated);
+    await updatePet("", sightingFormData, onPetUpdated);
   }
 }
 

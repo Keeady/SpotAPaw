@@ -225,7 +225,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("features", pet.features);
           updateSightingData("note", pet.note);
           updateSightingData("photo", pet.photo);
-          updateSightingData("isLost", pet.isLost || !!isPetLost);
+          updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
         })
         .catch(() => {
@@ -296,7 +296,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               return saveNewPetPhoto(
                 sightingFormData,
                 uploadImage,
-                action,
                 user?.id || "",
                 createSightingFromPet,
               );
@@ -305,7 +304,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             return saveNewPetPhoto(
               sightingFormData,
               uploadImage,
-              action,
               user?.id || "",
             );
           } else if (action === "edit-pet") {
@@ -568,7 +566,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       log("Failed to submit sighting.");
     }
 
-    if (action === "add-pet") {
+    if (action === "add-pet" || action === "edit-pet") {
       showMessage({
         message: "Error saving pet profile. Please try again.",
         type: "warning",
