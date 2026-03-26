@@ -29,6 +29,7 @@ export function EditPet({
     name,
     id,
     image,
+    isLost,
   } = sightingFormData;
 
   useEffect(() => {
@@ -64,6 +65,42 @@ export function EditPet({
           petPhoto={image.uri || photo}
           showDetails={false}
         />
+        {(reportType === "new_pet" || reportType === "edit_pet") && (
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text variant="titleMedium">Is pet lost?</Text>
+              <HelperText
+                type="error"
+                visible={hasErrors && isLost === undefined}
+                style={styles.helperText}
+                padding="none"
+              >
+                Please indicate if the pet is lost!
+              </HelperText>
+            </View>
+
+            <RadioButton.Group
+              onValueChange={(value) =>
+                updateSightingData("isLost", value === "yes")
+              }
+              value={isLost ? "yes" : "no"}
+            >
+              <View style={styles.radioGroupRow}>
+                <View style={styles.radioItem}>
+                  <RadioButton value="yes" />
+                  <Text>Yes</Text>
+                </View>
+
+                <View style={styles.radioItem}>
+                  <RadioButton value="no" />
+                  <Text>No</Text>
+                </View>
+              </View>
+            </RadioButton.Group>
+          </View>
+        )}
         <View style={[styles.verticallySpaced, styles.mt10]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -71,7 +108,13 @@ export function EditPet({
             <Text variant="titleMedium">Name:</Text>
             <HelperText
               type="error"
-              visible={hasErrors && !name && reportType === "lost_own"}
+              visible={
+                hasErrors &&
+                !name &&
+                (reportType === "lost_own" ||
+                  reportType === "new_pet" ||
+                  reportType === "edit_pet")
+              }
               style={styles.helperText}
               padding="none"
             >
@@ -143,7 +186,11 @@ export function EditPet({
             <Text variant="titleMedium">Breed(s):</Text>
             <HelperText
               type="error"
-              visible={false}
+              visible={
+                hasErrors &&
+                (reportType === "new_pet" || reportType === "edit_pet") &&
+                !breed
+              }
               style={styles.helperText}
               padding="none"
             >
@@ -170,7 +217,13 @@ export function EditPet({
             <Text variant="titleMedium">Age:</Text>
             <HelperText
               type="error"
-              visible={hasErrors && !age && reportType === "lost_own"}
+              visible={
+                hasErrors &&
+                !age &&
+                (reportType === "lost_own" ||
+                  reportType === "new_pet" ||
+                  reportType === "edit_pet")
+              }
               style={styles.helperText}
               padding="none"
             >
@@ -193,7 +246,13 @@ export function EditPet({
             <Text variant="titleMedium">Gender</Text>
             <HelperText
               type="error"
-              visible={hasErrors && !gender && reportType === "lost_own"}
+              visible={
+                hasErrors &&
+                !gender &&
+                (reportType === "lost_own" ||
+                  reportType === "new_pet" ||
+                  reportType === "edit_pet")
+              }
               style={styles.helperText}
               padding="none"
             >

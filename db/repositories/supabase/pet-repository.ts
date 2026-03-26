@@ -48,7 +48,7 @@ export class SupabasePetRepository extends BasePetRepository {
     return data.map((d) => this.denormalizePayload(d));
   }
 
-  async createPet(pet: Pet): Promise<string> {
+  async createPet(pet: Partial<Pet>): Promise<string> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
@@ -92,7 +92,7 @@ export class SupabasePetRepository extends BasePetRepository {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
-    const normalizedPayload = this.normalizePayload(payload);
+    const normalizedPayload = this.normalizePayload(payload);    
     const { error } = await this.supabaseClient
       .from("pets")
       .update(normalizedPayload)

@@ -75,12 +75,16 @@ export async function onDeletePet(id: string, userId: string) {
     });
 }
 
-export function onEditPet(id: string) {
-  router.navigate(`/(app)/pets/edit?id=${id}`);
+export function onEditPet(id: string, linkedSightingId?: string) {
+  if (linkedSightingId) {
+    router.navigate(`/(app)/pets/edit?petId=${id}&id=${linkedSightingId}`);
+    return;
+  }
+  router.navigate(`/(app)/pets/edit?petId=${id}`);
 }
 
 export function onPetLost(id: string) {
-  router.navigate(`/(app)/pets/edit?id=${id}&is_lost=true`);
+  router.navigate(`/(app)/pets/edit?petId=${id}&is_lost=true`);
 }
 
 async function onPetFound(id: string) {
@@ -121,7 +125,11 @@ async function onPetFound(id: string) {
 }
 
 export async function viewPetSightings(id: string) {
-  router.navigate(`/(app)/my-sightings`);
+  if (!id) {
+    router.navigate(`/(app)/my-sightings`);
+    return;
+  }
+  router.navigate(`/(app)/my-sightings/${id}`);
 }
 
 export async function createNewPet(profileInfo: SightingPet) {

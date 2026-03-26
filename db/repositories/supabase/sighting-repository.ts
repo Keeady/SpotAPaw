@@ -172,6 +172,30 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     return data.map((d) => this.denormalizePayload(d));
   }
 
+  async getSightingByPetId(petId: string): Promise<AggregatedSighting[]> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { data, error } = await this.supabaseClient
+      .from("aggregated_sightings")
+      .select("*")
+      .eq("is_active", true)
+      .eq("pet_id", petId)
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return [];
+    }
+
+    return data.map((d) => this.denormalizePayload(d));
+  }
+
+
   protected normalizePayload(payload: Partial<AggregatedSighting>) {
     type keyOfPet = keyof AggregatedSighting;
     type DBKey = {

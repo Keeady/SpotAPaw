@@ -32,4 +32,9 @@ export class SightingRepository implements ISightingRepository {
     const repository = new SupabaseSightingRepository(supabase);
     return repository.getSightings(filters);
   }
+
+  getSightingByPetId(petId: string): Promise<AggregatedSighting[]> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getSightingByPetId(petId);
+  }
 }

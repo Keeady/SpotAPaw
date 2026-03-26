@@ -108,9 +108,9 @@ export default function AboutScreen() {
             your email or social media to start posting and receiving alerts.
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
-            • <Text style={styles.bold}>Build your pet&#39;s profile: </Text> Add a
-            photo, description, and contact info to have everything ready in an
-            emergency.
+            • <Text style={styles.bold}>Build your pet&#39;s profile: </Text>{" "}
+            Add a photo, description, and contact info to have everything ready
+            in an emergency.
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
             • <Text style={styles.bold}>Post a report: </Text> Lost or found a
@@ -141,9 +141,7 @@ export default function AboutScreen() {
                 const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
                   subject,
                 )}`;
-                Linking.openURL(mailtoUrl).catch((err) =>
-                  console.error("Failed to open email client:", err),
-                );
+                Linking.openURL(mailtoUrl).catch(() => {});
               }}
             >
               {SUPPORT_EMAIL}
@@ -167,9 +165,7 @@ export default function AboutScreen() {
                 const email = SUPPORT_EMAIL;
                 const subject = "DATA DELETION REQUEST";
                 const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
-                Linking.openURL(mailtoUrl).catch((err) =>
-                  console.error("Failed to open email client:", err),
-                );
+                Linking.openURL(mailtoUrl).catch(() => {});
               }}
             >
               {SUPPORT_EMAIL}
@@ -199,8 +195,8 @@ export default function AboutScreen() {
             Acknowledgments
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
-            Thank you <Text style={styles.bold}>Camaria Bevavy</Text> for building
-            SpotAPaw.
+            Thank you <Text style={styles.bold}>Camaria Bevavy</Text> for
+            building SpotAPaw.
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
             Thank you <Text style={styles.bold}>Aubri Jonathan</Text> for his

@@ -22,11 +22,12 @@ import { EditPet } from "./edit-pet";
 import { LocatePet } from "./locate-pet";
 import { Step1 } from "./start";
 import {
+  createSightingFromPet,
   saveNewSighting,
   saveSightingPhoto,
   updateSighting,
   WizardFormAction,
-} from "./submit-handler";
+} from "./sighting-submit-handler";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
 import { PetImage, SightingReport } from "./wizard-interface";
@@ -35,6 +36,13 @@ import { log } from "../logs";
 import { isValidUuid } from "../util";
 import { EditPetContinued } from "./edit-pet-continued";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
+import {
+  saveNewPet,
+  saveNewPetPhoto,
+  updateNewPetPhoto,
+  updatePet,
+} from "./pet-submit-handler";
+import { PetRepository } from "@/db/repositories/pet-repository";
 
 export type SightingWizardSteps =
   | "start"
@@ -46,13 +54,17 @@ export type SightingWizardSteps =
   | "add_time"
   | "submit";
 
-export type SightingReportType = "lost_own" | "found_stray";
+export type SightingReportType =
+  | "lost_own"
+  | "found_stray"
+  | "new_pet"
+  | "edit_pet";
 
 export type SightingWizardStepData = {
   sightingFormData: SightingReport;
   updateSightingData: (
     field: keyof SightingReport,
-    value: string | number | PetImage,
+    value: string | number | PetImage | boolean,
   ) => void;
   loading: boolean;
   setReportType: (type: SightingReportType) => void;
@@ -92,13 +104,21 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     defaultSightingFormData,
   );
 
-  const { id: linkedSightingId, petId } = useLocalSearchParams<{
+  const {
+    id: linkedSightingId,
+    petId,
+    is_lost: isPetLost,
+  } = useLocalSearchParams<{
     id: string;
     petId: string;
+    is_lost: string;
   }>();
 
   const updateSightingData = useCallback(
-    (field: keyof SightingReport, value: string | number | PetImage) => {
+    (
+      field: keyof SightingReport,
+      value: string | number | PetImage | boolean,
+    ) => {
       setSightingFormData((prev) => ({ ...prev, [field]: value }));
     },
     [],
@@ -136,7 +156,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
           const sighting = data;
 
-          if (action === "edit") {
+          if (action === "edit-sighting") {
             updateSightingData("lastSeenLong", sighting.lastSeenLong);
             updateSightingData("lastSeenLat", sighting.lastSeenLat);
             updateSightingData("lastSeenLocation", sighting.lastSeenLocation);
@@ -147,14 +167,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             updateSightingData("collarDescription", sighting.collarDescription);
           }
 
-          updateSightingData("id", sighting.petId);
+          if (sighting.petId) {
+            updateSightingData("id", sighting.petId);
+          }
           updateSightingData("species", sighting.species);
-          updateSightingData("age", sighting.age);
           updateSightingData("name", sighting.name);
           updateSightingData("breed", sighting.breed);
           updateSightingData("colors", sighting.colors);
           updateSightingData("size", sighting.size);
           updateSightingData("gender", sighting.gender);
+          updateSightingData("linkedSightingId", sighting.linkedSightingId);
         })
         .catch(() => {
           showMessage({
@@ -168,10 +190,54 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   }, [linkedSightingId, updateSightingData, action]);
 
   useEffect(() => {
+    if (action === "add-pet") {
+      setCurrentStep("upload_photo");
+      setReportType("new_pet");
+    } else if (action === "edit-pet") {
+      setCurrentStep("upload_photo");
+      setReportType("edit_pet");
+    }
+  }, [action]);
+
+  useEffect(() => {
     if (petId && isValidUuid(petId)) {
       updateSightingData("id", petId);
+
+      const repository = new PetRepository();
+      repository
+        .getPet(petId)
+        .then((data) => {
+          if (!isMountedRef.current) {
+            return;
+          }
+
+          if (!data) {
+            return;
+          }
+
+          const pet = data;
+          updateSightingData("species", pet.species);
+          updateSightingData("age", pet.age);
+          updateSightingData("name", pet.name);
+          updateSightingData("breed", pet.breed);
+          updateSightingData("colors", pet.colors);
+          updateSightingData("gender", pet.gender);
+          updateSightingData("features", pet.features);
+          updateSightingData("note", pet.note);
+          updateSightingData("photo", pet.photo);
+          updateSightingData("isLost", pet.isLost || !!isPetLost);
+          updateSightingData("id", pet.id);
+        })
+        .catch(() => {
+          showMessage({
+            message: "Error fetching pet information.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
+        });
     }
-  }, [petId, updateSightingData]);
+  }, [petId, updateSightingData, isPetLost]);
 
   const handleBack = useCallback(() => {
     const newHistory = stepHistory.slice(0, stepHistory.length - 1);
@@ -200,18 +266,85 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         return Promise.resolve();
       case "submit":
         if (isAiFeatureEnabled) {
-          if (action === "new") {
+          if (action === "new-sighting") {
             return saveNewSighting("", sightingFormData);
+          } else if (action === "edit-sighting") {
+            return updateSighting("", sightingFormData);
+          } else if (action === "add-pet") {
+            if (sightingFormData.isLost) {
+              return saveNewPet(
+                "",
+                sightingFormData,
+                user?.id || "",
+                createSightingFromPet,
+              );
+            }
+
+            return saveNewPet("", sightingFormData, user?.id || "");
+          } else if (action === "edit-pet") {
+            if (sightingFormData.isLost) {
+              return updatePet("", sightingFormData, createSightingFromPet);
+            }
+
+            return updatePet("", sightingFormData);
           }
-          return updateSighting("", sightingFormData);
+        } else {
+          if (action === "new-sighting" || action === "edit-sighting") {
+            return saveSightingPhoto(sightingFormData, uploadImage, action);
+          } else if (action === "add-pet") {
+            if (sightingFormData.isLost) {
+              return saveNewPetPhoto(
+                sightingFormData,
+                uploadImage,
+                action,
+                user?.id || "",
+                createSightingFromPet,
+              );
+            }
+
+            return saveNewPetPhoto(
+              sightingFormData,
+              uploadImage,
+              action,
+              user?.id || "",
+            );
+          } else if (action === "edit-pet") {
+            if (sightingFormData.isLost) {
+              return updateNewPetPhoto(
+                sightingFormData,
+                uploadImage,
+                createSightingFromPet,
+              );
+            }
+
+            return updateNewPetPhoto(sightingFormData, uploadImage);
+          }
         }
-        return saveSightingPhoto(sightingFormData, uploadImage, action);
       default:
         return Promise.resolve();
     }
   };
 
   const getNextStep = useCallback(() => {
+    if (action === "add-pet" || action === "edit-pet") {
+      if (currentStep === "start") {
+        return "upload_photo";
+      } else if (currentStep === "upload_photo") {
+        return "edit_pet";
+      } else if (currentStep === "edit_pet") {
+        return "edit_pet_continued";
+      } else if (
+        currentStep === "edit_pet_continued" &&
+        sightingFormData.isLost
+      ) {
+        return "locate_pet";
+      } else if (currentStep === "locate_pet" && sightingFormData.isLost) {
+        return "add_time";
+      }
+
+      return "submit";
+    }
+
     if (linkedSightingId && isValidUuid(linkedSightingId)) {
       if (currentStep === "start") {
         return "upload_photo";
@@ -243,7 +376,13 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     }
 
     return "submit";
-  }, [currentStep, reportType, linkedSightingId]);
+  }, [
+    currentStep,
+    reportType,
+    linkedSightingId,
+    sightingFormData.isLost,
+    action,
+  ]);
 
   const handleNext = () => {
     setErrorMessage("");
@@ -276,7 +415,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             setStepHistory([...stepHistory, currentStep]);
             setCurrentStep(nextStep);
           }
-        } else if (currentStep === "submit" && action === "new") {
+        } else if (currentStep === "submit" && action === "new-sighting") {
           showMessage({
             message: "Successfully added pet sighting.",
             type: "success",
@@ -285,7 +424,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           });
 
           router.replace(`/${sightingsRoute}`);
-        } else if (currentStep === "submit" && action === "edit") {
+        } else if (currentStep === "submit" && action === "edit-sighting") {
           showMessage({
             message: "Successfully updated pet sighting.",
             type: "success",
@@ -294,6 +433,24 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           });
 
           router.replace(`/${sightingsRoute}`);
+        } else if (currentStep === "submit" && action === "add-pet") {
+          showMessage({
+            message: "Successfully added pet profile.",
+            type: "success",
+            icon: "success",
+            statusBarHeight: 50,
+          });
+
+          router.replace(`/(app)/pets`);
+        } else if (currentStep === "submit" && action === "edit-pet") {
+          showMessage({
+            message: "Successfully updated pet profile.",
+            type: "success",
+            icon: "success",
+            statusBarHeight: 50,
+          });
+
+          router.replace(`/(app)/pets`);
         }
       })
       .catch(async (err) => {
@@ -304,7 +461,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         if (currentStep === "upload_photo") {
           await onImageAnalyzeFailure(err);
         } else if (currentStep === "submit") {
-          onSubmitFailure(err);
+          onSubmitFailure(err, action);
         }
       })
       .finally(() => {
@@ -404,19 +561,28 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     setLoading(false);
   };
 
-  const onSubmitFailure = (error: any) => {
+  const onSubmitFailure = (error: any, action: WizardFormAction) => {
     if (error instanceof Error || error instanceof PostgrestError) {
       log(error.message);
     } else {
       log("Failed to submit sighting.");
     }
 
-    showMessage({
-      message: "Error saving sighting info. Please try again.",
-      type: "warning",
-      icon: "warning",
-      statusBarHeight: 50,
-    });
+    if (action === "add-pet") {
+      showMessage({
+        message: "Error saving pet profile. Please try again.",
+        type: "warning",
+        icon: "warning",
+        statusBarHeight: 50,
+      });
+    } else {
+      showMessage({
+        message: "Error saving sighting info. Please try again.",
+        type: "warning",
+        icon: "warning",
+        statusBarHeight: 50,
+      });
+    }
   };
 
   const { analyze } = usePetAnalyzer({
@@ -554,6 +720,19 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     };
   }, []);
 
+  const getSubmitButtonText = (
+    currentStep: SightingWizardSteps,
+    action: WizardFormAction,
+  ) => {
+    if (action === "add-pet") {
+      return currentStep === "submit" ? "Add Pet" : "Continue";
+    } else if (action === "edit-pet") {
+      return currentStep === "submit" ? "Update Pet" : "Continue";
+    }
+
+    return currentStep === "submit" ? "Submit" : "Continue";
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -575,7 +754,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           disabled={disabledNext || loading || !!errorMessage}
           style={user ? {} : { marginBottom: 20 }}
         >
-          {currentStep === "submit" ? "Submit" : "Continue"}
+          {getSubmitButtonText(currentStep, action)}
         </Button>
       </View>
     </KeyboardAvoidingView>

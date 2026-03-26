@@ -12,7 +12,7 @@ export class PetRepository implements IPetRepository {
     const petRepository = new SupabasePetRepository(supabase);
     return petRepository.getPet(id);
   }
-  createPet(data: Pet): Promise<string> {
+  createPet(data: Partial<Pet>): Promise<string> {
     const petRepository = new SupabasePetRepository(supabase);
     return petRepository.createPet(data);
   }

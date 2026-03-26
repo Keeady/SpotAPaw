@@ -8,6 +8,7 @@ export interface ISightingRepository {
   updateSightingStatusByPet(id: string): Promise<void>;
   getSightings(filters: SightingFilters): Promise<SightingRepositoryResponse>;
   getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]>;
+  getSightingByPetId(petId: string): Promise<AggregatedSighting[]>;
 }
 
 export interface SightingRepositoryResponse {
@@ -44,6 +45,9 @@ export class BaseSightingRepository implements ISightingRepository {
     throw new Error("Method not implemented.");
   }
   getSightings(_filters: SightingFilters): Promise<SightingRepositoryResponse> {
+    throw new Error("Method not implemented.");
+  }
+  getSightingByPetId(_petId: string): Promise<AggregatedSighting[]> {
     throw new Error("Method not implemented.");
   }
 }
