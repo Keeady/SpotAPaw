@@ -1,7 +1,10 @@
 import { supabase } from "@/components/supabase-client";
-import { ISightingRepository, SightingFilters } from "./base-sighting-repository";
-import { SupabaseSightingRepository } from "./supabase/sighting-repository";
 import { AggregatedSighting, Sighting } from "../models/sighting";
+import {
+  ISightingRepository,
+  SightingFilters,
+} from "./base-sighting-repository";
+import { SupabaseSightingRepository } from "./supabase/sighting-repository";
 
 export class SightingRepository implements ISightingRepository {
   getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]> {
@@ -25,11 +28,16 @@ export class SightingRepository implements ISightingRepository {
     return repository.createSighting(data);
   }
   updateSighting(id: string, data: Partial<AggregatedSighting>): Promise<void> {
-     const repository = new SupabaseSightingRepository(supabase);
+    const repository = new SupabaseSightingRepository(supabase);
     return repository.updateSighting(id, data);
   }
   getSightings(filters: SightingFilters) {
     const repository = new SupabaseSightingRepository(supabase);
     return repository.getSightings(filters);
+  }
+
+  getSightingsByPetId(petId: string): Promise<AggregatedSighting[]> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getSightingsByPetId(petId);
   }
 }

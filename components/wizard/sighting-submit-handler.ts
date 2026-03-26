@@ -2,7 +2,22 @@ import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 
-export type WizardFormAction = "edit" | "new";
+export type WizardFormAction =
+  | "edit-sighting"
+  | "new-sighting"
+  | "add-pet"
+  | "edit-pet";
+
+export async function createSightingFromPet(
+  petId: string,
+  sightingFormData: SightingReport,
+) {
+  if (!sightingFormData.isLost) {
+    return;
+  }
+
+  return saveNewSighting("", { ...sightingFormData, petId });
+}
 
 export async function saveSightingPhoto(
   sightingFormData: SightingReport,
@@ -10,16 +25,16 @@ export async function saveSightingPhoto(
     uri: string,
     callback: (uri: string, error?: string) => void,
   ) => Promise<void>,
-  action: WizardFormAction,
+  action: "new-sighting" | "edit-sighting",
 ) {
   if (sightingFormData.image.uri) {
     await uploadImage(sightingFormData.image.uri, (photo: string) =>
-      action === "new"
+      action === "new-sighting"
         ? saveNewSighting(photo, sightingFormData)
         : updateSighting(photo, sightingFormData),
     );
   } else {
-    if (action === "new") {
+    if (action === "new-sighting") {
       await saveNewSighting("", sightingFormData);
     } else {
       await updateSighting("", sightingFormData);

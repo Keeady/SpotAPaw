@@ -99,7 +99,13 @@ export function EditPetContinued({
         <View style={[styles.verticallySpaced]}>
           <HelperText
             type="error"
-            visible={hasErrors && !size && reportType === "lost_own"}
+            visible={
+              hasErrors &&
+              !size &&
+              (reportType === "lost_own" ||
+                reportType === "new_pet" ||
+                reportType === "edit_pet")
+            }
             style={styles.helperText}
             padding="none"
           >

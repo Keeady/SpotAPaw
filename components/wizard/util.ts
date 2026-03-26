@@ -15,7 +15,7 @@ export const defaultSightingFormData = {
   lastSeenLong: 0,
   lastSeenLat: 0,
   lastSeenLocation: "",
-  lastSeenTime: "",
+  lastSeenTime: new Date().toISOString(),
   features: "",
   photo: "",
   reporterName: "",
@@ -109,11 +109,19 @@ export function validateEditPet(
   }
 
   if (
-    reportType === "lost_own" &&
+    (reportType === "lost_own" ||
+      reportType === "new_pet" ||
+      reportType === "edit_pet") &&
     (!sightingFormData.age ||
-      !sightingFormData.colors ||
       !sightingFormData.gender ||
       !sightingFormData.name)
+  ) {
+    isValid = false;
+  }
+
+  if (
+    (reportType === "new_pet" || reportType === "edit_pet") &&
+    !sightingFormData.breed
   ) {
     isValid = false;
   }
@@ -130,7 +138,12 @@ export function validateEditPetContinued(
     return isValid;
   }
 
-  if (reportType === "lost_own" && !sightingFormData.size) {
+  if (
+    (reportType === "lost_own" ||
+      reportType === "new_pet" ||
+      reportType === "edit_pet") &&
+    !sightingFormData.size
+  ) {
     isValid = false;
   }
 

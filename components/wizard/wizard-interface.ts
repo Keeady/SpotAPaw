@@ -3,6 +3,7 @@ import { AggregatedSighting } from "@/db/models/sighting";
 
 export type SightingPet = Pet & {
   photoUrl?: string;
+  image?: PetImage;
 };
 
 export type SightingReport = AggregatedSighting & {
@@ -12,6 +13,7 @@ export type SightingReport = AggregatedSighting & {
   image: PetImage;
   collar: "yes_collar" | "no";
   petBehavior: string;
+  isLost: boolean;
 };
 
 export type PetImage = {

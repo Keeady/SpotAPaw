@@ -8,7 +8,9 @@ import {
 } from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
 import { SightingPet } from "@/components/wizard/wizard-interface";
+import { AggregatedSighting } from "@/db/models/sighting";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
@@ -18,6 +20,9 @@ import { Button, Text } from "react-native-paper";
 export default function PetProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [pet, setPet] = useState<SightingPet | undefined>(undefined);
+  const [sighting, setSighting] = useState<AggregatedSighting | undefined>(
+    undefined,
+  );
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
@@ -30,7 +35,6 @@ export default function PetProfile() {
     petRepository
       .getPet(id)
       .then((data) => {
-        setLoading(false);
         setPet(data);
       })
       .catch(() => {
@@ -40,7 +44,18 @@ export default function PetProfile() {
           icon: "warning",
           statusBarHeight: 50,
         });
-      });
+      })
+      .finally(() => setLoading(false));
+
+    const sightingRepository = new SightingRepository();
+    sightingRepository
+      .getSightingsByPetId(id)
+      .then((data) => {
+        if (data.length > 0) {
+          setSighting(data[0]);
+        }
+      })
+      .catch(() => {});
   }, [id]);
 
   if (!user) {
@@ -65,10 +80,14 @@ export default function PetProfile() {
     <RenderPetDetails
       pet={pet}
       onDeletePet={() => onConfirmDelete(pet.name, pet.id, user.id)}
-      onEditPet={() => onEditPet(pet.id)}
+      onEditPet={() =>
+        onEditPet(pet.id, sighting ? sighting.linkedSightingId : undefined)
+      }
       onPetLost={() => onPetLost(pet.id)}
       onPetFound={() => onPetFound(pet.name, pet.id)}
-      viewPetSightings={() => viewPetSightings(pet.id)}
+      viewPetSightings={() =>
+        viewPetSightings(sighting ? sighting.linkedSightingId : "")
+      }
     />
   );
 }

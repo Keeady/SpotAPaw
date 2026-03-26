@@ -1,10 +1,10 @@
+import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 import { SupabaseClient } from "@supabase/supabase-js";
 import {
   BaseSightingRepository,
   SightingFilters,
   SightingRepositoryResponse,
 } from "../base-sighting-repository";
-import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 
 export class SupabaseSightingRepository extends BaseSightingRepository {
   supabaseClient: SupabaseClient | undefined;
@@ -135,7 +135,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     const normalizedPayload = this.normalizePayload(payload);
-    
+
     const { data, error } = await this.supabaseClient
       .from("sightings")
       .insert(normalizedPayload)
@@ -167,6 +167,29 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
 
     if (error) {
       throw error;
+    }
+
+    return data.map((d) => this.denormalizePayload(d));
+  }
+
+  async getSightingsByPetId(petId: string): Promise<AggregatedSighting[]> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { data, error } = await this.supabaseClient
+      .from("aggregated_sightings")
+      .select("*")
+      .eq("is_active", true)
+      .eq("pet_id", petId)
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return [];
     }
 
     return data.map((d) => this.denormalizePayload(d));

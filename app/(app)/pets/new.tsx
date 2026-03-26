@@ -1,38 +1,5 @@
-import useUploadPetImageUrl from "@/components/image-upload-handler";
-import CreatePetDetails from "@/components/pets/pet-create";
-import { createNewPet } from "@/components/pets/pet-crud";
-import { AuthContext } from "@/components/Provider/auth-provider";
-import { SightingPet } from "@/components/wizard/wizard-interface";
-import { useContext } from "react";
+import { WizardForm } from "@/components/wizard/wizard-form";
 
 export default function AddPet() {
-  const { user } = useContext(AuthContext);
-  const uploadImage = useUploadPetImageUrl();
-
-  if (!user) {
-    return;
-  }
-
-  async function handleSaveNewPet(pet: SightingPet, photoUrl: string) {
-    if (!pet || !user) {
-      return;
-    }
-    createNewPet({ ...pet, photo: photoUrl, ownerId: user.id });
-  }
-
-  async function saveNewPet(pet: SightingPet) {
-    if (!pet || !user) {
-      return;
-    }
-
-    if (pet.photoUrl) {
-      await uploadImage(pet.photoUrl, (photoUrl: string) =>
-        handleSaveNewPet(pet, photoUrl),
-      );
-    } else {
-      await handleSaveNewPet(pet, "");
-    }
-  }
-
-  return <CreatePetDetails handleSubmit={saveNewPet} />;
+  return <WizardForm action="add-pet" />;
 }

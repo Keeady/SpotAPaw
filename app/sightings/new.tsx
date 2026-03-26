@@ -1,5 +1,5 @@
 import { WizardForm } from "@/components/wizard/wizard-form";
 
 export default function NewSighting() {
-  return <WizardForm action="new" />
+  return <WizardForm action="new-sighting" />
 }
