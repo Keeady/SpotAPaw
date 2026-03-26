@@ -309,7 +309,7 @@ export default function TermsScreen() {
 
           <Text variant="bodyMedium" style={styles.sectionText}>
             If you have questions about these Terms, please contact us at:{"\n"}
-            📧 spotapaw@gmail.com
+            📧 spotapaw@spotapaw.com
           </Text>
         </Card.Content>
       </Card>

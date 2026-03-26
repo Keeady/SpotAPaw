@@ -135,7 +135,7 @@ export default function AboutScreen() {
             <Text
               style={{ color: "#1976d2", textDecorationLine: "underline" }}
               onPress={() => {
-                const email = "spotapaw@gmail.com";
+                const email = "spotapaw@spotapaw.com";
                 const subject = "SpotAPaw App Inquiry";
                 const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
                   subject,
@@ -145,7 +145,7 @@ export default function AboutScreen() {
                 );
               }}
             >
-              spotapaw@gmail.com
+              spotapaw@spotapaw.com
             </Text>
           </Text>
         </Card.Content>
@@ -163,7 +163,7 @@ export default function AboutScreen() {
             <Text
               style={{ color: "#1976d2", textDecorationLine: "underline" }}
               onPress={() => {
-                const email = "spotapaw@gmail.com";
+                const email = "spotapaw@spotapaw.com";
                 const subject = "DATA DELETION REQUEST";
                 const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
                 Linking.openURL(mailtoUrl).catch((err) =>
@@ -171,7 +171,7 @@ export default function AboutScreen() {
                 );
               }}
             >
-              spotapaw@gmail.com
+              spotapaw@spotapaw.com
             </Text>
           </Text>
           <Text variant="bodyMedium" style={{ marginTop: 8 }}>

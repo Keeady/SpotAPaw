@@ -123,4 +123,4 @@ These Terms are governed by and construed in accordance with the laws of United 
 11. Contact Us
 
 If you have questions about these Terms, please contact us at:
-📧 [spotapaw@gmail.com](mailto:spotapaw@gmail.com)
+📧 [spotapaw@spotapaw.com](mailto:spotapaw@spotapaw.com)

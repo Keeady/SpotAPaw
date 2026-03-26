@@ -333,7 +333,7 @@ export default function PrivacyScreen() {
           <Text variant="bodyMedium" style={styles.sectionText}>
             If you have questions about this Privacy Policy, please contact us
             at:{"\n"}
-            📧 spotapaw@gmail.com
+            📧 spotapaw@spotapaw.com
           </Text>
         </Card.Content>
       </Card>
