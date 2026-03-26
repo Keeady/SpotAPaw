@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from "@/components/constants";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Linking, ScrollView, StyleSheet, View } from "react-native";
@@ -135,7 +136,7 @@ export default function AboutScreen() {
             <Text
               style={{ color: "#1976d2", textDecorationLine: "underline" }}
               onPress={() => {
-                const email = "spotapaw@gmail.com";
+                const email = SUPPORT_EMAIL;
                 const subject = "SpotAPaw App Inquiry";
                 const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
                   subject,
@@ -145,7 +146,7 @@ export default function AboutScreen() {
                 );
               }}
             >
-              spotapaw@gmail.com
+              {SUPPORT_EMAIL}
             </Text>
           </Text>
         </Card.Content>
@@ -163,7 +164,7 @@ export default function AboutScreen() {
             <Text
               style={{ color: "#1976d2", textDecorationLine: "underline" }}
               onPress={() => {
-                const email = "spotapaw@gmail.com";
+                const email = SUPPORT_EMAIL;
                 const subject = "DATA DELETION REQUEST";
                 const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
                 Linking.openURL(mailtoUrl).catch((err) =>
@@ -171,7 +172,7 @@ export default function AboutScreen() {
                 );
               }}
             >
-              spotapaw@gmail.com
+              {SUPPORT_EMAIL}
             </Text>
           </Text>
           <Text variant="bodyMedium" style={{ marginTop: 8 }}>

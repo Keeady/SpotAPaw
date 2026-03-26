@@ -27,3 +27,5 @@ export const SIGHTING_AI_ENABLED_KEY = "aiFeatureEnabled";
 export const MAX_FILE_SIZE_ERROR = "MAX_FILE_SIZE_ERROR";
 export const UNSUPPORTED_MIME_TYPE = "UNSUPPORTED_MIME_TYPE";
 export const NO_PETS_DETECTED = "NO_PETS_DETECTED";
+
+export const SUPPORT_EMAIL = "spotapaw@spotapaw.com";
