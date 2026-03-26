@@ -56,7 +56,16 @@ export default function PublicHome() {
         </Button>
 
         <View style={styles.usageText}>
-          <Text variant="bodySmall">By continuing, you agree to our</Text>
+          <Text variant="bodySmall">By using </Text>
+          <Button mode="text" onPress={() => router.push("/about")} compact>
+            <Text
+              variant="bodySmall"
+              style={{ textDecorationLine: "underline" }}
+            >
+              SpotAPaw,
+            </Text>
+          </Button>
+          <Text variant="bodySmall"> you agree to our</Text>
           <Button mode="text" onPress={() => router.push("/privacy")} compact>
             <Text
               variant="bodySmall"
