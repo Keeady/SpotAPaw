@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Platform } from "react-native";
 import { FAB, Portal, useTheme } from "react-native-paper";
 
 type ReportLostPetFabProps = {

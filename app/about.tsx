@@ -3,7 +3,7 @@ import React from "react";
 import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 
-export default function TermsScreen() {
+export default function AboutScreen() {
   const router = useRouter();
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -35,7 +35,7 @@ export default function TermsScreen() {
             <Text variant="bodyMedium" style={styles.bulletPoint}>
               • <Text style={styles.bold}>📍 Real-time sighting: </Text>
               See lost pet reports and community sightings pinned to your
-              neighborhood the moment they're posted.
+              neighborhood the moment they&#39;re posted.
             </Text>
             <Text variant="bodyMedium" style={styles.bulletPoint}>
               • <Text style={styles.bold}>🔔 Instant alerts: </Text>
@@ -100,14 +100,14 @@ export default function TermsScreen() {
             Getting Started
           </Text>
           <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
-            Ready to reunite with your pet? Here's how to get started:
+            Ready to reunite with your pet? Here&#39;s how to get started:
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
             • <Text style={styles.bold}>Create an account: </Text> Sign up with
             your email or social media to start posting and receiving alerts.
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
-            • <Text style={styles.bold}>Build your pet's profile: </Text> Add a
+            • <Text style={styles.bold}>Build your pet&#39;s profile: </Text> Add a
             photo, description, and contact info to have everything ready in an
             emergency.
           </Text>
@@ -196,6 +196,10 @@ export default function TermsScreen() {
         <Card.Content>
           <Text variant="headlineMedium" style={styles.title}>
             Acknowledgments
+          </Text>
+          <Text variant="bodyMedium" style={styles.bulletPoint}>
+            Thank you <Text style={styles.bold}>Camaria Bevavy</Text> for building
+            SpotAPaw.
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
             Thank you <Text style={styles.bold}>Aubri Jonathan</Text> for his

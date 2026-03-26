@@ -121,7 +121,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   }, [error, loading]);
 
   const onAddSighting = useCallback(() => {
-    handleAddingSighting(router, sightingsRoute, "", "");
+    handleAddingSighting(router, sightingsRoute, undefined, undefined);
   }, [router, sightingsRoute]);
 
   return (

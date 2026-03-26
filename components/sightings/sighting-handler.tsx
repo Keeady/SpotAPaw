@@ -1,4 +1,4 @@
-import { Router } from "expo-router";
+import { Href, Router } from "expo-router";
 import { Platform, Share } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { showMessage } from "react-native-flash-message";
@@ -19,7 +19,11 @@ export function handleAddingSighting(
     const storeUrl = isIOS ? APP_STORE_URL : PLAY_STORE_URL;
 
     if (sightingId) {
-      window.location.href = `spotapaw://${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`;
+      const url = petId
+        ? `spotapaw://${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`
+        : `spotapaw://${sightingsRoute}/new?id=${sightingId}`;
+
+      window.location.href = url;
     } else {
       window.location.href = `spotapaw://${sightingsRoute}/new`;
     }
@@ -28,7 +32,10 @@ export function handleAddingSighting(
       window.location.href = storeUrl;
     }, 1500);
   } else if (sightingId) {
-    router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);
+    const url = petId
+      ? `/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`
+      : `/${sightingsRoute}/new/?id=${sightingId}`;
+    router.push(url as Href);
   } else {
     router.push(`/${sightingsRoute}/new`);
   }
