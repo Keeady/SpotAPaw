@@ -92,7 +92,7 @@ export default function CreatePetDetails({
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <TextInput
               label={"Age"}
-              value={pet?.age}
+              value={pet?.age.toString()}
               onChangeText={(v) => handleChange("age", v)}
               mode="outlined"
             />

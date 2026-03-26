@@ -9,6 +9,7 @@ import { useConfirmPetFound } from "../pets/pet-crud";
 import { isValidUuid } from "../util";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { ClaimRepository } from "@/db/repositories/claim-repository";
+import { handleAddingSighting, handleSharingSighting } from "./sighting-handler";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function SightingProfile() {
   }, [petId, summary?.name, summary?.ownerId]);
 
   const onAddSighting = useCallback(() => {
-    router.push(`/${sightingsRoute}/new/?id=${sightingId}&petId=${petId}`);
+    handleAddingSighting(router, sightingsRoute, sightingId, petId);
   }, [sightingId, petId, router, sightingsRoute]);
 
   const onClaimPet = useCallback(() => {
@@ -74,6 +75,10 @@ export default function SightingProfile() {
   const handlePetFound = useCallback(() => {
     onPetFound(petName, petId);
   }, [petId, petName, onPetFound]);
+
+  const onShareSighting = useCallback(async () => {
+    handleSharingSighting(sightingId, petName || summary?.name || "");
+  }, [sightingId, petName, summary?.name]);
 
   if (error) {
     log(error);
@@ -105,6 +110,7 @@ export default function SightingProfile() {
       hasOwner={!!petOwner || !!cleanedPetId}
       isOwner={!!isOwner}
       onPetFound={isOwner ? handlePetFound : undefined}
+      onShareSighting={onShareSighting}
     />
   );
 }

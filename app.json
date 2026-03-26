@@ -37,6 +37,9 @@
       "package": "com.bcamaria.SpotAPaw"
     },
     "web": {
+      "name": "SpotAPaw - Lost Pet Finder",
+      "shortName": "SpotAPaw",
+      "description": "SpotAPaw is a community-powered app that uses AI to automatically generate detailed pet descriptions from photos, so you can post a detailed lost or found pet report quickly.",
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/spotapaw-icon.png"
