@@ -133,13 +133,13 @@ export default function OneTimePasscodeScreen() {
                   {hasEmailError ? "Invalid email address." : ""}
                 </Text>
                 <TextInput
-                  label="Email"
+                  label="Continue with Email"
                   left={<TextInput.Icon icon="mail" />}
                   onChangeText={(text) => {
                     setEmail(text);
                   }}
                   value={email}
-                  placeholder="email@address.com"
+                  placeholder="Enter your email address"
                   autoCapitalize={"none"}
                   mode="outlined"
                   keyboardType="email-address"
@@ -164,7 +164,7 @@ export default function OneTimePasscodeScreen() {
             <View>
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <TextInput
-                  label="Verification Code"
+                  label="Enter Verification Code"
                   onChangeText={(text) => {
                     setCode(text);
                   }}
@@ -188,24 +188,6 @@ export default function OneTimePasscodeScreen() {
               </View>
             </View>
           )}
-        </View>
-
-        <View>
-          <View style={styles.secondary}>
-            <Text>{"Don't have an account?"}</Text>
-            <Button
-              mode="text"
-              disabled={loading}
-              onPress={() => router.push("/(auth)/signup")}
-            >
-              Register
-            </Button>
-          </View>
-          <TextInput
-            style={{ height: 0, opacity: 0 }}
-            value={extra_info}
-            onChangeText={setExtraInfo}
-          />
         </View>
       </ScrollView>
     </View>

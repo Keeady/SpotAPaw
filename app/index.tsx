@@ -2,8 +2,10 @@ import HomePageHeader from "@/components/header/homepage-header";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, useRouter } from "expo-router";
 import { useContext } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
+import * as AppleAuthentication from "expo-apple-authentication";
+import DividerWithText from "@/components/divider-with-text";
 
 export default function PublicHome() {
   const router = useRouter();
@@ -21,7 +23,7 @@ export default function PublicHome() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.logoContainer}>
         <HomePageHeader />
-        <View>
+        <View style={styles.largeTextContainer}>
           <Text variant="titleMedium" style={styles.largeText}>
             A community helping lost pets find their way home.
           </Text>
@@ -29,22 +31,33 @@ export default function PublicHome() {
       </View>
 
       <View style={styles.buttonContainer}>
+        {Platform.OS === "ios" && (
+          <View style={[styles.verticallySpaced, styles.mt20]}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              cornerRadius={12}
+              style={[styles.button, { height: 48 }]}
+              onPress={() => router.push("/(auth)/apple")}
+            />
+          </View>
+        )}
+
+        {Platform.OS === "ios" && <DividerWithText text="OR" />}
         <Button
           icon="login"
           mode="contained"
           onPress={() => router.push("/(auth)/signin")}
           style={styles.button}
         >
-          Sign In
+          Continue with Email
         </Button>
-        <Button
-          icon="account-plus-outline"
-          mode="outlined"
-          onPress={() => router.push("/(auth)/signup")}
-          style={styles.button}
-        >
-          Create an account
-        </Button>
+
+        <DividerWithText text="OR" />
 
         <Button
           icon=""
@@ -109,12 +122,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
+    // flexGrow: 1,
   },
   logoContainer: {
+    flex: 1,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    flexGrow: 2,
   },
   largeText: {
     textAlign: "center",
@@ -126,5 +140,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
     marginTop: 16,
+  },
+  verticallySpaced: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    alignSelf: "stretch",
+  },
+  mt20: {
+    marginTop: 20,
+  },
+  largeTextContainer: {
+    marginTop: 24,
   },
 });
