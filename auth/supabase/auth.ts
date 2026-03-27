@@ -96,7 +96,7 @@ export class SupabaseAuthHandler extends BaseAuthHandler {
     const { error } = await this.supabaseClient.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: false,
+        shouldCreateUser: true,
       },
     });
     if (error) {

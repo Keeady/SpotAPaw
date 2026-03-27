@@ -9,21 +9,24 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
     this.supabaseClient = supabase;
   }
 
-  async getOwner(userId: string): Promise<Owner> {
+  async getOwner(userId: string): Promise<Owner | undefined> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
     const { error, data } = await this.supabaseClient
       .from("owner")
       .select("*")
-      .eq("owner_id", userId)
-      .single();
+      .eq("owner_id", userId);
 
     if (error) {
       throw error;
     }
 
-    return this.denormalizePayload(data);
+    if (!data || data.length === 0) {
+      return;
+    }
+
+    return this.denormalizePayload(data[0]);
   }
 
   async createOwner(payload: Partial<Owner>): Promise<string> {

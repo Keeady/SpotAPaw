@@ -27,7 +27,7 @@ export default function Auth() {
               icon: "warning",
               statusBarHeight: 50,
             });
-            return;
+            return router.replace("/");
           });
       } else {
         log("No credential found.");
