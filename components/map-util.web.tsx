@@ -34,10 +34,10 @@ export default function DropPinOnMap({
   } | null>(null);
 
   const initialRegion = {
-    lat: currentLocation?.lat ?? 34.05223,
-    lng: currentLocation?.lng ?? -118.24368,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
+    lat: currentLocation?.lat ?? 45,
+    lng: currentLocation?.lng ?? -100,
+    latitudeDelta: 50,
+    longitudeDelta: 50,
   };
 
   const handleMapPress = (event: MapMouseEvent) => {
