@@ -1,5 +1,5 @@
 import OneTimePasscodeScreen from "@/components/account/one-time-code";
 
-export default function continueScreen() {    
-    return <OneTimePasscodeScreen />
+export default function SignInScreen() {
+  return <OneTimePasscodeScreen />;
 }

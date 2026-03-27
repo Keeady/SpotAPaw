@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    // flexGrow: 1,
   },
   logoContainer: {
     flex: 1,

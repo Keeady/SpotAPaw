@@ -19,7 +19,7 @@ export default function OneTimePasscodeScreen() {
 
   const debounceTimer = useRef<number>(null);
 
-  async function resetWithEmail() {
+  async function loginWithEmail() {
     if (extra_info.trim()) {
       return;
     }
@@ -69,6 +69,10 @@ export default function OneTimePasscodeScreen() {
   }
 
   async function verify() {
+    if (extra_info.trim()) {
+      return;
+    }
+    
     setLoading(true);
     setDisabled(true);
     const authHandler = new AuthHandler();
@@ -151,7 +155,7 @@ export default function OneTimePasscodeScreen() {
                 <Button
                   mode="contained"
                   disabled={loading || hasEmailError}
-                  onPress={() => resetWithEmail()}
+                  onPress={() => loginWithEmail()}
                   style={styles.button}
                 >
                   Send code
@@ -186,13 +190,14 @@ export default function OneTimePasscodeScreen() {
                   Verify code
                 </Button>
               </View>
-              <TextInput
-                style={{ height: 0, opacity: 0 }}
-                value={extra_info}
-                onChangeText={setExtraInfo}
-              />
             </View>
           )}
+
+          <TextInput
+            style={{ height: 0, opacity: 0 }}
+            value={extra_info}
+            onChangeText={setExtraInfo}
+          />
         </View>
       </ScrollView>
     </View>
