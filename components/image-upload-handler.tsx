@@ -9,6 +9,7 @@ import AppConstant, {
 } from "./constants";
 import { log } from "./logs";
 import { createErrorLogMessage } from "./util";
+import * as Crypto from "expo-crypto";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png"];
@@ -100,6 +101,13 @@ async function readImageAsBase64(uri: string): Promise<string> {
   }
 }
 
+async function getFileHash(base64String: string): Promise<string> {
+  return Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    base64String,
+  );
+}
+
 export const uploadPhotoWithProcessing = async (
   uri: string,
   filename: string,
@@ -107,6 +115,7 @@ export const uploadPhotoWithProcessing = async (
 ) => {
   try {
     const base64Image = await readImageAsBase64(uri);
+    const imageHash = await getFileHash(base64Image);
 
     const { data, error } = await supabase.functions.invoke(
       "upload-photo-with-ai-processing",
@@ -115,6 +124,7 @@ export const uploadPhotoWithProcessing = async (
           photo: base64Image,
           filename,
           filetype,
+          hash: imageHash,
         },
       },
     );

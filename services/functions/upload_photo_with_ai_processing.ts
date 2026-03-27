@@ -5,6 +5,7 @@ interface reqPayload {
   photo: string;
   filename: string;
   filetype: string;
+  hash: string;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -69,9 +70,9 @@ function getErrorResponse(error: string, status: number = 400, code?: string) {
 }
 
 Deno.serve(async (req: Request) => {
-  const { photo, filename, filetype }: reqPayload = await req.json();
+  const { photo, filename, filetype, hash }: reqPayload = await req.json();
 
-  if (!photo || !filename || !filetype) {
+  if (!photo || !filename || !filetype || !hash) {
     const error = "Missing required parameters";
 
     return getErrorResponse(error);
@@ -113,19 +114,47 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error, 500);
   }
 
-  const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
   if (!supabaseKey) {
-    const error = "SUPABASE_ANON_KEY environment variable is not set";
+    const error = "SUPABASE_SERVICE_ROLE_KEY environment variable is not set";
 
     return getErrorResponse(error, 500);
   }
 
   let photoPublicUrl = "";
+  let supabaseClient;
 
   try {
     // Initialize Supabase client
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // check if file with same hash already exists in storage
+    const { data: existingFile } = await supabaseClient
+      .from("pet_desc_results")
+      .select("*")
+      .eq("photo_hash", hash);
+
+    if (existingFile && existingFile.length > 0) {
+      const existingPhotoPublicUrl = existingFile[0].public_url;
+      const existingPetDescription = existingFile[0].description;
+
+      if (existingPhotoPublicUrl && existingPetDescription) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            result: existingPetDescription,
+            publicUrl: existingPhotoPublicUrl,
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+            status: 200,
+          },
+        );
+      }
+    }
+
+    // No existing file, proceed with upload and processing
 
     const binaryString = atob(photoData);
     const bytes = new Uint8Array(binaryString.length);
@@ -217,6 +246,15 @@ Deno.serve(async (req: Request) => {
       const error = "Empty response from Gemini API";
       return getErrorResponse(error, 500);
     }
+
+    // Save result to Supabase
+     await supabaseClient
+      .from("pet_desc_results")
+      .insert({
+        photo_hash: hash,
+        description: textResponse,
+        public_url: photoPublicUrl,
+      });
 
     return new Response(
       JSON.stringify({
