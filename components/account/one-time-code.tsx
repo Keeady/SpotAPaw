@@ -186,6 +186,11 @@ export default function OneTimePasscodeScreen() {
                   Verify code
                 </Button>
               </View>
+              <TextInput
+                style={{ height: 0, opacity: 0 }}
+                value={extra_info}
+                onChangeText={setExtraInfo}
+              />
             </View>
           )}
         </View>
