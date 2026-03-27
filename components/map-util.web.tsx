@@ -73,7 +73,7 @@ export default function DropPinOnMap({
         <Map
           style={{ width: "90vw", height: "50vh" }}
           defaultCenter={initialRegion}
-          defaultZoom={15}
+          defaultZoom={4}
           gestureHandling="greedy"
           disableDefaultUI
           onClick={handleMapPress}
