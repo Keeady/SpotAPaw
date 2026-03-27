@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { encodeHex } from "jsr:@std/encoding/hex";
 
 interface reqPayload {
   photo: string;
@@ -69,12 +70,24 @@ function getErrorResponse(error: string, status: number = 400, code?: string) {
   );
 }
 
+async function getFileHash(base64String: string): Promise<string> {
+  const data = new TextEncoder().encode(base64String);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return encodeHex(new Uint8Array(hashBuffer));
+}
+
 Deno.serve(async (req: Request) => {
   const { photo, filename, filetype, hash }: reqPayload = await req.json();
 
   if (!photo || !filename || !filetype || !hash) {
     const error = "Missing required parameters";
 
+    return getErrorResponse(error);
+  }
+
+  const hashCheck = await getFileHash(photo);
+  if (hash != hashCheck) {
+    const error = "Hash mismatch";
     return getErrorResponse(error);
   }
 
@@ -248,13 +261,11 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save result to Supabase
-     await supabaseClient
-      .from("pet_desc_results")
-      .insert({
-        photo_hash: hash,
-        description: textResponse,
-        public_url: photoPublicUrl,
-      });
+    await supabaseClient.from("pet_desc_results").insert({
+      photo_hash: hash,
+      description: textResponse,
+      public_url: photoPublicUrl,
+    });
 
     return new Response(
       JSON.stringify({
