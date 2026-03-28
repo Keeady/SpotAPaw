@@ -7,7 +7,7 @@ type PetProfile = {
   name: string;
   breed?: string;
   gender?: string;
-  age?: string;
+  age?: number;
   colors?: string;
   photo?: string;
   status?: "lost" | "found" | "safe";
@@ -88,7 +88,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
           {breed && <Text style={styles.detail}>🐾 Breed: {breed}</Text>}
           {species && <Text style={styles.detail}>🐾 Species: {species}</Text>}
           {age !== undefined && (
-            <Text style={styles.detail}>🎂 Age: {age}</Text>
+            <Text style={styles.detail}>🎂 Age: {age.toString()}</Text>
           )}
           {colors && <Text style={styles.detail}>🎨 Color: {colors}</Text>}
           {features && (

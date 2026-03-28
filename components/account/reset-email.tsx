@@ -17,6 +17,8 @@ import {
   useTheme,
 } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
+import { log } from "../logs";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export default function ResetPasswordForEmailScreen() {
   const theme = useTheme();
@@ -63,9 +65,10 @@ export default function ResetPasswordForEmailScreen() {
           statusBarHeight: 50,
         });
       })
-      .catch(() => {
+      .catch((error: RepositoryException) => {
+        log(`Failed to reset password for email: ${error.message}`);
         showMessage({
-          message: "An error occured. Please try again.",
+          message: "Failed to reset password. Please try again.",
           type: "danger",
           icon: "danger",
           autoHide: true,

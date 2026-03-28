@@ -12,6 +12,8 @@ import {
 import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
+import { log } from "../logs";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export default function ResendEmailScreen() {
   const theme = useTheme();
@@ -61,9 +63,10 @@ export default function ResendEmailScreen() {
           statusBarHeight: 50,
         });
       })
-      .catch(() => {
+      .catch((error: RepositoryException) => {
+        log(`Failed to resend confirmation email: ${error.message}`);
         showMessage({
-          message: "An error occurred. Please try again.",
+          message: "Failed to resend confirmation email. Please try again.",
           type: "warning",
           icon: "warning",
           autoHide: true,

@@ -4,6 +4,8 @@ import * as chrono from "chrono-node";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppConstants, { GOOGLE_GEOCODE_URL } from "./constants";
 import { AuthHandler } from "@/auth/auth";
+import { log } from "./logs";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -18,7 +20,9 @@ export const isValidUuid = (id: string | null | undefined) => {
 
 export async function handleSignOut(router: Router) {
   const authHandler = new AuthHandler();
-  await authHandler.signOut().catch(() => {});
+  await authHandler.signOut().catch((error: RepositoryException) => {
+    log(`Sign out failed: ${error.message}`);
+  });
 
   router.navigate("/");
 }
@@ -55,7 +59,9 @@ export async function getLastSeenLocation(
           lastSeenLocationLng,
         );
       }
-    } catch {
+    } catch (error) {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Reverse geocoding failed, falling back to coordinates: ${errorMessage}`);
       return await convertToFullAddress(
         lastSeenLocationLat,
         lastSeenLocationLng,
@@ -114,13 +120,19 @@ export function convertTime(time: string) {
 export const saveStorageItem = async (key: string, value: string) => {
   try {
     await AsyncStorage.setItem(key, value);
-  } catch {}
+  } catch (error) {
+    const errorMessage = createErrorLogMessage(error);
+    log(`Failed to save storage item: ${key} - ${errorMessage}`);
+  }
 };
 
 export const getStorageItem = async (key: string) => {
   try {
     return await AsyncStorage.getItem(key);
-  } catch {}
+  } catch (error) {
+    const errorMessage = createErrorLogMessage(error);
+    log(`Failed to get storage item: ${key} - ${errorMessage}`);
+  }
 };
 
 export async function convertToFullAddress(lat: number, long: number) {
@@ -146,7 +158,9 @@ export async function convertToFullAddress(lat: number, long: number) {
         return defaultAddress;
       }
     })
-    .catch(() => {
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Failed to convert coordinates to address: ${errorMessage}`);
       return defaultAddress;
     });
 }

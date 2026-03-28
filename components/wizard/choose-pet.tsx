@@ -9,6 +9,8 @@ import { WizardHeader } from "./wizard-header";
 import { SightingPet } from "./wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { showMessage } from "react-native-flash-message";
+import { log } from "../logs";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export function ChoosePet({
   updateSightingData,
@@ -53,7 +55,8 @@ export function ChoosePet({
             setPets(data);
           }
         })
-        .catch(() => {
+        .catch((error: RepositoryException) => {
+          log(`Failed to fetch pets for user: ${error.message}`);
           showMessage({
             message: "Error fetching pets info.",
             type: "warning",

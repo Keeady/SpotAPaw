@@ -8,6 +8,8 @@ import { CountryCode } from "libphonenumber-js";
 import { AuthContext } from "../Provider/auth-provider";
 import { OwnerRepository } from "@/db/repositories/owner-repository";
 import { showMessage } from "react-native-flash-message";
+import { log } from "../logs";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export function AddContact({
   updateSightingData,
@@ -42,7 +44,8 @@ export function AddContact({
           updateSightingData("contactPhoneCountryCode", data.countryCode);
         }
       })
-      .catch(() => {
+      .catch((error: RepositoryException) => {
+        log(`Failed to fetch owner info for user: ${error.message}`);
         showMessage({
           message: "Error fetching contact info.",
           type: "warning",

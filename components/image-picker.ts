@@ -1,6 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 import { Alert, Linking } from "react-native";
 import { log } from "./logs";
+import { createErrorLogMessage } from "./util";
 
 export const ImagePickerHandler = async (
   handleChange: (f: string, v: string) => void,
@@ -14,7 +15,8 @@ export const ImagePickerHandler = async (
     allowsEditing: true,
     quality: 1,
   }).catch((err) => {
-    log(`launchImageLibraryAsync: ${err.message}`);
+    const errorMessage = createErrorLogMessage(err);
+    log(`launchImageLibraryAsync: ${errorMessage}`);
     return;
   });
 
@@ -39,7 +41,8 @@ export const pickImage = async (
     allowsEditing: true,
     quality: 0.8,
   }).catch((err) => {
-    log(`pickImage: ${err.message}`);
+    const errorMessage = createErrorLogMessage(err);
+    log(`pickImage: ${errorMessage}`);
   });
 
   if (!result || !result.assets || result.canceled) {
@@ -65,7 +68,8 @@ export const takePhoto = async (
     quality: 0.8,
     cameraType: ImagePicker.CameraType.back,
   }).catch((err) => {
-    log(`takePhoto: ${err.message}`);
+    const errorMessage = createErrorLogMessage(err);
+    log(`takePhoto: ${errorMessage}`);
   });
 
   if (!result || !result.assets || result.canceled) {

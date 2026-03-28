@@ -10,6 +10,7 @@ import { isValidUuid } from "../util";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { ClaimRepository } from "@/db/repositories/claim-repository";
 import { handleAddingSighting, handleSharingSighting } from "./sighting-handler";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -38,7 +39,9 @@ export default function SightingProfile() {
             setClaimed(true);
           }
         })
-        .catch(() => {});
+        .catch((error: RepositoryException) => {
+          log(`Failed to fetch claim info for sighting: ${error.message}`);
+        });
     }
   }, [user?.id, petId, sightingId]);
 
@@ -53,7 +56,9 @@ export default function SightingProfile() {
             setPetName(data.name);
           }
         })
-        .catch(() => {});
+        .catch((error: RepositoryException) => {
+          log(`Failed to fetch pet info for pet: ${error.message}`);
+        });
     }
   }, [petId, summary?.name, summary?.ownerId]);
 

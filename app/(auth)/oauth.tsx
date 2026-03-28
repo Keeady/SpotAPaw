@@ -3,6 +3,8 @@ import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from "expo-auth-session";
 import { showMessage } from "react-native-flash-message";
 import { AuthHandler } from "@/auth/auth";
+import { log } from "@/components/logs";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 // Required for web browser to close properly on iOS
 WebBrowser.maybeCompleteAuthSession();
@@ -21,7 +23,8 @@ export default function Auth() {
         // Open the OAuth URL in a browser
         await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
       }
-    } catch {
+    } catch (error) {
+      log(`signInWithOAuth failed: ${(error as RepositoryException).message}`);
       showMessage({
         message: "Authentication failed. Please try again.",
         type: "warning",

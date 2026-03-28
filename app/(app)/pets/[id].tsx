@@ -1,4 +1,5 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
+import { log } from "@/components/logs";
 import {
   onEditPet,
   onPetLost,
@@ -10,6 +11,7 @@ import RenderPetDetails from "@/components/pets/pet-details";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -37,7 +39,8 @@ export default function PetProfile() {
       .then((data) => {
         setPet(data);
       })
-      .catch(() => {
+      .catch((error: RepositoryException) => {
+        log(`getPet: Error fetching pet profile ${error.message}`);
         showMessage({
           message: "Error fetch pet profile.",
           type: "warning",
@@ -55,7 +58,9 @@ export default function PetProfile() {
           setSighting(data[0]);
         }
       })
-      .catch(() => {});
+      .catch((error: RepositoryException) => {
+        log(`getSightingsByPetId: Error fetching sightings ${error.message}`);
+      });
   }, [id]);
 
   if (!user) {

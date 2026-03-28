@@ -33,7 +33,7 @@ import { defaultSightingFormData, validate } from "./util";
 import { PetImage, SightingReport } from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
-import { isValidUuid } from "../util";
+import { createErrorLogMessage, isValidUuid } from "../util";
 import { EditPetContinued } from "./edit-pet-continued";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import {
@@ -43,6 +43,7 @@ import {
   updatePet,
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export type SightingWizardSteps =
   | "start"
@@ -178,7 +179,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("gender", sighting.gender);
           updateSightingData("linkedSightingId", sighting.linkedSightingId);
         })
-        .catch(() => {
+        .catch((error: RepositoryException) => {
+          log(
+            `Wizard: Failed to fetch sighting info for sighting: ${error.message}`,
+          );
           showMessage({
             message: "Error fetching pet sighting.",
             type: "warning",
@@ -228,7 +232,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
         })
-        .catch(() => {
+        .catch((error: RepositoryException) => {
+          log(`Wizard: Failed to fetch pet info for pet: ${error.message}`);
           showMessage({
             message: "Error fetching pet information.",
             type: "warning",
@@ -551,8 +556,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
       log(error.message);
     } else {
+      const errorMessage = createErrorLogMessage(error);
       setErrorMessage("Failed to process image. Please try again.");
-      log("Failed to process image");
+      log(`Wizard: Failed to process image: ${errorMessage}`);
     }
 
     setAiGenerated(false);
@@ -560,10 +566,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   };
 
   const onSubmitFailure = (error: any, action: WizardFormAction) => {
-    if (error instanceof Error || error instanceof PostgrestError) {
+    if (error instanceof PostgrestError) {
       log(error.message);
     } else {
-      log("Failed to submit sighting.");
+      const errorMessage = createErrorLogMessage(error);
+      log(`Wizard: Failed to submit sighting: ${errorMessage}`);
     }
 
     if (action === "add-pet" || action === "edit-pet") {
