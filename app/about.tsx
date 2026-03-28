@@ -192,6 +192,41 @@ export default function AboutScreen() {
       <Card mode="elevated" style={{ marginBottom: 16 }}>
         <Card.Content>
           <Text variant="headlineMedium" style={styles.title}>
+            Credits
+          </Text>
+          <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
+            Free Happy Dog Animation from{" "}
+            <Text
+              style={{ color: "#1976d2", textDecorationLine: "underline" }}
+              onPress={() =>
+                Linking.openURL(
+                  "https://lottiefiles.com/free-animation/happy-dog-JQlCkLqWSP",
+                )
+              }
+            >
+              LottieFiles
+            </Text>
+            .
+          </Text>
+          <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
+            Free Cat Animation from{" "}
+            <Text
+              style={{ color: "#1976d2", textDecorationLine: "underline" }}
+              onPress={() =>
+                Linking.openURL(
+                  "https://lottiefiles.com/free-animation/loader-cat-dWUie0iIVk",
+                )
+              }
+            >
+              LottieFiles
+            </Text>
+            .
+          </Text>
+        </Card.Content>
+      </Card>
+      <Card mode="elevated" style={{ marginBottom: 16 }}>
+        <Card.Content>
+          <Text variant="headlineMedium" style={styles.title}>
             Acknowledgments
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
