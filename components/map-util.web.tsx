@@ -33,11 +33,13 @@ export default function DropPinOnMap({
     longitude: number;
   } | null>(null);
 
+  const delta = currentLocation ? 0.05 : 50;
+  const defaultZoom = currentLocation ? 15 : 4;
   const initialRegion = {
-    lat: currentLocation?.lat ?? 34.05223,
-    lng: currentLocation?.lng ?? -118.24368,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
+    lat: currentLocation?.lat ?? 45,
+    lng: currentLocation?.lng ?? -100,
+    latitudeDelta: delta,
+    longitudeDelta: delta,
   };
 
   const handleMapPress = (event: MapMouseEvent) => {
@@ -73,7 +75,7 @@ export default function DropPinOnMap({
         <Map
           style={{ width: "90vw", height: "50vh" }}
           defaultCenter={initialRegion}
-          defaultZoom={15}
+          defaultZoom={defaultZoom}
           gestureHandling="greedy"
           disableDefaultUI
           onClick={handleMapPress}
