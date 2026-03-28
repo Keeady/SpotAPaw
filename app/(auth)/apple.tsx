@@ -4,6 +4,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { log } from "@/components/logs";
 import { useRouter } from "expo-router";
 import { AuthHandler } from "@/auth/auth";
+import { createErrorLogMessage } from "@/components/util";
 
 export default function Auth() {
   const router = useRouter();
@@ -20,7 +21,9 @@ export default function Auth() {
           .then(() => {
             router.replace("/(app)/my-sightings");
           })
-          .catch(() => {
+          .catch((error) => {
+            const errorMessage = createErrorLogMessage(error);
+            log(`signInWithIdToken: Error signing in ${errorMessage}`);
             showMessage({
               message: "Authentication failed. Please try again.",
               type: "warning",
@@ -30,7 +33,7 @@ export default function Auth() {
             return;
           });
       } else {
-        log("No credential found.");
+        log("Apple login: No credential found.");
         showMessage({
           message: "Authentication failed. Please try again.",
           type: "warning",

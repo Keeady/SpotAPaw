@@ -13,6 +13,7 @@ import {
 import { getStorageItem, saveStorageItem } from "../util";
 import { SIGHTING_LOCATION_KEY } from "../constants";
 import { LocationPermissionDeniedDialog } from "../location-request-util";
+import { log } from "../logs";
 type ContextProps = {
   enabledLocationPermission?: boolean;
   location?: SightingLocation;
@@ -45,6 +46,7 @@ const PermissionProvider = (props: Props) => {
         return JSON.parse(location);
       }
     } catch {
+      log("Failed to get saved location");
       return;
     }
   }, []);
@@ -62,7 +64,9 @@ const PermissionProvider = (props: Props) => {
           setLocation(location);
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        log("Failed to get existing location");
+      })
       .finally(() => {
         setLoadingLocation(false);
       });
@@ -87,6 +91,7 @@ const PermissionProvider = (props: Props) => {
         }
       })
       .catch(() => {
+        log("Failed to get refreshed location");
         getSavedLocation().then((location) => {
           if (location) {
             setLocation(location);

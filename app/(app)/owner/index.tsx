@@ -1,6 +1,7 @@
+import { log } from "@/components/logs";
 import PhoneNumberInput from "@/components/phone-number-util";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { isValidUuid } from "@/components/util";
+import { createErrorLogMessage, isValidUuid } from "@/components/util";
 import { Owner } from "@/db/models/owner";
 import { OwnerRepository } from "@/db/repositories/owner-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -108,7 +109,9 @@ const ProfileScreen = () => {
           setPhoneCountryCode(data.countryCode as CountryCode);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getOwner: Error fetching account info: ${errorMessage}`);
         showMessage({
           message: "Error fetching account info.",
           type: "warning",
@@ -205,7 +208,9 @@ const ProfileScreen = () => {
       if (sightingId) {
         router.replace(`/my-sightings`);
       }
-    } catch {
+    } catch (error) {
+      const errorMessage = createErrorLogMessage(error);
+      log(`createContact: Error saving owner profile: ${errorMessage}`);
       showMessage({
         message: "Error saving owner profile.",
         type: "warning",

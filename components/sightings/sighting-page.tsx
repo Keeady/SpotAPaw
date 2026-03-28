@@ -13,6 +13,8 @@ import { SightingLocationManager } from "./sighting-location-manager";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { handleAddingSighting } from "./sighting-handler";
+import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 type SightingPageProps = {
   renderer: (
@@ -215,7 +217,9 @@ const fetchSightingsWithLocation = async (
     .then(({ data, count }) => {
       onFetchComplete(data || [], null, pagination, count || 0);
     })
-    .catch(() => {
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`);
       onFetchComplete(
         [],
         "An error occurred while fetching sightings.",

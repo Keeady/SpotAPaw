@@ -7,6 +7,8 @@ import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { AuthHandler } from "@/auth/auth";
+import { log } from "@/components/logs";
+import { createErrorLogMessage } from "@/components/util";
 
 export default function SignInScreen() {
   const theme = useTheme();
@@ -52,7 +54,9 @@ export default function SignInScreen() {
           return;
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`SigninWithPassword failed: ${errorMessage}`);
         showMessage({
           message: "Invalid email or password. Please try again.",
           type: "danger",

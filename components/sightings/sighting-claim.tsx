@@ -2,10 +2,11 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { Text, Card, Button } from "react-native-paper";
-import { isValidUuid } from "../util";
+import { createErrorLogMessage, isValidUuid } from "../util";
 import { PetSelection } from "./pet-selection";
 import { SightingPet } from "../wizard/wizard-interface";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { log } from "../logs";
 
 type ClaimSightingProps = {
   sighting: AggregatedSighting;
@@ -32,7 +33,9 @@ export default function ClaimSighting({
     try {
       setDisabled(true);
       onConfirm(selectedPetId, sightingId);
-    } catch {
+    } catch (error) {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Error confirming sighting claim: ${errorMessage}`);
       setDisabled(false);
     }
   };

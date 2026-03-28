@@ -20,6 +20,8 @@ import {
 import isEmail from "validator/es/lib/isEmail";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { AuthHandler } from "@/auth/auth";
+import { log } from "@/components/logs";
+import { createErrorLogMessage } from "@/components/util";
 
 export default function SignUpScreen() {
   const theme = useTheme();
@@ -102,7 +104,9 @@ export default function SignUpScreen() {
           });
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`SignUp failed: ${errorMessage}`);
         showMessage({
           message: "An error occured. Please try again.",
           type: "danger",

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 export function usePetSightings(sightingId: string) {
   const [loading, setLoading] = useState(true);
@@ -18,7 +20,9 @@ export function usePetSightings(sightingId: string) {
       .then((data) => {
         setSummary(data);
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Failed to fetch sighting summary for sighting: ${errorMessage}`);
         setError("Error fetching sighting info.");
       })
       .finally(() => {
@@ -36,7 +40,9 @@ export function usePetSightings(sightingId: string) {
       .then((data) => {
         setTimeline(data);
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Failed to fetch linked sightings for sighting: ${errorMessage}`);
         setError("Error fetching sighting info.");
       })
       .finally(() => {

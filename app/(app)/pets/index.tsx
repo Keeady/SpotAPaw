@@ -1,5 +1,7 @@
+import { log } from "@/components/logs";
 import PetListRenderer from "@/components/pets/pet-list";
 import { AuthContext } from "@/components/Provider/auth-provider";
+import { createErrorLogMessage } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { useContext, useEffect, useState } from "react";
@@ -23,7 +25,9 @@ export default function PetListScreen() {
           }
           setLoading(false);
         })
-        .catch(() => {
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`getPets: Error fetching pet info ${errorMessage}`);
           showMessage({
             message: "Error fetching pets info.",
             type: "warning",

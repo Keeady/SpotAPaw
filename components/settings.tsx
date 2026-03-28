@@ -31,6 +31,8 @@ import { useRouter } from "expo-router";
 import { PermissionContext } from "./Provider/permission-provider";
 import { useAIFeatureContext } from "./Provider/ai-context-provider";
 import * as Application from "expo-application";
+import { log } from "./logs";
+import { createErrorLogMessage } from "./util";
 
 const SettingsScreen = () => {
   // Define color scheme for icons
@@ -131,6 +133,7 @@ const SettingsScreen = () => {
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
       setDefaultDistance(distance || "5");
     } catch {
+      log("Error loading settings");
     } finally {
       setLocationLoading(false);
     }
@@ -235,7 +238,9 @@ const SettingsScreen = () => {
         await AsyncStorage.clear();
         await onDeleteAccount(user.id);
       }
-    } catch {
+    } catch (error) {
+      const errorMessage = createErrorLogMessage(error);
+      log(`onDeleteAccount: Failed to delete account: ${errorMessage}`);
       setErrorMessage(
         "Failed to delete account. Please try again or contact support.",
       );

@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { getStorageItem, saveStorageItem } from "../util";
 import { SIGHTING_AI_ENABLED_KEY } from "../constants";
+import { log } from "../logs";
 type ContextProps = {
   isAiFeatureEnabled: boolean;
   saveAIFeatureContext: (value: boolean) => void;
@@ -26,6 +27,7 @@ const AIFeatureContextProvider = (props: Props) => {
       const aiFeature = await getStorageItem(SIGHTING_AI_ENABLED_KEY);
       setAiFeatureEnabled(aiFeature === "true" || aiFeature === null);
     } catch {
+      log("Error loading AI feature context");
       return false;
     }
   }, []);

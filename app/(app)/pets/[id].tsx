@@ -1,4 +1,5 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
+import { log } from "@/components/logs";
 import {
   onEditPet,
   onPetLost,
@@ -7,6 +8,7 @@ import {
   viewPetSightings,
 } from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
+import { createErrorLogMessage } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { PetRepository } from "@/db/repositories/pet-repository";
@@ -37,7 +39,9 @@ export default function PetProfile() {
       .then((data) => {
         setPet(data);
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getPet: Error fetching pet profile ${errorMessage}`);
         showMessage({
           message: "Error fetch pet profile.",
           type: "warning",
@@ -55,7 +59,10 @@ export default function PetProfile() {
           setSighting(data[0]);
         }
       })
-      .catch(() => {});
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getSightingsByPetId: Error fetching sightings ${errorMessage}`);
+      });
   }, [id]);
 
   if (!user) {

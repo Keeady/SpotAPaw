@@ -2,9 +2,10 @@ import { router } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { SightingPet } from "../wizard/wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
+import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -65,7 +66,9 @@ export async function onDeletePet(id: string, userId: string) {
       });
       router.replace(`/(app)/pets`);
     })
-    .catch(() => {
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Failed to delete pet: ${errorMessage}`);
       showMessage({
         message: "Error deleting pet profile.",
         type: "warning",
@@ -103,7 +106,9 @@ async function onPetFound(id: string) {
             statusBarHeight: 50,
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to update sighting status for pet: ${errorMessage}`);
           showMessage({
             message: "Error updating pet profile.",
             type: "warning",
@@ -114,7 +119,9 @@ async function onPetFound(id: string) {
 
       router.replace(`/(app)/pets`);
     })
-    .catch(() => {
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Failed to update pet as found: ${errorMessage}`);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
@@ -130,24 +137,4 @@ export async function viewPetSightings(id: string) {
     return;
   }
   router.navigate(`/(app)/my-sightings/${id}`);
-}
-
-export async function createNewPet(profileInfo: SightingPet) {
-  if (!profileInfo) {
-    return;
-  }
-
-  const petRepository = new PetRepository();
-
-  try {
-    await petRepository.createPet(profileInfo);
-    router.replace(`/(app)/pets`);
-  } catch {
-    showMessage({
-      message: "Error creating pet profile. Please try again.",
-      type: "warning",
-      icon: "warning",
-      statusBarHeight: 50,
-    });
-  }
 }

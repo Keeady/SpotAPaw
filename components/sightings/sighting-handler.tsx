@@ -2,6 +2,8 @@ import { Href, Router } from "expo-router";
 import { Platform, Share } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { showMessage } from "react-native-flash-message";
+import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 export function handleAddingSighting(
   router: Router,
@@ -69,7 +71,9 @@ export async function handleSharingSighting(
             statusBarHeight: 50,
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to copy link to clipboard on web: ${errorMessage}`);
           showMessage({
             message: "Failed to copy link to clipboard.",
             type: "warning",
@@ -92,5 +96,8 @@ export async function handleSharingSighting(
     };
 
     await Share.share(shareObj);
-  } catch {}
+  } catch (error) {
+    const errorMessage = createErrorLogMessage(error);
+    log(`Failed to share sighting: ${errorMessage}`);
+  }
 }

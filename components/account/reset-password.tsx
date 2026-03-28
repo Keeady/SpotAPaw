@@ -17,6 +17,8 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
+import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 export default function ResetPasswordScreen() {
   const theme = useTheme();
@@ -89,9 +91,11 @@ export default function ResetPasswordScreen() {
           statusBarHeight: 50,
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Failed to update password: ${errorMessage}`);
         showMessage({
-          message: "An error occured. Please try again.",
+          message: "Failed to reset password. Please try again.",
           type: "danger",
           icon: "danger",
           autoHide: true,
