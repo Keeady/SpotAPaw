@@ -32,11 +32,12 @@ export default function DropPinOnMap({
     longitude: number;
   } | null>(null);
 
+  const delta = currentLocation ? 0.05 : 50;
   const initialRegion = {
     latitude: currentLocation?.lat ?? 45,
     longitude: currentLocation?.lng ?? -100,
-    latitudeDelta: 50,
-    longitudeDelta: 50,
+    latitudeDelta: delta,
+    longitudeDelta: delta,
   };
 
   const handleMapPress = (event: MapPressEvent) => {
