@@ -6,11 +6,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
 import { useConfirmPetFound } from "../pets/pet-crud";
-import { isValidUuid } from "../util";
+import { createErrorLogMessage, isValidUuid } from "../util";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { ClaimRepository } from "@/db/repositories/claim-repository";
 import { handleAddingSighting, handleSharingSighting } from "./sighting-handler";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -39,8 +38,9 @@ export default function SightingProfile() {
             setClaimed(true);
           }
         })
-        .catch((error: RepositoryException) => {
-          log(`Failed to fetch claim info for sighting: ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to fetch claim info for sighting: ${errorMessage}`);
         });
     }
   }, [user?.id, petId, sightingId]);
@@ -56,8 +56,9 @@ export default function SightingProfile() {
             setPetName(data.name);
           }
         })
-        .catch((error: RepositoryException) => {
-          log(`Failed to fetch pet info for pet: ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to fetch pet info for pet: ${errorMessage}`);
         });
     }
   }, [petId, summary?.name, summary?.ownerId]);

@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppConstants, { GOOGLE_GEOCODE_URL } from "./constants";
 import { AuthHandler } from "@/auth/auth";
 import { log } from "./logs";
-import { RepositoryException } from "@/db/repositories/repository.interface";
+import { AuthError, PostgrestError } from "@supabase/supabase-js";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -20,8 +20,9 @@ export const isValidUuid = (id: string | null | undefined) => {
 
 export async function handleSignOut(router: Router) {
   const authHandler = new AuthHandler();
-  await authHandler.signOut().catch((error: RepositoryException) => {
-    log(`Sign out failed: ${error.message}`);
+  await authHandler.signOut().catch((error) => {
+    const errorMessage = createErrorLogMessage(error);
+    log(`Sign out failed: ${errorMessage}`);
   });
 
   router.navigate("/");
@@ -171,6 +172,18 @@ export function createErrorLogMessage(error: unknown) {
   }
 
   if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (error instanceof PostgrestError  && "message" in error) {
+    return error.message;
+  }
+
+  if (error instanceof AuthError && "message" in error) {
     return error.message;
   }
 

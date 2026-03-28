@@ -1,9 +1,9 @@
 import { log } from "@/components/logs";
 import PetListRenderer from "@/components/pets/pet-list";
 import { AuthContext } from "@/components/Provider/auth-provider";
+import { createErrorLogMessage } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 import { useContext, useEffect, useState } from "react";
 import { showMessage } from "react-native-flash-message";
 
@@ -25,8 +25,9 @@ export default function PetListScreen() {
           }
           setLoading(false);
         })
-        .catch((error: RepositoryException) => {
-          log(`getPets: Error fetching pet info ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`getPets: Error fetching pet info ${errorMessage}`);
           showMessage({
             message: "Error fetching pets info.",
             type: "warning",

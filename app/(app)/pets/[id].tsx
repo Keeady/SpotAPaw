@@ -8,10 +8,10 @@ import {
   viewPetSightings,
 } from "@/components/pets/pet-crud";
 import RenderPetDetails from "@/components/pets/pet-details";
+import { createErrorLogMessage } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -39,8 +39,9 @@ export default function PetProfile() {
       .then((data) => {
         setPet(data);
       })
-      .catch((error: RepositoryException) => {
-        log(`getPet: Error fetching pet profile ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getPet: Error fetching pet profile ${errorMessage}`);
         showMessage({
           message: "Error fetch pet profile.",
           type: "warning",
@@ -58,8 +59,9 @@ export default function PetProfile() {
           setSighting(data[0]);
         }
       })
-      .catch((error: RepositoryException) => {
-        log(`getSightingsByPetId: Error fetching sightings ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getSightingsByPetId: Error fetching sightings ${errorMessage}`);
       });
   }, [id]);
 

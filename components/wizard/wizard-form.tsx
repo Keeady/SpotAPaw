@@ -43,7 +43,6 @@ import {
   updatePet,
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export type SightingWizardSteps =
   | "start"
@@ -179,9 +178,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("gender", sighting.gender);
           updateSightingData("linkedSightingId", sighting.linkedSightingId);
         })
-        .catch((error: RepositoryException) => {
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
           log(
-            `Wizard: Failed to fetch sighting info for sighting: ${error.message}`,
+            `Wizard: Failed to fetch sighting info for sighting: ${errorMessage}`,
           );
           showMessage({
             message: "Error fetching pet sighting.",
@@ -232,8 +232,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
         })
-        .catch((error: RepositoryException) => {
-          log(`Wizard: Failed to fetch pet info for pet: ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Wizard: Failed to fetch pet info for pet: ${errorMessage}`);
           showMessage({
             message: "Error fetching pet information.",
             type: "warning",

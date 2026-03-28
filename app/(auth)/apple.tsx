@@ -4,7 +4,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { log } from "@/components/logs";
 import { useRouter } from "expo-router";
 import { AuthHandler } from "@/auth/auth";
-import { RepositoryException } from "@/db/repositories/repository.interface";
+import { createErrorLogMessage } from "@/components/util";
 
 export default function Auth() {
   const router = useRouter();
@@ -21,8 +21,9 @@ export default function Auth() {
           .then(() => {
             router.replace("/(app)/my-sightings");
           })
-          .catch((error: RepositoryException) => {
-            log(`signInWithIdToken: Error signing in ${error.message}`);
+          .catch((error) => {
+            const errorMessage = createErrorLogMessage(error);
+            log(`signInWithIdToken: Error signing in ${errorMessage}`);
             showMessage({
               message: "Authentication failed. Please try again.",
               type: "warning",

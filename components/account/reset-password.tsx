@@ -18,7 +18,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { log } from "../logs";
-import { RepositoryException } from "@/db/repositories/repository.interface";
+import { createErrorLogMessage } from "../util";
 
 export default function ResetPasswordScreen() {
   const theme = useTheme();
@@ -91,8 +91,9 @@ export default function ResetPasswordScreen() {
           statusBarHeight: 50,
         });
       })
-      .catch((error: RepositoryException) => {
-        log(`Failed to update password: ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Failed to update password: ${errorMessage}`);
         showMessage({
           message: "Failed to reset password. Please try again.",
           type: "danger",

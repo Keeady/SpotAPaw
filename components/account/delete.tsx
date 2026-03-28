@@ -1,9 +1,8 @@
 import { showMessage } from "react-native-flash-message";
-import { handleSignOut, isValidUuid } from "../util";
+import { createErrorLogMessage, handleSignOut, isValidUuid } from "../util";
 import { router } from "expo-router";
 import { OwnerRepository } from "@/db/repositories/owner-repository";
 import { log } from "../logs";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 
 export const onDeleteAccount = async (userId: string) => {
   if (!isValidUuid(userId)) {
@@ -29,8 +28,9 @@ export const onDeleteAccount = async (userId: string) => {
 
       handleSignOut(router);
     })
-    .catch((error: RepositoryException) => {
-      log(`Failed to delete account for: ${error.message}`);
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Failed to delete account for: ${errorMessage}`);
       showMessage({
         message: "Error deleting account.",
         type: "warning",

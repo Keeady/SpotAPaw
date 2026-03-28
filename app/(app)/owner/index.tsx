@@ -4,7 +4,6 @@ import { AuthContext } from "@/components/Provider/auth-provider";
 import { createErrorLogMessage, isValidUuid } from "@/components/util";
 import { Owner } from "@/db/models/owner";
 import { OwnerRepository } from "@/db/repositories/owner-repository";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -110,8 +109,9 @@ const ProfileScreen = () => {
           setPhoneCountryCode(data.countryCode as CountryCode);
         }
       })
-      .catch((error: RepositoryException) => {
-        log(`getOwner: Error fetching account info: ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getOwner: Error fetching account info: ${errorMessage}`);
         showMessage({
           message: "Error fetching account info.",
           type: "warning",

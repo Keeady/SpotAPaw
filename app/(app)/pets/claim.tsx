@@ -1,12 +1,11 @@
 import { log } from "@/components/logs";
 import { AuthContext } from "@/components/Provider/auth-provider";
 import ClaimSighting from "@/components/sightings/sighting-claim";
-import { isValidUuid } from "@/components/util";
+import { createErrorLogMessage, isValidUuid } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { ClaimRepository } from "@/db/repositories/claim-repository";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -34,8 +33,9 @@ export default function ClaimLostPet() {
         .then((data) => {
           setPets(data);
         })
-        .catch((error: RepositoryException) => {
-          log(`getPets: Error fetching pet info for claim: ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`getPets: Error fetching pet info for claim: ${errorMessage}`);
 
           showMessage({
             message: "Error fetching pet info.",
@@ -58,8 +58,9 @@ export default function ClaimLostPet() {
       .then((data) => {
         setSighting(data);
       })
-      .catch((error: RepositoryException) => {
-        log(`getSighting: Error fetching pet sighting for claim: ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`getSighting: Error fetching pet sighting for claim: ${errorMessage}`);
         showMessage({
           message: "Error fetching pet sighting.",
           type: "warning",
@@ -93,8 +94,9 @@ export default function ClaimLostPet() {
           });
           router.replace(`/(app)/my-sightings`);
         })
-        .catch((error: RepositoryException) => {
-          log(`createClaim: Error submitting claim ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`createClaim: Error submitting claim ${errorMessage}`);
           showMessage({
             message: "Error updating pet sighting.",
             type: "warning",

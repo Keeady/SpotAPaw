@@ -6,7 +6,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import { log } from "../logs";
-import { RepositoryException } from "@/db/repositories/repository.interface";
+import { createErrorLogMessage } from "../util";
 
 export default function OneTimePasscodeScreen() {
   const theme = useTheme();
@@ -56,8 +56,9 @@ export default function OneTimePasscodeScreen() {
         });
         setShowCodeVerification(true);
       })
-      .catch((error: RepositoryException) => {
-        log(`Failed to send OTP to email: ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Failed to send OTP to email: ${errorMessage}`);
         showMessage({
           message: "Failed to send verification code. Please try again.",
           type: "warning",
@@ -82,8 +83,9 @@ export default function OneTimePasscodeScreen() {
           router.dismissTo("/(app)/my-sightings");
         }
       })
-      .catch((error: RepositoryException) => {
-        log(`Failed to verify OTP for email: ${error.message}`);
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Failed to verify OTP for email: ${errorMessage}`);
         showMessage({
           message: "Invalid code. Please try again.",
           type: "danger",

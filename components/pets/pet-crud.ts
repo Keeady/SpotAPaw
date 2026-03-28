@@ -4,8 +4,8 @@ import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
-import { RepositoryException } from "@/db/repositories/repository.interface";
 import { log } from "../logs";
+import { createErrorLogMessage } from "../util";
 
 export const useConfirmDelete = () =>
   useCallback(
@@ -66,8 +66,9 @@ export async function onDeletePet(id: string, userId: string) {
       });
       router.replace(`/(app)/pets`);
     })
-    .catch((error: RepositoryException) => {
-      log(`Failed to delete pet: ${error.message}`);
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Failed to delete pet: ${errorMessage}`);
       showMessage({
         message: "Error deleting pet profile.",
         type: "warning",
@@ -105,8 +106,9 @@ async function onPetFound(id: string) {
             statusBarHeight: 50,
           });
         })
-        .catch((error: RepositoryException) => {
-          log(`Failed to update sighting status for pet: ${error.message}`);
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to update sighting status for pet: ${errorMessage}`);
           showMessage({
             message: "Error updating pet profile.",
             type: "warning",
@@ -117,8 +119,9 @@ async function onPetFound(id: string) {
 
       router.replace(`/(app)/pets`);
     })
-    .catch((error: RepositoryException) => {
-      log(`Failed to update pet as found: ${error.message}`);
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Failed to update pet as found: ${errorMessage}`);
       showMessage({
         message: "Error updating pet profile.",
         type: "warning",
