@@ -50,7 +50,7 @@ export function ChoosePet({
           if (!isMountedRef.current) {
             return;
           }
-          setLoading(false);
+
           if (data && data.length > 0) {
             setPets(data);
           }
@@ -64,6 +64,12 @@ export function ChoosePet({
             icon: "warning",
             statusBarHeight: 50,
           });
+        })
+        .finally(() => {
+          if (!isMountedRef.current) {
+            return;
+          }
+          setLoading(false);
         });
     }
   }, [user?.id]);

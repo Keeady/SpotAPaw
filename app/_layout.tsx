@@ -11,6 +11,8 @@ import { AIFeatureContextProvider } from "@/components/Provider/ai-context-provi
 import { AuthHandler } from "@/auth/auth";
 import HeaderRight from "@/components/header/header-right";
 import { HeaderLeft } from "@/components/header/header-left";
+import { createErrorLogMessage } from "@/components/util";
+import { log } from "@/components/logs";
 
 export default function Layout() {
   const router = useRouter();
@@ -19,7 +21,12 @@ export default function Layout() {
     const authHandler = new AuthHandler();
     const handleRedirect = async (url: string) => {
       // Let Supabase verify the confirmation link
-      await authHandler.exchangeCodeForSession(url);
+      const { error } = await authHandler.exchangeCodeForSession(url);
+
+      if (error) {
+        const errorMessage = createErrorLogMessage(error);
+        log(`Redirect exchangeCodeForSession failed: ${errorMessage}`);
+      }
 
       // Then send user to the login screen (no auto-login)
       router.replace("/(auth)/signin");
@@ -33,6 +40,8 @@ export default function Layout() {
         const { error } = await authHandler.exchangeCodeForSession(code);
 
         if (error) {
+          const errorMessage = createErrorLogMessage(error);
+          log(`OAuth exchangeCodeForSession failed: ${errorMessage}`);
           showMessage({
             message: "Authentication failed. Please try again.",
             type: "warning",
@@ -53,6 +62,8 @@ export default function Layout() {
         const { error } = await authHandler.exchangeCodeForSession(code);
 
         if (error) {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Reset exchangeCodeForSession failed: ${errorMessage}`);
           showMessage({
             message: "Authentication failed. Please try again.",
             type: "warning",

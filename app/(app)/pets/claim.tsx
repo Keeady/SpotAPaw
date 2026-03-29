@@ -31,7 +31,9 @@ export default function ClaimLostPet() {
       petRepository
         .getPets(user.id)
         .then((data) => {
-          setPets(data);
+          if (data && data.length > 0) {
+            setPets(data);
+          }
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
@@ -56,11 +58,15 @@ export default function ClaimLostPet() {
     sightingRepository
       .getSighting(sightingId)
       .then((data) => {
-        setSighting(data);
+        if (data) {
+          setSighting(data);
+        }
       })
       .catch((error) => {
         const errorMessage = createErrorLogMessage(error);
-        log(`getSighting: Error fetching pet sighting for claim: ${errorMessage}`);
+        log(
+          `getSighting: Error fetching pet sighting for claim: ${errorMessage}`,
+        );
         showMessage({
           message: "Error fetching pet sighting.",
           type: "warning",

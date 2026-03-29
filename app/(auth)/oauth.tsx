@@ -18,10 +18,18 @@ export default function Auth() {
   async function signInWithGoogle() {
     try {
       const authHandler = new AuthHandler();
-      const { data } = await authHandler.signInWithOAuth(redirectUrl);
-      if (data?.url) {
+      const url = await authHandler.signInWithOAuth(redirectUrl);
+      if (url) {
         // Open the OAuth URL in a browser
-        await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+        await WebBrowser.openAuthSessionAsync(url, redirectUrl);
+      } else {
+        log("No URL returned from signInWithOAuth");
+        showMessage({
+          message: "Authentication failed. Please try again.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
       }
     } catch (error) {
       const errorMessage = createErrorLogMessage(error);

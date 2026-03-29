@@ -18,7 +18,9 @@ export function usePetSightings(sightingId: string) {
     repository
       .getSighting(sightingId)
       .then((data) => {
-        setSummary(data);
+        if (data) {
+          setSummary(data);
+        }
       })
       .catch((error) => {
         const errorMessage = createErrorLogMessage(error);
@@ -38,7 +40,9 @@ export function usePetSightings(sightingId: string) {
     repository
       .getLinkedSightings(sightingId)
       .then((data) => {
-        setTimeline(data);
+        if (data && data.length > 0) {
+          setTimeline(data);
+        }
       })
       .catch((error) => {
         const errorMessage = createErrorLogMessage(error);

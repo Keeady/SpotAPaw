@@ -64,7 +64,10 @@ const ReportListPage = () => {
       const data = isGuest
         ? await fetchReportsFromStorage()
         : await fetchReportsFromSupabase();
-      setReports(data);
+
+      if (data && data.length > 0) {
+        setReports(data);
+      }
     } catch (error) {
       const message = createErrorLogMessage(error);
       log(`Error fetching reports: ${message}`);
