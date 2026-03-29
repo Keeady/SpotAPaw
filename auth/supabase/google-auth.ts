@@ -22,6 +22,10 @@ export class GoogleSupabaseAuthHandler extends SupabaseAuthHandler {
       throw error;
     }
 
-    return data;
+    if (!data?.url) {
+      throw new Error("No URL returned from signInWithOAuth");
+    }
+
+    return data.url;
   }
 }
