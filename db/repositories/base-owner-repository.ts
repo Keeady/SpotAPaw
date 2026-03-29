@@ -1,14 +1,14 @@
 import { Owner } from "../models/owner";
 
 export interface IOwnerRepository {
-  getOwner(id: string): Promise<Owner>;
+  getOwner(id: string): Promise<Owner | undefined>;
   createOwner(data: Partial<Owner>): Promise<string>;
   updateOwner(id: string, data: Partial<Owner>): Promise<void>;
   deleteOwner(id: string): Promise<void>;
 }
 
 export class BaseOwnerRepository implements IOwnerRepository {
-  getOwner(_id: string): Promise<Owner> {
+  getOwner(_id: string): Promise<Owner | undefined> {
     throw new Error("Method not implemented.");
   }
   createOwner(_data: Partial<Owner>): Promise<string> {

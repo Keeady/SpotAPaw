@@ -4,7 +4,7 @@ import { SupabaseOwnerRepository } from "./supabase/owner-repository";
 import { supabase } from "@/components/supabase-client";
 
 export class OwnerRepository implements IOwnerRepository {
-  getOwner(id: string): Promise<Owner> {
+  getOwner(id: string): Promise<Owner | undefined> {
     const repository = new SupabaseOwnerRepository(supabase);
     return repository.getOwner(id);
   }

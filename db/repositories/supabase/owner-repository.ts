@@ -9,7 +9,7 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
     this.supabaseClient = supabase;
   }
 
-  async getOwner(userId: string): Promise<Owner> {
+  async getOwner(userId: string): Promise<Owner | undefined> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
@@ -23,7 +23,7 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
     }
 
     if (!data || data.length === 0) {
-      throw new Error("No owner returned");
+      return;
     }
 
     return this.denormalizePayload(data[0]);
