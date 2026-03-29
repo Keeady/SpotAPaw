@@ -17,6 +17,7 @@ export class SupabaseClaimRepository extends BaseClaimRepository {
       .from("pet_claims")
       .select("*")
       .eq("sighting_id", sightingId);
+      
     if (error) {
       throw error;
     }

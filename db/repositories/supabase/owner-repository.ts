@@ -16,14 +16,17 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
     const { error, data } = await this.supabaseClient
       .from("owner")
       .select("*")
-      .eq("owner_id", userId)
-      .single();
+      .eq("owner_id", userId);
 
     if (error) {
       throw error;
     }
 
-    return this.denormalizePayload(data);
+    if (!data || data.length === 0) {
+      throw new Error("No owner returned");
+    }
+
+    return this.denormalizePayload(data[0]);
   }
 
   async createOwner(payload: Partial<Owner>): Promise<string> {
@@ -41,8 +44,8 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
       throw error;
     }
 
-    if (!data) {
-      throw "No owner id found.";
+    if (!data || !data["id"]) {
+      throw new Error("No owner id found.");
     }
 
     return data["id"];

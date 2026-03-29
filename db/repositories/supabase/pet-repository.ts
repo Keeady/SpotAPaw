@@ -17,14 +17,17 @@ export class SupabasePetRepository extends BasePetRepository {
     const { error, data } = await this.supabaseClient
       .from("pets")
       .select("*")
-      .eq("id", id)
-      .single();
+      .eq("id", id);
 
     if (error) {
       throw error;
     }
 
-    return this.denormalizePayload(data);
+    if (!data || data.length === 0) {
+      throw new Error("No pet returned");
+    }
+
+    return this.denormalizePayload(data[0]);
   }
 
   async getPets(ownerId: string): Promise<Pet[]> {
@@ -41,7 +44,7 @@ export class SupabasePetRepository extends BasePetRepository {
       throw error;
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       throw new Error("No pet returned");
     }
 
@@ -64,7 +67,7 @@ export class SupabasePetRepository extends BasePetRepository {
       throw error;
     }
 
-    if (!data) {
+    if (!data || !data.id) {
       throw new Error("No pet returned");
     }
 

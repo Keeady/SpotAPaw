@@ -38,7 +38,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw error;
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       return { data, count };
     }
 
@@ -55,18 +55,17 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       .from("aggregated_sightings")
       .select("*")
       .eq("is_active", true)
-      .eq("linked_sighting_id", id)
-      .single();
+      .eq("linked_sighting_id", id);
 
     if (error) {
       throw error;
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       throw new Error("No sightings found.");
     }
 
-    return this.denormalizePayload(data);
+    return this.denormalizePayload(data[0]);
   }
 
   async updateSighting(
@@ -122,7 +121,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw error;
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       throw new Error("No sightings found.");
     }
 
@@ -145,7 +144,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw error;
     }
 
-    if (!data) {
+    if (!data || !data["id"]) {
       throw "No data returned";
     }
 
@@ -169,6 +168,10 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw error;
     }
 
+    if (!data || data.length === 0) {
+      throw new Error("No sightings found.");
+    }
+
     return data.map((d) => this.denormalizePayload(d));
   }
 
@@ -188,8 +191,8 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw error;
     }
 
-    if (!data) {
-      return [];
+    if (!data || data.length === 0) {
+      throw new Error("No sightings found.");
     }
 
     return data.map((d) => this.denormalizePayload(d));
