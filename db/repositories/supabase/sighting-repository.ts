@@ -39,7 +39,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     if (!data || data.length === 0) {
-      return { data, count };
+      return { data: [], count: 0 };
     }
 
     const deNormalizedData = data.map((d) => this.denormalizePayload(d));
@@ -122,7 +122,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     if (!data || data.length === 0) {
-      throw new Error("No sightings found.");
+      return [];
     }
 
     return data.map((d) => this.denormalizePayload(d));
@@ -145,7 +145,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     if (!data || !data["id"]) {
-      throw "No data returned";
+      throw new Error("No data returned");
     }
 
     return data["id"];
@@ -169,7 +169,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     if (!data || data.length === 0) {
-      throw new Error("No sightings found.");
+      return [];
     }
 
     return data.map((d) => this.denormalizePayload(d));
@@ -192,7 +192,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
 
     if (!data || data.length === 0) {
-      throw new Error("No sightings found.");
+      return [];
     }
 
     return data.map((d) => this.denormalizePayload(d));

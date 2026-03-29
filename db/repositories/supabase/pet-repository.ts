@@ -45,7 +45,7 @@ export class SupabasePetRepository extends BasePetRepository {
     }
 
     if (!data || data.length === 0) {
-      throw new Error("No pet returned");
+      return [];
     }
 
     return data.map((d) => this.denormalizePayload(d));
