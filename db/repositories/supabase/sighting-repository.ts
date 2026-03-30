@@ -68,7 +68,9 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     return this.denormalizePayload(data[0]);
   }
 
-    async getSightingByLinkedSightingId(linkedSightingId: string): Promise<AggregatedSighting> {
+  async getSightingByLinkedSightingId(
+    linkedSightingId: string,
+  ): Promise<AggregatedSighting> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
@@ -127,7 +129,9 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     }
   }
 
-  async getLinkedSightings(linkedSightingId: string): Promise<AggregatedSighting[]> {
+  async getLinkedSightings(
+    linkedSightingId: string,
+  ): Promise<AggregatedSighting[]> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
@@ -136,7 +140,9 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       .from("sightings")
       .select("*")
       .eq("is_active", true)
-      .or(`linked_sighting_id.eq.${linkedSightingId}, id.eq.${linkedSightingId}`)
+      .or(
+        `linked_sighting_id.eq.${linkedSightingId}, id.eq.${linkedSightingId}`,
+      )
       .order("last_seen_time", { ascending: false });
 
     if (error) {
