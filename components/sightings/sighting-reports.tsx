@@ -129,7 +129,7 @@ const ReportListPage = () => {
           }
 
           router.navigate(
-            `/(app)/my-sightings/${sighting.id}/?linkedSightingId=${linkedSightingId}`,
+            `/(app)/my-sightings/${sighting.id}/?linkedSightingId=${linkedSightingId}&petId=${sighting.petId}`,
           );
         })
         .catch((error) => {

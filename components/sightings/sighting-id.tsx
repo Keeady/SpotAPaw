@@ -54,7 +54,7 @@ export default function SightingProfile() {
           log(`Failed to fetch claim info for sighting: ${errorMessage}`);
         });
     }
-  }, [user?.id, petId, sightingId]);
+  }, [user?.id, sightingId]);
 
   useEffect(() => {
     if ((!summary?.name || !summary.ownerId) && petId && isValidUuid(petId)) {
