@@ -9,7 +9,7 @@ export class SupabasePetRepository extends BasePetRepository {
     this.supabaseClient = supabase;
   }
 
-  async getPet(id: string): Promise<Pet> {
+  async getPet(id: string): Promise<Pet | undefined> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
@@ -24,7 +24,7 @@ export class SupabasePetRepository extends BasePetRepository {
     }
 
     if (!data || data.length === 0) {
-      throw new Error("No pet returned");
+      return;
     }
 
     return this.denormalizePayload(data[0]);
