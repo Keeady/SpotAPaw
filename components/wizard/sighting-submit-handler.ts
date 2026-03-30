@@ -109,7 +109,7 @@ async function buildSightingPayload(
     lastSeenTime: sightingFormData.lastSeenTime,
     reporterName: sightingFormData.reporterName,
     reporterPhone: sightingFormData.reporterPhone,
-  } as AggregatedSighting;
+  } as Partial<AggregatedSighting>;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     payload.petId = sightingFormData.id;
