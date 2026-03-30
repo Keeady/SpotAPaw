@@ -22,6 +22,7 @@ import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { showMessage } from "react-native-flash-message";
 
 const GUEST_REPORTS_KEY = "@guest_reports";
 
@@ -102,11 +103,49 @@ const ReportListPage = () => {
     return status === true ? theme.colors.primary : "green";
   };
 
+  const fetchSightingByLinkedId = useCallback(
+    async (linkedSightingId: string) => {
+      const repository = new SightingRepository();
+      return repository.getSightingByLinkedSightingId(linkedSightingId);
+    },
+    [],
+  );
+
   const onNavigateReport = (isActive: boolean, linkedSightingId: string) => {
     if (isActive) {
-      return router.navigate(
-        `/(app)/my-sightings/${linkedSightingId}/?linkedSightingId=${linkedSightingId}&type=report`,
-      );
+      setLoading(true);
+      // fetch the sighting by linkedSightingId to get the actual sightingId
+      fetchSightingByLinkedId(linkedSightingId)
+        .then((sighting) => {
+          if (!sighting) {
+            showMessage({
+              message: "Error",
+              description: "Sighting report not found.",
+              type: "warning",
+              icon: "warning",
+              statusBarHeight: 50,
+            });
+            return;
+          }
+
+          router.navigate(
+            `/(app)/my-sightings/${sighting.id}/?linkedSightingId=${linkedSightingId}`,
+          );
+        })
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Report: Failed to fetch sighting: ${errorMessage}`);
+          showMessage({
+            message: "Error",
+            description: "Failed to navigate to sighting details.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 

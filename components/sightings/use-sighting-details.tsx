@@ -4,11 +4,7 @@ import { AggregatedSighting } from "@/db/models/sighting";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 
-export function usePetSightings(
-  sightingId: string,
-  linkedSightingId: string,
-  type: "report" | "timeline" = "timeline",
-) {
+export function usePetSightings(sightingId: string, linkedSightingId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [timeline, setTimeline] = useState<AggregatedSighting[]>([]);
@@ -89,7 +85,7 @@ export function usePetSightings(
   );
 
   useEffect(() => {
-    if (type === "report") {
+    if (linkedSightingId && !sightingId) {
       // We do not have a sightingId for the report, so we need to fetch the summary by linkedSightingId
       fetchSummaryByLinkedSightingId(linkedSightingId);
     } else if (sightingId) {
@@ -105,7 +101,6 @@ export function usePetSightings(
     fetchSummary,
     fetchSightingsByLinkedSightingId,
     fetchSummaryByLinkedSightingId,
-    type,
   ]);
 
   return { loading, error, timeline, summary };

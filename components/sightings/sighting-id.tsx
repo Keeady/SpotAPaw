@@ -21,12 +21,10 @@ export default function SightingProfile() {
     id: sightingId,
     petId,
     linkedSightingId,
-    type,
   } = useLocalSearchParams<{
     id: string;
     petId: string;
     linkedSightingId: string;
-    type: "report" | "timeline";
   }>(); // pet id
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState<string | undefined>();
@@ -35,7 +33,6 @@ export default function SightingProfile() {
   const { loading, error, timeline, summary } = usePetSightings(
     sightingId,
     linkedSightingId,
-    type,
   );
 
   const { user } = useContext(AuthContext);
