@@ -90,7 +90,7 @@ exports.sightingPreview = onRequest(
     const { data, error } = await supabase
       .from("aggregated_sightings")
       .select("*")
-      .eq("linked_sighting_id", sightingId)
+      .eq("id", sightingId)
       .single();
 
     if (error || !data) {

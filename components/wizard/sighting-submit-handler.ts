@@ -1,3 +1,4 @@
+import { AggregatedSighting } from "@/db/models/sighting";
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
@@ -57,16 +58,16 @@ export async function updateSighting(
   sightingFormData: SightingReport,
 ) {
   if (
-    !sightingFormData.linkedSightingId ||
-    !isValidUuid(sightingFormData.linkedSightingId)
+    !sightingFormData.sightingId ||
+    !isValidUuid(sightingFormData.sightingId)
   ) {
-    throw new Error("Missing or invalid linked sighting id");
+    throw new Error("Missing or invalid sighting id");
   }
 
   const payload = await buildSightingPayload(photo, sightingFormData);
   const sightingRepository = new SightingRepository();
   return await sightingRepository.updateSighting(
-    sightingFormData.linkedSightingId,
+    sightingFormData.sightingId,
     payload,
   );
 }
@@ -108,7 +109,7 @@ async function buildSightingPayload(
     lastSeenTime: sightingFormData.lastSeenTime,
     reporterName: sightingFormData.reporterName,
     reporterPhone: sightingFormData.reporterPhone,
-  } as any;
+  } as Partial<AggregatedSighting>;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     payload.petId = sightingFormData.id;

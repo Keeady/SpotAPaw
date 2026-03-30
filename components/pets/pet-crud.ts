@@ -78,9 +78,9 @@ export async function onDeletePet(id: string, userId: string) {
     });
 }
 
-export function onEditPet(id: string, linkedSightingId?: string) {
-  if (linkedSightingId) {
-    router.navigate(`/(app)/pets/edit?petId=${id}&id=${linkedSightingId}`);
+export function onEditPet(id: string, sightingId?: string) {
+  if (sightingId) {
+    router.navigate(`/(app)/pets/edit?petId=${id}&id=${sightingId}`);
     return;
   }
   router.navigate(`/(app)/pets/edit?petId=${id}`);
@@ -131,10 +131,16 @@ async function onPetFound(id: string) {
     });
 }
 
-export async function viewPetSightings(id: string) {
+export async function viewPetSightings(
+  id: string,
+  linkedSightingId: string,
+  petId: string,
+) {
   if (!id) {
     router.navigate(`/(app)/my-sightings`);
     return;
   }
-  router.navigate(`/(app)/my-sightings/${id}`);
+  router.navigate(
+    `/(app)/my-sightings/${id}?petId=${petId}&linkedSightingId=${linkedSightingId}`,
+  );
 }

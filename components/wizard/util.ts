@@ -24,7 +24,8 @@ export const defaultSightingFormData = {
   petBehavior: "",
   gender: "",
   note: "",
-  linkedSightingId: "", // aggregate sighting id
+  sightingId: "", // aggregate sighting id
+  linkedSightingId: "", // aggregate linked sighting id
   photoUrl: "",
   isLost: false,
   aiMessage: "",

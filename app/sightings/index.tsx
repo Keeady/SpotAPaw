@@ -21,7 +21,7 @@ export default function SightingAnonList() {
         activeOpacity={0.7}
         onPress={() =>
           router.push(
-            `/sightings/${item.linkedSightingId}/?petId=${item.petId}`,
+            `/sightings/${item.id}/?petId=${item.petId}&linkedSightingId=${item.linkedSightingId}`,
           )
         }
       >

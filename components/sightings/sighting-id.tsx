@@ -9,20 +9,31 @@ import { useConfirmPetFound } from "../pets/pet-crud";
 import { createErrorLogMessage, isValidUuid } from "../util";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { ClaimRepository } from "@/db/repositories/claim-repository";
-import { handleAddingSighting, handleSharingSighting } from "./sighting-handler";
+import {
+  handleAddingSighting,
+  handleSharingSighting,
+} from "./sighting-handler";
 
 export default function SightingProfile() {
   const router = useRouter();
 
-  const { id: sightingId, petId } = useLocalSearchParams<{
+  const {
+    id: sightingId,
+    petId,
+    linkedSightingId,
+  } = useLocalSearchParams<{
     id: string;
     petId: string;
+    linkedSightingId: string;
   }>(); // pet id
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
 
-  const { loading, error, timeline, summary } = usePetSightings(sightingId);
+  const { loading, error, timeline, summary } = usePetSightings(
+    sightingId,
+    linkedSightingId,
+  );
 
   const { user } = useContext(AuthContext);
   const onPetFound = useConfirmPetFound();
@@ -43,7 +54,7 @@ export default function SightingProfile() {
           log(`Failed to fetch claim info for sighting: ${errorMessage}`);
         });
     }
-  }, [user?.id, petId, sightingId]);
+  }, [user?.id, sightingId]);
 
   useEffect(() => {
     if ((!summary?.name || !summary.ownerId) && petId && isValidUuid(petId)) {
@@ -97,7 +108,7 @@ export default function SightingProfile() {
     return;
   }
 
-  if (!timeline || timeline.length === 0 || loading || !summary) {
+  if (loading || !summary) {
     return null;
   }
 

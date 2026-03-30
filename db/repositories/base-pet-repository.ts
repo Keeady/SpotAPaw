@@ -1,7 +1,7 @@
 import { Pet } from "../models/pet";
 
 export interface IPetRepository {
-  getPet(id: string): Promise<Pet>;
+  getPet(id: string): Promise<Pet | undefined>;
   createPet(data: Pet): Promise<string>;
   updatePet(id: string, data: Pet): Promise<void>
   getPets(ownerId: string): Promise<Pet[]>;
@@ -12,7 +12,7 @@ export class BasePetRepository implements IPetRepository {
     deletePet(_id: string, _ownerId: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    getPet(_id: string): Promise<Pet> {
+    getPet(_id: string): Promise<Pet | undefined> {
         throw new Error("Method not implemented.");
     }
     createPet(_data: Pet): Promise<string> {

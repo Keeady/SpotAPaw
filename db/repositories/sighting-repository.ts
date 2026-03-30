@@ -23,6 +23,10 @@ export class SightingRepository implements ISightingRepository {
     const repository = new SupabaseSightingRepository(supabase);
     return repository.getSighting(id);
   }
+  getSightingByLinkedSightingId(linkedSightingId: string): Promise<AggregatedSighting> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getSightingByLinkedSightingId(linkedSightingId);
+  }
   createSighting(data: Partial<Sighting>): Promise<string> {
     const repository = new SupabaseSightingRepository(supabase);
     return repository.createSighting(data);

@@ -14,6 +14,7 @@ export type SightingReport = AggregatedSighting & {
   collar: "yes_collar" | "no";
   petBehavior: string;
   isLost: boolean;
+  sightingId: string;
 };
 
 export type PetImage = {

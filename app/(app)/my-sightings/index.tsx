@@ -21,7 +21,7 @@ export default function SightingList() {
         activeOpacity={0.7}
         onPress={() =>
           router.push(
-            `/(app)/my-sightings/${item.linkedSightingId}/?petId=${item.petId}`,
+            `/(app)/my-sightings/${item.id}/?petId=${item.petId}&linkedSightingId=${item.linkedSightingId}`,
           )
         }
       >

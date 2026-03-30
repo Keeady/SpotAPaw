@@ -19,9 +19,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../Provider/auth-provider";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
-import { createErrorLogMessage } from "../util";
+import { createErrorLogMessage, isValidUuid } from "../util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { showMessage } from "react-native-flash-message";
 
 const GUEST_REPORTS_KEY = "@guest_reports";
 
@@ -102,9 +103,61 @@ const ReportListPage = () => {
     return status === true ? theme.colors.primary : "green";
   };
 
-  const onNavigateReport = (isActive: boolean, sightingId: string) => {
+  const fetchSightingByLinkedId = useCallback(
+    async (linkedSightingId: string) => {
+      const repository = new SightingRepository();
+      return repository.getSightingByLinkedSightingId(linkedSightingId);
+    },
+    [],
+  );
+
+  const onNavigateReport = (isActive: boolean, linkedSightingId: string) => {
     if (isActive) {
-      return router.navigate(`/(app)/my-sightings/${sightingId}`);
+      if (!isValidUuid(linkedSightingId)) {
+        log(`Report: Invalid linkedSightingId: ${linkedSightingId}`);
+        showMessage({
+          message: "Error",
+          description: "An error occurred. Please try again.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
+        return;
+      }
+
+      setLoading(true);
+      // fetch the sighting by linkedSightingId to get the actual sightingId
+      fetchSightingByLinkedId(linkedSightingId)
+        .then((sighting) => {
+          if (!sighting) {
+            showMessage({
+              message: "Error",
+              description: "Sighting report not found.",
+              type: "warning",
+              icon: "warning",
+              statusBarHeight: 50,
+            });
+            return;
+          }
+
+          router.navigate(
+            `/(app)/my-sightings/${sighting.id}/?linkedSightingId=${linkedSightingId}&petId=${sighting.petId}`,
+          );
+        })
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Report: Failed to fetch sighting: ${errorMessage}`);
+          showMessage({
+            message: "Error",
+            description: "Failed to navigate to sighting details.",
+            type: "warning",
+            icon: "warning",
+            statusBarHeight: 50,
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 

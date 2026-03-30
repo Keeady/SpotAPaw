@@ -8,7 +8,7 @@ export class PetRepository implements IPetRepository {
     const petRepository = new SupabasePetRepository(supabase);
     return petRepository.deletePet(id, ownerId);
   }
-  getPet(id: string): Promise<Pet> {
+  getPet(id: string): Promise<Pet | undefined> {
     const petRepository = new SupabasePetRepository(supabase);
     return petRepository.getPet(id);
   }

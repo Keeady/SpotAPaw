@@ -81,11 +81,17 @@ export function ChoosePet({
     if (selectedPetId) {
       const pet = pets.find((p) => p.id === selectedPetId);
       if (pet) {
-        Object.keys(pet).map((key) => {
-          if (key in pet) {
-            updateSightingData(key, pet[key]);
-          }
-        });
+        updateSightingData("species", pet.species);
+        updateSightingData("age", pet.age);
+        updateSightingData("name", pet.name);
+        updateSightingData("breed", pet.breed);
+        updateSightingData("colors", pet.colors);
+        updateSightingData("gender", pet.gender);
+        updateSightingData("features", pet.features);
+        updateSightingData("note", pet.note);
+        updateSightingData("photo", pet.photo);
+        updateSightingData("isLost", pet.isLost);
+        updateSightingData("id", pet.id);
       }
     }
   }, [selectedPetId, pets, updateSightingData]);
