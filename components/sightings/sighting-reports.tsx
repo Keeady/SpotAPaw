@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../Provider/auth-provider";
 import { useRouter } from "expo-router";
 import { log } from "../logs";
-import { createErrorLogMessage } from "../util";
+import { createErrorLogMessage, isValidUuid } from "../util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { showMessage } from "react-native-flash-message";
@@ -113,6 +113,18 @@ const ReportListPage = () => {
 
   const onNavigateReport = (isActive: boolean, linkedSightingId: string) => {
     if (isActive) {
+      if (!isValidUuid(linkedSightingId)) {
+        log(`Report: Invalid linkedSightingId: ${linkedSightingId}`);
+        showMessage({
+          message: "Error",
+          description: "An error occurred. Please try again.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
+        return;
+      }
+
       setLoading(true);
       // fetch the sighting by linkedSightingId to get the actual sightingId
       fetchSightingByLinkedId(linkedSightingId)

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { log } from "../logs";
-import { createErrorLogMessage } from "../util";
+import { createErrorLogMessage, isValidUuid } from "../util";
 
 export function usePetSightings(sightingId: string, linkedSightingId: string) {
   const [loading, setLoading] = useState(true);
@@ -13,6 +13,13 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
   const fetchSummary = useCallback(async (sightingId: string) => {
     setLoading(true);
     setError("");
+
+    if (!sightingId || !isValidUuid(sightingId)) {
+      log(`Sighting Details: Invalid sightingId: ${sightingId}`);
+      setError("Error fetching sighting info.");
+      setLoading(false);
+      return;
+    }
 
     const repository = new SightingRepository();
     repository
@@ -25,7 +32,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
       .catch((error) => {
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to fetch sighting summary for sighting: ${errorMessage}`);
-        setError("Error fetching sighting info.");
+        setError("Error fetching sighting info. Please try again.");
       })
       .finally(() => {
         setLoading(false);
@@ -36,6 +43,13 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
     async (linkedSightingId: string) => {
       setLoading(true);
       setError("");
+
+      if (!linkedSightingId || !isValidUuid(linkedSightingId)) {
+        log(`Sighting Details: Invalid linkedSightingId: ${linkedSightingId}`);
+        setError("Error fetching sighting info. Please try again.");
+        setLoading(false);
+        return;
+      }
 
       const repository = new SightingRepository();
       repository
@@ -50,7 +64,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
           log(
             `Failed to fetch sighting summary for linked sighting: ${errorMessage}`,
           );
-          setError("Error fetching sighting info.");
+          setError("Error fetching sighting info. Please try again.");
         })
         .finally(() => {
           setLoading(false);
@@ -64,6 +78,15 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
       setLoading(true);
       setError("");
 
+      if (!linkedSightingId || !isValidUuid(linkedSightingId)) {
+        log(
+          `Sighting Details: Invalid linkedSightingId for timeline fetch: ${linkedSightingId}`,
+        );
+        setError("Error fetching sighting info. Please try again.");
+        setLoading(false);
+        return;
+      }
+
       const repository = new SightingRepository();
       repository
         .getLinkedSightings(linkedSightingId)
@@ -75,7 +98,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
           log(`Failed to fetch linked sightings for sighting: ${errorMessage}`);
-          setError("Error fetching sighting info.");
+          setError("Error fetching sighting info. Please try again.");
         })
         .finally(() => {
           setLoading(false);
