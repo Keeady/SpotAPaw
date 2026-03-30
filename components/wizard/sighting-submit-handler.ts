@@ -1,3 +1,4 @@
+import { AggregatedSighting } from "@/db/models/sighting";
 import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
@@ -108,14 +109,14 @@ async function buildSightingPayload(
     lastSeenTime: sightingFormData.lastSeenTime,
     reporterName: sightingFormData.reporterName,
     reporterPhone: sightingFormData.reporterPhone,
-  } as any;
+  } as AggregatedSighting;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     payload.petId = sightingFormData.id;
   }
 
   if (sightingFormData.sightingId && isValidUuid(sightingFormData.sightingId)) {
-    payload.sightingId = sightingFormData.sightingId;
+    payload.id = sightingFormData.sightingId;
   }
 
   if (
