@@ -153,5 +153,6 @@ function buildSightingPayload(
     size: (sightingFormData as SightingReport).size,
     collarDescription: (sightingFormData as SightingReport).collarDescription,
     linkedSightingId: (sightingFormData as SightingReport).linkedSightingId,
+    sightingId: (sightingFormData as SightingReport).id,
   } as SightingReport;
 }

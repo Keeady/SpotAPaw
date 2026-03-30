@@ -57,16 +57,16 @@ export async function updateSighting(
   sightingFormData: SightingReport,
 ) {
   if (
-    !sightingFormData.linkedSightingId ||
-    !isValidUuid(sightingFormData.linkedSightingId)
+    !sightingFormData.sightingId ||
+    !isValidUuid(sightingFormData.sightingId)
   ) {
-    throw new Error("Missing or invalid linked sighting id");
+    throw new Error("Missing or invalid sighting id");
   }
 
   const payload = await buildSightingPayload(photo, sightingFormData);
   const sightingRepository = new SightingRepository();
   return await sightingRepository.updateSighting(
-    sightingFormData.linkedSightingId,
+    sightingFormData.sightingId,
     payload,
   );
 }
@@ -112,6 +112,10 @@ async function buildSightingPayload(
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
     payload.petId = sightingFormData.id;
+  }
+
+  if (sightingFormData.sightingId && isValidUuid(sightingFormData.sightingId)) {
+    payload.sightingId = sightingFormData.sightingId;
   }
 
   if (

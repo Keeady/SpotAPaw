@@ -83,17 +83,21 @@ export default function PetProfile() {
     );
   }
 
+  const sightingId = sighting ? sighting.id : "";
+  const linkedSightingId = sighting ? sighting.linkedSightingId : "";
+  const petId = pet ? pet.id : "";
+
   return (
     <RenderPetDetails
       pet={pet}
       onDeletePet={() => onConfirmDelete(pet.name, pet.id, user.id)}
       onEditPet={() =>
-        onEditPet(pet.id, sighting ? sighting.linkedSightingId : undefined)
+        onEditPet(petId, sightingId)
       }
       onPetLost={() => onPetLost(pet.id)}
       onPetFound={() => onPetFound(pet.name, pet.id)}
       viewPetSightings={() =>
-        viewPetSightings(sighting ? sighting.linkedSightingId : "")
+        viewPetSightings(sightingId, linkedSightingId, petId)
       }
     />
   );

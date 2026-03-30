@@ -18,6 +18,7 @@ export type PetReportData = {
   gender: string | null;
   notes: string | null;
   collarDescription: string | null;
+  sightingId?: string | null;
   linkedSightingId: string | null;
   photoUrl?: string | null;
   is_lost?: boolean;

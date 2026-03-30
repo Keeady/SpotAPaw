@@ -184,17 +184,19 @@ export default function SightingDetail({
             </Card.Actions>
           </Card>
 
-          <Text
-            variant="titleLarge"
-            style={{
-              marginTop: 16,
-              marginBottom: 16,
-              fontSize: 22,
-              fontWeight: "bold",
-            }}
-          >
-            Sighting Timeline
-          </Text>
+          {sightings.length > 0 && (
+            <Text
+              variant="titleLarge"
+              style={{
+                marginTop: 16,
+                marginBottom: 16,
+                fontSize: 22,
+                fontWeight: "bold",
+              }}
+            >
+              Sighting Timeline
+            </Text>
+          )}
 
           {sightings.map((sighting, index) => {
             const reportName = sighting.reporterName;

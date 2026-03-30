@@ -105,13 +105,14 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   );
 
   const {
-    id: linkedSightingId,
+    id: sightingId,
     petId,
     is_lost: isPetLost,
   } = useLocalSearchParams<{
     id: string;
     petId: string;
     is_lost: string;
+    linkedSightingId: string;
   }>();
 
   const updateSightingData = useCallback(
@@ -138,13 +139,13 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   }, [reportType]);
 
   useEffect(() => {
-    if (linkedSightingId && isValidUuid(linkedSightingId)) {
+    if (sightingId && isValidUuid(sightingId)) {
       setCurrentStep("upload_photo");
-      updateSightingData("linkedSightingId", linkedSightingId);
+      updateSightingData("sightingId", sightingId);
 
       const repository = new SightingRepository();
       repository
-        .getSighting(linkedSightingId)
+        .getSighting(sightingId)
         .then((data) => {
           if (!isMountedRef.current) {
             return;
@@ -176,7 +177,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("colors", sighting.colors);
           updateSightingData("size", sighting.size);
           updateSightingData("gender", sighting.gender);
-          updateSightingData("linkedSightingId", sighting.linkedSightingId);
+          if (sighting.linkedSightingId) {
+            updateSightingData("linkedSightingId", sighting.linkedSightingId);
+          }
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
@@ -191,7 +194,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           });
         });
     }
-  }, [linkedSightingId, updateSightingData, action]);
+  }, [sightingId, updateSightingData, action]);
 
   useEffect(() => {
     if (action === "add-pet") {
@@ -349,7 +352,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       return "submit";
     }
 
-    if (linkedSightingId && isValidUuid(linkedSightingId)) {
+    if (sightingId && isValidUuid(sightingId)) {
       if (currentStep === "start") {
         return "upload_photo";
       } else if (currentStep === "upload_photo") {
@@ -383,7 +386,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   }, [
     currentStep,
     reportType,
-    linkedSightingId,
+    sightingId,
     sightingFormData.isLost,
     action,
   ]);

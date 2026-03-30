@@ -102,9 +102,11 @@ const ReportListPage = () => {
     return status === true ? theme.colors.primary : "green";
   };
 
-  const onNavigateReport = (isActive: boolean, sightingId: string) => {
+  const onNavigateReport = (isActive: boolean, linkedSightingId: string) => {
     if (isActive) {
-      return router.navigate(`/(app)/my-sightings/${sightingId}`);
+      return router.navigate(
+        `/(app)/my-sightings/${linkedSightingId}/?linkedSightingId=${linkedSightingId}&type=report`,
+      );
     }
   };
 
