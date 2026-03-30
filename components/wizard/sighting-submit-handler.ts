@@ -115,10 +115,6 @@ async function buildSightingPayload(
     payload.petId = sightingFormData.id;
   }
 
-  if (sightingFormData.sightingId && isValidUuid(sightingFormData.sightingId)) {
-    payload.id = sightingFormData.sightingId;
-  }
-
   if (
     sightingFormData.linkedSightingId &&
     isValidUuid(sightingFormData.linkedSightingId)
