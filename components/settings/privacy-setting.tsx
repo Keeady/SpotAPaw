@@ -1,6 +1,11 @@
 import { List } from "react-native-paper";
 
-const PrivacySetting = ({ iconColorPrivacy, onOpenPrivacyPolicy }: any) => {
+interface PrivacySettingProps {
+  iconColorPrivacy: string;
+  onOpenPrivacyPolicy: () => void;
+}
+
+const PrivacySetting = ({ iconColorPrivacy, onOpenPrivacyPolicy }: PrivacySettingProps) => {
   return (
     <List.Item
       title="Privacy Policy"
