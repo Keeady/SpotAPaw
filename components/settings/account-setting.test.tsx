@@ -1,12 +1,12 @@
-import { fireEvent, render, userEvent } from "@testing-library/react-native";
-import React, { act } from "react";
-import { List, Provider as PaperProvider } from "react-native-paper";
+import { fireEvent, render } from "@testing-library/react-native";
+import React from "react";
+import { Provider as PaperProvider } from "react-native-paper";
 import AccountSetting from "./account-setting";
 import { Text } from "react-native";
 
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <PaperProvider settings={{icon: MockIcon}}>{children}</PaperProvider>
+  <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
 );
 
 describe("AccountSetting Component", () => {
@@ -30,7 +30,6 @@ describe("AccountSetting Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
 
   it("renders correctly with all required elements", () => {
     const { getByText } = render(
@@ -105,7 +104,7 @@ describe("AccountSetting Component", () => {
     const mockHandleConfirmationAccountDeletion = jest.fn();
     const mockSetDeleteConfirmationText = jest.fn();
 
-    const { getByText, getByTestId, getByPlaceholderText, debug } = render(
+    const { getByText, getByTestId, getByPlaceholderText } = render(
       <TestWrapper>
         <AccountSetting
           {...defaultProps}

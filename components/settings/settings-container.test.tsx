@@ -4,25 +4,24 @@ import { Provider as PaperProvider } from "react-native-paper";
 import { Text } from "react-native";
 import { AuthContext } from "../Provider/auth-provider";
 import { PermissionContext } from "../Provider/permission-provider";
-import {
-  AIFeatureContext,
-} from "../Provider/ai-context-provider";
+import { AIFeatureContext } from "../Provider/ai-context-provider";
 
 const fakeUser = { id: "test-user-id" };
 
-var mockSetItem = jest.fn();
-var mockGetItem = jest.fn();
+const mockSetItem = jest.fn();
+const mockGetItem = jest.fn();
 jest.mock("@react-native-async-storage/async-storage", () => ({
   setItem: (key: string, value: string) => mockSetItem(key, value),
   getItem: (key: string) => mockGetItem(key),
 }));
 
-var mockOnDeleteAccount = jest.fn();
+const mockOnDeleteAccount = jest.fn();
 jest.mock("@/components/account/delete", () => ({
   onDeleteAccount: () => mockOnDeleteAccount(),
 }));
 
-var mockGetSavedLocation = jest.fn();
+const mockGetSavedLocation = jest.fn();
+
 jest.mock("../Provider/permission-provider", () => {
   const React = require("react");
   const PermissionContext = React.createContext({
@@ -71,20 +70,26 @@ jest.mock("expo-application", () => ({
   nativeApplicationVersion: "1.0.0",
 }));
 
-var mockRouterPush = jest.fn();
+const mockRouterPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({
     push: mockRouterPush,
   }),
 }));
 
-var mockGetCurrentUserLocationV3 = jest.fn();
+const mockGetCurrentUserLocationV3 = jest.fn();
 jest.mock("@/components/get-current-location", () => ({
   getCurrentUserLocationV3: () => mockGetCurrentUserLocationV3(),
 }));
 
 const MockIcon = () => <Text testID="icon">Icon</Text>;
-const TestWrapper = ({ children, user }: { children: React.ReactNode, user: any }) => (
+const TestWrapper = ({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: any;
+}) => (
   <AuthContext.Provider value={{ user }}>
     <PermissionContext.Provider
       value={{
@@ -214,7 +219,7 @@ describe("SettingsContainer Component", () => {
     expect(await findByText("50 km")).toBeTruthy();
     expect(await findByText("100 km")).toBeTruthy();
   });
-  
+
   it("renders correctly when location is not available", async () => {
     mockGetCurrentUserLocationV3.mockResolvedValue(null);
 
@@ -241,7 +246,11 @@ describe("SettingsContainer Component", () => {
     expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
 
     expect(await findByText("Grant Location Permission")).toBeTruthy();
-    expect(await findByText("Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.")).toBeTruthy();
+    expect(
+      await findByText(
+        "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.",
+      ),
+    ).toBeTruthy();
     expect(await findByText("Open Settings")).toBeTruthy();
     expect(await findByText("Cancel")).toBeTruthy();
     expect(await findByText("No location set")).toBeTruthy();
@@ -275,7 +284,11 @@ describe("SettingsContainer Component", () => {
     expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
 
     expect(await findByText("Grant Location Permission")).toBeTruthy();
-    expect(await findByText("Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.")).toBeTruthy();
+    expect(
+      await findByText(
+        "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.",
+      ),
+    ).toBeTruthy();
     expect(await findByText("Open Settings")).toBeTruthy();
     expect(await findByText("Cancel")).toBeTruthy();
     expect(await findByText("No location set")).toBeTruthy();
@@ -292,7 +305,7 @@ describe("SettingsContainer Component", () => {
     expect(getByText("About")).toBeTruthy();
     expect(getByText("Learn more about the app")).toBeTruthy();
 
-        expect(getByText("Location")).toBeTruthy();
+    expect(getByText("Location")).toBeTruthy();
     expect(getByText("Location Permission")).toBeTruthy();
     expect(getByText("Disabled")).toBeTruthy();
     expect(getByText("Request")).toBeTruthy();

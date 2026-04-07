@@ -37,7 +37,7 @@ describe("LocationResetSetting Component", () => {
   });
 
   it("calls setResetLocationDialogVisible when Reset button is pressed", () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <TestWrapper>
         <LocationResetSetting {...defaultProps} />
       </TestWrapper>,
@@ -271,7 +271,7 @@ describe("LocationResetSetting Component", () => {
     const mockHandleResetSavedLocation = jest.fn();
     const mockSetLocationResetSuccessDialogVisible = jest.fn();
 
-    const { getByText, rerender, getByTestId } = render(
+    const { rerender, getByTestId } = render(
       <TestWrapper>
         <LocationResetSetting
           {...defaultProps}
