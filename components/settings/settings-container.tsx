@@ -239,7 +239,6 @@ const SettingsContainer = () => {
   };
 
   const handleConfirmAccountDeletion = async () => {
-    console.log("handleConfirmAccountDeletion called with text:", deleteConfirmText);
     if (deleteConfirmText.trim().toLowerCase() !== "delete") {
       setErrorMessage("Please type DELETE to confirm");
       setErrorDialogVisible(true);
