@@ -3,7 +3,11 @@ import { uploadPhotoWithProcessing } from "../image-upload-handler";
 import type { AnalysisResponse } from "./types";
 
 interface UsePetAnalyzerOptions {
-  onSuccess?: (result?: AnalysisResponse, publicUrl?: string) => void;
+  onSuccess?: (
+    result?: AnalysisResponse,
+    publicUrl?: string,
+    petDescriptionId?: string,
+  ) => void;
 }
 
 interface UsePetAnalyzerReturn {
@@ -39,7 +43,9 @@ export function usePetAnalyzer(
     async (uri: string, filename: string, filetype: string) => {
       try {
         if (!uri || !filename || !filetype) {
-          throw new Error("Missing required parameters uri or filename or filetype.");
+          throw new Error(
+            "Missing required parameters uri or filename or filetype.",
+          );
         }
 
         setLoading(true);
@@ -53,16 +59,20 @@ export function usePetAnalyzer(
           throw new Error("Failed with no response");
         }
 
-        const { result, publicUrl } = response;
+        const { result, publicUrl, petDescriptionId } = response;
 
         if (result) {
           const data = parseJsonResponse(result);
-          onSuccess?.(data, publicUrl);
+          onSuccess?.(data, publicUrl, petDescriptionId);
           return;
         }
 
         if (publicUrl) {
-          onSuccess?.(undefined, publicUrl);
+          onSuccess?.(undefined, publicUrl, petDescriptionId);
+        }
+
+        if (petDescriptionId) {
+          onSuccess?.(undefined, undefined, petDescriptionId);
         }
       } catch (error) {
         throw error;

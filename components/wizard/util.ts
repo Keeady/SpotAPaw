@@ -39,6 +39,7 @@ export const defaultSightingFormData = {
   petId: "", // pet id
   isActive: true,
   reporterId: "",
+  petDescriptionId: "",
 } as SightingReport;
 
 export const validate = (

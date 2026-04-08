@@ -15,5 +15,6 @@ export interface Pet {
     lastSeenLong: number,
     lastSeenLocation: string,
     note: string,
-    photo: string
+    photo: string,
+    petDescriptionId: string
 }

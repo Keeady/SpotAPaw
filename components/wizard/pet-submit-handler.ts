@@ -124,6 +124,7 @@ async function buildPetPayload(
     lastSeenLat: sightingFormData.lastSeenLat,
     lastSeenLong: sightingFormData.lastSeenLong,
     lastSeenLocation: lastSeenFormatted,
+    petDescriptionId: sightingFormData.petDescriptionId,
   } as Partial<SightingPet>;
 
   if (userId && isValidUuid(userId)) {
@@ -154,5 +155,6 @@ function buildSightingPayload(
     collarDescription: (sightingFormData as SightingReport).collarDescription,
     linkedSightingId: (sightingFormData as SightingReport).linkedSightingId,
     sightingId: (sightingFormData as SightingReport).sightingId,
+    petDescriptionId: sightingFormData.petDescriptionId,
   } as SightingReport;
 }
