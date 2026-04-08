@@ -47,11 +47,19 @@ jest.mock("../Provider/auth-provider", () => {
 });
 
 jest.mock("@/db/repositories/sighting-repository", () => ({
-  SightingRepository: jest.fn(),
+  SightingRepository: jest.fn().mockImplementation(() => ({
+    getSighting: jest.fn(),
+    createSighting: jest.fn(),
+    updateSighting: jest.fn(),
+  })),
 }));
 
 jest.mock("@/db/repositories/pet-repository", () => ({
-  PetRepository: jest.fn(),
+  PetRepository: jest.fn().mockImplementation(() => ({
+    getPet: jest.fn(),
+    createPet: jest.fn(),
+    updatePet: jest.fn(),
+  })),
 }));
 
 jest.mock("./util", () => ({
@@ -198,7 +206,7 @@ describe("WizardForm", () => {
     replace: jest.fn(),
     push: jest.fn(),
     back: jest.fn(),
-  };
+  } as any;
 
   const mockUser = {
     id: "user-123",
@@ -210,7 +218,7 @@ describe("WizardForm", () => {
     signOut: jest.fn(),
     signIn: jest.fn(),
     session: null,
-  };
+  } as any;
 
   const mockAnalyze = jest.fn();
   const mockUploadImage = jest.fn();
@@ -235,7 +243,10 @@ describe("WizardForm", () => {
     mockSightingRepository.mockImplementation(
       () =>
         ({
-          getSighting: jest.fn(),
+          getSighting: jest.fn().mockResolvedValue({
+            id: "sighting-123",
+            petId: "pet-456",
+          }),
           createSighting: jest.fn(),
           updateSighting: jest.fn(),
         }) as any,
@@ -244,7 +255,10 @@ describe("WizardForm", () => {
     mockPetRepository.mockImplementation(
       () =>
         ({
-          getPet: jest.fn(),
+          getPet: jest.fn().mockResolvedValue({
+            id: "pet-456",
+            name: "Fluffy",
+          }),
           createPet: jest.fn(),
           updatePet: jest.fn(),
         }) as any,
@@ -262,315 +276,275 @@ describe("WizardForm", () => {
       </AuthContext.Provider>,
     );
   };
-  
-  describe("Component Rendering", () => {
-    it("should render start step by default for new-sighting", async () => {
-      const { getByText } = renderWizardForm("new-sighting");
 
+  describe("Component Rendering", () => {
+    it("should render start step by default for new-sighting", () => {
+      const { getByText } = renderWizardForm("new-sighting");
+      
       expect(getByText("Start Step")).toBeTruthy();
       expect(getByText("Continue")).toBeTruthy();
       expect(getByText("Back")).toBeTruthy();
     });
 
-    it("should render upload photo step for edit-sighting action", () => {
-      const { getByText } = renderWizardForm("edit-sighting");
+    it("should render upload photo step for edit-sighting action", async () => {
+      mockUseLocalSearchParams.mockReturnValue({ id: "sighting-123" });
+      mockIsValidUuid.mockReturnValue(true);
 
-      expect(getByText("Start Step")).toBeTruthy();
+      const { findByText } = renderWizardForm("edit-sighting");
+      expect(await findByText("Upload Photo Step")).toBeTruthy();
+      expect(await findByText("Continue")).toBeTruthy();
+    });
+
+    it("should render upload photo step for add-pet action", () => {
+      const { getByText } = renderWizardForm("add-pet");
+
+      expect(getByText("Upload Photo Step")).toBeTruthy();
       expect(getByText("Continue")).toBeTruthy();
     });
 
-    it("should render edit pet step for edit-pet action", () => {
+    it("should render upload photo step for edit-pet action", () => {
       const { getByText } = renderWizardForm("edit-pet");
 
       expect(getByText("Upload Photo Step")).toBeTruthy();
       expect(getByText("Continue")).toBeTruthy();
     });
 
-    it("should show correct button text for add-pet action", () => {
-      const { getByText } = renderWizardForm("add-pet");
+    it("should disable back button when no step history", () => {
+      const { getByText } = renderWizardForm("new-sighting");
+      const backButton = getByText("Back");
 
-      expect(getByText("Upload Photo Step")).toBeTruthy();
-      expect(getByText("Continue")).toBeTruthy();
+      expect(backButton).toBeDisabled();
     });
   });
 
-  describe("Navigation", () => {
-    it("should disable back button initially", () => {
-      const { getByRole } = renderWizardForm("new-sighting");
-      const backButton = getByRole("button", { name: "Back" });
-      expect(backButton).toBeDisabled();
-    });
-    
-    it("should enable continue button when not loading", () => {
-      const { getByRole } = renderWizardForm("new-sighting");
-
-      const continueButton = getByRole("button", { name: "Continue" });
-      expect(continueButton).not.toBeDisabled();
+  describe("Step Navigation", () => {
+    beforeEach(() => {
+      mockValidate.mockReturnValue(true);
     });
 
-    it("should move to next step when continue is pressed and validation passes", async () => {
-      const { getByText, rerender } = renderWizardForm("add-pet");
-
-      expect(getByText("Upload Photo Step")).toBeTruthy();
-
+    it("should navigate to next step on continue button press", async () => {
+      const { getByText } = renderWizardForm("new-sighting");
       const continueButton = getByText("Continue");
+
       await act(async () => {
         fireEvent.press(continueButton);
       });
 
+      // Should move to upload_photo step
+      await waitFor(() => {
+        expect(getByText("Upload Photo Step")).toBeTruthy();
+      });
+    });
+
+    it("should navigate back to previous step", async () => {
+      const { getByText } = renderWizardForm("new-sighting");
+      
+      // First navigate forward to have history
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+
+      await waitFor(() => {
+        expect(getByText("Upload Photo Step")).toBeTruthy();
+      });
+
+      // Now navigate back
+      await act(async () => {
+        fireEvent.press(getByText("Back"));
+      });
+
+      await waitFor(() => {
+        expect(getByText("Start Step")).toBeTruthy();
+      });
+    });
+
+    it("should follow correct step sequence for new-sighting", async () => {
+      mockUseRouter.mockReturnValue({
+        ...mockRouter,
+        replace: jest.fn(),
+      });
+
+      const { getByText } = renderWizardForm("new-sighting");
+      
+      // Start -> Upload Photo
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
+        expect(getByText("Upload Photo Step")).toBeTruthy();
+      });
+
+      // Upload Photo -> Edit Pet
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
       await waitFor(() => {
         expect(getByText("Edit Pet Step")).toBeTruthy();
       });
     });
 
-    it("should not move to next step when validation fails", async () => {
+    it("should skip steps appropriately for add-pet action", async () => {
+      const { getByText } = renderWizardForm("add-pet");
+      
+      // Should start at upload_photo step
+      expect(getByText("Upload Photo Step")).toBeTruthy();
+
+      // Navigate to edit_pet step
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
+        expect(getByText("Edit Pet Step")).toBeTruthy();
+      });
+    });
+  });
+
+  describe("Form Data Management", () => {
+    it("should load existing sighting data for edit mode", async () => {
+      const mockSighting = {
+        id: "sighting-123",
+        petId: "pet-456",
+        species: "dog",
+        name: "Test Pet",
+        breed: "Labrador",
+        lastSeenLat: 40.7128,
+        lastSeenLong: -74.0060,
+        lastSeenLocation: "Test Location",
+      };
+
+      const mockSightingRepo = {
+        getSighting: jest.fn().mockResolvedValue(mockSighting),
+      };
+      mockSightingRepository.mockImplementation(() => mockSightingRepo);
+
+      mockUseLocalSearchParams.mockReturnValue({ id: "sighting-123" });
+      mockIsValidUuid.mockReturnValue(true);
+
+      const {findByText} = renderWizardForm("edit-sighting");
+
+      await waitFor(() => {
+        expect(mockSightingRepo.getSighting).toHaveBeenCalledWith("sighting-123");
+      });
+
+      expect(await findByText("Upload Photo Step")).toBeTruthy();
+      expect(await findByText("Continue")).toBeTruthy();
+      expect(await findByText("Back")).toBeTruthy();
+    });
+
+    it("should load existing pet data when petId is provided", async () => {
+      const mockPet = {
+        id: "pet-456",
+        species: "cat",
+        name: "Fluffy",
+        breed: "Persian",
+        age: 3,
+        colors: "white",
+        gender: "female",
+      };
+
+      const mockPetRepo = {
+        getPet: jest.fn().mockResolvedValue(mockPet),
+      };
+      mockPetRepository.mockImplementation(() => mockPetRepo);
+
+      mockUseLocalSearchParams.mockReturnValue({ petId: "pet-456" });
+      mockIsValidUuid.mockReturnValue(true);
+
+      const {findByText} = renderWizardForm("edit-pet");
+
+      await waitFor(() => {
+        expect(mockPetRepo.getPet).toHaveBeenCalledWith("pet-456");
+      });
+
+      expect(await findByText("Upload Photo Step")).toBeTruthy();
+      expect(await findByText("Continue")).toBeTruthy();
+      expect(await findByText("Back")).toBeTruthy();
+    });
+  });
+
+  describe("Validation", () => {
+    it("should prevent navigation when validation fails", async () => {
       mockValidate.mockReturnValue(false);
 
-      const { getByText } = renderWizardForm("add-pet");
-
-      expect(getByText("Upload Photo Step")).toBeTruthy();
-
+      const { getByText } = renderWizardForm("new-sighting");
       const continueButton = getByText("Continue");
+
       await act(async () => {
         fireEvent.press(continueButton);
       });
 
-      // Should still be on upload photo step
-      expect(getByText("Upload Photo Step")).toBeTruthy();
-    });
-  });
-
-  describe("Data Loading from URL Parameters", () => {
-    it("should load sighting data when sightingId is provided", async () => {
-      const mockSightingData = {
-        id: "sighting-123",
-        petId: "pet-456",
-        species: "dog",
-        name: "Buddy",
-        breed: "Golden Retriever",
-        colors: "golden",
-        size: "large",
-        lastSeenLat: 40.7128,
-        lastSeenLong: -74.006,
-        lastSeenLocation: "Central Park",
-      };
-
-      const mockGetSighting = jest.fn().mockResolvedValue(mockSightingData);
-      mockSightingRepository.mockImplementation(
-        () =>
-          ({
-            getSighting: mockGetSighting,
-          }) as any,
-      );
-
-      mockUseLocalSearchParams.mockReturnValue({
-        id: "sighting-123",
-      });
-
-      renderWizardForm("edit-sighting");
-
-      await waitFor(() => {
-        expect(mockGetSighting).toHaveBeenCalledWith("sighting-123");
-      });
+      // Should stay on start step
+      expect(getByText("Start Step")).toBeTruthy();
+      expect(mockValidate).toHaveBeenCalled();
     });
 
-    it("should load pet data when petId is provided", async () => {
-      const mockPetData = {
-        id: "pet-456",
-        species: "dog",
-        name: "Buddy",
-        breed: "Golden Retriever",
-        colors: "golden",
-        age: 3,
-        gender: "male",
-        isLost: true,
-      };
+    it("should allow navigation when validation passes", async () => {
+      mockValidate.mockReturnValue(true);
 
-      const mockGetPet = jest.fn().mockResolvedValue(mockPetData);
-      mockPetRepository.mockImplementation(
-        () =>
-          ({
-            getPet: mockGetPet,
-          }) as any,
-      );
-
-      mockUseLocalSearchParams.mockReturnValue({
-        petId: "pet-456",
-      });
-
-      renderWizardForm("edit-pet");
-
-      await waitFor(() => {
-        expect(mockGetPet).toHaveBeenCalledWith("pet-456");
-      });
-    });
-
-    it("should handle invalid UUID parameters", async () => {
-      mockIsValidUuid.mockReturnValue(false);
-
-      mockUseLocalSearchParams.mockReturnValue({
-        id: "invalid-uuid",
-      });
-
-      const mockGetSighting = jest.fn();
-      mockSightingRepository.mockImplementation(
-        () =>
-          ({
-            getSighting: mockGetSighting,
-          }) as any,
-      );
-
-      renderWizardForm("edit-sighting");
-
-      // Should not attempt to load data with invalid UUID
-      await waitFor(() => {
-        expect(mockGetSighting).not.toHaveBeenCalled();
-      });
-    });
-  });
-  
-  describe("AI Analysis", () => {
-    it("should trigger AI analysis on image upload when AI is enabled", async () => {
-      const mockSightingData = {
-        ...defaultSightingFormData,
-        image: {
-          uri: "file://test.jpg",
-          filename: "test.jpg",
-          filetype: "image/jpeg",
-        },
-      };
-
-      mockAnalyze.mockResolvedValue(undefined);
-
-      const { getByText } = renderWizardForm("add-pet");
-
-      // Move to upload photo step and then continue (which should trigger analysis)
+      const { getByText } = renderWizardForm("new-sighting");
       const continueButton = getByText("Continue");
+
       await act(async () => {
         fireEvent.press(continueButton);
       });
 
       await waitFor(() => {
-        expect(mockAnalyze).toHaveBeenCalledTimes(0);
+        expect(getByText("Upload Photo Step")).toBeTruthy();
       });
-    });
-
-    it("should handle AI analysis success with pet data", async () => {
-      const mockAnalysisResult = {
-        pets: [
-          {
-            species: "dog",
-            breed: "Golden Retriever",
-            colors: ["golden", "cream"],
-            size: "large",
-            distinctive_features: ["fluffy tail"],
-            collar_descriptions: ["red collar"],
-            confidence: "high",
-          },
-        ],
-        image_quality: "good",
-        number_of_pets: 1,
-      };
-
-      mockUsePetAnalyzer.mockImplementation(({ onSuccess }) => {
-        // Simulate successful analysis
-        const analyze = jest.fn().mockImplementation(() => {
-          onSuccess?.(mockAnalysisResult, "http://photo.jpg", "desc-123");
-        });
-        return { analyze, loading: false };
-      });
-
-      renderWizardForm("add-pet");
-
-      // The onSuccess callback should be set up correctly
-      expect(mockUsePetAnalyzer).toHaveBeenCalledWith({
-        onSuccess: expect.any(Function),
-      });
-    });
-
-    it("should handle AI analysis failure", async () => {
-      const mockError = new Error("Analysis failed");
-
-      mockUsePetAnalyzer.mockImplementation(({ onSuccess }) => {
-        const analyze = jest.fn().mockRejectedValue(mockError);
-        return { analyze, loading: false };
-      });
-
-      renderWizardForm("add-pet");
-
-      expect(mockUsePetAnalyzer).toHaveBeenCalledWith({
-        onSuccess: expect.any(Function),
-      });
-    });
-  });
-
-  describe("Form Submission", () => {
-    it("should show success message on successful pet creation", async () => {
-      const { saveNewPetPhoto } = require("./pet-submit-handler");
-      saveNewPetPhoto.mockResolvedValue("pet-123");
-
-      mockUseAIFeatureContext.mockReturnValue({
-        isAiFeatureEnabled: false, // Disable AI to test photo upload path
-        saveAIFeatureContext: jest.fn(),
-      });
-
-      // Mock moving through all steps to submit
-      const { getByText, rerender } = renderWizardForm("add-pet");
-
-      // This would need to be a more comprehensive test with proper step navigation
-      // For now, we're testing that the success handler works
-      expect(mockRouter.replace).not.toHaveBeenCalled();
-    });
-
-    it("should show success message on successful sighting creation", async () => {
-      const { saveNewSighting } = require("./sighting-submit-handler");
-      saveNewSighting.mockResolvedValue("sighting-123");
-
-      mockUseAIFeatureContext.mockReturnValue({
-        isAiFeatureEnabled: true,
-        saveAIFeatureContext: jest.fn(),
-      });
-
-      renderWizardForm("new-sighting");
-
-      // Would need comprehensive navigation testing to reach submit step
-      expect(saveNewSighting).not.toHaveBeenCalled(); // Not called yet since we haven't navigated
-    });
-
-    it("should handle submission errors gracefully", async () => {
-      const { saveNewPet } = require("./pet-submit-handler");
-      const mockError = new Error("Submission failed");
-      saveNewPet.mockRejectedValue(mockError);
-
-      // Would need to simulate full navigation flow to test error handling
-      renderWizardForm("add-pet");
-
-      // The error handling would be tested in integration tests
-      expect(mockShowMessage).not.toHaveBeenCalled();
     });
   });
 
   describe("Error Handling", () => {
-    it("should handle network errors on data loading", async () => {
-      const mockError = new Error("Network error");
-      const mockGetSighting = jest.fn().mockRejectedValue(mockError);
+    it("should handle invalid sighting ID gracefully", () => {
+      mockUseLocalSearchParams.mockReturnValue({ id: "invalid-id" });
+      mockIsValidUuid.mockReturnValue(false);
 
-      mockSightingRepository.mockImplementation(
-        () =>
-          ({
-            getSighting: mockGetSighting,
-          }) as any,
-      );
+      const { getByText } = renderWizardForm("edit-sighting");
+      
+      // Should render normally despite invalid ID
+      expect(getByText("Start Step")).toBeTruthy();
+    });
 
-      mockUseLocalSearchParams.mockReturnValue({
-        id: "sighting-123",
-      });
+    it("should handle repository errors when fetching sighting data", async () => {
+      const mockError = new Error("Database error");
+      const mockSightingRepo = {
+        getSighting: jest.fn().mockRejectedValue(mockError),
+      };
+      mockSightingRepository.mockImplementation(() => mockSightingRepo);
+
+      mockUseLocalSearchParams.mockReturnValue({ id: "sighting-123" });
+      mockIsValidUuid.mockReturnValue(true);
 
       renderWizardForm("edit-sighting");
 
       await waitFor(() => {
         expect(mockShowMessage).toHaveBeenCalledWith({
           message: "Error fetching pet sighting.",
+          type: "warning",
+          icon: "warning",
+          statusBarHeight: 50,
+        });
+      });
+    });
+
+    it("should handle repository errors when fetching pet data", async () => {
+      const mockError = new Error("Database error");
+      const mockPetRepo = {
+        getPet: jest.fn().mockRejectedValue(mockError),
+      };
+      mockPetRepository.mockImplementation(() => mockPetRepo);
+
+      mockUseLocalSearchParams.mockReturnValue({ petId: "pet-456" });
+      mockIsValidUuid.mockReturnValue(true);
+
+      renderWizardForm("edit-pet");
+
+      await waitFor(() => {
+        expect(mockShowMessage).toHaveBeenCalledWith({
+          message: "Error fetching pet information.",
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,

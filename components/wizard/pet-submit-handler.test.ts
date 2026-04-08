@@ -212,7 +212,7 @@ describe("Pet Submit Handler", () => {
     it("should create pet with correct payload and call onPetCreated", async () => {
       mockCreatePet.mockResolvedValue(mockPetId);
 
-      const result = await saveNewPet(
+      await saveNewPet(
         mockPhotoUrl,
         mockSightingPet,
         mockUserId,
