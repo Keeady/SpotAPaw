@@ -8,7 +8,7 @@ import useUploadPetImageUrl from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { isValidUuid } from "../util";
-import { defaultSightingFormData, validate } from "./util";
+import { validate } from "./util";
 import { WizardForm } from "./wizard-form";
 
 // Mock all dependencies

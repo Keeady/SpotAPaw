@@ -389,7 +389,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     sightingId,
     sightingFormData.isLost,
     action,
-    petId,
   ]);
 
   const handleNext = () => {
