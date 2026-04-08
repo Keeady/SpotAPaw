@@ -69,6 +69,7 @@ export function usePetAnalyzer(
 
         if (publicUrl) {
           onSuccess?.(undefined, publicUrl, petDescriptionId);
+          return;
         }
 
         if (petDescriptionId) {

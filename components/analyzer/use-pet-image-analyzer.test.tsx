@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { uploadPhotoWithProcessing } from "../image-upload-handler";
 import { usePetAnalyzer } from "./use-pet-image-analyzer";
+import { AnalysisResponse } from "./types";
 
 // Mock the image upload handler
 jest.mock("../image-upload-handler", () => ({
