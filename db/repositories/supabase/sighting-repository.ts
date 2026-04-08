@@ -258,6 +258,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       updatedAt: "updated_at",
       ownerId: "owner_id",
       linkedSightings: "linked_sightings",
+      petDescriptionId: "pet_description_id",
     };
 
     const normalizedPayload = {};
@@ -304,6 +305,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       updatedAt: "updated_at",
       ownerId: "owner_id",
       linkedSightings: "linked_sightings",
+      petDescriptionId: "pet_description_id",
     };
 
     const deNormalizedPayload = {} as AggregatedSighting;

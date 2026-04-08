@@ -483,13 +483,17 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   };
 
   const onImageAnalyzeSuccess = useCallback(
-    (data?: AnalysisResponse, publicUrl?: string) => {
+    (data?: AnalysisResponse, publicUrl?: string, petDescriptionId?: string) => {
       if (!isMountedRef.current) {
         return;
       }
 
       if (publicUrl) {
         updateSightingData("photo", publicUrl);
+      }
+
+      if (petDescriptionId) {
+        updateSightingData("petDescriptionId", petDescriptionId);
       }
 
       if (data && "pets" in data && data.pets.length > 0) {

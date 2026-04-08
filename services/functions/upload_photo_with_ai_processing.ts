@@ -137,6 +137,7 @@ Deno.serve(async (req: Request) => {
 
   let photoPublicUrl = "";
   let supabaseClient;
+  let petDescriptionResultId = "";
 
   try {
     // Initialize Supabase client
@@ -151,6 +152,7 @@ Deno.serve(async (req: Request) => {
     if (existingFile && existingFile.length > 0) {
       const existingPhotoPublicUrl = existingFile[0].public_url;
       const existingPetDescription = existingFile[0].description;
+      const existingPetDescriptionId = existingFile[0].id;
 
       if (existingPhotoPublicUrl && existingPetDescription) {
         return new Response(
@@ -158,6 +160,7 @@ Deno.serve(async (req: Request) => {
             success: true,
             result: existingPetDescription,
             publicUrl: existingPhotoPublicUrl,
+            petDescriptionId: existingPetDescriptionId,
           }),
           {
             headers: { "Content-Type": "application/json" },
@@ -261,17 +264,22 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save result to Supabase
-    await supabaseClient.from("pet_desc_results").insert({
+    const { data: insertedData } = await supabaseClient.from("pet_desc_results").insert({
       photo_hash: hash,
       description: textResponse,
       public_url: photoPublicUrl,
-    });
+    }).select("id");
+
+    if (insertedData && insertedData.length > 0) {
+      petDescriptionResultId = insertedData[0].id;
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
         result: textResponse,
         publicUrl: photoPublicUrl,
+        petDescriptionId: petDescriptionResultId,
       }),
       {
         headers: { "Content-Type": "application/json" },
