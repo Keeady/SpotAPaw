@@ -106,6 +106,9 @@ Deno.serve(async (req: Request) => {
     }
 
     const data = await response.json();
+    if (!data || !data.embedding || !data.embedding.values) {
+      return getErrorResponse("Invalid response from Gemini API", 500);
+    }
     embeddings = data.embedding.values;
 
     if (!embeddings) {
@@ -113,7 +116,7 @@ Deno.serve(async (req: Request) => {
     }
   } catch (error) {
     return getErrorResponse(
-      "Error while getting embedding from Gemini API",
+      "Error while processing embedding from Gemini API",
       500,
     );
   }
@@ -121,24 +124,15 @@ Deno.serve(async (req: Request) => {
   try {
     supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from("pet_desc_results")
       .update({
         embeddings,
       })
-      .eq("id", id)
-      .select("*")
-      .single();
+      .eq("id", id);
 
     if (error) {
       return getErrorResponse("Failed to update db with new embeddings", 500);
-    }
-
-    if (!data) {
-      return getErrorResponse(
-        "Failed to update pet description with embedding",
-        500,
-      );
     }
   } catch (error) {
     return getErrorResponse("Error while updating pet description", 500);
