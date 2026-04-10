@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, TextInput, HelperText } from "react-native-paper";
 import { useCallback, useContext, useEffect, useRef } from "react";
-import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import PhoneNumberInput from "../phone-number-util";
 import { CountryCode } from "libphonenumber-js";
@@ -10,6 +9,7 @@ import { OwnerRepository } from "@/db/repositories/owner-repository";
 import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { SightingWizardStepData } from "./wizard-interface";
 
 export function AddContact({
   updateSightingData,
