@@ -29,4 +29,5 @@ export interface AggregatedSighting extends Sighting {
     updatedAt: string;
     ownerId: string;
     linkedSightings: Sighting[];
+    similarityScore?: number;
 }

@@ -26,11 +26,17 @@ import {
   saveNewSighting,
   saveSightingPhoto,
   updateSighting,
-  WizardFormAction,
 } from "./sighting-submit-handler";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
-import { PetImage, SightingReport } from "./wizard-interface";
+import {
+  PetImage,
+  SightingReport,
+  SightingReportType,
+  SightingWizardSteps,
+  WizardFormAction,
+  WizardFormProps,
+} from "./wizard-interface";
 import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { log } from "../logs";
 import { createErrorLogMessage, isValidUuid } from "../util";
@@ -43,42 +49,7 @@ import {
   updatePet,
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
-
-export type SightingWizardSteps =
-  | "start"
-  | "upload_photo"
-  | "choose_pet"
-  | "edit_pet"
-  | "edit_pet_continued"
-  | "locate_pet"
-  | "add_time"
-  | "submit";
-
-export type SightingReportType =
-  | "lost_own"
-  | "found_stray"
-  | "new_pet"
-  | "edit_pet";
-
-export type SightingWizardStepData = {
-  sightingFormData: SightingReport;
-  updateSightingData: (
-    field: keyof SightingReport,
-    value: string | number | PetImage | boolean,
-  ) => void;
-  loading: boolean;
-  setReportType: (type: SightingReportType) => void;
-  reportType?: SightingReportType;
-  aiGenerated?: boolean;
-  isValidData?: boolean;
-  errorMessage?: string;
-  onResetErrorMessage?: () => void;
-  onResetAiGeneratedPhoto?: () => void;
-};
-
-type WizardFormProps = {
-  action: WizardFormAction;
-};
+import { FindMatch } from "./find-match";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const router = useRouter();
@@ -180,6 +151,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           if (sighting.linkedSightingId) {
             updateSightingData("linkedSightingId", sighting.linkedSightingId);
           }
+
+          if (sighting.petDescriptionId) {
+            updateSightingData("petDescriptionId", sighting.petDescriptionId);
+          }
+
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
@@ -327,6 +303,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             return updateNewPetPhoto(sightingFormData, uploadImage);
           }
         }
+      case "find_match":
+        return router.push(`/${sightingsRoute}`);
       default:
         return Promise.resolve();
     }
@@ -363,9 +341,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         return "locate_pet";
       } else if (currentStep === "locate_pet") {
         return "add_time";
+      } else if (currentStep === "add_time") {
+        return "submit";
       }
 
-      return "submit";
+      return "find_match";
     }
 
     if (currentStep === "start" && reportType === "lost_own") {
@@ -380,16 +360,12 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       return "locate_pet";
     } else if (currentStep === "locate_pet") {
       return "add_time";
+    } else if (currentStep === "add_time") {
+      return "submit";
     }
 
-    return "submit";
-  }, [
-    currentStep,
-    reportType,
-    sightingId,
-    sightingFormData.isLost,
-    action,
-  ]);
+    return "find_match";
+  }, [currentStep, reportType, sightingId, sightingFormData.isLost, action]);
 
   const handleNext = () => {
     setErrorMessage("");
@@ -430,7 +406,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             statusBarHeight: 50,
           });
 
-          router.replace(`/${sightingsRoute}`);
+          setCurrentStep("find_match");
         } else if (currentStep === "submit" && action === "edit-sighting") {
           showMessage({
             message: "Successfully updated pet sighting.",
@@ -438,8 +414,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             icon: "success",
             statusBarHeight: 50,
           });
-
-          router.replace(`/${sightingsRoute}`);
+          setCurrentStep("find_match");
         } else if (currentStep === "submit" && action === "add-pet") {
           showMessage({
             message: "Successfully added pet profile.",
@@ -483,7 +458,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   };
 
   const onImageAnalyzeSuccess = useCallback(
-    (data?: AnalysisResponse, publicUrl?: string, petDescriptionId?: string) => {
+    (
+      data?: AnalysisResponse,
+      publicUrl?: string,
+      petDescriptionId?: string,
+    ) => {
       if (!isMountedRef.current) {
         return;
       }
@@ -703,6 +682,17 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             reportType={reportType}
           />
         );
+      case "find_match":
+        return (
+          <FindMatch
+            sightingFormData={sightingFormData}
+            updateSightingData={updateSightingData}
+            loading={loading}
+            setReportType={setReportType}
+            isValidData={isValidData}
+            reportType={reportType}
+          />
+        );
       default:
         return null;
     }
@@ -741,6 +731,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       return currentStep === "submit" ? "Add Pet" : "Continue";
     } else if (action === "edit-pet") {
       return currentStep === "submit" ? "Update Pet" : "Continue";
+    }
+
+    if (currentStep === "find_match") {
+      return "Done";
     }
 
     return currentStep === "submit" ? "Submit" : "Continue";

@@ -97,6 +97,12 @@ export default function SightingProfile() {
     handleSharingSighting(sightingId, petName || summary?.name || "");
   }, [sightingId, petName, summary?.name]);
 
+  const onFindMatches = useCallback(() => {
+    router.push(
+      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId || ""}`,
+    );
+  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute]);
+
   if (error) {
     log(error);
     showMessage({
@@ -128,6 +134,7 @@ export default function SightingProfile() {
       isOwner={!!isOwner}
       onPetFound={isOwner ? handlePetFound : undefined}
       onShareSighting={onShareSighting}
+      onFindMatches={onFindMatches}
     />
   );
 }

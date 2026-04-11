@@ -7,6 +7,10 @@ import {
 import { SupabaseSightingRepository } from "./supabase/sighting-repository";
 
 export class SightingRepository implements ISightingRepository {
+  getMatchingSightings(id: string, petDescriptionId: string): Promise<AggregatedSighting[]> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getMatchingSightings(id, petDescriptionId);
+  }
   getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]> {
     const repository = new SupabaseSightingRepository(supabase);
     return repository.getSightingsByReporter(reporterId);

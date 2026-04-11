@@ -226,6 +226,36 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     return data.map((d) => this.denormalizePayload(d));
   }
 
+  async getMatchingSightings(
+    id: string,
+    petDescriptionId: string,
+  ): Promise<AggregatedSighting[]> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { data, error } = await this.supabaseClient.functions.invoke(
+      "get_pet_matches",
+      {
+        body: {
+          sightingId: id,
+          petDescriptionId: petDescriptionId,
+        },
+      },
+    );
+
+    const { data: result } = data;
+    if (error) {
+      throw error;
+    }
+
+    if (!result || result.length === 0) {
+      return [];
+    }
+
+    return result.map((d) => this.denormalizePayload(d));
+  }
+
   protected normalizePayload(payload: Partial<AggregatedSighting>) {
     type keyOfPet = keyof AggregatedSighting;
     type DBKey = {
@@ -259,6 +289,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       ownerId: "owner_id",
       linkedSightings: "linked_sightings",
       petDescriptionId: "pet_description_id",
+      similarityScore: "similarity_score",
     };
 
     const normalizedPayload = {};
@@ -306,6 +337,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       ownerId: "owner_id",
       linkedSightings: "linked_sightings",
       petDescriptionId: "pet_description_id",
+      similarityScore: "similarity_score",
     };
 
     const deNormalizedPayload = {} as AggregatedSighting;
