@@ -6,6 +6,17 @@ interface reqPayload {
   id: string;
 }
 
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
+
+if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
+  const error = "Missing environment variables";
+  throw new Error(error);
+}
+
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
 function getErrorResponse(error: string, status: number = 400, code?: string) {
   return new Response(
     JSON.stringify({
@@ -52,6 +63,15 @@ async function getEmbedding(apiKey: string, text: string) {
   });
 }
 
+function petToText(pet: Record<string, any>): string {
+  return [
+    `${pet.species} is a ${pet.size} size ${pet.breed}.`,
+    `Colors: ${pet.colors}.`,
+    `Collar Description: ${pet.collar_descriptions.join(', ') ?? ''}.`,
+    `Distinctive Features: ${pet.distinctive_features.join(', ') ?? ''}.`,
+  ].filter(Boolean).join(' ')
+};
+
 Deno.serve(async (req: Request) => {
   const { description, id }: reqPayload = await req.json();
 
@@ -59,30 +79,6 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse("Missing description or id");
   }
 
-  const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
-  if (!geminiApiKey) {
-    const error = "GOOGLE_GENAI_API_KEY environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-
-  if (!supabaseUrl) {
-    const error = "SUPABASE_URL environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-  if (!supabaseKey) {
-    const error = "SUPABASE_SERVICE_ROLE_KEY environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  let supabaseClient;
   let embeddings;
 
   try {
@@ -98,8 +94,9 @@ Deno.serve(async (req: Request) => {
     }
 
     const pet = parsedDescription.pets[0];
+    const petText = petToText(pet);
 
-    const response = await getEmbedding(geminiApiKey, JSON.stringify(pet));
+    const response = await getEmbedding(geminiApiKey, petText);
     if (!response.ok) {
       const errorText = await response.text();
       return getErrorResponse(errorText, 500);
@@ -122,8 +119,6 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    supabaseClient = createClient(supabaseUrl, supabaseKey);
-
     const { error } = await supabaseClient
       .from("pet_desc_results")
       .update({

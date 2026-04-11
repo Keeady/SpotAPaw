@@ -24,11 +24,8 @@ For EACH pet in the image, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
-      "confidence": "high/medium/low"
     }
   ],
-  "image_quality": "good/fair/poor",
-  "number_of_pets": 1
 }
 
 Guidelines:
@@ -55,6 +52,17 @@ If NO pets are visible in the image, return:
 }
 
 Respond ONLY with valid JSON. Do not include any other text or markdown formatting.`;
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
+
+if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
+  const error = "Missing environment variables";
+  throw new Error(error);
+}
+
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 function getErrorResponse(error: string, status: number = 400, code?: string) {
   return new Response(
@@ -112,37 +120,10 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error);
   }
 
-  const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
-  if (!geminiApiKey) {
-    const error = "GOOGLE_GENAI_API_KEY environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-
-  if (!supabaseUrl) {
-    const error = "SUPABASE_URL environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-  if (!supabaseKey) {
-    const error = "SUPABASE_SERVICE_ROLE_KEY environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
   let photoPublicUrl = "";
-  let supabaseClient;
   let petDescriptionResultId = "";
 
   try {
-    // Initialize Supabase client
-    supabaseClient = createClient(supabaseUrl, supabaseKey);
-
     // check if file with same hash already exists in storage
     const { data: existingFile } = await supabaseClient
       .from("pet_desc_results")
