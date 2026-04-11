@@ -88,7 +88,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
       : "Possible Matches Found";
   const subTitle =
     loading || matchResults.length === 0
-      ? "Looking for pets matching your pet's description."
+      ? "Looking for pets matching your pet&#39;s description."
       : "These pets closely match the description.";
   return (
     <View style={{ flex: 1 }}>
@@ -108,7 +108,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
               <>
                 <Text variant="bodyLarge">No Matches Found Yet</Text>
                 <Text variant="bodyMedium">
-                  We'll keep looking. Come back soon as new sightings are
+                  We&#39;ll keep looking. Come back soon as new sightings are
                   reported every day.
                 </Text>
               </>
