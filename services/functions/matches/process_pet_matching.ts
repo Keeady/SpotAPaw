@@ -89,20 +89,20 @@ Deno.serve(async (req: Request) => {
     const matchResultsData = matchResults.data;
     let i = 0;
     const matchResultsToSave = [];
-    const matchesStrigified = JSON.stringify([...matchResults.data,
+    const matchesStringified = JSON.stringify([...matchResults.data,
     { match_id: petEmbeddingId, similarity_score: 1 }]);
 
     matchResultsToSave.push({
       sighting_id: sightingId,
       pet_description_id: petEmbeddingId,
-      matches: matchesStrigified
+      matches: matchesStringified
     });
 
     for (i = 0; i < matchResultsData.length; i++) {
       const id = matchResultsData[i].match_id;
       matchResultsToSave.push({
         pet_description_id: id,
-        matches: matchesStrigified,
+        matches: matchesStringified,
       })
     }
 

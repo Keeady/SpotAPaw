@@ -27,7 +27,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
   }, []);
 
   useEffect(() => {
-    if (sightingFormData.sightingId) {
+    if (sightingFormData.sightingId && sightingFormData.petDescriptionId) {
       setLoading(true);
       const repository = new SightingRepository();
       repository

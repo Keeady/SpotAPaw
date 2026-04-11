@@ -98,8 +98,12 @@ export default function SightingProfile() {
   }, [sightingId, petName, summary?.name]);
 
   const onFindMatches = useCallback(() => {
+    if (!sightingId || !summary?.petDescriptionId) {
+      return;
+    }
+    
     router.push(
-      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId || ""}`,
+      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
     );
   }, [sightingId, summary?.petDescriptionId, router, sightingsRoute]);
 

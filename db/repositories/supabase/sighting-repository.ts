@@ -244,10 +244,11 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       },
     );
 
-    const { data: result } = data;
     if (error) {
       throw error;
     }
+
+    const { data: result } = data;
 
     if (!result || result.length === 0) {
       return [];

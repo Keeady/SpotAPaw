@@ -132,7 +132,7 @@ export function SightingThumbnail({
             flexWrap: "wrap",
           }}
         >
-          <Text variant="labelLarge">Location:: </Text>
+          <Text variant="labelLarge">Location: </Text>
           <Text>
             {userCurrentLocation
               ? getLastSeenLocationDistance(

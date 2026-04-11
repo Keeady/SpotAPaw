@@ -30,8 +30,6 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-let matchResults;
-
 Deno.serve(async (req: Request) => {
   const { sightingId, petDescriptionId }: reqPayload = await req.json();
 
@@ -39,15 +37,17 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse("Missing parameters");
   }
 
+  let matchResults;
+
   try {
     const { data, error } = await supabaseClient
       .from("sighting_matches")
       .select("*")
       .or(
-        `sighting_id.eq.${sightingId}, pet_description_id.eq.${petDescriptionId}`
+        `sighting_id.eq.${sightingId}, pet_description_id.eq.${petDescriptionId}`,
       )
       .order("created_at", { ascending: false });
-    
+
     if (error) {
       return getErrorResponse(error.message, 500);
     }
@@ -70,26 +70,31 @@ Deno.serve(async (req: Request) => {
     const matchIds = [];
     let i = 0;
     for (i = 0; i < parsedMatches.length; i++) {
-      matchIds.push(parsedMatches[i].match_id)
+      matchIds.push(parsedMatches[i].match_id);
     }
 
     const { data: matchDetails, error: matchDetailsError } =
-      await supabaseClient.from("aggregated_sightings").select("*").in("pet_description_id", matchIds);
-
-    const data = matchDetails
-      .map(item => {
-        const score = parsedMatches.find(m => m.match_id === item.pet_description_id)?.similarity_score ?? 0;
-
-        return {
-          ...item,
-          similarity_score: score > 1 ? 100 : score * 100
-        }
-      })
-      .sort((a, b) => b.similarity_score - a.similarity_score)
+      await supabaseClient
+        .from("aggregated_sightings")
+        .select("*")
+        .in("pet_description_id", matchIds);
 
     if (matchDetailsError) {
       return getErrorResponse(matchDetailsError.message, 500);
     }
+
+    const data = matchDetails
+      .map((item) => {
+        const score =
+          parsedMatches.find((m) => m.match_id === item.pet_description_id)
+            ?.similarity_score ?? 0;
+
+        return {
+          ...item,
+          similarity_score: score > 1 ? 100 : score * 100,
+        };
+      })
+      .sort((a, b) => b.similarity_score - a.similarity_score);
 
     if (!data) {
       return getErrorResponse("No match details found", 404);
