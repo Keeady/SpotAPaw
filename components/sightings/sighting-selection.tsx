@@ -72,7 +72,7 @@ export function SightingThumbnail({
       <Card.Title
         title={sighting.name || "Unknown"}
         titleVariant="titleLarge"
-        subtitle={`${sighting.breed} ${sighting.species.charAt(0).toUpperCase() + sighting.species.slice(1)}`}
+        subtitle={`${sighting.breed ?? ""} ${sighting.species ? sighting.species.charAt(0).toUpperCase() + sighting.species.slice(1) : ""}`}
         subtitleVariant="titleMedium"
         right={(props) => (
           <View
@@ -85,7 +85,9 @@ export function SightingThumbnail({
               marginRight: 16,
             }}
           >
-            <Text>{sighting.similarityScore}%</Text>
+            <Text>
+              {sighting.similarityScore ? `${sighting.similarityScore}%` : ""}
+            </Text>
           </View>
         )}
       />
@@ -134,7 +136,9 @@ export function SightingThumbnail({
         >
           <Text variant="labelLarge">Location: </Text>
           <Text>
-            {userCurrentLocation
+            {userCurrentLocation &&
+            sighting.lastSeenLat &&
+            sighting.lastSeenLong
               ? getLastSeenLocationDistance(
                   userCurrentLocation,
                   sighting.lastSeenLat,

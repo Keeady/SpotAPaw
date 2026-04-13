@@ -11,7 +11,7 @@ export default function Match() {
       sightingFormData={{ sightingId, petDescriptionId } as any}
       updateSightingData={() => void 0}
       loading={false}
-        setReportType={() => void 0}
+      setReportType={() => void 0}
     />
   );
 }

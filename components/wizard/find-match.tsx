@@ -27,11 +27,14 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
   }, []);
 
   useEffect(() => {
-    if (sightingFormData.sightingId && sightingFormData.petDescriptionId) {
+    if (sightingFormData?.sightingId && sightingFormData?.petDescriptionId) {
       setLoading(true);
       const repository = new SightingRepository();
       repository
-        .getMatchingSightings(sightingFormData.sightingId, sightingFormData.petDescriptionId)
+        .getMatchingSightings(
+          sightingFormData.sightingId,
+          sightingFormData.petDescriptionId,
+        )
         .then((results) => {
           if (!isMountedRef.current) {
             return;
@@ -52,7 +55,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
           setLoading(false);
         });
     }
-  }, [sightingFormData.sightingId, sightingFormData.petDescriptionId]);
+  }, [sightingFormData?.sightingId, sightingFormData?.petDescriptionId]);
 
   const onSightingSelect = (id: string) => {
     if (!id) {
@@ -60,6 +63,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
     }
 
     const index = matchResults.findIndex((s) => s.id === id);
+
     if (index === -1) {
       return;
     }
@@ -88,33 +92,36 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
       : "Possible Matches Found";
   const subTitle =
     loading || matchResults.length === 0
-      ? "Looking for pets matching your pet&#39;s description."
+      ? "Looking for pets matching your pet's description."
       : "These pets closely match the description.";
+
+  const bodyText = loading ? (
+    <Text variant="bodyMedium">Looking for possible matches...</Text>
+  ) : matchResults.length === 0 ? (
+    <>
+      <Text variant="bodyLarge">No Matches Found Yet</Text>
+      <Text variant="bodyMedium">
+        We'll keep looking. Come back soon as new sightings are reported every
+        day.
+      </Text>
+    </>
+  ) : null;
+
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader title={title} subTitle={subTitle} />
-      {loading ||
-        (matchResults.length === 0 && (
-          <View
-            style={{
-              padding: 16,
-              flexGrow: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {loading && <Text>Looking for possible matches...</Text>}
-            {!loading && matchResults.length === 0 && (
-              <>
-                <Text variant="bodyLarge">No Matches Found Yet</Text>
-                <Text variant="bodyMedium">
-                  We&#39;ll keep looking. Come back soon as new sightings are
-                  reported every day.
-                </Text>
-              </>
-            )}
-          </View>
-        ))}
+      {bodyText && (
+        <View
+          style={{
+            padding: 16,
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {bodyText}
+        </View>
+      )}
 
       {!loading && matchResults.length > 0 && (
         <SightingSelection
