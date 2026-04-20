@@ -50,6 +50,7 @@ import {
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { FindMatch } from "./find-match";
+import ShowProgress from "./show-progress";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const router = useRouter();
@@ -684,13 +685,14 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         );
       case "find_match":
         return (
-          <FindMatch
+          <ShowProgress
             sightingFormData={sightingFormData}
             updateSightingData={updateSightingData}
             loading={loading}
             setReportType={setReportType}
             isValidData={isValidData}
             reportType={reportType}
+            aiGenerated={aiGenerated}
           />
         );
       default:
@@ -747,23 +749,25 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       keyboardVerticalOffset={100}
     >
       <View style={styles.content}>{renderStep()}</View>
-      <View style={styles.buttonContainer}>
-        <Button
-          mode="text"
-          onPress={handleBack}
-          disabled={loading || disabledBack || stepHistory.length === 0}
-        >
-          Back
-        </Button>
-        <Button
-          mode={currentStep === "submit" ? "contained" : "text"}
-          onPress={handleNext}
-          disabled={disabledNext || loading || !!errorMessage}
-          style={user ? {} : { marginBottom: 20 }}
-        >
-          {getSubmitButtonText(currentStep, action)}
-        </Button>
-      </View>
+      {currentStep !== "find_match" && (
+        <View style={styles.buttonContainer}>
+          <Button
+            mode="text"
+            onPress={handleBack}
+            disabled={loading || disabledBack || stepHistory.length === 0}
+          >
+            Back
+          </Button>
+          <Button
+            mode={currentStep === "submit" ? "contained" : "text"}
+            onPress={handleNext}
+            disabled={disabledNext || loading || !!errorMessage}
+            style={user ? {} : { marginBottom: 20 }}
+          >
+            {getSubmitButtonText(currentStep, action)}
+          </Button>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 };

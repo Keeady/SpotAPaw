@@ -257,6 +257,35 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     return result.map((d) => this.denormalizePayload(d));
   }
 
+  async findMatchingSightings(
+    sightingId: string,
+    userLocationLat: number,
+    userLocationLong: number,
+    sightingRadiusKm: number,
+  ): Promise<void> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+    
+    const { error, data } = await this.supabaseClient.functions.invoke(
+      "process_pet_matching",
+      {
+        body: {
+          sightingId,
+          userLocationLat,
+          userLocationLong,
+          sightingRadiusKm,
+        },
+      },
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
   protected normalizePayload(payload: Partial<AggregatedSighting>) {
     type keyOfPet = keyof AggregatedSighting;
     type DBKey = {

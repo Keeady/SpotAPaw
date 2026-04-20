@@ -99,6 +99,14 @@ export default function SightingProfile() {
 
   const onFindMatches = useCallback(() => {
     if (!sightingId || !summary?.petDescriptionId) {
+      showMessage({
+        message:
+          "Pet matching is still processing. Please try again in a moment.",
+        type: "warning",
+        icon: "warning",
+        statusBarHeight: 50,
+      });
+      
       return;
     }
     

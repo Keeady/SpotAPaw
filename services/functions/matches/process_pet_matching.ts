@@ -34,6 +34,20 @@ function getErrorResponse(error: string, status: number = 400, code?: string) {
   );
 }
 
+function getSuccessResponse(message: string, data: any = []) {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message,
+      data,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    },
+  );
+}
+
 async function findNearestSightings(
   sightingRadiusKm: number,
   userLocationLat: number,
@@ -58,7 +72,7 @@ async function findNearestSightings(
     .from("aggregated_sightings")
     .select("*")
     .eq("is_active", true)
-    .neq("pet_description_id", null)
+    .not("pet_description_id", "is", null)
     .gte("last_seen_lat", minLat)
     .lte("last_seen_lat", maxLat)
     .gte("last_seen_long", minLng)
@@ -103,8 +117,13 @@ Deno.serve(async (req: Request) => {
     sightingRadiusKm,
   }: reqPayload = await req.json();
 
-  if (!sightingId) {
-    return getErrorResponse("Missing sightingId");
+  if (
+    !sightingId ||
+    !userLocationLat ||
+    !userLocationLong ||
+    !sightingRadiusKm
+  ) {
+    return getErrorResponse("Missing required parameters");
   }
 
   let petEmbeddings;
@@ -119,7 +138,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!data || data.length === 0 || !data[0].pet_desc_results) {
-      return getErrorResponse("No matches found", 404);
+      return getSuccessResponse("No matches found");
     }
 
     petEmbeddings = data[0].pet_desc_results.embeddings;
@@ -142,11 +161,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!nearestSightings.data || nearestSightings.data.length === 0) {
-      return getErrorResponse(
-        "No nearby sightings found",
-        404,
-        "NO_NEARBY_SIGHTINGS",
-      );
+      return getSuccessResponse("No nearby sightings found");
     }
 
     nearbyPetDescriptionIds = nearestSightings.data
@@ -154,10 +169,8 @@ Deno.serve(async (req: Request) => {
       .filter((id: string | null) => id !== null);
 
     if (nearbyPetDescriptionIds.length === 0) {
-      return getErrorResponse(
+      return getSuccessResponse(
         "No nearby sightings with pet descriptions found",
-        404,
-        "NO_NEARBY_PET_DESCRIPTIONS",
       );
     }
   } catch (error) {
@@ -173,7 +186,7 @@ Deno.serve(async (req: Request) => {
       nearbyPetDescriptionIds,
     );
     if (!matchResults || !matchResults.data || matchResults.data.length === 0) {
-      return getErrorResponse("No matches found", 404);
+      return getSuccessResponse("No matches found");
     }
   } catch (error) {
     return getErrorResponse(

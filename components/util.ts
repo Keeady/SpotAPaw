@@ -36,6 +36,7 @@ export async function getLastSeenLocation(
   lastSeenLocation?: string | null,
   lastSeenLocationLat?: number | null,
   lastSeenLocationLng?: number | null,
+  showFullAddress = true,
 ) {
   if (!lastSeenLocation && lastSeenLocationLat && lastSeenLocationLng) {
     try {
@@ -53,7 +54,11 @@ export async function getLastSeenLocation(
         const streetInfo = street ? `${streetNumber} ${street}, ` : "";
         const cityInfo = city ? `${city}, ` : "";
 
+        if (showFullAddress) {
         return `${streetInfo}${cityInfo}${state}`;
+        } else {
+          return `${cityInfo}${state}`;
+        }
       } else {
         return await convertToFullAddress(
           lastSeenLocationLat,
@@ -192,4 +197,12 @@ export function createErrorLogMessage(error: unknown) {
   }
 
   return String(error);
+}
+
+export function kmToMiles(km: number) {
+  return (km * 0.621371).toFixed(0);
+}
+
+export function milesToKm(miles: number) {
+  return (miles / 0.621371).toFixed(0);
 }
