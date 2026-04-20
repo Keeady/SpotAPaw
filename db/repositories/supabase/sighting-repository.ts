@@ -282,8 +282,6 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     if (error) {
       throw error;
     }
-
-    return data;
   }
 
   protected normalizePayload(payload: Partial<AggregatedSighting>) {

@@ -119,9 +119,9 @@ Deno.serve(async (req: Request) => {
 
   if (
     !sightingId ||
-    !userLocationLat ||
-    !userLocationLong ||
-    !sightingRadiusKm
+    userLocationLat === undefined ||
+    userLocationLong === undefined ||
+    sightingRadiusKm === undefined
   ) {
     return getErrorResponse("Missing required parameters");
   }
@@ -185,6 +185,11 @@ Deno.serve(async (req: Request) => {
       petEmbeddings,
       nearbyPetDescriptionIds,
     );
+
+    if (matchResults.error) {
+      return getErrorResponse(matchResults.error.message, 500);
+    }
+
     if (!matchResults || !matchResults.data || matchResults.data.length === 0) {
       return getSuccessResponse("No matches found");
     }

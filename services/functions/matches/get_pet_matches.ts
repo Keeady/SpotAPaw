@@ -20,6 +20,20 @@ function getErrorResponse(error: string, status: number = 400, code?: string) {
   );
 }
 
+function getSuccessResponse(message: string, data: any = []) {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message,
+      data,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    },
+  );
+}
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -64,7 +78,7 @@ Deno.serve(async (req: Request) => {
   try {
     const parsedMatches = JSON.parse(matchResults);
     if (!parsedMatches || parsedMatches.length === 0) {
-      return getErrorResponse("No parsed matches", 200);
+      return getSuccessResponse("No parsed matches");
     }
 
     const matchIds = [];

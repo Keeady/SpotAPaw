@@ -64,11 +64,16 @@ async function getEmbedding(apiKey: string, text: string) {
 }
 
 function petToText(pet: Record<string, any>): string {
+  const intro = `${pet.species} is a ${pet.size} size ${pet.breed}.`;
+  const colors = pet.colors ? `Colors: ${pet.colors}.` : '';
+  const collar = pet.collar_descriptions ? `Collar Description: ${pet.collar_descriptions.join(', ')}.` : '';
+  const features = pet.distinctive_features ? `Distinctive Features: ${pet.distinctive_features.join(', ')}.` : '';
+  
   return [
-    `${pet.species} is a ${pet.size} size ${pet.breed}.`,
-    `Colors: ${pet.colors}.`,
-    `Collar Description: ${pet.collar_descriptions.join(', ') ?? ''}.`,
-    `Distinctive Features: ${pet.distinctive_features.join(', ') ?? ''}.`,
+    intro,
+    colors,
+    collar,
+    features,
   ].filter(Boolean).join(' ')
 };
 

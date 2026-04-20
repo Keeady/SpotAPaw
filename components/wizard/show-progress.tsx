@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     fontSize: 12,
-    color: "",
+    color: "#2D1F0F",
   },
 
   // CTA

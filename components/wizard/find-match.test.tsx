@@ -276,7 +276,7 @@ describe("FindMatch", () => {
     expect(await queryByText("Pet Id: sighting-3")).toBeNull();
   });
 
-  it("navigates to sighting details when a sighting is selected", async () => {
+  it("navigates to sighting details when a sighting is selected for auth user", async () => {
     const mockSightings: any[] = [
       {
         id: "sighting-1",
@@ -327,7 +327,7 @@ describe("FindMatch", () => {
     });
   });
 
-  it("navigates to sighting details when a sighting is selected", async () => {
+  it("navigates to sighting details when a sighting is selected for anon user", async () => {
     const mockSightings: any[] = [
       {
         id: "sighting-1",
