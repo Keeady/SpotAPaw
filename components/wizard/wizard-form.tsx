@@ -49,7 +49,6 @@ import {
   updatePet,
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { FindMatch } from "./find-match";
 import ShowProgress from "./show-progress";
 
 export const WizardForm = ({ action }: WizardFormProps) => {

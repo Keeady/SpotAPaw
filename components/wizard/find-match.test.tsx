@@ -29,7 +29,7 @@ jest.mock("expo-router", () => ({
   }),
 }));
 
-var mockGetMatchingSightings = jest.fn();
+const mockGetMatchingSightings = jest.fn();
 jest.mock("@/db/repositories/sighting-repository", () => ({
   SightingRepository: jest.fn().mockImplementation(() => ({
     getSighting: jest.fn(),
@@ -47,7 +47,7 @@ jest.mock("../logs", () => ({
   log: jest.fn(),
 }));
 
-var mockSightingRenderer = ({ setSelectedSightingId, sighting }: any) => {
+const mockSightingRenderer = ({ setSelectedSightingId, sighting }: any) => {
   return (
     <TouchableOpacity
       onPress={() => setSelectedSightingId(sighting.id)}
@@ -107,7 +107,7 @@ describe("FindMatch", () => {
     expect(getByText("No Matches Found Yet")).toBeTruthy();
     expect(
       getByText(
-        "We'll keep looking. Come back soon as new sightings are reported every day.",
+        "We will keep looking. Come back soon as new sightings are reported every day.",
       ),
     ).toBeTruthy();
   });
@@ -125,7 +125,7 @@ describe("FindMatch", () => {
     expect(getByText("No Matches Found Yet")).toBeTruthy();
     expect(
       getByText(
-        "We'll keep looking. Come back soon as new sightings are reported every day.",
+        "We will keep looking. Come back soon as new sightings are reported every day.",
       ),
     ).toBeTruthy();
   });
@@ -143,7 +143,7 @@ describe("FindMatch", () => {
     expect(getByText("No Matches Found Yet")).toBeTruthy();
     expect(
       getByText(
-        "We'll keep looking. Come back soon as new sightings are reported every day.",
+        "We will keep looking. Come back soon as new sightings are reported every day.",
       ),
     ).toBeTruthy();
   });
@@ -167,7 +167,7 @@ describe("FindMatch", () => {
     expect(await findByText("No Matches Found Yet")).toBeTruthy();
     expect(
       await findByText(
-        "We'll keep looking. Come back soon as new sightings are reported every day.",
+        "We will keep looking. Come back soon as new sightings are reported every day.",
       ),
     ).toBeTruthy();
   });
@@ -189,7 +189,7 @@ describe("FindMatch", () => {
     expect(await findByText("No Matches Found Yet")).toBeTruthy();
     expect(
       await findByText(
-        "We'll keep looking. Come back soon as new sightings are reported every day.",
+        "We will keep looking. Come back soon as new sightings are reported every day.",
       ),
     ).toBeTruthy();
   });
@@ -308,7 +308,7 @@ describe("FindMatch", () => {
     expect(queryByText("No Matches Found Yet")).toBeNull();
     expect(
       queryByText(
-        "We'll keep looking. Come back soon as new sightings are reported every day.",
+        "We will keep looking. Come back soon as new sightings are reported every day.",
       ),
     ).toBeNull();
 

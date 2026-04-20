@@ -101,7 +101,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
     <>
       <Text variant="bodyLarge">No Matches Found Yet</Text>
       <Text variant="bodyMedium">
-        We'll keep looking. Come back soon as new sightings are reported every
+        We will keep looking. Come back soon as new sightings are reported every
         day.
       </Text>
     </>

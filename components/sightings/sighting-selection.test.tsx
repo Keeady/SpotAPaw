@@ -37,7 +37,7 @@ describe("SightingSelection", () => {
   });
 
   it("renders a list of sightings with empty details", () => {
-    const { getByText, debug } = render(
+    const { getByText } = render(
       <SightingSelection
         setSelectedSightingId={mockSetSelectedSightingId}
         selectedSightingId=""

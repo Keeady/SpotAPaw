@@ -108,7 +108,7 @@ export default function ShowProgress({
     <View style={{ flex: 1 }}>
       <WizardHeader
         title="Sighting Submitted!"
-        subTitle="Hang tight — we're processing your report."
+        subTitle="Hang tight — we are processing your report."
       />
       <ScrollView
         style={styles.screen}
@@ -118,7 +118,7 @@ export default function ShowProgress({
         <Surface style={styles.card} elevation={1}>
           <Text style={styles.cardTitle}>Matching Filters</Text>
           <Text style={styles.cardSubtitle}>
-            We'll search for similar pets using these parameters
+            We are searching for similar pets using these parameters
           </Text>
           <View style={styles.chipGrid}>
             {filterTags.map((tag, idx) => (

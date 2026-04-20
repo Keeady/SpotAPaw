@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react-native";
 import { useLocalSearchParams } from "expo-router";
-import Match from "./match";
+import Match from "../match";
 
 // Mock dependencies
 jest.mock("expo-router", () => ({
