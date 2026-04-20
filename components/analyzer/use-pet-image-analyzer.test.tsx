@@ -293,14 +293,16 @@ describe("usePetAnalyzer", () => {
       }),
     );
 
-    await expect(
-      result.current.analyze(testUri, testFilename, testFiletype),
-    ).rejects.toThrow();
+    await act(async () => {
+      await expect(
+        result.current.analyze(testUri, testFilename, testFiletype),
+      ).rejects.toThrow();
+    });
 
     expect(result.current.loading).toBe(false);
     expect(mockOnSuccess).not.toHaveBeenCalled();
   });
-
+  
   it("should work without onSuccess callback", async () => {
     const mockResponse = {
       result: '{"pets": [], "image_quality": "good", "number_of_pets": 0}',

@@ -1,10 +1,10 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useEffect, useState } from "react";
-import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import { usePermission } from "../Provider/permission-provider";
 import DropPinOnMap from "../map-util";
 import { HelperText } from "react-native-paper";
+import { SightingWizardStepData } from "./wizard-interface";
 
 export function LocatePet({
   updateSightingData,

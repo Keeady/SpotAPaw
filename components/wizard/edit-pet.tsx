@@ -1,11 +1,11 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, TextInput, RadioButton, HelperText } from "react-native-paper";
 import { useEffect, useState } from "react";
-import { SightingWizardStepData } from "./wizard-form";
 import { AIFieldAnalysisBanner } from "../analyzer/ai-banner";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetThumbnail } from "../sightings/pet-selection";
+import { SightingWizardStepData } from "./wizard-interface";
 
 export function EditPet({
   updateSightingData,

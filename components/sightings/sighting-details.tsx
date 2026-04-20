@@ -54,6 +54,7 @@ export default function SightingDetail({
   onPetFound,
   petName,
   onShareSighting,
+  onFindMatches,
 }: {
   sightings: AggregatedSighting[];
   petSummary: AggregatedSighting;
@@ -66,6 +67,7 @@ export default function SightingDetail({
   onPetFound?: () => void;
   petName: string;
   onShareSighting: () => void;
+  onFindMatches: () => void;
 }) {
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
@@ -169,6 +171,7 @@ export default function SightingDetail({
                     Owner Pending
                   </Chip>
                 )}
+                <Button onPress={() => onFindMatches()}>View Matches</Button>
                 {!hasOwner && claimPet && (
                   <Button mode="contained" onPress={() => claimPet()}>
                     This is my pet.

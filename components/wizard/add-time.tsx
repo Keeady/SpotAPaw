@@ -1,9 +1,9 @@
 import { StyleSheet, View, ScrollView } from "react-native";
 import { Text, HelperText, TextInput } from "react-native-paper";
 import { useEffect, useState } from "react";
-import { SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import DatePicker from "../date-picker";
+import { SightingWizardStepData } from "./wizard-interface";
 
 export function AddTime({
   updateSightingData,

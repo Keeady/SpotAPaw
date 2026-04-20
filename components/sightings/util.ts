@@ -21,6 +21,10 @@ export function getLastSeenLocationDistance(
 }
 
 export function getLastSeenTimeDistance(lastSeenTime: string) {
+  if (!lastSeenTime) {
+    return "";
+  }
+
   return formatDistanceToNow(new Date(lastSeenTime), {
     addSuffix: true,
   });
