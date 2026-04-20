@@ -97,6 +97,10 @@ Deno.serve(async (req: Request) => {
       return getErrorResponse(matchDetailsError.message, 500);
     }
 
+    if (!matchDetails) {
+      return getErrorResponse("No match details found", 404);
+    }
+
     const data = matchDetails
       .map((item) => {
         const score =
@@ -109,10 +113,6 @@ Deno.serve(async (req: Request) => {
         };
       })
       .sort((a, b) => b.similarity_score - a.similarity_score);
-
-    if (!data) {
-      return getErrorResponse("No match details found", 500);
-    }
 
     return new Response(
       JSON.stringify({

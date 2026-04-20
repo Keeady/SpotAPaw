@@ -592,7 +592,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         },
       );
     }
-  }, [sightingFormData.petDescriptionId]);
+  }, [sightingFormData.petDescriptionId, analyzePetDescription]);
 
   const onResetErrorMessage = useCallback(() => {
     setErrorMessage("");

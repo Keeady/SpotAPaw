@@ -1,6 +1,4 @@
 import { useCallback, useState } from "react";
-import { uploadPhotoWithProcessing } from "../image-upload-handler";
-import type { AnalysisResponse } from "./types";
 import { PetRepository } from "@/db/repositories/pet-repository";
 
 interface UsePetDescriptionAnalyzerOptions {

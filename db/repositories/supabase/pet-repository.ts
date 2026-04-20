@@ -111,7 +111,7 @@ export class SupabasePetRepository extends BasePetRepository {
       throw new Error("Undefined supabase client");
     }
 
-    const { error, data } = await this.supabaseClient.functions.invoke(
+    const { error } = await this.supabaseClient.functions.invoke(
       "process_pet_description",
       {
         body: {

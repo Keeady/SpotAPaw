@@ -2,7 +2,6 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 interface reqPayload {
-  description: string;
   id: string;
 }
 
@@ -27,6 +26,20 @@ function getErrorResponse(error: string, status: number = 400, code?: string) {
     {
       headers: { "Content-Type": "application/json" },
       status,
+    },
+  );
+}
+
+function getSuccessResponse(message: string, data: any = []) {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message,
+      data,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
     },
   );
 }
@@ -80,7 +93,7 @@ function petToText(pet: Record<string, any>): string {
 function findDescription(id: string) {
   return supabaseClient
     .from("pet_desc_results")
-    .select("description")
+    .select("*")
     .eq("id", id);
 }
 
@@ -108,7 +121,7 @@ Deno.serve(async (req: Request) => {
     embeddings = data[0].embeddings;
 
     if (embeddings) {
-      return getErrorResponse("Embeddings already exist for this description", 400);
+      return getSuccessResponse("Embeddings already exist for this description");
     }
   } catch (error) {
     return getErrorResponse("Error while fetching description from db", 500);
