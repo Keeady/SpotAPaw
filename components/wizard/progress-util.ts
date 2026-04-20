@@ -7,12 +7,12 @@ export interface FilterTag {
   delayMs: number;
 }
 
-export async function buildFilterTags(
+export function buildFilterTags(
   lastSeenLocation: string,
   lastSeenTime: string,
   radiusMiles: string,
   species: string,
-): Promise<FilterTag[]> {
+): FilterTag[] {
   const FILTER_TAGS: FilterTag[] = [
     {
       icon: "map-marker",

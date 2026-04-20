@@ -10,7 +10,8 @@ import { ShowHappyDogAnimation } from "@/components/animate";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { SIGHTING_RADIUSKM } from "../constants";
 import { showMessage } from "react-native-flash-message";
-import { getLastSeenLocation, kmToMiles } from "../util";
+import { createErrorLogMessage, getLastSeenLocation, kmToMiles } from "../util";
+import { log } from "../logs";
 
 export default function ShowProgress({
   sightingFormData,
@@ -38,7 +39,7 @@ export default function ShowProgress({
         ? `${kmToMiles(SIGHTING_RADIUSKM)} miles`
         : "";
 
-      const tags = await buildFilterTags(
+      const tags = buildFilterTags(
         lastSeenLocation,
         lastSeenTime,
         radiusMiles,
@@ -89,11 +90,9 @@ export default function ShowProgress({
         userLocationLong,
         sightingRadiusKm,
       )
-      .then((res) => {
-        console.log("Match results:", res);
-      })
       .catch((error) => {
-        console.error("Error finding matches:", error);
+        const errorMessage = createErrorLogMessage(error);
+        log(`Error processing matching sightings: ${errorMessage}`);
       })
       .finally(() => {
         setLoading(false);
@@ -154,8 +153,6 @@ export default function ShowProgress({
   );
 }
 
-// ─── Styles ────────────────────────────────────────────────────────────────────
-
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -215,8 +212,8 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row-reverse",
   },
-  animationWrapper: { 
-    alignContent: "center", 
-    alignItems: "center" 
+  animationWrapper: {
+    alignContent: "center",
+    alignItems: "center",
   },
 });
