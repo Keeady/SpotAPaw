@@ -95,11 +95,30 @@ export class SupabasePetRepository extends BasePetRepository {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
-    const normalizedPayload = this.normalizePayload(payload);    
+    const normalizedPayload = this.normalizePayload(payload);
     const { error } = await this.supabaseClient
       .from("pets")
       .update(normalizedPayload)
       .eq("id", id);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async processPetDescription(id: string): Promise<void> {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { error } = await this.supabaseClient.functions.invoke(
+      "process_pet_description",
+      {
+        body: {
+          id,
+        },
+      },
+    );
 
     if (error) {
       throw error;
