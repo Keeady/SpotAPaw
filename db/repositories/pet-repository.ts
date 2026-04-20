@@ -4,6 +4,10 @@ import { SupabasePetRepository } from "./supabase/pet-repository";
 import { IPetRepository } from "./base-pet-repository";
 
 export class PetRepository implements IPetRepository {
+  processPetDescription(id: string): Promise<void> {
+    const petRepository = new SupabasePetRepository(supabase);
+    return petRepository.processPetDescription(id);
+  }
   deletePet(id: string, ownerId: string): Promise<void> {
     const petRepository = new SupabasePetRepository(supabase);
     return petRepository.deletePet(id, ownerId);

@@ -83,7 +83,7 @@ describe("ShowProgress", () => {
   it("renders progress page", async () => {
     mockGetMatchingSightings.mockResolvedValue([]);
 
-    const { getByText, debug, findByText } = renderWithAuthContext(
+    const { getByText, findByText } = renderWithAuthContext(
       {
         species: "dog",
         lastSeenLocation: "Central Park",
@@ -95,7 +95,6 @@ describe("ShowProgress", () => {
       },
       { user: { id: "user123" } },
     );
-    debug();
     expect(getByText("Sighting Submitted!")).toBeTruthy();
     expect(
       getByText("Hang tight — we are processing your report."),
@@ -135,7 +134,7 @@ describe("ShowProgress", () => {
   it("renders progress page with no matching sightings", async () => {
     mockGetMatchingSightings.mockResolvedValue([]);
 
-    const { getByText, debug, findByText } = renderWithAuthContext(
+    const { getByText, findByText } = renderWithAuthContext(
       {
         species: "dog",
         lastSeenLocation: "Central Park",
@@ -147,7 +146,6 @@ describe("ShowProgress", () => {
       },
       { user: { id: "user123" } },
     );
-    debug();
     expect(getByText("Sighting Submitted!")).toBeTruthy();
     expect(
       getByText("Hang tight — we are processing your report."),
@@ -180,7 +178,7 @@ describe("ShowProgress", () => {
   it("renders progress page with error", async () => {
     mockGetMatchingSightings.mockRejectedValue(new Error("Error"));
 
-    const { getByText, debug, findByText } = renderWithAuthContext(
+    const { getByText, findByText } = renderWithAuthContext(
       {
         species: "dog",
         lastSeenLocation: "Central Park",
@@ -192,7 +190,6 @@ describe("ShowProgress", () => {
       },
       { user: null },
     );
-    debug();
     expect(getByText("Sighting Submitted!")).toBeTruthy();
     expect(
       getByText("Hang tight — we are processing your report."),

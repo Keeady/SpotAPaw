@@ -77,14 +77,42 @@ function petToText(pet: Record<string, any>): string {
   ].filter(Boolean).join(' ')
 };
 
-Deno.serve(async (req: Request) => {
-  const { description, id }: reqPayload = await req.json();
+function findDescription(id: string) {
+  return supabaseClient
+    .from("pet_desc_results")
+    .select("description")
+    .eq("id", id);
+}
 
-  if (!description || !id) {
-    return getErrorResponse("Missing description or id");
+Deno.serve(async (req: Request) => {
+  const { id }: reqPayload = await req.json();
+
+  if (!id) {
+    return getErrorResponse("Missing id");
   }
 
   let embeddings;
+  let description;
+  
+  try {
+    const { data, error } = await findDescription(id);
+    if (error) {
+      return getErrorResponse("Error fetching description from db", 500);
+    }
+
+    if (!data || data.length === 0) {
+      return getErrorResponse("No description found for the given id", 404);
+    }
+
+    description = data[0].description;
+    embeddings = data[0].embeddings;
+
+    if (embeddings) {
+      return getErrorResponse("Embeddings already exist for this description", 400);
+    }
+  } catch (error) {
+    return getErrorResponse("Error while fetching description from db", 500);
+  }
 
   try {
     const parsedDescription = parseJsonResponse(description);

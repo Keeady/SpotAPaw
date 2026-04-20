@@ -67,7 +67,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!data || data.length === 0) {
-      return getErrorResponse("No matches found", 404);
+      return getSuccessResponse("No matches found");
     }
 
     matchResults = data[0].matches;
@@ -111,7 +111,7 @@ Deno.serve(async (req: Request) => {
       .sort((a, b) => b.similarity_score - a.similarity_score);
 
     if (!data) {
-      return getErrorResponse("No match details found", 404);
+      return getErrorResponse("No match details found", 500);
     }
 
     return new Response(
