@@ -1,3 +1,11 @@
+/**
+ * This function is responsible for retrieving pet matching results for a given sighting.
+ * It accepts a sighting ID and pet description ID as input, 
+ * checks the sighting_matches table for existing matches,
+ * and returns the matching sightings sorted by similarity score.
+ * If no matches are found, it returns a success response with an empty data array.
+ */
+
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 

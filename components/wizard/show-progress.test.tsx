@@ -6,7 +6,7 @@ import { Text } from "react-native-paper";
 const mockRouterPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({
-    push: mockRouterPush,
+    replace: mockRouterPush,
   }),
 }));
 
@@ -51,11 +51,6 @@ jest.mock("@/db/repositories/sighting-repository", () => ({
       radius: number,
     ) => mockGetMatchingSightings(sightingId, lat, long, radius),
   })),
-}));
-
-const mockHappyDogAnimation = () => <Text>Happy Dog Animation</Text>;
-jest.mock("@/components/animate", () => ({
-  ShowHappyDogAnimation: () => mockHappyDogAnimation(),
 }));
 
 describe("ShowProgress", () => {
@@ -105,7 +100,7 @@ describe("ShowProgress", () => {
       getByText("We are searching for similar pets using these parameters"),
     ).toBeTruthy();
 
-    expect(getByText("Happy Dog Animation")).toBeTruthy();
+    expect(getByText("No photo")).toBeTruthy();
     expect(getByText("View Matches")).toBeTruthy();
     expect(getByText("View Matches")).toBeDisabled();
 
@@ -134,7 +129,7 @@ describe("ShowProgress", () => {
   it("renders progress page with no matching sightings", async () => {
     mockGetMatchingSightings.mockResolvedValue([]);
 
-    const { getByText, findByText } = renderWithAuthContext(
+    const { getByText, findByText, getByTestId } = renderWithAuthContext(
       {
         species: "dog",
         lastSeenLocation: "Central Park",
@@ -143,6 +138,7 @@ describe("ShowProgress", () => {
         petDescriptionId: "petDesc123",
         lastSeenLat: 40.785091,
         lastSeenLong: -73.968285,
+        photo: "http://example.co/photo"
       },
       { user: { id: "user123" } },
     );
@@ -155,10 +151,9 @@ describe("ShowProgress", () => {
     expect(
       getByText("We are searching for similar pets using these parameters"),
     ).toBeTruthy();
-
-    expect(getByText("Happy Dog Animation")).toBeTruthy();
+    expect(getByTestId("sighting-photo")).toBeTruthy();
     expect(getByText("View Matches")).toBeTruthy();
-    expect(getByText("View Matches")).toBeDisabled();
+    expect(getByText("View Matches")).not.toBeDisabled();
 
     expect(await findByText("Last seen location: Central Park")).toBeTruthy();
     expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
@@ -167,7 +162,7 @@ describe("ShowProgress", () => {
     expect(await findByText("Species: Dog")).toBeTruthy();
 
     expect(mockGetMatchingSightings).not.toHaveBeenCalled();
-    expect(await findByText("View Matches")).toBeDisabled();
+    expect(await findByText("View Matches")).not.toBeDisabled();
 
     const viewMatchesButton = getByText("View Matches");
     fireEvent.press(viewMatchesButton);
@@ -178,7 +173,7 @@ describe("ShowProgress", () => {
   it("renders progress page with error", async () => {
     mockGetMatchingSightings.mockRejectedValue(new Error("Error"));
 
-    const { getByText, findByText } = renderWithAuthContext(
+    const { getByText, findByText, getByTestId } = renderWithAuthContext(
       {
         species: "dog",
         lastSeenLocation: "Central Park",
@@ -187,6 +182,7 @@ describe("ShowProgress", () => {
         petDescriptionId: "petDesc123",
         lastSeenLat: 40.785091,
         lastSeenLong: -73.968285,
+        photo: "http://example.co/photo"
       },
       { user: null },
     );
@@ -199,8 +195,7 @@ describe("ShowProgress", () => {
     expect(
       getByText("We are searching for similar pets using these parameters"),
     ).toBeTruthy();
-
-    expect(getByText("Happy Dog Animation")).toBeTruthy();
+    expect(getByTestId("sighting-photo")).toBeTruthy();
     expect(getByText("View Matches")).toBeTruthy();
     expect(getByText("View Matches")).toBeDisabled();
 

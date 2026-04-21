@@ -1,3 +1,10 @@
+/**
+ * Find the nearest sightings with pet descriptions within the specified radius, 
+ * then calculate similarity scores between the sighting's pet description 
+ * and nearby descriptions using the match_pet_sightings Postgres function, 
+ * and save the matching results in the sighting_matches table.
+ */
+
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 

@@ -1,9 +1,11 @@
+/**
+ * This function processes pet descriptions by generating embeddings using the Gemini API and storing them in the database.
+ * It is triggered when a new sighting is created with a pet description ID.
+ * The function receives the sighting record then retrieves the associated pet description from the database. 
+ * If embeddings already exist for that description, it returns early.
+ */
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-interface reqPayload {
-  id: string;
-}
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -98,7 +100,8 @@ function findDescription(id: string) {
 }
 
 Deno.serve(async (req: Request) => {
-  const { id }: reqPayload = await req.json();
+  const { record } = await req.json();
+  const id = record?.pet_description_id;
 
   if (!id) {
     return getErrorResponse("Missing id");

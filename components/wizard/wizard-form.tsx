@@ -50,7 +50,6 @@ import {
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import ShowProgress from "./show-progress";
-import { usePetDescriptionAnalyzer } from "../analyzer/use-pet-description-analyzer";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const router = useRouter();
@@ -580,19 +579,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   const { analyze } = usePetAnalyzer({
     onSuccess: onImageAnalyzeSuccess,
   });
-
-  const { analyze: analyzePetDescription } = usePetDescriptionAnalyzer({});
-
-  useEffect(() => {
-    if (sightingFormData.petDescriptionId) {
-      analyzePetDescription(sightingFormData.petDescriptionId).catch(
-        (error) => {
-          const errorMessage = createErrorLogMessage(error);
-          log(`Wizard: Failed to analyze pet description: ${errorMessage}`);
-        },
-      );
-    }
-  }, [sightingFormData.petDescriptionId, analyzePetDescription]);
 
   const onResetErrorMessage = useCallback(() => {
     setErrorMessage("");

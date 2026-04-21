@@ -1,12 +1,11 @@
 import { SightingWizardStepData } from "./wizard-interface";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View, Image } from "react-native";
 import { Button, Chip, Surface, Text } from "react-native-paper";
 import { WizardHeader } from "./wizard-header";
 import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
 import { buildFilterTags, FilterTag } from "./progress-util";
-import { ShowHappyDogAnimation } from "@/components/animate";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { SIGHTING_RADIUSKM } from "../constants";
 import { showMessage } from "react-native-flash-message";
@@ -16,8 +15,11 @@ import { log } from "../logs";
 export default function ShowProgress({
   sightingFormData,
 }: SightingWizardStepData) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
+  const { sightingId, petDescriptionId, photo } = sightingFormData;
 
   useEffect(() => {
     const fetchFilterTags = async () => {
@@ -50,10 +52,6 @@ export default function ShowProgress({
     fetchFilterTags();
   }, [sightingFormData]);
 
-  const { user } = useContext(AuthContext);
-  const router = useRouter();
-  const { sightingId, petDescriptionId } = sightingFormData;
-  const sightingsRoute = user ? "my-sightings" : "sightings";
   const onViewMatches = useCallback(() => {
     if (!sightingId || !petDescriptionId) {
       showMessage({
@@ -66,10 +64,12 @@ export default function ShowProgress({
       return;
     }
 
-    router.push(
+    const sightingsRoute = user ? "my-sightings" : "sightings";
+
+    router.replace(
       `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${petDescriptionId}`,
     );
-  }, [sightingId, petDescriptionId, router, sightingsRoute]);
+  }, [sightingId, petDescriptionId, router, user]);
 
   const onFindMatches = useCallback(() => {
     if (!sightingId) {
@@ -134,7 +134,32 @@ export default function ShowProgress({
         </Surface>
 
         <View style={styles.animationWrapper}>
-          <ShowHappyDogAnimation />
+          {photo ? (
+            <Image
+              source={{ uri: photo }}
+              resizeMode={"contain"}
+              style={{
+                width: 400,
+                height: "auto",
+                borderRadius: 12,
+                aspectRatio: 1,
+              }}
+              testID="sighting-photo"
+            />
+          ) : (
+            <View
+              style={{
+                width: 200,
+                height: 200,
+                borderRadius: 12,
+                backgroundColor: "#eee",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text>No photo</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.ctaWrapper}>
