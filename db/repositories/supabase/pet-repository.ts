@@ -106,25 +106,6 @@ export class SupabasePetRepository extends BasePetRepository {
     }
   }
 
-  async processPetDescription(id: string): Promise<void> {
-    if (!this.supabaseClient) {
-      throw new Error("Undefined supabase client");
-    }
-
-    const { error } = await this.supabaseClient.functions.invoke(
-      "process_pet_description",
-      {
-        body: {
-          id,
-        },
-      },
-    );
-
-    if (error) {
-      throw error;
-    }
-  }
-
   protected normalizePayload(payload: Partial<Pet>) {
     type keyOfPet = keyof Pet;
     type DBKey = {

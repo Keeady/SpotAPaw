@@ -6,13 +6,9 @@ export interface IPetRepository {
   updatePet(id: string, data: Pet): Promise<void>
   getPets(ownerId: string): Promise<Pet[]>;
   deletePet(id: string, ownerId: string): Promise<void>;
-  processPetDescription(id: string): Promise<void>;
 }
 
 export class BasePetRepository implements IPetRepository {
-    processPetDescription(_id: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
     deletePet(_id: string, _ownerId: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
