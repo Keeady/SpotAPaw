@@ -1,5 +1,11 @@
 import { SightingWizardStepData } from "./wizard-interface";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ScrollView, StyleSheet, View, Image } from "react-native";
 import { Button, Chip, Surface, Text } from "react-native-paper";
 import { WizardHeader } from "./wizard-header";
@@ -11,6 +17,7 @@ import { SIGHTING_RADIUSKM } from "../constants";
 import { showMessage } from "react-native-flash-message";
 import { createErrorLogMessage, getLastSeenLocation, kmToMiles } from "../util";
 import { log } from "../logs";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 
 export default function ShowProgress({
   sightingFormData,
@@ -20,6 +27,13 @@ export default function ShowProgress({
   const { user } = useContext(AuthContext);
   const router = useRouter();
   const { sightingId, petDescriptionId, photo } = sightingFormData;
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchFilterTags = async () => {
@@ -90,11 +104,23 @@ export default function ShowProgress({
         userLocationLong,
         sightingRadiusKm,
       )
-      .catch((error) => {
-        const errorMessage = createErrorLogMessage(error);
-        log(`Error processing matching sightings: ${errorMessage}`);
+      .catch(async (error) => {
+        if (!isMountedRef.current) {
+          return;
+        }
+
+        if (error instanceof FunctionsHttpError) {
+          const errorContext = await error.context.json().catch(() => null);
+          log(`Error processing matching sightings: ${errorContext?.message}`);
+        } else {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Error processing matching sightings: ${errorMessage}`);
+        }
       })
       .finally(() => {
+        if (!isMountedRef.current) {
+          return;
+        }
         setLoading(false);
       });
   }, [sightingFormData.lastSeenLat, sightingFormData.lastSeenLong, sightingId]);
@@ -126,42 +152,43 @@ export default function ShowProgress({
                 icon={tag.icon}
                 style={styles.filterChip}
                 textStyle={styles.filterChipText}
+                ellipsizeMode="tail"
               >
                 {tag.label}: {tag.value}
               </Chip>
             ))}
           </View>
         </Surface>
-
-        <View style={styles.animationWrapper}>
-          {photo ? (
-            <Image
-              source={{ uri: photo }}
-              resizeMode={"contain"}
-              style={{
-                width: 400,
-                height: "auto",
-                borderRadius: 12,
-                aspectRatio: 1,
-              }}
-              testID="sighting-photo"
-            />
-          ) : (
-            <View
-              style={{
-                width: 200,
-                height: 200,
-                borderRadius: 12,
-                backgroundColor: "#eee",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text>No photo</Text>
-            </View>
-          )}
-        </View>
-
+        <Surface style={styles.card} elevation={1}>
+          <View style={styles.animationWrapper}>
+            {photo ? (
+              <Image
+                source={{ uri: photo }}
+                resizeMode={"contain"}
+                style={{
+                  width: 350,
+                  height: "auto",
+                  borderRadius: 12,
+                  aspectRatio: 1,
+                }}
+                testID="sighting-photo"
+              />
+            ) : (
+              <View
+                style={{
+                  width: 200,
+                  height: 200,
+                  borderRadius: 12,
+                  backgroundColor: "#eee",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text>No photo</Text>
+              </View>
+            )}
+          </View>
+        </Surface>
         <View style={styles.ctaWrapper}>
           <Button
             mode="contained"
@@ -192,7 +219,7 @@ const styles = StyleSheet.create({
   // Card
   card: {
     borderRadius: 20,
-    padding: 20,
+    padding: 10,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#EAD9C8",
@@ -222,6 +249,7 @@ const styles = StyleSheet.create({
   filterChip: {
     backgroundColor: "#FAE5D3",
     borderRadius: 20,
+    maxWidth: "100%",
   },
   filterChipText: {
     fontSize: 12,

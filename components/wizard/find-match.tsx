@@ -10,6 +10,7 @@ import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
 import { createErrorLogMessage } from "../util";
 import { log } from "../logs";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 
 export function FindMatch({ sightingFormData }: SightingWizardStepData) {
   const [loading, setLoading] = useState(false);
@@ -44,9 +45,18 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
             setMatchResults(results);
           }
         })
-        .catch((error) => {
-          const errorMessage = createErrorLogMessage(error);
-          log(`Failed to fetch matching sightings: ${errorMessage}`);
+        .catch(async (error) => {
+          if (!isMountedRef.current) {
+            return;
+          }
+
+          if (error instanceof FunctionsHttpError) {
+            const errorContext = await error.context.json().catch(() => null);
+            log(`Failed to fetch matching sightings: ${errorContext?.message}`);
+          } else {
+            const errorMessage = createErrorLogMessage(error);
+            log(`Failed to fetch matching sightings: ${errorMessage}`);
+          }
         })
         .finally(() => {
           if (!isMountedRef.current) {
