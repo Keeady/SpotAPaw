@@ -12,7 +12,7 @@ const DistanceSetting = ({
   iconColorDistance: string;
   defaultDistance: string;
   selectedDistance: string;
-  onDistancePress: () => void;
+  onDistancePress: (status: boolean) => void;
   distanceDialogVisible: boolean;
   handleDistanceChange: (distance: string) => Promise<void>;
 }) => {
@@ -30,7 +30,7 @@ const DistanceSetting = ({
             color={iconColorDistance}
           />
         )}
-        onPress={onDistancePress}
+        onPress={() => onDistancePress(true)}
       />
       <DistanceSelectionDialog
         distanceDialogVisible={distanceDialogVisible}

@@ -347,7 +347,7 @@ const SettingsContainer = () => {
         <LanguageSetting
           iconColorLanguage={iconColors.language}
           languageSelectedDescription={getSelectedLanguageDisplay()}
-          onLanguagePress={() => setLanguageDialogVisible(true)}
+          onLanguagePress={setLanguageDialogVisible}
           languageDialogVisible={languageDialogVisible}
           handleLanguageChange={handleLanguageChange}
           selectedLanguage={selectedLanguage}
@@ -358,7 +358,7 @@ const SettingsContainer = () => {
         <DistanceSetting
           iconColorDistance={iconColors.distance}
           selectedDistance={selectedDistance}
-          onDistancePress={() => setDistanceDialogVisible(true)}
+          onDistancePress={setDistanceDialogVisible}
           distanceDialogVisible={distanceDialogVisible}
           handleDistanceChange={handleDistanceChange}
           defaultDistance={defaultDistance}
