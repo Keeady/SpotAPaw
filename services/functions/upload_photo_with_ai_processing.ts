@@ -24,11 +24,8 @@ For EACH pet in the image, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
-      "confidence": "high/medium/low"
     }
   ],
-  "image_quality": "good/fair/poor",
-  "number_of_pets": 1
 }
 
 Guidelines:
@@ -55,6 +52,17 @@ If NO pets are visible in the image, return:
 }
 
 Respond ONLY with valid JSON. Do not include any other text or markdown formatting.`;
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
+
+if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
+  const error = "Missing environment variables";
+  throw new Error(error);
+}
+
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 function getErrorResponse(error: string, status: number = 400, code?: string) {
   return new Response(
@@ -112,36 +120,10 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error);
   }
 
-  const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
-  if (!geminiApiKey) {
-    const error = "GOOGLE_GENAI_API_KEY environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-
-  if (!supabaseUrl) {
-    const error = "SUPABASE_URL environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
-  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-  if (!supabaseKey) {
-    const error = "SUPABASE_SERVICE_ROLE_KEY environment variable is not set";
-
-    return getErrorResponse(error, 500);
-  }
-
   let photoPublicUrl = "";
-  let supabaseClient;
+  let petDescriptionResultId = "";
 
   try {
-    // Initialize Supabase client
-    supabaseClient = createClient(supabaseUrl, supabaseKey);
-
     // check if file with same hash already exists in storage
     const { data: existingFile } = await supabaseClient
       .from("pet_desc_results")
@@ -151,6 +133,7 @@ Deno.serve(async (req: Request) => {
     if (existingFile && existingFile.length > 0) {
       const existingPhotoPublicUrl = existingFile[0].public_url;
       const existingPetDescription = existingFile[0].description;
+      const existingPetDescriptionId = existingFile[0].id;
 
       if (existingPhotoPublicUrl && existingPetDescription) {
         return new Response(
@@ -158,6 +141,7 @@ Deno.serve(async (req: Request) => {
             success: true,
             result: existingPetDescription,
             publicUrl: existingPhotoPublicUrl,
+            petDescriptionId: existingPetDescriptionId,
           }),
           {
             headers: { "Content-Type": "application/json" },
@@ -261,17 +245,22 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save result to Supabase
-    await supabaseClient.from("pet_desc_results").insert({
+    const { data: insertedData } = await supabaseClient.from("pet_desc_results").insert({
       photo_hash: hash,
       description: textResponse,
       public_url: photoPublicUrl,
-    });
+    }).select("id");
+
+    if (insertedData && insertedData.length > 0) {
+      petDescriptionResultId = insertedData[0].id;
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
         result: textResponse,
         publicUrl: photoPublicUrl,
+        petDescriptionId: petDescriptionResultId,
       }),
       {
         headers: { "Content-Type": "application/json" },

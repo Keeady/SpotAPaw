@@ -3,12 +3,6 @@ import { getLastSeenLocation, isValidUuid } from "../util";
 import { SightingReport } from "./wizard-interface";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 
-export type WizardFormAction =
-  | "edit-sighting"
-  | "new-sighting"
-  | "add-pet"
-  | "edit-pet";
-
 export async function createSightingFromPet(
   petId: string,
   sightingFormData: SightingReport,
@@ -124,6 +118,10 @@ async function buildSightingPayload(
 
   if (sightingFormData.reporterId && isValidUuid(sightingFormData.reporterId)) {
     payload.reporterId = sightingFormData.reporterId;
+  }
+
+  if (sightingFormData.petDescriptionId && isValidUuid(sightingFormData.petDescriptionId)) {
+    payload.petDescriptionId = sightingFormData.petDescriptionId;
   }
 
   return payload;

@@ -117,7 +117,7 @@ export const LocationConfirmationDialog = ({
           <Button onPress={() => setResetLocationDialogVisible(false)}>
             Cancel
           </Button>
-          <Button onPress={handleResetSavedLocation}>Reset</Button>
+          <Button onPress={handleResetSavedLocation} testID="reset-confirm-button">Reset</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -381,6 +381,7 @@ export const AccountDeletionConfirmationDialog = ({
             disabled={deletingAccount}
             autoCapitalize="characters"
             style={styles.confirmInput}
+            testID="confirm-delete-input"
           />
         </Dialog.Content>
         <Dialog.Actions>
@@ -398,6 +399,7 @@ export const AccountDeletionConfirmationDialog = ({
               deletingAccount ||
               deleteConfirmText.trim().toLowerCase() !== "delete"
             }
+            testID="confirm-delete-btn"
           >
             Delete Account
           </Button>

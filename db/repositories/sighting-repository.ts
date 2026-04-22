@@ -7,6 +7,24 @@ import {
 import { SupabaseSightingRepository } from "./supabase/sighting-repository";
 
 export class SightingRepository implements ISightingRepository {
+  findMatchingSightings(
+    sightingId: string,
+    userLocationLat: number,
+    userLocationLong: number,
+    sightingRadiusKm: number,
+  ): Promise<void> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.findMatchingSightings(
+      sightingId,
+      userLocationLat,
+      userLocationLong,
+      sightingRadiusKm,
+    );
+  }
+  getMatchingSightings(id: string, petDescriptionId: string): Promise<AggregatedSighting[]> {
+    const repository = new SupabaseSightingRepository(supabase);
+    return repository.getMatchingSightings(id, petDescriptionId);
+  }
   getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]> {
     const repository = new SupabaseSightingRepository(supabase);
     return repository.getSightingsByReporter(reporterId);

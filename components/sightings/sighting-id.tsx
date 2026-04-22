@@ -97,6 +97,24 @@ export default function SightingProfile() {
     handleSharingSighting(sightingId, petName || summary?.name || "");
   }, [sightingId, petName, summary?.name]);
 
+  const onFindMatches = useCallback(() => {
+    if (!sightingId || !summary?.petDescriptionId) {
+      showMessage({
+        message:
+          "Pet matching is still processing. Please try again in a moment.",
+        type: "warning",
+        icon: "warning",
+        statusBarHeight: 50,
+      });
+      
+      return;
+    }
+    
+    router.push(
+      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
+    );
+  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute]);
+
   if (error) {
     log(error);
     showMessage({
@@ -128,6 +146,7 @@ export default function SightingProfile() {
       isOwner={!!isOwner}
       onPetFound={isOwner ? handlePetFound : undefined}
       onShareSighting={onShareSighting}
+      onFindMatches={onFindMatches}
     />
   );
 }

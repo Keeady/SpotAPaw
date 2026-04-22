@@ -134,6 +134,10 @@ async function buildPetPayload(
     payload.id = sightingFormData.id;
   }
 
+  if (sightingFormData.petDescriptionId && isValidUuid(sightingFormData.petDescriptionId)) {
+    payload.petDescriptionId = sightingFormData.petDescriptionId;
+  }
+
   return payload;
 }
 
@@ -154,5 +158,6 @@ function buildSightingPayload(
     collarDescription: (sightingFormData as SightingReport).collarDescription,
     linkedSightingId: (sightingFormData as SightingReport).linkedSightingId,
     sightingId: (sightingFormData as SightingReport).sightingId,
+    petDescriptionId: sightingFormData.petDescriptionId,
   } as SightingReport;
 }

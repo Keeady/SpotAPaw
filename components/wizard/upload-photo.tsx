@@ -9,11 +9,10 @@ import { Text, Button, Icon, HelperText } from "react-native-paper";
 import { uploadOrTakePhoto } from "../image-picker";
 import { useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { SightingWizardStepData } from "./wizard-form";
 import { AuthContext } from "../Provider/auth-provider";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
-import { PetImage } from "./wizard-interface";
+import { PetImage, SightingWizardStepData } from "./wizard-interface";
 
 export function UploadPhoto({
   updateSightingData,

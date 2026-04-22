@@ -95,7 +95,7 @@ export class SupabasePetRepository extends BasePetRepository {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
-    const normalizedPayload = this.normalizePayload(payload);    
+    const normalizedPayload = this.normalizePayload(payload);
     const { error } = await this.supabaseClient
       .from("pets")
       .update(normalizedPayload)
@@ -129,6 +129,7 @@ export class SupabasePetRepository extends BasePetRepository {
       lastSeenLong: "last_seen_long",
       createdAt: "created_at",
       lastSeenTime: "last_seen_time",
+      petDescriptionId: "pet_description_id",
     };
 
     const normalizedPayload = {};
@@ -166,6 +167,7 @@ export class SupabasePetRepository extends BasePetRepository {
       lastSeenLong: "last_seen_long",
       createdAt: "created_at",
       lastSeenTime: "last_seen_time",
+      petDescriptionId: "pet_description_id",
     };
 
     const deNormalizedPayload = {} as Pet;

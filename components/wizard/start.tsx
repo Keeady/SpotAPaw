@@ -1,8 +1,8 @@
 import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { SightingReportType, SightingWizardStepData } from "./wizard-form";
 import { WizardHeader } from "./wizard-header";
 import { HelperText, Surface, Text, useTheme } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
+import { SightingReportType, SightingWizardStepData } from "./wizard-interface";
 
 export function Step1({
   setReportType,
