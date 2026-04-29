@@ -38,7 +38,7 @@ export default function PublicHome() {
           onPress={() => router.push("/(auth)/signin")}
           style={styles.button}
         >
-          {t("signIn")}
+          {t("signIn", { ns: "translation" })}
         </Button>
         <Button
           icon="account-plus-outline"

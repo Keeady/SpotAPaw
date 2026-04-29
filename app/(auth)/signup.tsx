@@ -282,7 +282,7 @@ export default function SignUpScreen() {
               disabled={loading}
               onPress={() => router.push("/(auth)/signin")}
             >
-              {t("signIn")}
+              {t("signIn", { ns: "translation" })}
             </Button>
           </View>
           <TextInput

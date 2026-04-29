@@ -9,7 +9,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { AuthHandler } from "@/auth/auth";
 import { log } from "@/components/logs";
 import { createErrorLogMessage } from "@/components/util";
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next";
 
 export default function SignInScreen() {
   const { t } = useTranslation("signin");
@@ -32,7 +32,7 @@ export default function SignInScreen() {
 
     if (!email || !password) {
       showMessage({
-        message: t('emailAndPasswordAreRequiredPleaseTryAgain'),
+        message: t("emailAndPasswordAreRequiredPleaseTryAgain"),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -60,7 +60,7 @@ export default function SignInScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`SigninWithPassword failed: ${errorMessage}`);
         showMessage({
-          message: t('invalidEmailOrPasswordPleaseTryAgain'),
+          message: t("invalidEmailOrPasswordPleaseTryAgain"),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -95,19 +95,19 @@ export default function SignInScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>{t('welcomeBack')}</Text>
+        <Text style={styles.headerTitle}>{t("welcomeBack")}</Text>
         <Text style={styles.headerSubtitle}>
-          {t('helpFindAndProtectOurFurryFriends')}
+          {t("helpFindAndProtectOurFurryFriends")}
         </Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.buttonContainer}>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Text variant="labelSmall" style={{ color: "red" }}>
-              {hasEmailError ? t('invalidEmailAddress') : ""}
+              {hasEmailError ? t("invalidEmailAddress") : ""}
             </Text>
             <TextInput
-              label={t('email')}
+              label={t("email")}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setEmail(text);
@@ -122,12 +122,12 @@ export default function SignInScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label={t('password')}
+              label={t("password")}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry={isHidden}
-              placeholder={t('password')}
+              placeholder={t("password")}
               autoCapitalize={"none"}
               mode="outlined"
               right={
@@ -141,7 +141,7 @@ export default function SignInScreen() {
           </View>
           <View style={{ alignSelf: "flex-end" }}>
             <Button mode="text" onPress={() => router.push("/(auth)/forgot")}>
-              {t('forgotPassword')}
+              {t("forgotPassword")}
             </Button>
           </View>
           <View style={[styles.verticallySpaced]}>
@@ -151,7 +151,7 @@ export default function SignInScreen() {
               onPress={() => signInWithEmail()}
               style={styles.button}
             >
-              {t('signIn')}
+              {t("signIn", { ns: "translation" })}
             </Button>
           </View>
           <DividerWithText text={t("or").toUpperCase()} />
@@ -162,7 +162,7 @@ export default function SignInScreen() {
               onPress={() => router.push("/(auth)/oauth")}
               style={styles.button}
             >
-              {t('continueWithGoogle')}
+              {t("continueWithGoogle")}
             </Button>
           </View>
           {Platform.OS === "ios" && (
@@ -184,13 +184,13 @@ export default function SignInScreen() {
 
         <View>
           <View style={styles.secondary}>
-            <Text>{t('dontHaveAnAccount')}</Text>
+            <Text>{t("dontHaveAnAccount")}</Text>
             <Button
               mode="text"
               disabled={loading}
               onPress={() => router.push("/(auth)/signup")}
             >
-              {t('register')}
+              {t("register")}
             </Button>
           </View>
           <TextInput
