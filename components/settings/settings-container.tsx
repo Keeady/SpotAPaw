@@ -278,7 +278,7 @@ const SettingsContainer = () => {
     router.push("/about");
   };
 
-  const versionText = Application.nativeApplicationVersion ?? "1.2.0";
+  const versionText = Application.nativeApplicationVersion ?? "1.3.0";
 
   return (
     <SettingsRenderer
