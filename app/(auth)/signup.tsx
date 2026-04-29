@@ -202,12 +202,12 @@ export default function SignUpScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label={t("password")}
+              label={t("password", { ns: "translation" })}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry={isHidden}
-              placeholder={t("password")}
+              placeholder={t("password", { ns: "translation" })}
               autoCapitalize={"none"}
               right={
                 <TextInput.Icon

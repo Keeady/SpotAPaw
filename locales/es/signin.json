@@ -3,12 +3,9 @@
   "dontHaveAnAccount": "¿No tienes una cuenta?",
   "emailAndPasswordAreRequiredPleaseTryAgain": "El correo y la contraseña son obligatorios. Por favor, inténtalo de nuevo.",
   "forgotPassword": "¿Olvidaste tu contraseña?",
-  "helpFindAndProtectOurFurryFriends": "Ayuda a encontrar y proteger a nuestros amigos peludos",
   "invalidEmailAddress": "Dirección de correo electrónico no válida.",
   "invalidEmailOrPasswordPleaseTryAgain": "Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.",
   "register": "Registrarse",
-  "welcomeBack": "¡Bienvenido de nuevo!",
   "email": "Correo electrónico",
-  "password": "Contraseña",
   "or": "o"
 }

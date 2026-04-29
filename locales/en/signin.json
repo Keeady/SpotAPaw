@@ -3,12 +3,9 @@
   "dontHaveAnAccount": "Don't have an account?",
   "emailAndPasswordAreRequiredPleaseTryAgain": "Email and password are required. Please try again.",
   "forgotPassword": "Forgot Password?",
-  "helpFindAndProtectOurFurryFriends": "Help find and protect our furry friends",
   "invalidEmailAddress": "Invalid email address.",
   "invalidEmailOrPasswordPleaseTryAgain": "Invalid email or password. Please try again.",
   "register": "Register",
-  "welcomeBack": "Welcome Back!",
   "email": "Email",
-  "password": "Password",
   "or": "or"
 }

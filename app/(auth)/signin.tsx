@@ -12,7 +12,7 @@ import { createErrorLogMessage } from "@/components/util";
 import { useTranslation } from "react-i18next";
 
 export default function SignInScreen() {
-  const { t } = useTranslation("signin");
+  const { t } = useTranslation(["signin", "translation"]);
   const theme = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -95,9 +95,9 @@ export default function SignInScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>{t("welcomeBack")}</Text>
+        <Text style={styles.headerTitle}>{t("welcomeBack", { ns: "translation" })}</Text>
         <Text style={styles.headerSubtitle}>
-          {t("helpFindAndProtectOurFurryFriends")}
+          {t("helpFindAndProtectOurFurryFriends", { ns: "translation" })}
         </Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
@@ -122,12 +122,12 @@ export default function SignInScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label={t("password")}
+              label={t("password", { ns: "translation" })}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry={isHidden}
-              placeholder={t("password")}
+              placeholder={t("password", { ns: "translation" })}
               autoCapitalize={"none"}
               mode="outlined"
               right={
