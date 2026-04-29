@@ -1,0 +1,11 @@
+{
+  "ageAgeYearsOld": "Edad: {{age}} años",
+  "colorsColors": "Colores: {{colors}}",
+  "features": "Características:",
+  "genderGender": "Género: {{gender}}",
+  "lastSeen": "Última vez visto:",
+  "name": "Nombre:",
+  "noDistance": "Sin distancia",
+  "noPhoto": "Sin foto",
+  "type": "Tipo:"
+}
