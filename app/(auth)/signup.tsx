@@ -256,7 +256,7 @@ export default function SignUpScreen() {
             </Button>
           </View>
 
-          <DividerWithText text="OR" />
+          <DividerWithText text={t("or").toUpperCase()} />
 
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button
