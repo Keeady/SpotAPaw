@@ -22,8 +22,10 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { AuthHandler } from "@/auth/auth";
 import { log } from "@/components/logs";
 import { createErrorLogMessage } from "@/components/util";
+import { useTranslation } from "react-i18next";
 
 export default function SignUpScreen() {
+  const { t } = useTranslation("signup");
   const theme = useTheme();
   const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
@@ -52,7 +54,9 @@ export default function SignUpScreen() {
 
     if (!email || !password) {
       showMessage({
-        message: "Email and password are required. Please try again.",
+        message: t(
+          "emailAndPasswordAreRequiredPleaseTryAgain",
+        ),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -63,7 +67,9 @@ export default function SignUpScreen() {
 
     if (password !== rePassword) {
       showMessage({
-        message: "Passwords do not match. Please try again.",
+        message: t(
+          "passwordsDoNotMatchPleaseTryAgain",
+        ),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -80,7 +86,7 @@ export default function SignUpScreen() {
     const isValid = validate(password);
     if (!isValid) {
       showMessage({
-        message: "Please use a strong password.",
+        message: t("pleaseUseAStrongPassword"),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -96,7 +102,9 @@ export default function SignUpScreen() {
       .then((session) => {
         if (!session) {
           showMessage({
-            message: "Please check your inbox for email verification!",
+            message: t(
+              "pleaseCheckYourInboxForEmailVerification",
+            ),
             type: "success",
             icon: "success",
             autoHide: true,
@@ -108,7 +116,9 @@ export default function SignUpScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`SignUp failed: ${errorMessage}`);
         showMessage({
-          message: "An error occured. Please try again.",
+          message: t(
+            "anErrorOccuredPleaseTryAgain",
+          ),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -162,9 +172,11 @@ export default function SignUpScreen() {
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome!</Text>
+        <Text style={styles.headerTitle}>{t("welcome", "Welcome!")}</Text>
         <Text style={styles.headerSubtitle}>
-          Join a community of pets and pet lovers
+          {t(
+            "joinACommunityOfPetsAndPetLovers",
+          )}
         </Text>
       </View>
 
@@ -182,10 +194,10 @@ export default function SignUpScreen() {
               style={{ color: theme.colors.error }}
               padding="none"
             >
-              Invalid email address.
+              {t("invalidEmailAddress")}
             </HelperText>
             <TextInput
-              label="Email"
+              label={t("email")}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setEmail(text);
@@ -200,12 +212,12 @@ export default function SignUpScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label="Password"
+              label={t("password")}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry={isHidden}
-              placeholder="Password"
+              placeholder={t("password")}
               autoCapitalize={"none"}
               right={
                 <TextInput.Icon
@@ -219,20 +231,18 @@ export default function SignUpScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label="Confirm Password"
+              label={t("confirmPassword")}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setRePassword(text)}
               value={rePassword}
               secureTextEntry={isHidden}
-              placeholder="Confirm Password"
+              placeholder={t("confirmPassword")}
               autoCapitalize={"none"}
               mode="outlined"
               textContentType="password"
             />
             <HelperText visible={true} type="info" padding="none">
-              Password must be at least 8 characters long, include one uppercase
-              letter, one lowercase letter, one number, and one special
-              character.
+              {t("passwordRequirements")}
             </HelperText>
           </View>
           <View style={[styles.verticallySpaced]}>
@@ -242,7 +252,7 @@ export default function SignUpScreen() {
               onPress={() => signUpWithEmail()}
               style={styles.button}
             >
-              Create an account
+              {t("createAnAccount")}
             </Button>
           </View>
 
@@ -255,7 +265,7 @@ export default function SignUpScreen() {
               onPress={() => router.push("/(auth)/oauth")}
               style={styles.button}
             >
-              Continue with Google
+              {t("continueWithGoogle")}
             </Button>
           </View>
           {Platform.OS === "ios" && (
@@ -276,13 +286,13 @@ export default function SignUpScreen() {
         </View>
         <View>
           <View style={styles.secondary}>
-            <Text>Already have an account?</Text>
+            <Text>{t("alreadyHaveAnAccount")}</Text>
             <Button
               mode="text"
               disabled={loading}
               onPress={() => router.push("/(auth)/signin")}
             >
-              Sign in
+              {t("signIn")}
             </Button>
           </View>
           <TextInput

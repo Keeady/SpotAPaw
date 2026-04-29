@@ -36,6 +36,7 @@ const locales: Record<string, Record<string, any>> = {
     index: require("./locales/en/index.json"),
     about: require("./locales/en/about.json"),
     signin: require("./locales/en/signin.json"),
+    signup: require("./locales/en/signup.json"),
   },
   es: {
     translation: require("./locales/es/translation.json"),
@@ -43,6 +44,7 @@ const locales: Record<string, Record<string, any>> = {
     index: require("./locales/es/index.json"),
     about: require("./locales/es/about.json"),
     signin: require("./locales/es/signin.json"),
+    signup: require("./locales/es/signup.json"),
   },
 };
 
