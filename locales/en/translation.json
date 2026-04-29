@@ -7,6 +7,8 @@
   "signIn": "Sign in",
   "email": "Email",
   "continueWithGoogle": "Continue with Google",
-    "emailAndPasswordAreRequiredPleaseTryAgain": "Email and password are required. Please try again.",
-    "invalidEmailAddress": "Invalid email address."
+  "emailAndPasswordAreRequiredPleaseTryAgain": "Email and password are required. Please try again.",
+  "invalidEmailAddress": "Invalid email address.",
+  "milesAway": "{{distance}} miles away",
+  "feetAway": "{{distance}} feet away"
 }
