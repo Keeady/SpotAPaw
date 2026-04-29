@@ -54,7 +54,7 @@ export default function SignUpScreen() {
 
     if (!email || !password) {
       showMessage({
-        message: t("emailAndPasswordAreRequiredPleaseTryAgain"),
+        message: t("emailAndPasswordAreRequiredPleaseTryAgain", { ns: "translation" }),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -184,7 +184,7 @@ export default function SignUpScreen() {
               style={{ color: theme.colors.error }}
               padding="none"
             >
-              {t("invalidEmailAddress")}
+              {t("invalidEmailAddress", { ns: "translation" })}
             </HelperText>
             <TextInput
               label={t("email", { ns: "translation" })}
@@ -255,7 +255,7 @@ export default function SignUpScreen() {
               onPress={() => router.push("/(auth)/oauth")}
               style={styles.button}
             >
-              {t("continueWithGoogle")}
+              {t("continueWithGoogle", { ns: "translation" })}
             </Button>
           </View>
           {Platform.OS === "ios" && (

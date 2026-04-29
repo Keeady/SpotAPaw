@@ -32,7 +32,7 @@ export default function SignInScreen() {
 
     if (!email || !password) {
       showMessage({
-        message: t("emailAndPasswordAreRequiredPleaseTryAgain"),
+        message: t("emailAndPasswordAreRequiredPleaseTryAgain", { ns: "translation" }),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -104,7 +104,7 @@ export default function SignInScreen() {
         <View style={styles.buttonContainer}>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Text variant="labelSmall" style={{ color: "red" }}>
-              {hasEmailError ? t("invalidEmailAddress") : ""}
+              {hasEmailError ? t("invalidEmailAddress", { ns: "translation" }) : ""}
             </Text>
             <TextInput
               label={t("email", { ns: "translation" })}
@@ -162,7 +162,7 @@ export default function SignInScreen() {
               onPress={() => router.push("/(auth)/oauth")}
               style={styles.button}
             >
-              {t("continueWithGoogle")}
+              {t("continueWithGoogle", { ns: "translation" })}
             </Button>
           </View>
           {Platform.OS === "ios" && (

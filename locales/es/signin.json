@@ -1,9 +1,6 @@
 {
-  "continueWithGoogle": "Continuar con Google",
   "dontHaveAnAccount": "¿No tienes una cuenta?",
-  "emailAndPasswordAreRequiredPleaseTryAgain": "El correo y la contraseña son obligatorios. Por favor, inténtalo de nuevo.",
   "forgotPassword": "¿Olvidaste tu contraseña?",
-  "invalidEmailAddress": "Dirección de correo electrónico no válida.",
   "invalidEmailOrPasswordPleaseTryAgain": "Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.",
   "register": "Registrarse"
 }

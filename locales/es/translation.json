@@ -5,5 +5,8 @@
   "welcomeBack": "¡Bienvenido de nuevo!",
   "createAnAccount": "Crear una cuenta",
   "signIn": "Iniciar sesión",
-  "email": "Correo electrónico"
+  "email": "Correo electrónico",
+  "continueWithGoogle": "Continuar con Google",
+  "emailAndPasswordAreRequiredPleaseTryAgain": "El correo y la contraseña son obligatorios. Por favor, inténtalo de nuevo.",
+  "invalidEmailAddress": "Dirección de correo electrónico no válida."
 }
