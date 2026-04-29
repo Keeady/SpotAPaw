@@ -34,6 +34,7 @@ export const initI18next = async () => {
         "forgot",
         "sightingpage",
         "petprofile",
+        "sightingdetails",
       ],
     });
 
@@ -51,6 +52,7 @@ const locales: Record<string, Record<string, any>> = {
     forgot: require("./locales/en/forgot.json"),
     sightingpage: require("./locales/en/sightingpage.json"),
     petprofile: require("./locales/en/petprofile.json"),
+    sightingdetails: require("./locales/en/sightingdetails.json"),
   },
   es: {
     translation: require("./locales/es/translation.json"),
@@ -62,6 +64,7 @@ const locales: Record<string, Record<string, any>> = {
     forgot: require("./locales/es/forgot.json"),
     sightingpage: require("./locales/es/sightingpage.json"),
     petprofile: require("./locales/es/petprofile.json"),
+    sightingdetails: require("./locales/es/sightingdetails.json"),
   },
 };
 

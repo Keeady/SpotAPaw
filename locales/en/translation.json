@@ -11,5 +11,8 @@
   "emailAndPasswordAreRequiredPleaseTryAgain": "Email and password are required. Please try again.",
   "invalidEmailAddress": "Invalid email address.",
   "milesAway": "{{distance}} miles away",
-  "feetAway": "{{distance}} feet away"
+  "feetAway": "{{distance}} feet away",
+  "iveSeenThisPet": "I've seen This Pet!",
+  "shareSighting": "Share This Sighting",
+  "report": "Report"
 }

@@ -11,5 +11,8 @@
   "emailAndPasswordAreRequiredPleaseTryAgain": "El correo y la contraseña son obligatorios. Por favor, inténtalo de nuevo.",
   "invalidEmailAddress": "Dirección de correo electrónico no válida.",
   "milesAway": "a {{distance}} millas de distancia",
-  "feetAway": "a {{distance}} pies de distancia"
+  "feetAway": "a {{distance}} pies de distancia",
+  "iveSeenThisPet": "¡He visto esta mascota!",
+  "shareSighting": "Compartir este avistamiento",
+  "report": "Reportar"
 }

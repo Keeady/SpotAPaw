@@ -1,0 +1,21 @@
+{
+    "colors": "Colors:",
+    "features": "Features:",
+    "gender": "Gender:",
+    "noDistanceData": "No distance data",
+    "breed": "Breed:",
+    "call": "Call",
+    "editSighting": "Edit Sighting",
+    "featuresFeatures": "Features: {{features}}",
+    "iveSeenThisPet": "I've seen This Pet!",
+    "notes": "Notes:",
+    "notesNote": "Notes: {{note}}",
+    "ownerPending": "Owner Pending",
+    "petFound": "Pet Found",
+    "reportedBy": "Reported by:",
+    "sightingTimeline": "Sighting Timeline",
+    "text": "Text",
+    "thisIsMyPet": "This is my pet.",
+    "viewMatches": "View Matches",
+    "unknown": "Unknown"
+}
