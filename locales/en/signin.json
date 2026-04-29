@@ -5,7 +5,5 @@
   "forgotPassword": "Forgot Password?",
   "invalidEmailAddress": "Invalid email address.",
   "invalidEmailOrPasswordPleaseTryAgain": "Invalid email or password. Please try again.",
-  "register": "Register",
-  "email": "Email",
-  "or": "or"
+  "register": "Register"
 }

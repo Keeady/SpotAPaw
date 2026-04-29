@@ -5,7 +5,5 @@
   "forgotPassword": "¿Olvidaste tu contraseña?",
   "invalidEmailAddress": "Dirección de correo electrónico no válida.",
   "invalidEmailOrPasswordPleaseTryAgain": "Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.",
-  "register": "Registrarse",
-  "email": "Correo electrónico",
-  "or": "o"
+  "register": "Registrarse"
 }

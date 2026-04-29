@@ -187,13 +187,13 @@ export default function SignUpScreen() {
               {t("invalidEmailAddress")}
             </HelperText>
             <TextInput
-              label={t("email")}
+              label={t("email", { ns: "translation" })}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setEmail(text);
               }}
               value={email}
-              placeholder="email@address.com"
+              placeholder={"email@address.com"}
               autoCapitalize={"none"}
               mode="outlined"
               keyboardType="email-address"
@@ -246,7 +246,7 @@ export default function SignUpScreen() {
             </Button>
           </View>
 
-          <DividerWithText text={t("or").toUpperCase()} />
+          <DividerWithText text={t("or", { ns: "translation" }).toUpperCase()} />
 
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button

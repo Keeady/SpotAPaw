@@ -10,7 +10,5 @@
   "passwordsDoNotMatchPleaseTryAgain": "Passwords do not match. Please try again.",
   "pleaseCheckYourInboxForEmailVerification": "Please check your inbox for email verification!",
   "pleaseUseAStrongPassword": "Please use a strong password.",
-  "welcome": "Welcome!",
-  "email": "Email",
-  "or": "or"
+  "welcome": "Welcome!"
 }

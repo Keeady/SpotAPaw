@@ -107,7 +107,7 @@ export default function SignInScreen() {
               {hasEmailError ? t("invalidEmailAddress") : ""}
             </Text>
             <TextInput
-              label={t("email")}
+              label={t("email", { ns: "translation" })}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setEmail(text);
@@ -154,7 +154,7 @@ export default function SignInScreen() {
               {t("signIn", { ns: "translation" })}
             </Button>
           </View>
-          <DividerWithText text={t("or").toUpperCase()} />
+          <DividerWithText text={t("or", { ns: "translation" }).toUpperCase()} />
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button
               icon="google"
