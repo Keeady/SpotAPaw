@@ -24,7 +24,16 @@ export const initI18next = async () => {
       lng: initialLanguage, // set initial language based on device settings
       fallbackLng: "en",
       defaultNS: "translation",
-      ns: ["translation", "auth", "index", "about", "signin", "signup", "forgot"],
+      ns: [
+        "translation",
+        "auth",
+        "index",
+        "about",
+        "signin",
+        "signup",
+        "forgot",
+        "sightingpage",
+      ],
     });
 
   return i18next;
@@ -39,6 +48,7 @@ const locales: Record<string, Record<string, any>> = {
     signin: require("./locales/en/signin.json"),
     signup: require("./locales/en/signup.json"),
     forgot: require("./locales/en/forgot.json"),
+    sightingpage: require("./locales/en/sightingpage.json"),
   },
   es: {
     translation: require("./locales/es/translation.json"),
@@ -48,6 +58,7 @@ const locales: Record<string, Record<string, any>> = {
     signin: require("./locales/es/signin.json"),
     signup: require("./locales/es/signup.json"),
     forgot: require("./locales/es/forgot.json"),
+    sightingpage: require("./locales/es/sightingpage.json"),
   },
 };
 

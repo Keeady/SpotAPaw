@@ -15,6 +15,7 @@ import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { handleAddingSighting } from "./sighting-handler";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { useTranslation } from "react-i18next";
 
 type SightingPageProps = {
   renderer: (
@@ -32,6 +33,7 @@ type SightingPagination = {
 };
 
 export default function SightingPage({ renderer }: SightingPageProps) {
+  const { t } = useTranslation("sightingpage");
   const router = useRouter();
   const [sightings, setSightings] = useState<AggregatedSighting[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,8 +141,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         >
           <Button mode="text" disabled={true}>
             {loading
-              ? "Loading Nearby Sightings..."
-              : "Showing Nearby Sightings"}
+              ? t("loadingNearbySightings")
+              : t("showingNearbySightings")}
           </Button>
           {loading ? (
             <ActivityIndicator size="small" />
@@ -169,7 +171,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
 
         <ReportLostPetFab
           onFormPress={onAddSighting}
-          title={"Report New Sighting"}
+          title={t("reportNewSighting")}
           showGroup={false}
           handleShare={() => void 0}
         />
