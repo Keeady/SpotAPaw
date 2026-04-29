@@ -35,12 +35,14 @@ const locales: Record<string, Record<string, any>> = {
     auth: require("./locales/en/auth.json"),
     index: require("./locales/en/index.json"),
     about: require("./locales/en/about.json"),
+    signin: require("./locales/en/signin.json"),
   },
   es: {
     translation: require("./locales/es/translation.json"),
     auth: require("./locales/es/auth.json"),
     index: require("./locales/es/index.json"),
     about: require("./locales/es/about.json"),
+    signin: require("./locales/es/signin.json"),
   },
 };
 
