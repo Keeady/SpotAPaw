@@ -25,7 +25,7 @@ import { createErrorLogMessage } from "@/components/util";
 import { useTranslation } from "react-i18next";
 
 export default function SignUpScreen() {
-  const { t } = useTranslation("signup");
+  const { t } = useTranslation(["signup", "translation"]);
   const theme = useTheme();
   const [behavior, setBehavior] = useState<"padding" | undefined>("padding");
 
@@ -54,9 +54,7 @@ export default function SignUpScreen() {
 
     if (!email || !password) {
       showMessage({
-        message: t(
-          "emailAndPasswordAreRequiredPleaseTryAgain",
-        ),
+        message: t("emailAndPasswordAreRequiredPleaseTryAgain"),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -67,9 +65,7 @@ export default function SignUpScreen() {
 
     if (password !== rePassword) {
       showMessage({
-        message: t(
-          "passwordsDoNotMatchPleaseTryAgain",
-        ),
+        message: t("passwordsDoNotMatchPleaseTryAgain"),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -102,9 +98,7 @@ export default function SignUpScreen() {
       .then((session) => {
         if (!session) {
           showMessage({
-            message: t(
-              "pleaseCheckYourInboxForEmailVerification",
-            ),
+            message: t("pleaseCheckYourInboxForEmailVerification"),
             type: "success",
             icon: "success",
             autoHide: true,
@@ -116,9 +110,7 @@ export default function SignUpScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`SignUp failed: ${errorMessage}`);
         showMessage({
-          message: t(
-            "anErrorOccuredPleaseTryAgain",
-          ),
+          message: t("anErrorOccuredPleaseTryAgain"),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -174,9 +166,7 @@ export default function SignUpScreen() {
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
         <Text style={styles.headerTitle}>{t("welcome", "Welcome!")}</Text>
         <Text style={styles.headerSubtitle}>
-          {t(
-            "joinACommunityOfPetsAndPetLovers",
-          )}
+          {t("joinACommunityOfPetsAndPetLovers")}
         </Text>
       </View>
 
@@ -252,7 +242,7 @@ export default function SignUpScreen() {
               onPress={() => signUpWithEmail()}
               style={styles.button}
             >
-              {t("createAnAccount")}
+              {t("createAnAccount", { ns: "translation" })}
             </Button>
           </View>
 

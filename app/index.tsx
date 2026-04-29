@@ -7,7 +7,7 @@ import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 
 export default function PublicHome() {
-  const { t } = useTranslation("index");
+  const { t } = useTranslation(["index", "translation"]);
 
   const router = useRouter();
   const { user, loading } = useContext(AuthContext);
@@ -46,7 +46,7 @@ export default function PublicHome() {
           onPress={() => router.push("/(auth)/signup")}
           style={styles.button}
         >
-          {t("createAnAccount")}
+          {t("createAnAccount", {ns: "translation"})}
         </Button>
 
         <Button
