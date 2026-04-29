@@ -5,6 +5,7 @@
   "welcomeBack": "¡Bienvenido de nuevo!",
   "createAnAccount": "Crear una cuenta",
   "signIn": "Iniciar sesión",
+  "signOut": "Cerrar sesión",
   "email": "Correo electrónico",
   "continueWithGoogle": "Continuar con Google",
   "emailAndPasswordAreRequiredPleaseTryAgain": "El correo y la contraseña son obligatorios. Por favor, inténtalo de nuevo.",
