@@ -4,8 +4,11 @@ import { Redirect, useRouter } from "expo-router";
 import { useContext } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 export default function PublicHome() {
+  const { t } = useTranslation("index");
+
   const router = useRouter();
   const { user, loading } = useContext(AuthContext);
 
@@ -23,7 +26,7 @@ export default function PublicHome() {
         <HomePageHeader />
         <View>
           <Text variant="titleMedium" style={styles.largeText}>
-            A community helping lost pets find their way home.
+            {t("title")}
           </Text>
         </View>
       </View>
@@ -35,7 +38,7 @@ export default function PublicHome() {
           onPress={() => router.push("/(auth)/signin")}
           style={styles.button}
         >
-          Sign In
+          {t("signIn")}
         </Button>
         <Button
           icon="account-plus-outline"
@@ -43,7 +46,7 @@ export default function PublicHome() {
           onPress={() => router.push("/(auth)/signup")}
           style={styles.button}
         >
-          Create an account
+          {t("createAnAccount")}
         </Button>
 
         <Button
@@ -52,11 +55,11 @@ export default function PublicHome() {
           style={styles.button}
           onPress={() => router.push("/sightings/")}
         >
-          Continue as Guest
+          {t("continueAsGuest")}
         </Button>
 
         <View style={styles.usageText}>
-          <Text variant="bodySmall">By using </Text>
+          <Text variant="bodySmall">{t("byUsing")}</Text>
           <Button mode="text" onPress={() => router.push("/about")} compact>
             <Text
               variant="bodySmall"
@@ -65,22 +68,22 @@ export default function PublicHome() {
               SpotAPaw,
             </Text>
           </Button>
-          <Text variant="bodySmall"> you agree to our</Text>
+          <Text variant="bodySmall">{t("youAgreeToOur")}</Text>
           <Button mode="text" onPress={() => router.push("/privacy")} compact>
             <Text
               variant="bodySmall"
               style={{ textDecorationLine: "underline" }}
             >
-              Privacy Policy
+              {t("privacyPolicy")}
             </Text>
           </Button>
-          <Text variant="bodySmall">and</Text>
+          <Text variant="bodySmall">{t("and")}</Text>
           <Button mode="text" onPress={() => router.push("/terms")} compact>
             <Text
               variant="bodySmall"
               style={{ textDecorationLine: "underline" }}
             >
-              Terms of Service
+              {t("termsOfService")}
             </Text>
           </Button>
         </View>

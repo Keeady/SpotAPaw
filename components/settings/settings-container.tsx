@@ -6,7 +6,6 @@ import {
   SightingLocation,
 } from "@/components/get-current-location";
 import {
-  PREFERRED_LANGUAGE,
   SIGHTING_DISTANCE_KEY,
   SIGHTING_LOCATION_KEY,
   SIGHTING_NOTIFICATION_ENABLED_KEY,
@@ -32,6 +31,8 @@ import DistanceSetting from "./distance-setting";
 import PrivacySetting from "./privacy-setting";
 import TermsSetting from "./terms-setting";
 import AccountSetting from "./account-setting";
+import { useLocaleContext } from "../Provider/locale-provider";
+import i18next from "i18next";
 
 // Define color scheme for icons
 const iconColors = {
@@ -51,6 +52,7 @@ const iconColors = {
 // Available languages
 const languages: SupportedLanguage[] = [
   { code: "en", name: "English", nativeName: "English" },
+  { code: "es", name: "Spanish", nativeName: "Español" },
 ];
 
 const defaultDistance = "25";
@@ -103,6 +105,7 @@ const SettingsContainer = () => {
   const { getSavedLocation } = useContext(PermissionContext);
 
   const { isAiFeatureEnabled, saveAIFeatureContext } = useAIFeatureContext();
+  const { preferredLanguage, saveLanguageContext } = useLocaleContext();
 
   const loadSavedLocation = useCallback(async () => {
     try {
@@ -128,14 +131,16 @@ const SettingsContainer = () => {
     setAIFeatureEnabled(!!isAiFeatureEnabled);
   }, [isAiFeatureEnabled]);
 
+  useEffect(() => {
+    // Load language settings
+    setSelectedLanguage(preferredLanguage || "en");
+  }, [preferredLanguage]);
+
   const loadSettings = useCallback(async () => {
     try {
       // Check location permission
       const { status } = await Location.getForegroundPermissionsAsync();
       setLocationPermission(status === "granted");
-
-      const language = await AsyncStorage.getItem(PREFERRED_LANGUAGE);
-      setSelectedLanguage(language || "en");
 
       // Load notification settings
       const notifications = await AsyncStorage.getItem(
@@ -209,12 +214,12 @@ const SettingsContainer = () => {
 
   const handleLanguageChange = async (selectedLanguageCode: string) => {
     setSelectedLanguage(selectedLanguageCode);
-    await AsyncStorage.setItem(PREFERRED_LANGUAGE, selectedLanguageCode);
+    saveLanguageContext?.(selectedLanguageCode);
     setLanguageDialogVisible(false);
   };
 
   const getSelectedLanguageDisplay = () => {
-    const language = languages.find((lang) => lang.code === selectedLanguage);
+    const language = languages.find((lang) => lang.code === preferredLanguage);
     return language ? `${language.name} (${language.nativeName})` : "English";
   };
 

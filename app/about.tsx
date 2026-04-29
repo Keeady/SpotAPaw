@@ -1,15 +1,17 @@
 import { SUPPORT_EMAIL } from "@/components/constants";
 import { useRouter } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 
 export default function AboutScreen() {
   const router = useRouter();
+  const { t } = useTranslation("about");
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text variant="headlineMedium" style={styles.title}>
-        About SpotAPaw
+        {t("about")} SpotAPaw
       </Text>
       <Card mode="elevated" style={{ marginBottom: 16 }}>
         <Card.Content>
