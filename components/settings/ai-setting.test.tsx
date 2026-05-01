@@ -6,7 +6,7 @@ import { Text } from "react-native";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, options: any) => key,
   }),
 }));
 
@@ -34,9 +34,9 @@ describe("AISetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("AI Image Analysis")).toBeTruthy();
+    expect(getByText("aiImageAnalysis")).toBeTruthy();
     expect(
-      getByText("Enable image analysis for pet identification and matching"),
+      getByText("enableImageAnalysisForPetIdentification"),
     ).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });

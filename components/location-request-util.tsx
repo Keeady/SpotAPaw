@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "react-native-paper";
 import { Linking, View, StyleSheet, ScrollView, Platform } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type LocationPermissionDeniedDialogProps = {
   permissionDeniedDialogVisible: boolean;
@@ -17,29 +18,30 @@ export const LocationPermissionDeniedDialog = ({
   permissionDeniedDialogVisible,
   setPermissionDeniedDialogVisible,
 }: LocationPermissionDeniedDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={permissionDeniedDialogVisible}
         onDismiss={() => setPermissionDeniedDialogVisible(false)}
       >
-        <Dialog.Title>Grant Location Permission</Dialog.Title>
+        <Dialog.Title>{t("grantLocationPermission")}</Dialog.Title>
         <Dialog.Content>
           <Text variant="bodyMedium">
             {Platform.OS === "web"
-              ? "Turning on your location will allow us to show you nearby pet sightings. Please open your browser settings manually to update location settings."
-              : "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings."}
+              ? t("turningOnLocationWeb")
+              : t("turningOnLocationMobile")}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
           {Platform.OS === "web" ? (
             <Button onPress={() => setPermissionDeniedDialogVisible(false)}>
-              OK
+              {t("ok")}
             </Button>
           ) : (
-            <View style={{flexDirection: "row"}}>
+            <View style={{ flexDirection: "row" }}>
               <Button onPress={() => setPermissionDeniedDialogVisible(false)}>
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 onPress={() => {
@@ -47,7 +49,7 @@ export const LocationPermissionDeniedDialog = ({
                   Linking.openSettings();
                 }}
               >
-                Open Settings
+                {t("openSettings")}
               </Button>
             </View>
           )}
@@ -66,22 +68,20 @@ export const LocationPermissionGrantedDialog = ({
   permissionGrantedDialogVisible,
   setPermissionGrantedDialogVisible,
 }: LocationPermissionGrantedDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={permissionGrantedDialogVisible}
         onDismiss={() => setPermissionGrantedDialogVisible(false)}
       >
-        <Dialog.Title>Permission Granted</Dialog.Title>
+        <Dialog.Title>{t("permissionGranted")}</Dialog.Title>
         <Dialog.Content>
-          <Text variant="bodyMedium">
-            Location permission has been enabled. The app will now use your
-            device location.
-          </Text>
+          <Text variant="bodyMedium">{t("locationPermissionEnabled")}</Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={() => setPermissionGrantedDialogVisible(false)}>
-            OK
+            {t("ok")}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -100,24 +100,27 @@ export const LocationConfirmationDialog = ({
   setResetLocationDialogVisible,
   handleResetSavedLocation,
 }: LocationConfirmationDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={resetLocationDialogVisible}
         onDismiss={() => setResetLocationDialogVisible(false)}
       >
-        <Dialog.Title>Reset Saved Location?</Dialog.Title>
+        <Dialog.Title>{t("resetSavedLocation")}</Dialog.Title>
         <Dialog.Content>
-          <Text variant="bodyMedium">
-            This will remove your manually selected location. You will need to
-            select a new location from the map or grant location permission.
-          </Text>
+          <Text variant="bodyMedium">{t("resetSavedLocationMessage")}</Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={() => setResetLocationDialogVisible(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
-          <Button onPress={handleResetSavedLocation} testID="reset-confirm-button">Reset</Button>
+          <Button
+            onPress={handleResetSavedLocation}
+            testID="reset-confirm-button"
+          >
+            {t("reset")}
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -133,22 +136,20 @@ export const LocationResetSuccessDialog = ({
   locationResetSuccessDialogVisible,
   setLocationResetSuccessDialogVisible,
 }: LocationResetSuccessDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={locationResetSuccessDialogVisible}
         onDismiss={() => setLocationResetSuccessDialogVisible(false)}
       >
-        <Dialog.Title>Location Reset</Dialog.Title>
+        <Dialog.Title>{t("locationReset")}</Dialog.Title>
         <Dialog.Content>
-          <Text variant="bodyMedium">
-            Your saved location has been removed. You can select a new location
-            from the map.
-          </Text>
+          <Text variant="bodyMedium">{t("locationResetMessage")}</Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={() => setLocationResetSuccessDialogVisible(false)}>
-            OK
+            {t("ok")}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -167,18 +168,21 @@ export const ErrorDialog = ({
   setErrorDialogVisible,
   errorMessage,
 }: ErrorDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={errorDialogVisible}
         onDismiss={() => setErrorDialogVisible(false)}
       >
-        <Dialog.Title>Error</Dialog.Title>
+        <Dialog.Title>{t("error")}</Dialog.Title>
         <Dialog.Content>
           <Text variant="bodyMedium">{errorMessage}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setErrorDialogVisible(false)}>OK</Button>
+          <Button onPress={() => setErrorDialogVisible(false)}>
+            {t("ok")}
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -198,13 +202,14 @@ export const DistanceSelectionDialog = ({
   handleDistanceChange,
   defaultDistance,
 }: DistanceSelectionDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={distanceDialogVisible}
         onDismiss={() => setDistanceDialogVisible(false)}
       >
-        <Dialog.Title>Pet Sighting Distance</Dialog.Title>
+        <Dialog.Title>{t("petSightingDistance")}</Dialog.Title>
         <Dialog.Content>
           <RadioButton.Group
             onValueChange={handleDistanceChange}
@@ -220,7 +225,7 @@ export const DistanceSelectionDialog = ({
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={() => setDistanceDialogVisible(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -249,13 +254,14 @@ export const LanguageSelectionDialog = ({
   selectedLanguage,
   languages,
 }: LanguageSelectionDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
         visible={languageDialogVisible}
         onDismiss={() => setLanguageDialogVisible(false)}
       >
-        <Dialog.Title>Select Language</Dialog.Title>
+        <Dialog.Title>{t("selectLanguage")}</Dialog.Title>
         <Dialog.ScrollArea>
           <ScrollView>
             <RadioButton.Group
@@ -274,7 +280,7 @@ export const LanguageSelectionDialog = ({
         </Dialog.ScrollArea>
         <Dialog.Actions>
           <Button onPress={() => setLanguageDialogVisible(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -293,6 +299,7 @@ export const AccountDeletionWarningDialog = ({
   setDeleteDialogVisible,
   handleProceedToConfirmDeletion,
 }: AccountDeletionWarningDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
@@ -301,37 +308,39 @@ export const AccountDeletionWarningDialog = ({
       >
         <Dialog.Icon icon="alert" color="#d32f2f" size={48} />
         <Dialog.Title style={styles.dialogDangerTitle}>
-          Delete Account?
+          {t("deleteAccountTitle")}
         </Dialog.Title>
         <Dialog.Content>
           <Text variant="bodyMedium" style={styles.dialogText}>
-            This action cannot be undone. Deleting your account will:
+            {t("thisActionCannotBeUndone")}
           </Text>
           <View style={styles.warningList}>
             <Text variant="bodyMedium" style={styles.warningItem}>
-              • Permanently delete all your data
+              • {t("permanentlyDeleteAllYourData")}
             </Text>
             <Text variant="bodyMedium" style={styles.warningItem}>
-              • Permanently delete all your pet data
+              • {t("permanentlyDeleteAllYourPetData")}
             </Text>
             <Text variant="bodyMedium" style={styles.warningItem}>
-              • Remove your saved locations and preferences
+              • {t("removeYourSavedLocationsAndPreferences")}
             </Text>
             <Text variant="bodyMedium" style={styles.warningItem}>
-              • Sign you out of all devices
+              • {t("signYouOutOfAllDevices")}
             </Text>
           </View>
           <Text
             variant="bodyMedium"
             style={[styles.dialogText, styles.warningNote]}
           >
-            Are you sure you want to continue?
+            {t("areYouSureYouWantToContinue")}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
+          <Button onPress={() => setDeleteDialogVisible(false)}>
+            {t("cancel")}
+          </Button>
           <Button textColor="#d32f2f" onPress={handleProceedToConfirmDeletion}>
-            Continue
+            {t("continue")}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -356,6 +365,7 @@ export const AccountDeletionConfirmationDialog = ({
   setDeleteConfirmText,
   handleConfirmAccountDeletion,
 }: AccountDeletionConfirmationDialogProps) => {
+  const { t } = useTranslation(["dialog"]);
   return (
     <Portal>
       <Dialog
@@ -366,16 +376,26 @@ export const AccountDeletionConfirmationDialog = ({
         dismissable={!deletingAccount}
       >
         <Dialog.Title style={styles.dialogDangerTitle}>
-          Confirm Account Deletion
+          {t("confirmAccountDeletion")}
         </Dialog.Title>
         <Dialog.Content>
-          <Text variant="bodyMedium" style={styles.dialogText}>
-            Type <Text style={styles.boldText}>DELETE</Text> to permanently
-            delete your account:
+          <Text
+            variant="bodyMedium"
+            style={styles.dialogText}
+            testID="confirm-delete-input-label"
+          >
+            {t("typeDeleteToPermanentlyDeleteAccount")}
+            <Text
+              style={styles.boldText}
+              testID="confirm-delete-input-label-delete"
+            >
+              {t("delete")}
+            </Text>
+            {t("toPermanentlyDeleteYourAccount")}
           </Text>
           <TextInput
             mode="outlined"
-            placeholder="Type DELETE"
+            placeholder={t("typeDelete")}
             value={deleteConfirmText}
             onChangeText={setDeleteConfirmText}
             disabled={deletingAccount}
@@ -389,7 +409,7 @@ export const AccountDeletionConfirmationDialog = ({
             onPress={() => setDeleteConfirmDialogVisible(false)}
             disabled={deletingAccount}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             textColor="#d32f2f"
@@ -397,11 +417,12 @@ export const AccountDeletionConfirmationDialog = ({
             loading={deletingAccount}
             disabled={
               deletingAccount ||
-              deleteConfirmText.trim().toLowerCase() !== "delete"
+              deleteConfirmText.trim().toLowerCase() !==
+                t("delete").toLowerCase()
             }
             testID="confirm-delete-btn"
           >
-            Delete Account
+            {t("deleteAccount")}
           </Button>
         </Dialog.Actions>
       </Dialog>

@@ -6,7 +6,7 @@ import PrivacySetting from "./privacy-setting";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, options?: any) => key,
   }),
 }));
 
@@ -32,8 +32,8 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Privacy Policy")).toBeTruthy();
-    expect(getByText("Learn how we handle your data")).toBeTruthy();
+    expect(getByText("privacyPolicy")).toBeTruthy();
+    expect(getByText("learnHowWeHandleYourData")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
 
@@ -44,7 +44,7 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Privacy Policy")).toBeTruthy();
+    expect(getByText("privacyPolicy")).toBeTruthy();
   });
 
   it("displays the correct description", () => {
@@ -54,7 +54,7 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Learn how we handle your data")).toBeTruthy();
+    expect(getByText("learnHowWeHandleYourData")).toBeTruthy();
   });
 
   it("renders icon in the left section", () => {
@@ -80,7 +80,7 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    const listItem = getByText("Privacy Policy");
+    const listItem = getByText("privacyPolicy");
     fireEvent.press(listItem);
 
     expect(mockOnOpenPrivacyPolicy).toHaveBeenCalledTimes(1);
@@ -99,7 +99,7 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    const description = getByText("Learn how we handle your data");
+    const description = getByText("learnHowWeHandleYourData");
     fireEvent.press(description);
 
     expect(mockOnOpenPrivacyPolicy).toHaveBeenCalledTimes(1);
@@ -118,7 +118,7 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    const listItem = getByText("Privacy Policy");
+    const listItem = getByText("privacyPolicy");
 
     fireEvent.press(listItem);
     fireEvent.press(listItem);
@@ -155,11 +155,11 @@ describe("PrivacySetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Privacy Policy")).toBeTruthy();
-    expect(getByText("Learn how we handle your data")).toBeTruthy();
+    expect(getByText("privacyPolicy")).toBeTruthy();
+    expect(getByText("learnHowWeHandleYourData")).toBeTruthy();
 
     // Should not throw error when pressed
-    const listItem = getByText("Privacy Policy");
+    const listItem = getByText("privacyPolicy");
     expect(() => fireEvent.press(listItem)).not.toThrow();
   });
 });

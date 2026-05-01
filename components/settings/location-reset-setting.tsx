@@ -24,7 +24,7 @@ const LocationResetSetting = ({
   return (
     <>
       <List.Item
-        title={t("resetSavedLocation")}
+        title={t("resetSavedLocationTitle")}
         description={t("removeYourManuallySelectedLocation")}
         left={(props) => (
           <List.Icon

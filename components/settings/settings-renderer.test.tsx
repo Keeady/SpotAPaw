@@ -6,13 +6,13 @@ import SettingsRenderer from "./settings-renderer";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string, options: any) => {
+    t: (key: string, options: any) => {
       if (options && options.defaultDistanceValue) {
         return `${options.defaultDistanceValue} km radius`;
       } else if (options && options.versionText) {
         return `Version ${options.versionText}`;
       }
-      return defaultValue;
+      return key;
     },
   }),
 }));
@@ -61,9 +61,9 @@ describe("SettingsRenderer Component", () => {
     );
 
     // Check section headers
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Preferences")).toBeTruthy();
-    expect(getByText("Legal")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("preferences")).toBeTruthy();
+    expect(getByText("legal")).toBeTruthy();
 
     // Check all components are rendered
     expect(getByTestId("about-section")).toBeTruthy();
@@ -116,9 +116,9 @@ describe("SettingsRenderer Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Preferences")).toBeTruthy();
-    expect(getByText("Legal")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("preferences")).toBeTruthy();
+    expect(getByText("legal")).toBeTruthy();
   });
 
   it("renders location section components in correct order", () => {
@@ -183,9 +183,9 @@ describe("SettingsRenderer Component", () => {
 
     expect(queryByTestId("account-setting")).toBeNull();
     // Other sections should still render
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Preferences")).toBeTruthy();
-    expect(getByText("Legal")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("preferences")).toBeTruthy();
+    expect(getByText("legal")).toBeTruthy();
   });
 
   it("handles undefined account setting", () => {
@@ -201,7 +201,7 @@ describe("SettingsRenderer Component", () => {
     );
 
     expect(queryByTestId("account-setting")).toBeNull();
-    expect(getByText("Location")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
   });
 
   it("renders notification setting outside of sections", () => {
@@ -259,9 +259,9 @@ describe("SettingsRenderer Component", () => {
     );
 
     // Should still render other sections
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Preferences")).toBeTruthy();
-    expect(getByText("Legal")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("preferences")).toBeTruthy();
+    expect(getByText("legal")).toBeTruthy();
     expect(queryByTestId("about-section")).toBeNull();
     expect(queryByTestId("language-setting")).toBeNull();
     // Other components should still be there

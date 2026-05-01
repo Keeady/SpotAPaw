@@ -227,6 +227,10 @@ const SettingsContainer = () => {
   };
 
   const getLocationDisplayText = () => {
+    if (locationLoading) {
+      return t("loading");
+    }
+
     if (locationPermission) {
       return t("usingDeviceLocation");
     } else if (savedLocation) {
@@ -322,9 +326,7 @@ const SettingsContainer = () => {
       currentLocationSetting={
         <CurrentLocationSetting
           iconColorLocationCheck={iconColors.locationCheck}
-          locationUsedDisplayText={
-            locationLoading ? "Loading..." : getLocationDisplayText()
-          }
+          locationUsedDisplayText={getLocationDisplayText()}
         />
       }
       locationResetSetting={

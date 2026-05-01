@@ -6,7 +6,7 @@ import NotificationSetting from "./notification-setting";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, options: any) => key,
   }),
 }));
 
@@ -33,9 +33,9 @@ describe("NotificationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Notifications")).toBeTruthy();
-    expect(getByText("Push Notifications")).toBeTruthy();
-    expect(getByText("Get notified about updates and events")).toBeTruthy();
+    expect(getByText("notifications")).toBeTruthy();
+    expect(getByText("pushNotifications")).toBeTruthy();
+    expect(getByText("getNotifiedAboutUpdatesAndEvents")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
     expect(getByTestId("notification-switch")).toBeTruthy();
   });
@@ -140,7 +140,7 @@ describe("NotificationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Notifications")).toBeTruthy();
+    expect(getByText("notifications")).toBeTruthy();
   });
 
   it("renders List.Item with correct title and description", () => {
@@ -150,8 +150,8 @@ describe("NotificationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Push Notifications")).toBeTruthy();
-    expect(getByText("Get notified about updates and events")).toBeTruthy();
+    expect(getByText("pushNotifications")).toBeTruthy();
+    expect(getByText("getNotifiedAboutUpdatesAndEvents")).toBeTruthy();
   });
 
   it("renders icon in the left section", () => {

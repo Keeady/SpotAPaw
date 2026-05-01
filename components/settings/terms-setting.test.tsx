@@ -6,7 +6,7 @@ import TermsSetting from "./terms-setting";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, options?: any) => key,
   }),
 }));
 
@@ -32,8 +32,8 @@ describe("TermsSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Terms of Service")).toBeTruthy();
-    expect(getByText("Read our terms and conditions")).toBeTruthy();
+    expect(getByText("termsOfService")).toBeTruthy();
+    expect(getByText("readOurTermsAndConditions")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
 
@@ -44,7 +44,7 @@ describe("TermsSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Terms of Service")).toBeTruthy();
+    expect(getByText("termsOfService")).toBeTruthy();
   });
 
   it("displays the correct description", () => {
@@ -54,7 +54,7 @@ describe("TermsSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Read our terms and conditions")).toBeTruthy();
+    expect(getByText("readOurTermsAndConditions")).toBeTruthy();
   });
 
   it("renders icon in the left section", () => {
@@ -80,7 +80,7 @@ describe("TermsSetting Component", () => {
       </TestWrapper>,
     );
 
-    const listItem = getByText("Terms of Service");
+    const listItem = getByText("termsOfService");
     fireEvent.press(listItem);
 
     expect(mockOnOpenTermsOfService).toHaveBeenCalledTimes(1);
@@ -99,7 +99,7 @@ describe("TermsSetting Component", () => {
       </TestWrapper>,
     );
 
-    const description = getByText("Read our terms and conditions");
+    const description = getByText("readOurTermsAndConditions");
     fireEvent.press(description);
 
     expect(mockOnOpenTermsOfService).toHaveBeenCalledTimes(1);
@@ -118,7 +118,7 @@ describe("TermsSetting Component", () => {
       </TestWrapper>,
     );
 
-    const listItem = getByText("Terms of Service");
+    const listItem = getByText("termsOfService");
 
     fireEvent.press(listItem);
     fireEvent.press(listItem);

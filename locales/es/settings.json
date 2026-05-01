@@ -22,7 +22,7 @@
     "readOurTermsAndConditions": "Lee nuestros términos y condiciones",
     "removeYourManuallySelectedLocation": "Eliminar tu ubicación seleccionada manualmente",
     "reset": "Restablecer",
-    "resetSavedLocation": "Restablecer ubicación guardada",
+    "resetSavedLocationTitle": "Restablecer ubicación guardada",
     "savedVal": "Guardado: {{val}}",
     "termsOfService": "Términos de servicio",
     "usingDeviceLocation": "Usando ubicación del dispositivo",
@@ -31,5 +31,6 @@
     "request": "Solicitar",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
-    "language": "Idioma"
+    "language": "Idioma",
+    "loading": "Cargando..."
 }

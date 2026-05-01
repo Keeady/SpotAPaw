@@ -22,7 +22,7 @@
     "readOurTermsAndConditions": "Read our terms and conditions",
     "removeYourManuallySelectedLocation": "Remove your manually selected location",
     "reset": "Reset",
-    "resetSavedLocation": "Reset Saved Location",
+    "resetSavedLocationTitle": "Reset Saved Location",
     "savedVal": "Saved: {{val}}",
     "termsOfService": "Terms of Service",
     "usingDeviceLocation": "Using device location",
@@ -31,5 +31,6 @@
     "request": "Request",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "language": "Language"
+    "language": "Language",
+    "loading": "Loading...",
 }

@@ -6,7 +6,7 @@ import CurrentLocationSetting from "./current-location-setting";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, options: any) => key,
   }),
 }));
 
@@ -33,7 +33,7 @@ describe("CurrentLocationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Current Location")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
     expect(getByText(testLocationText)).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
@@ -49,7 +49,7 @@ describe("CurrentLocationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Current Location")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
     expect(getByText(alternativeLocationText)).toBeTruthy();
   });
 
@@ -65,7 +65,7 @@ describe("CurrentLocationSetting Component", () => {
     );
 
     // Verify the component still renders correctly with custom color
-    expect(getByText("Current Location")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
     expect(getByText(testLocationText)).toBeTruthy();
   });
 
@@ -79,7 +79,7 @@ describe("CurrentLocationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Current Location")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
   });
 
   it("renders with long location text", () => {
@@ -94,7 +94,7 @@ describe("CurrentLocationSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Current Location")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
     expect(getByText(longLocationText)).toBeTruthy();
   });
 });

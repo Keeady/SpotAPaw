@@ -7,7 +7,7 @@ import LanguageSetting from "./language-setting";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, options?: any) => key,
   }),
 }));
 
@@ -45,7 +45,7 @@ describe("LanguageSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Language")).toBeTruthy();
+    expect(getByText("language")).toBeTruthy();
     expect(getByText("English")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
@@ -72,7 +72,7 @@ describe("LanguageSetting Component", () => {
       </TestWrapper>,
     );
 
-    const listItem = getByText("Language");
+    const listItem = getByText("language");
     fireEvent.press(listItem);
 
     expect(defaultProps.onLanguagePress).toHaveBeenCalledTimes(1);
@@ -102,8 +102,8 @@ describe("LanguageSetting Component", () => {
     );
 
     // Dialog should be visible when languageDialogVisible is true
-    expect(await findByText("Select Language")).toBeTruthy();
-    expect(await findByText("Cancel")).toBeTruthy();
+    expect(await findByText("selectLanguage")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
   });
 
   it("renders all language options in the dialog", async () => {
@@ -159,7 +159,7 @@ describe("LanguageSetting Component", () => {
       </TestWrapper>,
     );
 
-    const cancelButton = await findByText("Cancel");
+    const cancelButton = await findByText("cancel");
     fireEvent.press(cancelButton);
 
     expect(mockOnLanguagePress).toHaveBeenCalledTimes(1);
@@ -203,8 +203,8 @@ describe("LanguageSetting Component", () => {
     );
 
     // Dialog should still render but with no language options
-    expect(await findByText("Select Language")).toBeTruthy();
-    expect(await findByText("Cancel")).toBeTruthy();
+    expect(await findByText("selectLanguage")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
     expect(queryByText("English (English)")).toBeNull();
   });
 
