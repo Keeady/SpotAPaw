@@ -1,0 +1,18 @@
+{
+  "or": "or",
+  "password": "Password",
+  "helpFindAndProtectOurFurryFriends": "Help find and protect our furry friends",
+  "welcomeBack": "Welcome Back!",
+  "createAnAccount": "Create an account",
+  "signIn": "Sign in",
+  "signOut": "Sign out",
+  "email": "Email",
+  "continueWithGoogle": "Continue with Google",
+  "emailAndPasswordAreRequiredPleaseTryAgain": "Email and password are required. Please try again.",
+  "invalidEmailAddress": "Invalid email address.",
+  "milesAway": "{{distance}} miles away",
+  "feetAway": "{{distance}} feet away",
+  "iveSeenThisPet": "I've seen This Pet!",
+  "shareSighting": "Share This Sighting",
+  "report": "Report"
+}

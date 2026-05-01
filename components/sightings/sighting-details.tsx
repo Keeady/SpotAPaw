@@ -27,6 +27,8 @@ import {
 import { usePermission } from "../Provider/permission-provider";
 import SightingGallery from "./gallery";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { useTranslation } from "react-i18next";
+import { useLocaleContext } from "../Provider/locale-provider";
 
 function dedupPhotos(sightings: AggregatedSighting[]) {
   const seen = new Set();
@@ -69,11 +71,13 @@ export default function SightingDetail({
   onShareSighting: () => void;
   onFindMatches: () => void;
 }) {
+  const { t } = useTranslation(["sightingdetails", "translation"]);
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const uniquePhotos = dedupPhotos(sightings);
   const images = uniquePhotos?.map((url) => ({ uri: url })) || [];
   const { location: userCurrentLocation } = usePermission();
+  const { preferredLanguage } = useLocaleContext();
 
   const handleCall = (phone: string) => {
     if (phone) Linking.openURL(`tel:${phone}`);
@@ -96,7 +100,7 @@ export default function SightingDetail({
         >
           <Card>
             <Card.Title
-              title={petSummary?.name || petName || "Unknown"}
+              title={petSummary?.name || petName || t("unknown")}
               titleVariant="titleLarge"
             />
             <Card.Content>
@@ -123,13 +127,13 @@ export default function SightingDetail({
                     flexWrap: "wrap",
                   }}
                 >
-                  <Text variant="labelLarge">Colors: </Text>
+                  <Text variant="labelLarge">{t("colors")} </Text>
                   <Text>{petSummary?.colors}</Text>
                 </View>
               )}
               {petSummary?.gender && (
                 <View style={{ flexDirection: "row", marginBottom: 10 }}>
-                  <Text variant="labelLarge">Gender: </Text>
+                  <Text variant="labelLarge">{t("gender")} </Text>
                   <Text>{petSummary?.gender}</Text>
                 </View>
               )}
@@ -144,7 +148,7 @@ export default function SightingDetail({
                     flexWrap: "wrap",
                   }}
                 >
-                  <Text variant="labelLarge">Features: </Text>
+                  <Text variant="labelLarge">{t("features")} </Text>
                   <Text>{petSummary?.features}</Text>
                   <Divider />
                 </View>
@@ -159,7 +163,7 @@ export default function SightingDetail({
                     flexWrap: "wrap",
                   }}
                 >
-                  <Text variant="labelLarge">Notes: </Text>
+                  <Text variant="labelLarge">{t("notes")} </Text>
                   <Text>{petSummary?.note}</Text>
                 </View>
               )}
@@ -168,20 +172,22 @@ export default function SightingDetail({
               <View style={{ flexDirection: "row", gap: 10 }}>
                 {claimed && (
                   <Chip mode="outlined" disabled={claimed}>
-                    Owner Pending
+                    {t("ownerPending")}
                   </Chip>
                 )}
-                <Button onPress={() => onFindMatches()}>View Matches</Button>
+                <Button onPress={() => onFindMatches()}>
+                  {t("viewMatches")}
+                </Button>
                 {!hasOwner && claimPet && (
                   <Button mode="contained" onPress={() => claimPet()}>
-                    This is my pet.
+                    {t("thisIsMyPet")}
                   </Button>
                 )}
                 {onPetFound && (
-                  <Button onPress={() => onPetFound()}>Pet Found</Button>
+                  <Button onPress={() => onPetFound()}>{t("petFound")}</Button>
                 )}
                 {onEdit && (
-                  <Button onPress={() => onEdit()}>Edit Sighting</Button>
+                  <Button onPress={() => onEdit()}>{t("editSighting")}</Button>
                 )}
               </View>
             </Card.Actions>
@@ -197,7 +203,7 @@ export default function SightingDetail({
                 fontWeight: "bold",
               }}
             >
-              Sighting Timeline
+              {t("sightingTimeline")}
             </Text>
           )}
 
@@ -233,7 +239,10 @@ export default function SightingDetail({
                 <View style={{ flex: 1, marginBottom: 16 }}>
                   <Card style={{ elevation: isLatest ? 4 : 1 }}>
                     <Card.Title
-                      title={getLastSeenTimeDistance(sighting.lastSeenTime)}
+                      title={getLastSeenTimeDistance(
+                        sighting.lastSeenTime,
+                        preferredLanguage,
+                      )}
                       titleVariant="labelLarge"
                       subtitle={
                         <View style={{ flexDirection: "row", gap: 8 }}>
@@ -246,8 +255,9 @@ export default function SightingDetail({
                                   userCurrentLocation,
                                   sighting.lastSeenLat,
                                   sighting.lastSeenLong,
+                                  t,
                                 )
-                              : "No distance data"}
+                              : t("noDistanceData")}
                           </Text>
                         </View>
                       }
@@ -300,18 +310,18 @@ export default function SightingDetail({
                       >
                         {sighting?.breed && (
                           <Text style={styles.detail}>
-                            Breed: {sighting?.breed}
+                            {t("breed")} {sighting?.breed}
                           </Text>
                         )}
 
                         {sighting?.colors && (
                           <Text style={styles.detail}>
-                            Colors: {sighting?.colors}
+                            {t("colors")} {sighting?.colors}
                           </Text>
                         )}
                         {sighting?.gender && (
                           <Text style={styles.detail}>
-                            Gender: {sighting?.gender}
+                            {t("gender")} {sighting?.gender}
                           </Text>
                         )}
                       </View>
@@ -320,7 +330,9 @@ export default function SightingDetail({
                           variant="bodyMedium"
                           style={{ marginTop: 6, marginBottom: 6 }}
                         >
-                          Features: {sighting.features}
+                          {t("featuresFeatures", {
+                            features: sighting.features,
+                          })}
                         </Text>
                       )}
                       {sighting.note && (
@@ -328,7 +340,7 @@ export default function SightingDetail({
                           variant="bodyMedium"
                           style={{ marginTop: 6, marginBottom: 6 }}
                         >
-                          Notes: {sighting.note}
+                          {t("notesNote", { note: sighting.note })}
                         </Text>
                       )}
 
@@ -343,7 +355,7 @@ export default function SightingDetail({
                             marginTop: 10,
                           }}
                         >
-                          <Text variant="labelLarge">Reported by: </Text>
+                          <Text variant="labelLarge">{t("reportedBy")} </Text>
                           <Text>{reportName}</Text>
                           <Button
                             mode="text"
@@ -351,7 +363,7 @@ export default function SightingDetail({
                             onPress={() => handleCall(reporterPhone)}
                             compact
                           >
-                            Call
+                            {t("call")}
                           </Button>
                           <Button
                             mode="text"
@@ -359,7 +371,7 @@ export default function SightingDetail({
                             onPress={() => handleText(reporterPhone)}
                             compact
                           >
-                            Text
+                            {t("text")}
                           </Button>
                         </View>
                       )}
@@ -374,7 +386,7 @@ export default function SightingDetail({
         <ReportLostPetFab
           onFormPress={onAddSighting}
           handleShare={onShareSighting}
-          title={"I've seen This Pet!"}
+          title={t("iveSeenThisPet")}
           showGroup={true}
         />
       </View>

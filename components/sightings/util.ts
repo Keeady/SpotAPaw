@@ -1,11 +1,19 @@
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, Locale } from "date-fns";
 import { SightingLocation } from "../get-current-location";
 import { getDistance, convertDistance } from "geolib";
+import { enUS, es } from "date-fns/locale";
+import { TFunction } from "i18next";
+
+const supportedLocales: { [key: string]: Locale } = {
+  en: enUS,
+  es: es,
+};
 
 export function getLastSeenLocationDistance(
   location: SightingLocation,
   lastSeenLat: number,
   lastSeenLong: number,
+  translate?: TFunction<readonly ["petprofile", "translation"], undefined>,
 ) {
   const dist = getDistance(location, {
     latitude: lastSeenLat,
@@ -13,20 +21,37 @@ export function getLastSeenLocationDistance(
   });
   const miles = convertDistance(dist, "mi");
   if (miles > 0.1) {
-    return `${miles.toFixed(1)} miles away`;
+    return translate
+      ? translate("milesAway", {
+          distance: miles.toFixed(1),
+          ns: "translation",
+        })
+      : `${miles.toFixed(1)} miles away`;
   }
 
   const feet = convertDistance(dist, "ft");
-  return `${feet.toFixed()} feet away`;
+  return translate
+    ? translate("feetAway", { distance: feet.toFixed(), ns: "translation" })
+    : `${feet.toFixed()} feet away`;
 }
 
-export function getLastSeenTimeDistance(lastSeenTime: string) {
+export function getLastSeenTimeDistance(
+  lastSeenTime: string,
+  preferredLanguage?: string,
+) {
   if (!lastSeenTime) {
     return "";
   }
 
+  let locale = enUS;
+
+  if (preferredLanguage && supportedLocales[preferredLanguage]) {
+    locale = supportedLocales[preferredLanguage];
+  }
+
   return formatDistanceToNow(new Date(lastSeenTime), {
     addSuffix: true,
+    locale: locale,
   });
 }
 

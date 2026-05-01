@@ -1,0 +1,18 @@
+{
+  "or": "o",
+  "password": "Contraseña",
+  "helpFindAndProtectOurFurryFriends": "Ayuda a encontrar y proteger a nuestros amigos peludos",
+  "welcomeBack": "¡Bienvenido de nuevo!",
+  "createAnAccount": "Crear una cuenta",
+  "signIn": "Iniciar sesión",
+  "signOut": "Cerrar sesión",
+  "email": "Correo electrónico",
+  "continueWithGoogle": "Continuar con Google",
+  "emailAndPasswordAreRequiredPleaseTryAgain": "El correo y la contraseña son obligatorios. Por favor, inténtalo de nuevo.",
+  "invalidEmailAddress": "Dirección de correo electrónico no válida.",
+  "milesAway": "a {{distance}} millas de distancia",
+  "feetAway": "a {{distance}} pies de distancia",
+  "iveSeenThisPet": "¡He visto esta mascota!",
+  "shareSighting": "Compartir este avistamiento",
+  "report": "Reportar"
+}

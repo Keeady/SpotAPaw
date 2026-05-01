@@ -5,6 +5,7 @@ import { Text } from "react-native";
 import { AuthContext } from "../Provider/auth-provider";
 import { PermissionContext } from "../Provider/permission-provider";
 import { AIFeatureContext } from "../Provider/ai-context-provider";
+import { LocaleContext } from "../Provider/locale-provider";
 
 const fakeUser = { id: "test-user-id" };
 
@@ -55,6 +56,24 @@ jest.mock("../Provider/ai-context-provider", () => {
   };
 });
 
+let mockPreferredLanguage = "en";
+jest.mock("../Provider/locale-provider", () => {
+  const React = require("react");
+  const useLocaleContext = () => ({
+    preferredLanguage: mockPreferredLanguage,
+    saveLanguageContext: jest.fn(),
+  });
+  const LocaleContext = React.createContext({
+    preferredLanguage: mockPreferredLanguage,
+    saveLanguageContext: jest.fn(),
+  });
+
+  return {
+    LocaleContext,
+    useLocaleContext,
+  };
+});
+
 jest.mock("../util", () => ({
   isValidUuid: jest.fn(() => true),
   saveStorageItem: jest.fn(),
@@ -97,9 +116,18 @@ const TestWrapper = ({
         getSavedLocation: mockGetSavedLocation,
       }}
     >
-      <AIFeatureContext.Provider value={{ isAiFeatureEnabled: true }}>
-        <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
-      </AIFeatureContext.Provider>
+      <LocaleContext.Provider
+        value={{
+          preferredLanguage: mockPreferredLanguage,
+          saveLanguageContext: jest.fn(),
+        }}
+      >
+        <AIFeatureContext.Provider value={{ isAiFeatureEnabled: true }}>
+          <PaperProvider settings={{ icon: MockIcon }}>
+            {children}
+          </PaperProvider>
+        </AIFeatureContext.Provider>
+      </LocaleContext.Provider>
     </PermissionContext.Provider>
   </AuthContext.Provider>
 );
@@ -188,6 +216,7 @@ describe("SettingsContainer Component", () => {
     fireEvent.press(languageButton);
     expect(await findByText("Select Language")).toBeTruthy();
     expect((await findAllByText("English (English)")).at(1)).toBeTruthy();
+    expect(await findByText("Spanish (Español)")).toBeTruthy();
     expect(await findByText("Cancel")).toBeTruthy();
 
     const deleteAccountButton = getByText("Delete Account");
@@ -335,5 +364,84 @@ describe("SettingsContainer Component", () => {
 
     expect(await findByText("No location set")).toBeTruthy();
     expect(queryByText("Loading...")).toBeNull();
+  });
+
+  it("renders correctly with default language", async () => {
+    mockPreferredLanguage = "";
+    const { getByText, findByText, queryByText, getByTestId } = render(
+      <TestWrapper user={fakeUser}>
+        <SettingsContainer />
+      </TestWrapper>,
+    );
+    expect(getByText("About")).toBeTruthy();
+    expect(getByText("Learn more about the app")).toBeTruthy();
+
+    expect(getByText("Location")).toBeTruthy();
+    expect(getByText("Location Permission")).toBeTruthy();
+    expect(getByText("Disabled")).toBeTruthy();
+    expect(getByText("Request")).toBeTruthy();
+    expect(getByText("Current Location")).toBeTruthy();
+    expect(getByText("Loading...")).toBeTruthy();
+
+    expect(getByText("Notifications")).toBeTruthy();
+    expect(getByText("Push Notifications")).toBeTruthy();
+    expect(getByText("Get notified about updates and events")).toBeTruthy();
+
+    expect(getByText("Terms of Service")).toBeTruthy();
+    expect(getByText("Read our terms and conditions")).toBeTruthy();
+
+    expect(getByText("Privacy Policy")).toBeTruthy();
+    expect(getByText("Learn how we handle your data")).toBeTruthy();
+
+    expect(getByText("Language")).toBeTruthy();
+    expect(getByText("English (Default)")).toBeTruthy();
+
+    expect(getByText("Default Distance")).toBeTruthy();
+    expect(getByText("25 km radius")).toBeTruthy();
+
+    expect(getByText("Delete Account")).toBeTruthy();
+    expect(getByText("Permanently delete your account and data")).toBeTruthy();
+
+    expect(getByText("Version 1.0.0")).toBeTruthy();
+
+    expect(await findByText("No location set")).toBeTruthy();
+    expect(queryByText("Loading...")).toBeNull();
+
+    const aboutButton = getByText("About");
+    fireEvent.press(aboutButton);
+    expect(mockRouterPush).toHaveBeenCalledWith("/about");
+
+    const requestLocationButton = getByText("Request");
+    fireEvent.press(requestLocationButton);
+    expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
+    expect(await findByText("Current Location")).toBeTruthy();
+    expect(await findByText("Granted")).toBeTruthy();
+
+    const notificationSwitch = getByTestId("notification-switch");
+    expect(notificationSwitch.props.value).toBe(false);
+    fireEvent(notificationSwitch, "valueChange", true);
+    expect(notificationSwitch.props.value).toBe(true);
+    expect(mockSetItem).toHaveBeenCalledWith("notificationsEnabled", "true");
+
+    const privacyButton = getByText("Privacy Policy");
+    fireEvent.press(privacyButton);
+    expect(mockRouterPush).toHaveBeenCalledWith("/privacy");
+
+    const termsButton = getByText("Terms of Service");
+    fireEvent.press(termsButton);
+    expect(mockRouterPush).toHaveBeenCalledWith("/terms");
+
+    const languageButton = getByText("Language");
+    fireEvent.press(languageButton);
+    expect(await findByText("Select Language")).toBeTruthy();
+    expect(await findByText("English (English)")).toBeTruthy();
+    expect(await findByText("Spanish (Español)")).toBeTruthy();
+    expect(await findByText("Cancel")).toBeTruthy();
+
+    // select Spanish and verify
+    const spanishOption = await findByText("Spanish (Español)");
+    fireEvent.press(spanishOption);
+    expect(await findByText("Language")).toBeTruthy();
+    expect(getByText("Spanish (Español)")).toBeTruthy();
   });
 });

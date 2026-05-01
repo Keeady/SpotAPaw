@@ -2,8 +2,12 @@ import { AuthProvider } from "@/components/Provider/auth-provider";
 import { Stack, useRouter } from "expo-router";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { Linking, View } from "react-native";
-import { useEffect } from "react";
-import { MD3LightTheme, PaperProvider } from "react-native-paper";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  MD3LightTheme,
+  PaperProvider,
+} from "react-native-paper";
 import styles from "@/components/layout.style";
 import { PermissionProvider } from "@/components/Provider/permission-provider";
 import { AppLifecycleProvider } from "@/components/Provider/app-lifecycle-provider";
@@ -13,9 +17,25 @@ import HeaderRight from "@/components/header/header-right";
 import { HeaderLeft } from "@/components/header/header-left";
 import { createErrorLogMessage } from "@/components/util";
 import { log } from "@/components/logs";
+import { I18nextProvider } from "react-i18next";
+import { initI18next } from "@/i18n";
+import { LocaleContextProvider } from "@/components/Provider/locale-provider";
+import type { i18n } from "i18next";
 
 export default function Layout() {
   const router = useRouter();
+  const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
+
+  useEffect(() => {
+    initI18next()
+      .then((v) => {
+        setI18nInstance(v);
+      })
+      .catch((error) => {
+        const errorMessage = createErrorLogMessage(error);
+        log(`i18next initialization failed: ${errorMessage}`);
+      });
+  }, []);
 
   useEffect(() => {
     const authHandler = new AuthHandler();
@@ -109,48 +129,56 @@ export default function Layout() {
     return () => subscription.remove();
   }, [router]);
 
+  if (!i18nInstance) {
+    return <ActivityIndicator />;
+  }
+
   return (
-    <PaperProvider theme={MD3LightTheme}>
-      <AuthProvider>
-        <PermissionProvider>
-          <AIFeatureContextProvider>
-            <AppLifecycleProvider>
-              <View style={styles.root}>
-                <View style={styles.container}>
-                  <Stack
-                    screenOptions={{
-                      contentStyle: styles.content,
-                      headerShown: true,
-                      headerBackVisible: true,
-                      headerBackButtonDisplayMode: "minimal",
-                      headerTitle: HeaderLeft,
-                      headerRight: HeaderRight,
-                    }}
-                  >
-                    <Stack.Screen
-                      name="index"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(app)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="terms"
-                      options={{ headerShown: true }}
-                    />
-                    <Stack.Screen
-                      name="privacy"
-                      options={{ headerShown: true }}
-                    />
-                  </Stack>
-                  <FlashMessage position="top" duration={5000} />
-                </View>
-              </View>
-            </AppLifecycleProvider>
-          </AIFeatureContextProvider>
-        </PermissionProvider>
-      </AuthProvider>
-    </PaperProvider>
+    <I18nextProvider i18n={i18nInstance}>
+      <PaperProvider theme={MD3LightTheme}>
+        <LocaleContextProvider>
+          <AuthProvider>
+            <PermissionProvider>
+              <AIFeatureContextProvider>
+                <AppLifecycleProvider>
+                  <View style={styles.root}>
+                    <View style={styles.container}>
+                      <Stack
+                        screenOptions={{
+                          contentStyle: styles.content,
+                          headerShown: true,
+                          headerBackVisible: true,
+                          headerBackButtonDisplayMode: "minimal",
+                          headerTitle: HeaderLeft,
+                          headerRight: HeaderRight,
+                        }}
+                      >
+                        <Stack.Screen
+                          name="index"
+                          options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                          name="(app)"
+                          options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                          name="terms"
+                          options={{ headerShown: true }}
+                        />
+                        <Stack.Screen
+                          name="privacy"
+                          options={{ headerShown: true }}
+                        />
+                      </Stack>
+                      <FlashMessage position="top" duration={5000} />
+                    </View>
+                  </View>
+                </AppLifecycleProvider>
+              </AIFeatureContextProvider>
+            </PermissionProvider>
+          </AuthProvider>
+        </LocaleContextProvider>
+      </PaperProvider>
+    </I18nextProvider>
   );
 }

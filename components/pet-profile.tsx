@@ -8,10 +8,14 @@ import {
 } from "./sightings/util";
 import { usePermission } from "./Provider/permission-provider";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { useTranslation } from "react-i18next";
+import { useLocaleContext } from "./Provider/locale-provider";
 
 export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
+  const { t } = useTranslation(["petprofile", "translation"]);
   const theme = useTheme();
   const { location: userCurrentLocation } = usePermission();
+  const { preferredLanguage } = useLocaleContext();
   return (
     <Card
       style={{
@@ -46,14 +50,14 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
             backgroundColor: "#eee",
           }}
         >
-          <Text>No photo</Text>
+          <Text>{t("noPhoto")}</Text>
         </View>
       )}
       <Card.Content style={{ alignItems: "left" }}>
         {pet?.name && (
           <View style={styles.header}>
             <Text variant="labelLarge" style={{ alignSelf: "center" }}>
-              Name:
+              {t("name")}
             </Text>
             <Chip
               style={{
@@ -83,7 +87,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
               size={25}
               color={theme.colors.primary}
             />
-            <Text variant="labelLarge">Type:</Text>
+            <Text variant="labelLarge">{t("type")}</Text>
           </View>
           <Text variant="bodyLarge" style={styles.title}>
             {pet.breed}{" "}
@@ -101,7 +105,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                 size={25}
                 color={theme.colors.primary}
               />
-              <Text variant="labelLarge">Last Seen:</Text>
+              <Text variant="labelLarge">{t("lastSeen")}</Text>
             </View>
             <View
               style={{ flexDirection: "row", justifyContent: "space-around" }}
@@ -119,7 +123,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                   color={theme.colors.primary}
                 />
                 <Text variant="bodyLarge" style={styles.title}>
-                  {getLastSeenTimeDistance(pet.lastSeenTime)}
+                  {getLastSeenTimeDistance(pet.lastSeenTime, preferredLanguage)}
                 </Text>
               </View>
 
@@ -141,8 +145,9 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                         userCurrentLocation,
                         pet.lastSeenLat,
                         pet.lastSeenLong,
+                        t,
                       )
-                    : "No distance"}
+                    : t("noDistance")}
                 </Text>
               </View>
             </View>
@@ -159,12 +164,12 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                 size={25}
                 color={theme.colors.primary}
               />
-              <Text variant="labelLarge">Features:</Text>
+              <Text variant="labelLarge">{t("features")}</Text>
             </View>
             <Text variant="bodyLarge" style={styles.title}>
-              {pet.colors && `Colors: ${pet.colors}`}
-              {pet.gender && `\nGender: ${pet.gender}`}
-              {pet.age && `\nAge: ${pet.age} years old`}
+              {pet.colors && t("colors", { colors: pet.colors })}
+              {pet.gender && `\n${t("gender", { gender: pet.gender })}`}
+              {pet.age && `\n${t("age", { age: pet.age })}`}
             </Text>
             <Divider />
             <Text variant="bodyLarge" style={styles.title}>

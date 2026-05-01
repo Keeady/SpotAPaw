@@ -4,8 +4,10 @@ import DividerWithText from "@/components/divider-with-text";
 import { useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 export default function ForgotScreen() {
+  const { t } = useTranslation(["forgot", "translation"]);
   const theme = useTheme();
   const [showOneTimePasscodeLogin, setShowOneTimePasscodeLogin] =
     useState(false);
@@ -23,9 +25,11 @@ export default function ForgotScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome Back!</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcomeBack", { ns: "translation" })}
+        </Text>
         <Text style={styles.headerSubtitle}>
-          Help find and protect our furry friends
+          {t("helpFindAndProtectOurFurryFriends", { ns: "translation" })}
         </Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
@@ -36,11 +40,11 @@ export default function ForgotScreen() {
               onPress={() => setShowResetPassword(true)}
               style={styles.button}
             >
-              Reset your password.
+              {t("resetYourPassword")}
             </Button>
           </View>
 
-          <DividerWithText text="OR" />
+          <DividerWithText text={t("or", { ns: "translation" })} />
 
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button
@@ -48,7 +52,7 @@ export default function ForgotScreen() {
               onPress={() => setShowOneTimePasscodeLogin(true)}
               style={styles.button}
             >
-              Login with one time passcode.
+              {t("loginWithOneTimePasscode")}
             </Button>
           </View>
         </View>

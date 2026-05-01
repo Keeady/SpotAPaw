@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { FAB, Portal, useTheme } from "react-native-paper";
 
 type ReportLostPetFabProps = {
@@ -19,6 +20,8 @@ export default function ReportLostPetFab({
   showGroup,
 }: ReportLostPetFabProps) {
   const theme = useTheme();
+  const {t} = useTranslation("translation");
+
   const [state, setState] = React.useState<FABGroupStateChangeProps>({
     open: false,
   });
@@ -58,12 +61,12 @@ export default function ReportLostPetFab({
             color: theme.colors.onPrimary,
             labelStyle: { color: theme.colors.onPrimary },
             icon: "share-variant",
-            label: "Share This Sighting",
+            label: t("shareSighting"),
             onPress: handleShare,
           },
           {
             icon: "paw",
-            label: "I've Seen This Pet!",
+            label: t("iveSeenThisPet"),
             onPress: onFormPress,
             style: { backgroundColor: theme.colors.primary },
             color: theme.colors.onPrimary,
@@ -73,7 +76,7 @@ export default function ReportLostPetFab({
         backdropColor={"rgba(0,0,0,0.8)"}
         style={{ position: "absolute", bottom: 20, right: 5 }}
         variant={"primary"}
-        label="Report"
+        label={t("report")}
       />
     </Portal>
   );
