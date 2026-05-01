@@ -9,6 +9,23 @@ import { LocaleContext } from "../Provider/locale-provider";
 
 const fakeUser = { id: "test-user-id" };
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue: string, options: any) => {
+      if (options && options.defaultDistanceValue) {
+        return `${options.defaultDistanceValue} km radius`;
+      } else if (options && options.versionText) {
+        return `Version ${options.versionText}`;
+      }
+      return defaultValue;
+    },
+  }),
+}));
+
+jest.mock("i18next", () => ({
+  t: (key: string, defaultValue: string, options: any) => defaultValue,
+}));
+
 const mockSetItem = jest.fn();
 const mockGetItem = jest.fn();
 jest.mock("@react-native-async-storage/async-storage", () => ({

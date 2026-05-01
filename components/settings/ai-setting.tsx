@@ -1,4 +1,5 @@
 import { List, Switch } from "react-native-paper";
+import { useTranslation } from 'react-i18next'
 
 const AISetting = ({
   iconColorAI,
@@ -9,10 +10,11 @@ const AISetting = ({
   aiFeatureEnabled: boolean;
   onToggleAIFeature: (value: boolean) => void;
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
     <List.Item
-      title="AI Image Analysis"
-      description="Enable image analysis for pet identification"
+      title={t("aiImageAnalysis")}
+      description={t("enableImageAnalysisForPetIdentification")}
       left={(props) => (
         <List.Icon {...props} icon="creation-outline" color={iconColorAI} />
       )}

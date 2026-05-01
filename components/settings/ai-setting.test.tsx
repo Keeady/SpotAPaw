@@ -4,6 +4,12 @@ import { Provider as PaperProvider } from "react-native-paper";
 import AISetting from "./ai-setting";
 import { Text } from "react-native";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue: string) => defaultValue,
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{icon: MockIcon}}>{children}</PaperProvider>
@@ -30,7 +36,7 @@ describe("AISetting Component", () => {
 
     expect(getByText("AI Image Analysis")).toBeTruthy();
     expect(
-      getByText("Enable image analysis for pet identification"),
+      getByText("Enable image analysis for pet identification and matching"),
     ).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });

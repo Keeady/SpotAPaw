@@ -1,4 +1,5 @@
 import { List } from "react-native-paper";
+import { useTranslation } from 'react-i18next'
 
 const CurrentLocationSetting = ({
   locationUsedDisplayText,
@@ -7,9 +8,10 @@ const CurrentLocationSetting = ({
   locationUsedDisplayText: string;
   iconColorLocationCheck: string;
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
       <List.Item
-        title="Current Location"
+        title={t("currentLocation")}
         description={locationUsedDisplayText}
         left={(props) => (
           <List.Icon

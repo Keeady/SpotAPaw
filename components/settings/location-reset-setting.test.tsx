@@ -4,6 +4,12 @@ import { Text } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import LocationResetSetting from "./location-reset-setting";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue: string) => defaultValue,
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>

@@ -4,6 +4,7 @@ import {
   AccountDeletionWarningDialog,
   ErrorDialog,
 } from "../location-request-util";
+import { useTranslation } from "react-i18next";
 
 const AccountSetting = ({
   iconColorDelete,
@@ -38,13 +39,14 @@ const AccountSetting = ({
   setErrorDialogVisible: (visible: boolean) => void;
   errorMessage: string;
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
     <>
       <List.Section>
-        <List.Subheader>Account Management</List.Subheader>
+        <List.Subheader>{t("accountManagement")}</List.Subheader>
         <List.Item
-          title="Delete Account"
-          description="Permanently delete your account and data"
+          title={t("deleteAccount")}
+          description={t("permanentlyDeleteYourAccountAndData")}
           left={(props) => (
             <List.Icon
               {...props}

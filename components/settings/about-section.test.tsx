@@ -4,6 +4,10 @@ import { Provider as PaperProvider } from "react-native-paper";
 import  AboutSection  from "./about-section";
 import { Text } from "react-native";
 
+jest.mock("i18next", () => ({
+  t: (key: string, defaultValue: string) => defaultValue,
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{icon: MockIcon}}>{children}</PaperProvider>

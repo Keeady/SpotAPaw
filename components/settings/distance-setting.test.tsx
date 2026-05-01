@@ -4,6 +4,19 @@ import { Text } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import DistanceSetting from "./distance-setting";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue: string, options: any) => {
+      if (options && options.defaultDistanceValue) {
+        return `${options.defaultDistanceValue} km radius`;
+      } else if (options && options.versionText) {
+        return `Version ${options.versionText}`;
+      }
+      return defaultValue;
+    },
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{icon: MockIcon}}>{children}</PaperProvider>

@@ -5,6 +5,12 @@ import { Provider as PaperProvider } from "react-native-paper";
 import { SupportedLanguage } from "../location-request-util";
 import LanguageSetting from "./language-setting";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue: string) => defaultValue,
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
