@@ -219,7 +219,9 @@ const SettingsContainer = () => {
 
   const getSelectedLanguageDisplay = () => {
     const language = languages.find((lang) => lang.code === preferredLanguage);
-    return language ? `${language.name} (${language.nativeName})` : "English";
+    return language
+      ? `${language.name} (${language.nativeName})`
+      : "English (Default)";
   };
 
   const getLocationDisplayText = () => {
