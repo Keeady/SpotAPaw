@@ -39,7 +39,7 @@ export default function ReportLostPetFab({
           icon={"plus"}
           style={{ position: "absolute", bottom: 16, right: 16 }}
           variant={"primary"}
-          label={t(title)}
+          label={title}
           onPress={onFormPress}
         />
       </Portal>

@@ -7,7 +7,7 @@ import i18next from "i18next";
 
 export const initI18next = async () => {
   const storedLanguage = await AsyncStorage.getItem(PREFERRED_LANGUAGE);
-  const initialLanguage = storedLanguage || getLocales()[0].languageTag || "en";
+  const initialLanguage = storedLanguage || getLocales()[0].languageCode || "en";
 
   await i18next
     .use(initReactI18next)
@@ -20,7 +20,7 @@ export const initI18next = async () => {
       console.log(`Failed to load ${ns} for ${lng}: ${msg}`),
     )
     .init({
-      returnEmptyString: false, // allows empty string as valid translation
+      returnEmptyString: false, // treat empty strings as missing translations so fallback behavior applies
       lng: initialLanguage, // set initial language based on device settings
       fallbackLng: "en",
       defaultNS: "translation",

@@ -32,7 +32,6 @@ import PrivacySetting from "./privacy-setting";
 import TermsSetting from "./terms-setting";
 import AccountSetting from "./account-setting";
 import { useLocaleContext } from "../Provider/locale-provider";
-import i18next from "i18next";
 
 // Define color scheme for icons
 const iconColors = {

@@ -5,19 +5,16 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import {
-  getStorageItem,
-  saveStorageItem,
-} from "../util";
+import { getStorageItem, saveStorageItem } from "../util";
 import { PREFERRED_LANGUAGE } from "../constants";
 import { log } from "../logs";
+import { getLocales } from "expo-localization";
+import { changeLanguage } from "i18next";
 
 type ContextProps = {
   preferredLanguage: string;
   saveLanguageContext: (value: string) => void;
 };
-import { getLocales } from "expo-localization";
-import i18next from "i18next";
 
 const LocaleContext = createContext<Partial<ContextProps>>({});
 
@@ -26,7 +23,7 @@ interface Props {
 }
 
 const LocaleContextProvider = (props: Props) => {
-  const defaultLanguage = getLocales()[0].languageTag || "en";
+  const defaultLanguage = getLocales()[0].languageCode || "en";
   const [language, setLanguage] = useState<string>(defaultLanguage);
 
   const getLanguage = useCallback(async () => {
@@ -37,12 +34,12 @@ const LocaleContextProvider = (props: Props) => {
       log("Error loading language context");
       return false;
     }
-  }, []);
+  }, [defaultLanguage]);
 
   const saveLanguageContext = useCallback((value: string) => {
     setLanguage(value);
     saveStorageItem(PREFERRED_LANGUAGE, value);
-    i18next.changeLanguage(value).catch((error) => {
+    changeLanguage(value).catch(() => {
       log("Failed to change language");
     });
   }, []);

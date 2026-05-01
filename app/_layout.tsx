@@ -17,10 +17,10 @@ import HeaderRight from "@/components/header/header-right";
 import { HeaderLeft } from "@/components/header/header-left";
 import { createErrorLogMessage } from "@/components/util";
 import { log } from "@/components/logs";
-import { I18nextProvider, useTranslation } from "react-i18next";
+import { I18nextProvider } from "react-i18next";
 import { initI18next } from "@/i18n";
 import { LocaleContextProvider } from "@/components/Provider/locale-provider";
-import { i18n } from "i18next";
+import type { i18n } from "i18next";
 
 export default function Layout() {
   const router = useRouter();
