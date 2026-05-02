@@ -4,6 +4,12 @@ import { Provider as PaperProvider } from "react-native-paper";
 import AccountSetting from "./account-setting";
 import { Text } from "react-native";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, options: any) => key,
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
@@ -38,9 +44,9 @@ describe("AccountSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Account Management")).toBeTruthy();
-    expect(getByText("Delete Account")).toBeTruthy();
-    expect(getByText("Permanently delete your account and data")).toBeTruthy();
+    expect(getByText("accountManagement")).toBeTruthy();
+    expect(getByText("deleteAccount")).toBeTruthy();
+    expect(getByText("permanentlyDeleteYourAccountAndData")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
 
@@ -51,8 +57,8 @@ describe("AccountSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Delete Account")).toBeTruthy();
-    const deleteAccountItem = getByText("Delete Account");
+    expect(getByText("deleteAccount")).toBeTruthy();
+    const deleteAccountItem = getByText("deleteAccount");
     fireEvent.press(deleteAccountItem);
 
     expect(defaultProps.onAccountDeletionPress).toHaveBeenCalledTimes(1);
@@ -75,22 +81,22 @@ describe("AccountSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Delete Account")).toBeTruthy();
+    expect(getByText("deleteAccountTitle")).toBeTruthy();
     expect(
-      getByText("This action cannot be undone. Deleting your account will:"),
+      getByText("thisActionCannotBeUndone"),
     ).toBeTruthy();
-    expect(getByText("• Permanently delete all your data")).toBeTruthy();
-    expect(getByText("• Permanently delete all your pet data")).toBeTruthy();
+    expect(getByText("• permanentlyDeleteAllYourData")).toBeTruthy();
+    expect(getByText("• permanentlyDeleteAllYourPetData")).toBeTruthy();
     expect(
-      getByText("• Remove your saved locations and preferences"),
+      getByText("• removeYourSavedLocationsAndPreferences"),
     ).toBeTruthy();
-    expect(getByText("• Sign you out of all devices")).toBeTruthy();
-    expect(getByText("Are you sure you want to continue?")).toBeTruthy();
-    expect(getByText("Cancel")).toBeTruthy();
-    expect(getByText("Continue")).toBeTruthy();
+    expect(getByText("• signYouOutOfAllDevices")).toBeTruthy();
+    expect(getByText("areYouSureYouWantToContinue")).toBeTruthy();
+    expect(getByText("cancel")).toBeTruthy();
+    expect(getByText("continue")).toBeTruthy();
 
-    const cancelButton = getByText("Cancel");
-    const continueButton = getByText("Continue");
+    const cancelButton = getByText("cancel");
+    const continueButton = getByText("continue");
 
     fireEvent.press(cancelButton);
     expect(mockSetDeleteDialogVisible).toHaveBeenCalledWith(false);
@@ -122,20 +128,20 @@ describe("AccountSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Confirm Account Deletion")).toBeTruthy();
+    expect(getByText("confirmAccountDeletion")).toBeTruthy();
     expect(
-      getByText("Type DELETE to permanently delete your account:"),
+      getByTestId("confirm-delete-input-label"),
     ).toBeTruthy();
     expect(getByTestId("confirm-delete-input")).toBeTruthy();
     const deleteInput = getByTestId("confirm-delete-input");
     expect(deleteInput.props.value).toBe("");
 
-    expect(getByPlaceholderText("Type DELETE")).toBeTruthy();
-    expect(getByText("Cancel")).toBeTruthy();
+    expect(getByTestId("confirm-delete-input-label-delete")).toBeTruthy();
+    expect(getByText("cancel")).toBeTruthy();
     expect(getByTestId("confirm-delete-btn")).toBeTruthy();
     const deleteButton = getByTestId("confirm-delete-btn");
     expect(
-      deleteButton.findByProps({ children: "Delete Account" }),
+      deleteButton.findByProps({ children: "deleteAccount" }),
     ).toBeTruthy();
 
     fireEvent.changeText(deleteInput, "DELETE");
@@ -144,7 +150,7 @@ describe("AccountSetting Component", () => {
     fireEvent.press(deleteButton);
     expect(mockHandleConfirmationAccountDeletion).not.toHaveBeenCalled();
 
-    const cancelButton = getByText("Cancel");
+    const cancelButton = getByText("cancel");
     fireEvent.press(cancelButton);
     expect(mockSetDeleteConfirmationDialogVisible).toHaveBeenCalledWith(false);
   });
@@ -172,26 +178,26 @@ describe("AccountSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Confirm Account Deletion")).toBeTruthy();
+    expect(getByText("confirmAccountDeletion")).toBeTruthy();
     expect(
-      getByText("Type DELETE to permanently delete your account:"),
+      getByTestId("confirm-delete-input-label"),
     ).toBeTruthy();
     expect(getByTestId("confirm-delete-input")).toBeTruthy();
     const deleteInput = getByTestId("confirm-delete-input");
     expect(deleteInput.props.value).toBe("DELETE");
 
-    expect(getByPlaceholderText("Type DELETE")).toBeTruthy();
-    expect(getByText("Cancel")).toBeTruthy();
+    expect(getByTestId("confirm-delete-input-label-delete")).toBeTruthy();
+    expect(getByText("cancel")).toBeTruthy();
     expect(getByTestId("confirm-delete-btn")).toBeTruthy();
     const deleteButton = getByTestId("confirm-delete-btn");
     expect(
-      deleteButton.findByProps({ children: "Delete Account" }),
+      deleteButton.findByProps({ children: "deleteAccount" }),
     ).toBeTruthy();
 
     fireEvent.press(deleteButton);
     expect(mockHandleConfirmationAccountDeletion).toHaveBeenCalledTimes(1);
 
-    const cancelButton = getByText("Cancel");
+    const cancelButton = getByText("cancel");
     fireEvent.press(cancelButton);
     expect(mockSetDeleteConfirmationDialogVisible).toHaveBeenCalledWith(false);
   });
@@ -212,9 +218,9 @@ describe("AccountSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Error")).toBeTruthy();
+    expect(getByText("error")).toBeTruthy();
     expect(getByText(errorMessage)).toBeTruthy();
-    const closeButton = getByText("OK");
+    const closeButton = getByText("ok");
     expect(closeButton).toBeTruthy();
     fireEvent.press(closeButton);
     expect(mockSetErrorDialogVisible).toHaveBeenCalledWith(false);

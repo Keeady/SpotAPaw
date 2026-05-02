@@ -32,6 +32,7 @@ import PrivacySetting from "./privacy-setting";
 import TermsSetting from "./terms-setting";
 import AccountSetting from "./account-setting";
 import { useLocaleContext } from "../Provider/locale-provider";
+import { useTranslation } from "react-i18next";
 
 // Define color scheme for icons
 const iconColors = {
@@ -57,6 +58,7 @@ const languages: SupportedLanguage[] = [
 const defaultDistance = "25";
 
 const SettingsContainer = () => {
+  const { t } = useTranslation(["settings", "translation"]);
   const router = useRouter();
 
   // Location states
@@ -225,12 +227,20 @@ const SettingsContainer = () => {
   };
 
   const getLocationDisplayText = () => {
+    if (locationLoading) {
+      return t("loading");
+    }
+
     if (locationPermission) {
-      return "Using device location";
+      return t("usingDeviceLocation");
     } else if (savedLocation) {
-      return `Saved: ${savedLocation.locationAddress || `${savedLocation.lat?.toFixed(6)}, ${savedLocation.lng?.toFixed(6)}`}`;
+      return t("savedVal", {
+        val:
+          savedLocation.locationAddress ||
+          `${savedLocation.lat?.toFixed(6)}, ${savedLocation.lng?.toFixed(6)}`,
+      });
     } else {
-      return "No location set";
+      return t("noLocationSet");
     }
   };
 
@@ -245,8 +255,8 @@ const SettingsContainer = () => {
   };
 
   const handleConfirmAccountDeletion = async () => {
-    if (deleteConfirmText.trim().toLowerCase() !== "delete") {
-      setErrorMessage("Please type DELETE to confirm");
+    if (deleteConfirmText.trim().toLowerCase() !== t("delete")) {
+      setErrorMessage(t("pleaseTypeDeleteToConfirm"));
       setErrorDialogVisible(true);
       return;
     }
@@ -264,9 +274,7 @@ const SettingsContainer = () => {
     } catch (error) {
       const errorMessage = createErrorLogMessage(error);
       log(`onDeleteAccount: Failed to delete account: ${errorMessage}`);
-      setErrorMessage(
-        "Failed to delete account. Please try again or contact support.",
-      );
+      setErrorMessage(t("failedToDeleteAccountPleaseTryAgainOrContactSupport"));
       setErrorDialogVisible(true);
       setDeletingAccount(false);
     }
@@ -285,6 +293,12 @@ const SettingsContainer = () => {
   };
 
   const versionText = Application.nativeApplicationVersion ?? "1.3.0";
+  const locationPermissionStatusDisplayText = locationPermission
+    ? t("granted", "Granted")
+    : t("request", "Request");
+  const locationPermissionDescription = locationPermission
+    ? t("enabled", "Enabled")
+    : t("disabled", "Disabled");
 
   return (
     <SettingsRenderer
@@ -297,13 +311,11 @@ const SettingsContainer = () => {
       locationPermissionSetting={
         <LocationPermissionSetting
           iconColorLocation={iconColors.location}
-          locationPermissionDescription={
-            locationPermission ? "Enabled" : "Disabled"
-          }
+          locationPermissionDescription={locationPermissionDescription}
           handleRequestLocationPermission={handleRequestLocationPermission}
           locationPermissionButtonDisabled={locationPermission}
           locationPermissionStatusDisplayText={
-            locationPermission ? "Granted" : "Request"
+            locationPermissionStatusDisplayText
           }
           permissionGrantedDialogVisible={permissionGrantedDialogVisible}
           setPermissionGrantedDialogVisible={setPermissionGrantedDialogVisible}
@@ -314,9 +326,7 @@ const SettingsContainer = () => {
       currentLocationSetting={
         <CurrentLocationSetting
           iconColorLocationCheck={iconColors.locationCheck}
-          locationUsedDisplayText={
-            locationLoading ? "Loading..." : getLocationDisplayText()
-          }
+          locationUsedDisplayText={getLocationDisplayText()}
         />
       }
       locationResetSetting={

@@ -4,6 +4,12 @@ import { Text } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import LocationPermissionSetting from "./location-permission-setting";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, options: any) => key,
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
@@ -33,9 +39,9 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Location Permission")).toBeTruthy();
-    expect(getByText("Allow app to access your location")).toBeTruthy();
-    expect(getByText("Grant")).toBeTruthy();
+    expect(getByText("locationPermission")).toBeTruthy();
+    expect(getByText(defaultProps.locationPermissionDescription)).toBeTruthy();
+    expect(getByText(defaultProps.locationPermissionStatusDisplayText)).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
 
@@ -53,14 +59,14 @@ describe("LocationPermissionSetting Component", () => {
     );
 
     expect(
-      getByText("Location access required for nearby sightings"),
+      getByText(props.locationPermissionDescription),
     ).toBeTruthy();
   });
 
   it("displays the correct button text", () => {
     const props = {
       ...defaultProps,
-      locationPermissionStatusDisplayText: "Granted",
+      locationPermissionStatusDisplayText: "granted",
     };
 
     const { getByText } = render(
@@ -69,7 +75,7 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Granted")).toBeTruthy();
+    expect(getByText("granted")).toBeTruthy();
   });
 
   it("calls handleRequestLocationPermission when button is pressed", () => {
@@ -101,7 +107,7 @@ describe("LocationPermissionSetting Component", () => {
 
     const button = getByText("Grant");
     expect(button).toBeTruthy();
-    // Button should still be pressable in tests, but the disabled prop affects styling
+    expect(button).toBeDisabled();
   });
 
   it("does not render permission granted dialog when hidden", () => {
@@ -111,7 +117,7 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(queryByText("Permission Granted")).toBeNull();
+    expect(queryByText("permissionGranted")).toBeNull();
   });
 
   it("renders permission granted dialog when visible", () => {
@@ -126,13 +132,13 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Permission Granted")).toBeTruthy();
+    expect(getByText("permissionGranted")).toBeTruthy();
     expect(
       getByText(
-        "Location permission has been enabled. The app will now use your device location.",
+        "locationPermissionEnabled",
       ),
     ).toBeTruthy();
-    expect(getByText("OK")).toBeTruthy();
+    expect(getByText("ok")).toBeTruthy();
   });
 
   it("calls setPermissionGrantedDialogVisible when OK button is pressed in granted dialog", () => {
@@ -149,7 +155,7 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    const okButton = getByText("OK");
+    const okButton = getByText("ok");
     fireEvent.press(okButton);
 
     expect(mockSetPermissionGrantedDialogVisible).toHaveBeenCalledWith(false);
@@ -162,7 +168,7 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(queryByText("Grant Location Permission")).toBeNull();
+    expect(queryByText("grantLocationPermission")).toBeNull();
   });
 
   it("renders permission denied dialog when visible", () => {
@@ -177,14 +183,14 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Grant Location Permission")).toBeTruthy();
+    expect(getByText("grantLocationPermission")).toBeTruthy();
     expect(
       getByText(
-        "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.",
+        "turningOnLocationMobile"
       ),
     ).toBeTruthy();
-    expect(getByText("Cancel")).toBeTruthy();
-    expect(getByText("Open Settings")).toBeTruthy();
+    expect(getByText("cancel")).toBeTruthy();
+    expect(getByText("openSettings")).toBeTruthy();
   });
 
   it("calls setPermissionDeniedDialogVisible when Cancel button is pressed in denied dialog", () => {
@@ -201,7 +207,7 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    const cancelButton = getByText("Cancel");
+    const cancelButton = getByText("cancel");
     fireEvent.press(cancelButton);
 
     expect(mockSetPermissionDeniedDialogVisible).toHaveBeenCalledWith(false);
@@ -209,9 +215,9 @@ describe("LocationPermissionSetting Component", () => {
 
   it("handles different button states", () => {
     const testCases = [
-      { text: "Grant", disabled: false },
-      { text: "Granted", disabled: true },
-      { text: "Request Permission", disabled: false },
+      { text: "grant", disabled: false },
+      { text: "granted", disabled: true },
+      { text: "requestPermission", disabled: false },
     ];
 
     testCases.forEach(({ text, disabled }) => {
@@ -266,7 +272,7 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByTextGranted("Permission Granted")).toBeTruthy();
+    expect(getByTextGranted("permissionGranted")).toBeTruthy();
 
     unmount();
 
@@ -281,6 +287,6 @@ describe("LocationPermissionSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByTextDenied("Grant Location Permission")).toBeTruthy();
+    expect(getByTextDenied("grantLocationPermission")).toBeTruthy();
   });
 });

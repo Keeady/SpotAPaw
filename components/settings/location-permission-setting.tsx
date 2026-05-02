@@ -1,4 +1,6 @@
 import { Button, List } from "react-native-paper";
+import { useTranslation } from "react-i18next";
+
 import {
   LocationPermissionDeniedDialog,
   LocationPermissionGrantedDialog,
@@ -25,10 +27,11 @@ const LocationPermissionSetting = ({
   permissionDeniedDialogVisible: boolean;
   setPermissionDeniedDialogVisible: (visible: boolean) => void;
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
     <>
       <List.Item
-        title="Location Permission"
+        title={t("locationPermission")}
         description={locationPermissionDescription}
         left={(props) => (
           <List.Icon {...props} icon="map-marker" color={iconColorLocation} />
