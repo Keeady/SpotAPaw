@@ -1,5 +1,5 @@
 import { List, Switch } from "react-native-paper";
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next";
 
 const AISetting = ({
   iconColorAI,
@@ -19,7 +19,11 @@ const AISetting = ({
         <List.Icon {...props} icon="creation-outline" color={iconColorAI} />
       )}
       right={() => (
-        <Switch value={aiFeatureEnabled} onValueChange={onToggleAIFeature} testID="ai-switch" />
+        <Switch
+          value={aiFeatureEnabled}
+          onValueChange={onToggleAIFeature}
+          testID="ai-switch"
+        />
       )}
     />
   );

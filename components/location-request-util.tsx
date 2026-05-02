@@ -365,7 +365,7 @@ export const AccountDeletionConfirmationDialog = ({
   setDeleteConfirmText,
   handleConfirmAccountDeletion,
 }: AccountDeletionConfirmationDialogProps) => {
-  const { t } = useTranslation(["dialog"]);
+  const { t } = useTranslation(["dialog", "settings"]);
   return (
     <Portal>
       <Dialog
@@ -422,7 +422,7 @@ export const AccountDeletionConfirmationDialog = ({
             }
             testID="confirm-delete-btn"
           >
-            {t("deleteAccount")}
+            {t("deleteAccount", { ns: "settings" })}
           </Button>
         </Dialog.Actions>
       </Dialog>

@@ -33,4 +33,6 @@
     "disabled": "Disabled",
     "language": "Language",
     "loading": "Loading...",
+    "pleaseTypeDeleteToConfirm": "Please type DELETE to confirm",
+    "delete": "delete"
 }

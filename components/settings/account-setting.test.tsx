@@ -68,7 +68,7 @@ describe("AccountSetting Component", () => {
     const mockSetDeleteDialogVisible = jest.fn();
     const mockHandleAccountDeletionConfirmation = jest.fn();
 
-    const { getByText, debug } = render(
+    const { getByText } = render(
       <TestWrapper>
         <AccountSetting
           {...defaultProps}
