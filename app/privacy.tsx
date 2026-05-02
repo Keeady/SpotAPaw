@@ -73,7 +73,7 @@ export default function PrivacyScreen() {
             {t("inConnectionWithThisFeature")}
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
-            {t("uploadedPhotos")}
+            {t("uploadedPhotosMayBeTrans")}
           </Text>
           <Text variant="bodyMedium" style={styles.bulletPoint}>
             {t("weUseThePaidCommercialApiVersionOfGoogleGemini")}
