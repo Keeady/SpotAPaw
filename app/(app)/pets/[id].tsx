@@ -72,14 +72,14 @@ export default function PetProfile() {
   }
 
   if (loading) {
-    return <Text>{t("loading", "Loading ...")}</Text>;
+    return <Text>{t("loading", "Loading ...", {ns: "translation"})}</Text>;
   }
 
   if (!pet) {
     return (
       <View>
         <Button onPress={() => router.navigate("/(app)/pets/new")}>
-          {t("addPet", "Add Pet")}
+          {t("addPet", "Add Pet", {ns: "translation"})}
         </Button>
       </View>
     );

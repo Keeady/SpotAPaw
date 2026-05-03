@@ -32,5 +32,6 @@
   "noPetProfileToDisplay": "No hay perfiles de mascotas para mostrar.",
   "addANewPet": "Agregar una nueva mascota",
   "matchingProcessing": "La coincidencia de mascotas aún se está procesando. Por favor, inténtelo de nuevo en un momento.",
-  "errorFetchingSightingInfo": "Error al obtener información del avistamiento. Por favor, inténtelo de nuevo."
+  "errorFetchingSightingInfo": "Error al obtener información del avistamiento. Por favor, inténtelo de nuevo.",
+  "errorFetchingPetProfile": "Error al obtener el perfil de la mascota."
 }

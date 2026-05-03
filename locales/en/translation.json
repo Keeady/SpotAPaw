@@ -82,5 +82,7 @@
   "cameraPermissionRequired": "Camera Permission Required",
   "pleaseEnableCameraAccess": "Please enable camera access in your device settings to take a pet photo to help identify pets faster.",
   "confirm": "Confirm",
-  "yesPleaseDelete": "Yes, please delete"
+  "yesPleaseDelete": "Yes, please delete",
+  "loading": "Loading...",
+  "addPet": "Add Pet"
 }

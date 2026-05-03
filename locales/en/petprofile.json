@@ -29,8 +29,9 @@
   "deletingPet": "Deleting Pet {{petName}}",
   "confirmDeleteMessage": "Are you sure you want to delete {{petName}}'s profile?",
   "noPetDetailsFound": "No pet details found.",
-  "noPetProfileToDisplay": "No Pet profile to display",
+  "noPetProfileToDisplay": "No pet profile to display",
   "addANewPet": "Add a new pet",
   "matchingProcessing": "Pet matching is still processing. Please try again in a moment.",
-  "errorFetchingSightingInfo": "Error fetching sighting info. Please try again."
+  "errorFetchingSightingInfo": "Error fetching sighting info. Please try again.",
+  "errorFetchingPetProfile": "Error fetching pet profile."
 }

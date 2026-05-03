@@ -106,7 +106,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
           {species && (
             <Text style={styles.detail}>
               🐾 {t("species", "Species", { ns: "translation" })}:{" "}
-              {t(`animals.${species}`, species, { ns: "translation" })}
+              {t(`animal.${species}`, species, { ns: "translation" })}
             </Text>
           )}
           {age !== undefined && (

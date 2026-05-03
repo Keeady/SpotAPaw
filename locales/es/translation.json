@@ -82,5 +82,7 @@
   "cameraPermissionRequired": "Se requiere permiso de la cámara",
   "pleaseEnableCameraAccess": "Por favor, habilita el acceso a la cámara en la configuración de tu dispositivo para tomar una foto de la mascota y ayudar a identificar mascotas más rápido.",
   "confirm": "Confirmar",
-  "yesPleaseDelete": "Sí, por favor elimina"
+  "yesPleaseDelete": "Sí, por favor elimina",
+  "loading": "Cargando...",
+  "addPet": "Agregar mascota"
 }
