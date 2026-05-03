@@ -80,5 +80,7 @@
   "pleaseEnablePhotoLibraryAccess": "Please enable photo library access in your device settings to share a pet photo to help identify pets faster.",
   "openSettings": "Open Settings",
   "cameraPermissionRequired": "Camera Permission Required",
-  "pleaseEnableCameraAccess": "Please enable camera access in your device settings to take a pet photo to help identify pets faster."
+  "pleaseEnableCameraAccess": "Please enable camera access in your device settings to take a pet photo to help identify pets faster.",
+  "confirm": "Confirm",
+  "yesPleaseDelete": "Yes, please delete"
 }

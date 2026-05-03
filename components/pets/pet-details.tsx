@@ -1,6 +1,7 @@
 import { Text } from "react-native-paper";
 import PetProfileCard from "./profile";
 import { SightingPet } from "../wizard/wizard-interface";
+import { useTranslation } from "react-i18next";
 
 type RenderPetDetailsProps = {
   pet: SightingPet;
@@ -19,8 +20,9 @@ export default function RenderPetDetails({
   onPetLost,
   viewPetSightings,
 }: RenderPetDetailsProps) {
+  const { t } = useTranslation("petprofile");
   if (!pet) {
-    return <Text>No pet details found</Text>;
+    return <Text>{t("noPetDetailsFound", "No pet details found")}</Text>;
   }
 
   return (

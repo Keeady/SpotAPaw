@@ -15,6 +15,7 @@ import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button, Text } from "react-native-paper";
@@ -30,6 +31,7 @@ export default function PetProfile() {
   const { user } = useContext(AuthContext);
   const onConfirmDelete = useConfirmDelete();
   const onPetFound = useConfirmPetFound();
+  const { t } = useTranslation(["petprofile", "translation"]);
 
   useEffect(() => {
     setLoading(true);
@@ -43,7 +45,7 @@ export default function PetProfile() {
         const errorMessage = createErrorLogMessage(error);
         log(`getPet: Error fetching pet profile ${errorMessage}`);
         showMessage({
-          message: "Error fetch pet profile.",
+          message: t("errorFetchingPetProfile", "Error fetch pet profile."),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -70,14 +72,14 @@ export default function PetProfile() {
   }
 
   if (loading) {
-    return <Text>Loading ...</Text>;
+    return <Text>{t("loading", "Loading ...")}</Text>;
   }
 
   if (!pet) {
     return (
       <View>
         <Button onPress={() => router.navigate("/(app)/pets/new")}>
-          Add Pet
+          {t("addPet", "Add Pet")}
         </Button>
       </View>
     );
@@ -90,12 +92,10 @@ export default function PetProfile() {
   return (
     <RenderPetDetails
       pet={pet}
-      onDeletePet={() => onConfirmDelete(pet.name, pet.id, user.id)}
-      onEditPet={() =>
-        onEditPet(petId, sightingId)
-      }
+      onDeletePet={() => onConfirmDelete(pet.name, pet.id, user.id, t)}
+      onEditPet={() => onEditPet(petId, sightingId)}
       onPetLost={() => onPetLost(pet.id)}
-      onPetFound={() => onPetFound(pet.name, pet.id)}
+      onPetFound={() => onPetFound(pet.name, pet.id, t)}
       viewPetSightings={() =>
         viewPetSightings(sightingId, linkedSightingId, petId)
       }
