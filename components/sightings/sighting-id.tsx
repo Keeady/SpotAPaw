@@ -13,9 +13,11 @@ import {
   handleAddingSighting,
   handleSharingSighting,
 } from "./sighting-handler";
+import { useTranslation } from "react-i18next";
 
 export default function SightingProfile() {
   const router = useRouter();
+  const { t } = useTranslation(["petprofile", "translation"]);
 
   const {
     id: sightingId,
@@ -90,7 +92,7 @@ export default function SightingProfile() {
   }, [petId, sightingId, router, sightingsRoute]);
 
   const handlePetFound = useCallback(() => {
-    onPetFound(petName, petId);
+    onPetFound(petName, petId, t);
   }, [petId, petName, onPetFound]);
 
   const onShareSighting = useCallback(async () => {
@@ -101,7 +103,7 @@ export default function SightingProfile() {
     if (!sightingId || !summary?.petDescriptionId) {
       showMessage({
         message:
-          "Pet matching is still processing. Please try again in a moment.",
+          t("matchingProcessing", "Pet matching is still processing. Please try again in a moment."),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,
@@ -118,7 +120,7 @@ export default function SightingProfile() {
   if (error) {
     log(error);
     showMessage({
-      message: "Error fetching sighting info. Please try again.",
+      message: t("errorFetchingSightingInfo", "Error fetching sighting info. Please try again."),
       type: "warning",
       icon: "warning",
       statusBarHeight: 50,

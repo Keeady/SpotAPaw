@@ -32,7 +32,6 @@
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
     "language": "Idioma",
-    "loading": "Cargando...",
     "pleaseTypeDeleteToConfirm": "Por favor, escribe ELIMINAR para confirmar",
     "delete": "eliminar"
 }

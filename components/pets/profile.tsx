@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Image, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, Chip, Button } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 type PetProfile = {
   id: string;
@@ -33,6 +34,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   onDeletePet,
   viewPetSightings,
 }) => {
+  const { t } = useTranslation(["petprofile", "translation"]);
   const {
     name,
     breed,
@@ -62,10 +64,16 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     <ScrollView>
       <Card style={styles.card}>
         {photo ? (
-          <Image source={{ uri: photo }} style={styles.image} resizeMode="contain" />
+          <Image
+            source={{ uri: photo }}
+            style={styles.image}
+            resizeMode="contain"
+          />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
-            <Text style={styles.placeholderText}>No Photo</Text>
+            <Text style={styles.placeholderText}>
+              {t("noPhoto", "No Photo")}
+            </Text>
           </View>
         )}
 
@@ -79,22 +87,52 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                 }}
                 textStyle={{ color: getStatusColor().text, fontWeight: "bold" }}
               >
-                {status.toUpperCase()}
+                {t(`status.${status}`)}
               </Chip>
             )}
           </View>
 
-          {gender && <Text style={styles.detail}>🐾 Gender: {gender}</Text>}
-          {breed && <Text style={styles.detail}>🐾 Breed: {breed}</Text>}
-          {species && <Text style={styles.detail}>🐾 Species: {species}</Text>}
+          {gender && (
+            <Text style={styles.detail}>
+              🐾 {t("genderLabel", { ns: "translation" })}:{" "}
+              {t(`gender.${gender}`, { ns: "translation" })}
+            </Text>
+          )}
+          {breed && (
+            <Text style={styles.detail}>
+              🐾 {t("breed", "Breed:")} {breed}
+            </Text>
+          )}
+          {species && (
+            <Text style={styles.detail}>
+              🐾 {t("species", "Species", { ns: "translation" })}:{" "}
+              {t(`animal.${species}`, species, { ns: "translation" })}
+            </Text>
+          )}
           {age !== undefined && (
-            <Text style={styles.detail}>🎂 Age: {age.toString()}</Text>
+            <Text style={styles.detail}>
+              🎂 {t("ageLabel", "Age", { ns: "translation" })}:{" "}
+              {t("ageWithCount", age.toString(), {
+                count: age,
+                ns: "translation",
+              })}
+            </Text>
           )}
-          {colors && <Text style={styles.detail}>🎨 Color: {colors}</Text>}
+          {colors && (
+            <Text style={styles.detail}>
+              🎨 {t("colors", "Colors:")} {colors}
+            </Text>
+          )}
           {features && (
-            <Text style={styles.detail}>⭐ Features: {features}</Text>
+            <Text style={styles.detail}>
+              ⭐ {t("features", "Features:" )} {features}
+            </Text>
           )}
-          {note && <Text style={styles.detail}>📝 Notes: {note}</Text>}
+          {note && (
+            <Text style={styles.detail}>
+              📝 {t("notes", "Notes:")} {note}
+            </Text>
+          )}
         </Card.Content>
         <Card.Actions>
           <View style={{ flex: 1, flexDirection: "column" }}>
@@ -107,7 +145,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                 onPress={onEditPet}
                 compact={true}
               >
-                Edit
+                {t("edit", "Edit")}
               </Button>
 
               <Button
@@ -118,7 +156,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                 onPress={onDeletePet}
                 compact={true}
               >
-                Delete
+                {t("delete", "Delete")}
               </Button>
 
               {status === "lost" && (
@@ -130,7 +168,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                   onPress={onPetFound}
                   compact={true}
                 >
-                  Report Pet Found
+                  {t("reportPetFound", "Report Pet Found")}
                 </Button>
               )}
               {status === "safe" && (
@@ -142,7 +180,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                   onPress={onPetLost}
                   compact={true}
                 >
-                  Report Lost Pet
+                  {t("reportLostPet", "Report Lost Pet")}
                 </Button>
               )}
             </View>
@@ -156,7 +194,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                   onPress={viewPetSightings}
                   compact={true}
                 >
-                  View Pet Sightings
+                  {t("viewPetSightings", "View Pet Sightings")}
                 </Button>
               )}
             </View>

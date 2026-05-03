@@ -228,7 +228,7 @@ const SettingsContainer = () => {
 
   const getLocationDisplayText = () => {
     if (locationLoading) {
-      return t("loading");
+      return t("loading", {ns: "translation"});
     }
 
     if (locationPermission) {

@@ -53,7 +53,7 @@ import ShowProgress from "./show-progress";
 import { useTranslation } from "react-i18next";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
-  const { t } = useTranslation("wizard");
+  const { t } = useTranslation(["wizard", "translation"]);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const isMountedRef = useRef(true);
@@ -759,7 +759,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   ) => {
     if (action === "add-pet") {
       return currentStep === "submit"
-        ? t("addPet", "Add Pet")
+        ? t("addPet", "Add Pet", {ns: "translation"})
         : t("continue", "Continue");
     } else if (action === "edit-pet") {
       return currentStep === "submit"

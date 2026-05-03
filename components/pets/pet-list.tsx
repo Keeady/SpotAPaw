@@ -3,12 +3,14 @@ import { useRouter } from "expo-router";
 import { FlatList, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { SightingPet } from "../wizard/wizard-interface";
+import { useTranslation } from 'react-i18next'
 
 type PetListRendererProp = {
   pets: SightingPet[];
 };
 
 export default function PetListRenderer({ pets }: PetListRendererProp) {
+  const { t } = useTranslation("petprofile");
   const router = useRouter();
   return (
     <View style={styles.container}>
@@ -24,7 +26,7 @@ export default function PetListRenderer({ pets }: PetListRendererProp) {
           <Text
             style={{ alignSelf: "center", marginBottom: 40, marginTop: 40 }}
           >
-            No Pet profile to display
+            {t('noPetProfileToDisplay', 'No Pet profile to display')}
           </Text>
         }
         ListFooterComponent={
@@ -32,7 +34,7 @@ export default function PetListRenderer({ pets }: PetListRendererProp) {
             mode="contained"
             onPress={() => router.navigate("/(app)/pets/new")}
           >
-            Add a new Pet
+            {t('addANewPet', 'Add a new Pet')}
           </Button>
         }
         pagingEnabled

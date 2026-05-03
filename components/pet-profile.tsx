@@ -167,7 +167,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
               <Text variant="labelLarge">{t("features")}</Text>
             </View>
             <Text variant="bodyLarge" style={styles.title}>
-              {pet.colors && t("colors", { colors: pet.colors })}
+              {pet.colors && t("colors", "Colors:")} {pet.colors}
               {pet.gender &&
                 `\n${t("genderLabel", { ns: "translation" })}: ${t(`gender.${pet.gender}`, { ns: "translation" })}`}
               {pet.age &&
