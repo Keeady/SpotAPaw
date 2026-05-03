@@ -11,5 +11,15 @@
   "startCreatingSightingsToSeeThemHere": "Start creating sightings to see them here",
   "loadingReports": "Loading reports...",
   "thankYouForHelpingOurFurryFriends": "Thank you for helping our furry friends!",
-  "sightingReportNotFound": "Sighting report not found."
+  "sightingReportNotFound": "Sighting report not found.",
+  "errorFetchingAccountInfo": "Error fetching pet info.",
+  "errorFetchingPetSighting": "Error fetching pet sighting.",
+  "successfullySubmittedClaim": "Successfully submitted claim.",
+  "errorUpdatingPetSighting": "Error updating pet sighting.",
+  "thisPet": "this pet",
+  "shareSightingMessage": "🐾 Have you seen {{petName}}? Help them get home!",
+  "lostPet": "Lost Pet",
+  "sightingSpottedTitle": "{{petName}} spotted!",
+  "linkCopiedToClipboard": "Link copied to clipboard!",
+  "failedToCopyLinkToClipboard": "Failed to copy link to clipboard."
 }

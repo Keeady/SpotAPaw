@@ -87,5 +87,7 @@
   "addPet": "Agregar mascota",
   "saveChanges": "Guardar cambios",
   "noPhoto": "Sin foto",
-  "error": "Error"
+  "error": "Error",
+  "welcome": "¡Bienvenido!",
+  "joinCommunity": "Únete a una comunidad de mascotas y amantes de las mascotas"
 }

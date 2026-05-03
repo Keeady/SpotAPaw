@@ -32,5 +32,6 @@
   "addANewPet": "Add a new pet",
   "matchingProcessing": "Pet matching is still processing. Please try again in a moment.",
   "errorFetchingSightingInfo": "Error fetching sighting info. Please try again.",
-  "errorFetchingPetProfile": "Error fetching pet profile."
+  "errorFetchingPetProfile": "Error fetching pet profile.",
+  "errorFetchingPetsInfo": "Error fetching pets info."
 }

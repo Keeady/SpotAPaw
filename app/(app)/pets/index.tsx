@@ -5,12 +5,14 @@ import { createErrorLogMessage } from "@/components/util";
 import { SightingPet } from "@/components/wizard/wizard-interface";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { showMessage } from "react-native-flash-message";
 
 export default function PetListScreen() {
   const [pets, setPets] = useState<SightingPet[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation("petprofile");
 
   useEffect(() => {
     if (user?.id) {
@@ -29,7 +31,7 @@ export default function PetListScreen() {
           const errorMessage = createErrorLogMessage(error);
           log(`getPets: Error fetching pet info ${errorMessage}`);
           showMessage({
-            message: "Error fetching pets info.",
+            message: t("errorFetchingPetsInfo", "Error fetching pets info."),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,

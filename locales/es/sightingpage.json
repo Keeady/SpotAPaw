@@ -11,5 +11,15 @@
   "startCreatingSightingsToSeeThemHere": "Comienza a crear avistamientos para verlos aquí",
   "loadingReports": "Cargando informes...",
   "thankYouForHelpingOurFurryFriends": "¡Gracias por ayudar a nuestros amigos peludos!",
-  "sightingReportNotFound": "Informe de avistamiento no encontrado."
+  "sightingReportNotFound": "Informe de avistamiento no encontrado.",
+  "errorFetchingAccountInfo": "Error al obtener la información de la cuenta.",
+  "errorFetchingPetSighting": "Error al obtener la información del avistamiento de la mascota.",
+  "successfullySubmittedClaim": "Reclamo enviado con éxito.",
+  "errorUpdatingPetSighting": "Error al actualizar el avistamiento de la mascota.",
+  "thisPet": "esta mascota",
+  "shareSightingMessage": "🐾 ¿Has visto a {{petName}}? Ayúdalos a regresar a casa.",
+  "lostPet": "Mascota perdida",
+  "sightingSpottedTitle": "¡{{petName}} avistado!",
+  "linkCopiedToClipboard": "¡Enlace copiado al portapapeles!",
+  "failedToCopyLinkToClipboard": "No se pudo copiar el enlace al portapapeles."
 }
