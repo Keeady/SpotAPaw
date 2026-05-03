@@ -1,7 +1,19 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import ShowProgress from "./show-progress";
 import { AuthContext } from "../Provider/auth-provider";
-import { Text } from "react-native-paper";
+
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (key: string, defaultValue?: string, options?: any) => {
+        if (options && options.val) {
+          return defaultValue?.replace("{{val}}", options.val) || key;
+        }
+        return defaultValue || key;
+      },
+    };
+  },
+}));
 
 const mockRouterPush = jest.fn();
 jest.mock("expo-router", () => ({

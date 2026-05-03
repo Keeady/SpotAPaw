@@ -16,6 +16,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
   const theme = useTheme();
   const { location: userCurrentLocation } = usePermission();
   const { preferredLanguage } = useLocaleContext();
+  const species = pet.species.charAt(0).toUpperCase() + pet.species.slice(1);
   return (
     <Card
       style={{
@@ -90,8 +91,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
             <Text variant="labelLarge">{t("type")}</Text>
           </View>
           <Text variant="bodyLarge" style={styles.title}>
-            {pet.breed}{" "}
-            {pet.species.charAt(0).toUpperCase() + pet.species.slice(1)}
+            {pet.breed} {t(`animal.${species}`, { ns: "translation" })}
           </Text>
         </View>
 
@@ -168,8 +168,10 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
             </View>
             <Text variant="bodyLarge" style={styles.title}>
               {pet.colors && t("colors", { colors: pet.colors })}
-              {pet.gender && `\n${t("gender", { gender: pet.gender })}`}
-              {pet.age && `\n${t("age", { age: pet.age })}`}
+              {pet.gender &&
+                `\n${t("genderLabel", { ns: "translation" })}: ${t(`gender.${pet.gender}`, { ns: "translation" })}`}
+              {pet.age &&
+                `\n${t("ageLabel", { ns: "translation" })}: ${t("ageWithCount", { count: pet.age, ns: "translation" })}`}
             </Text>
             <Divider />
             <Text variant="bodyLarge" style={styles.title}>
@@ -192,5 +194,8 @@ const styles = StyleSheet.create({
     gap: 5,
     alignItems: "center",
   },
-  title: { paddingHorizontal: 25 },
+  title: {
+    paddingHorizontal: 25,
+    paddingVertical: 5,
+  },
 });

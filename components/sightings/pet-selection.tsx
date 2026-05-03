@@ -1,6 +1,7 @@
 import { Card, RadioButton } from "react-native-paper";
 import { StyleSheet, Image } from "react-native";
 import { SightingPet } from "../wizard/wizard-interface";
+import { useTranslation } from "react-i18next";
 
 type PetSelectionProps = {
   setSelectedPetId: (value: string) => void;
@@ -43,7 +44,7 @@ type PetThumbnailProps = {
   petGender: string;
   petAge: number;
   petPhoto: string;
-  showDetails: boolean
+  showDetails: boolean;
 };
 
 export function PetThumbnail({
@@ -54,8 +55,14 @@ export function PetThumbnail({
   petGender,
   petAge,
   petPhoto,
-  showDetails
+  showDetails,
 }: PetThumbnailProps) {
+  const { t } = useTranslation("translation");
+  const genderText = t(`gender.${petGender}`);
+  const ageText =
+    petAge > 1
+      ? t("age.years", { count: petAge })
+      : t("age.year", { count: petAge });
   return (
     <Card
       key={petId}
@@ -67,7 +74,7 @@ export function PetThumbnail({
     >
       <Card.Title
         title={showDetails && petName}
-        subtitle={showDetails && `${petGender}, ${petAge} years`}
+        subtitle={showDetails && `${genderText}, ${ageText}`}
         left={() =>
           petPhoto ? (
             <Image source={{ uri: petPhoto }} style={styles.petImage} />

@@ -2,13 +2,14 @@ import * as ImagePicker from "expo-image-picker";
 import { Alert, Linking } from "react-native";
 import { log } from "./logs";
 import { createErrorLogMessage } from "./util";
+import { t, TFunction } from "i18next";
 
 export const ImagePickerHandler = async (
   handleChange: (f: string, v: string) => void,
   callback?: () => void,
 ) => {
-  await requestMediaLibraryPermission();
-  
+  await requestMediaLibraryPermission(t);
+
   // No permissions request is necessary for launching the image library
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -32,9 +33,10 @@ export const ImagePickerHandler = async (
 };
 
 export const pickImage = async (
+  t: TFunction,
   setPhoto?: React.Dispatch<React.SetStateAction<string>>,
 ): Promise<ImagePicker.ImagePickerAsset | null> => {
-  await requestMediaLibraryPermission();
+  await requestMediaLibraryPermission(t);
 
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -117,7 +119,7 @@ export const requestCameraPermission = async () => {
   return status === "granted";
 };
 
-export const requestMediaLibraryPermission = async () => {
+export const requestMediaLibraryPermission = async (t: TFunction) => {
   const existingStatus = await checkMediaLibraryPermission();
 
   if (existingStatus) {
@@ -128,11 +130,17 @@ export const requestMediaLibraryPermission = async () => {
 
   if (status === "denied") {
     Alert.alert(
-      "Photo Library Permission Required",
-      "Please enable photo library access in your device settings to share a pet photo to help identify pets faster.",
+      t("photoLibraryPermissionRequired", "Photo Library Permission Required"),
+      t(
+        "pleaseEnablePhotoLibraryAccess",
+        "Please enable photo library access in your device settings to share a pet photo to help identify pets faster.",
+      ),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
+        { text: t("cancel", "Cancel"), style: "cancel" },
+        {
+          text: t("openSettings", "Open Settings"),
+          onPress: () => Linking.openSettings(),
+        },
       ],
     );
     return false;
@@ -147,26 +155,33 @@ export const uploadOrTakePhoto = async (
     fileName: string | null,
     mimeType: string | null,
   ) => void,
+  t: TFunction,
 ): Promise<void> => {
-  Alert.alert("Add Photo", "Choose an option", [
-    { text: "Cancel", style: "cancel" },
-    {
-      text: "Take Photo",
-      onPress: async () => {
-        const result = await takePhoto();
-        if (result) {
-          callback(result.uri, result.fileName || "", result?.mimeType || "");
-        }
+  Alert.alert(
+    t("addPhoto", "Add Photo", { ns: "translation" }),
+    t("chooseOption", "Choose an option", { ns: "translation" }),
+    [
+      { text: t("cancel", "Cancel", { ns: "translation" }), style: "cancel" },
+      {
+        text: t("takePhoto", "Take Photo", { ns: "translation" }),
+        onPress: async () => {
+          const result = await takePhoto();
+          if (result) {
+            callback(result.uri, result.fileName || "", result?.mimeType || "");
+          }
+        },
       },
-    },
-    {
-      text: "Choose from Library",
-      onPress: async () => {
-        const result = await pickImage();
-        if (result) {
-          callback(result.uri, result.fileName || "", result?.mimeType || "");
-        }
+      {
+        text: t("chooseFromLibrary", "Choose from Library", {
+          ns: "translation",
+        }),
+        onPress: async () => {
+          const result = await pickImage(t);
+          if (result) {
+            callback(result.uri, result.fileName || "", result?.mimeType || "");
+          }
+        },
       },
-    },
-  ]);
+    ],
+  );
 };

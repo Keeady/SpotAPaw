@@ -1,11 +1,19 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text, TextInput, RadioButton, HelperText } from "react-native-paper";
+import {
+  Text,
+  TextInput,
+  RadioButton,
+  HelperText,
+  Menu,
+} from "react-native-paper";
 import { useEffect, useState } from "react";
 import { AIFieldAnalysisBanner } from "../analyzer/ai-banner";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetThumbnail } from "../sightings/pet-selection";
 import { SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
+import { supportedSpecies } from "../util";
 
 export function EditPet({
   updateSightingData,
@@ -15,9 +23,17 @@ export function EditPet({
   reportType,
   isValidData,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [showAiGeneratedFlag, setShowAiGeneratedFlag] = useState(true);
   const [hasErrors, setHasErrors] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [selectedSpecies, setSelectedSpecies] = useState(
+    sightingFormData.species || "",
+  );
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
 
   const {
     photo,
@@ -47,8 +63,11 @@ export function EditPet({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="What did the pet look like?"
-        subTitle="Review and edit pet description"
+        title={t("whatDidThePetLookLike", "What did the pet look like?")}
+        subTitle={t(
+          "reviewAndEditPetDescription",
+          "Review and edit pet description",
+        )}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -70,14 +89,19 @@ export function EditPet({
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text variant="titleMedium">Is pet lost?</Text>
+              <Text variant="titleMedium">
+                {t("isPetLost", "Is pet lost?")}
+              </Text>
               <HelperText
                 type="error"
                 visible={hasErrors && isLost === undefined}
                 style={styles.helperText}
                 padding="none"
               >
-                Please indicate if the pet is lost!
+                {t(
+                  "pleaseIndicateIfThePetIsLost",
+                  "Please indicate if the pet is lost!",
+                )}
               </HelperText>
             </View>
 
@@ -90,12 +114,12 @@ export function EditPet({
               <View style={styles.radioGroupRow}>
                 <View style={styles.radioItem}>
                   <RadioButton value="yes" />
-                  <Text>Yes</Text>
+                  <Text>{t("yes", "Yes")}</Text>
                 </View>
 
                 <View style={styles.radioItem}>
                   <RadioButton value="no" />
-                  <Text>No</Text>
+                  <Text>{t("no", "No")}</Text>
                 </View>
               </View>
             </RadioButton.Group>
@@ -105,7 +129,7 @@ export function EditPet({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Name:</Text>
+            <Text variant="titleMedium">{t("name", "Name:")}</Text>
             <HelperText
               type="error"
               visible={
@@ -118,7 +142,7 @@ export function EditPet({
               style={styles.helperText}
               padding="none"
             >
-              Please add a pet name!
+              {t("pleaseAddAPetName", "Please add a pet name!")}
             </HelperText>
           </View>
 
@@ -132,14 +156,14 @@ export function EditPet({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Color(s):</Text>
+            <Text variant="titleMedium">{t("colors", "Color(s):")}</Text>
             <HelperText
               type="error"
               visible={hasErrors && !colors}
               style={styles.helperText}
               padding="none"
             >
-              Please describe pet color(s)!
+              {t("pleaseDescribePetColors", "Please describe pet color(s)!")}
             </HelperText>
 
             <AIFieldAnalysisBanner
@@ -157,14 +181,14 @@ export function EditPet({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Species:</Text>
+            <Text variant="titleMedium">{t("species", "Species:")}</Text>
             <HelperText
               type="error"
               visible={hasErrors && !species}
               style={styles.helperText}
               padding="none"
             >
-              Species is required!
+              {t("speciesIsRequired", "Species is required!")}
             </HelperText>
             <AIFieldAnalysisBanner
               loading={loadingAnalyzer}
@@ -172,18 +196,45 @@ export function EditPet({
             />
           </View>
 
-          <TextInput
-            placeholder="Dog/Cat/Hamster/Rabbit/Snake/Horse/Chicken"
-            value={species}
-            onChangeText={(value) => updateSightingData("species", value)}
-            mode={"outlined"}
-          />
+          <Menu
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={
+              <TextInput
+                placeholder="Select species"
+                value={selectedSpecies}
+                onPress={openMenu}
+                mode="outlined"
+                onChangeText={(value) => {
+                  updateSightingData("species", value);
+                  setSelectedSpecies(value);
+                }}
+              />
+            }
+          >
+            {supportedSpecies.map((specie) => {
+              const translatedSpecie = t(`animal.${specie}`, specie, {
+                ns: "translation",
+              });
+              return (
+                <Menu.Item
+                  key={specie}
+                  title={translatedSpecie}
+                  onPress={() => {
+                    setSelectedSpecies(translatedSpecie);
+                    updateSightingData("species", specie);
+                    closeMenu();
+                  }}
+                />
+              );
+            })}
+          </Menu>
         </View>
         <View style={[styles.verticallySpaced, styles.mt10]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Breed(s):</Text>
+            <Text variant="titleMedium">{t("breeds", "Breed(s):")}</Text>
             <HelperText
               type="error"
               visible={
@@ -194,7 +245,7 @@ export function EditPet({
               style={styles.helperText}
               padding="none"
             >
-              Breed is required
+              {t("breedIsRequired", "Breed is required")}
             </HelperText>
             <AIFieldAnalysisBanner
               loading={loadingAnalyzer}
@@ -203,7 +254,7 @@ export function EditPet({
           </View>
 
           <TextInput
-            placeholder="Breed(s) (if known)"
+            placeholder={t("breedsIfKnown", "Breed(s) (if known)")}
             value={breed}
             onChangeText={(value) => updateSightingData("breed", value)}
             mode={"outlined"}
@@ -214,7 +265,7 @@ export function EditPet({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Age:</Text>
+            <Text variant="titleMedium">{t("age", "Age:")}</Text>
             <HelperText
               type="error"
               visible={
@@ -227,11 +278,14 @@ export function EditPet({
               style={styles.helperText}
               padding="none"
             >
-              Please provide approximate age!
+              {t(
+                "pleaseProvideApproximateAge",
+                "Please provide approximate age!",
+              )}
             </HelperText>
           </View>
           <TextInput
-            placeholder={"how old?"}
+            placeholder={t("howOld", "how old?")}
             value={age?.toString() || ""}
             onChangeText={(v) => updateSightingData("age", v)}
             keyboardType="numeric"
@@ -243,7 +297,7 @@ export function EditPet({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Gender</Text>
+            <Text variant="titleMedium">{t("gender", "Gender")}</Text>
             <HelperText
               type="error"
               visible={
@@ -256,7 +310,7 @@ export function EditPet({
               style={styles.helperText}
               padding="none"
             >
-              Gender is required!
+              {t("genderIsRequired", "Gender is required!")}
             </HelperText>
           </View>
 
@@ -267,12 +321,12 @@ export function EditPet({
             <View style={styles.radioGroupRow}>
               <View style={styles.radioItem}>
                 <RadioButton value="Female" />
-                <Text>Female</Text>
+                <Text>{t("female", "Female")}</Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="Male" />
-                <Text>Male</Text>
+                <Text>{t("male", "Male")}</Text>
               </View>
             </View>
           </RadioButton.Group>

@@ -3,6 +3,7 @@ import { WizardHeader } from "./wizard-header";
 import { HelperText, Surface, Text, useTheme } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
 import { SightingReportType, SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
 
 export function Step1({
   setReportType,
@@ -10,6 +11,7 @@ export function Step1({
   reportType,
   isValidData,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const theme = useTheme();
   const [selected, setSelected] = useState<SightingReportType | null>();
   const [hasErrors, setHasErrors] = useState(false);
@@ -35,8 +37,8 @@ export function Step1({
   return (
     <View style={styles.container}>
       <WizardHeader
-        title="Report a lost pet"
-        subTitle="Thank you for helping bring our lost friends home."
+        title={t("reportALostPet", "Report a lost pet")}
+        subTitle={t("thankYouForHelping", "Thank you for helping bring our lost friends home.")}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -50,7 +52,7 @@ export function Step1({
             style={styles.helperText}
             padding="none"
           >
-            Please select an option!
+            {t("pleaseSelectAnOption", "Please select an option!")}
           </HelperText>
 
           <Surface
@@ -69,7 +71,9 @@ export function Step1({
               activeOpacity={0.7}
             >
               <View style={styles.steps}>
-                <Text variant="bodyLarge">My pet is lost</Text>
+                <Text variant="bodyLarge">
+                  {t("myPetIsLost", "My pet is lost")}
+                </Text>
               </View>
             </TouchableOpacity>
           </Surface>
@@ -89,7 +93,9 @@ export function Step1({
               activeOpacity={0.7}
             >
               <View style={styles.steps}>
-                <Text variant="bodyLarge">I found a lost pet</Text>
+                <Text variant="bodyLarge">
+                  {t("iFoundALostPet", "I found a lost pet")}
+                </Text>
               </View>
             </TouchableOpacity>
           </Surface>

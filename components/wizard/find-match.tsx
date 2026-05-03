@@ -11,8 +11,10 @@ import { AuthContext } from "../Provider/auth-provider";
 import { createErrorLogMessage } from "../util";
 import { log } from "../logs";
 import { FunctionsHttpError } from "@supabase/supabase-js";
+import { useTranslation } from "react-i18next";
 
 export function FindMatch({ sightingFormData }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const [loading, setLoading] = useState(false);
   const [matchResults, setMatchResults] = useState<AggregatedSighting[]>([]);
   const router = useRouter();
@@ -98,21 +100,33 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
 
   const title =
     loading || matchResults.length === 0
-      ? "Looking For Possible Matches"
-      : "Possible Matches Found";
+      ? t("lookingForPossibleMatches", "Looking For Possible Matches")
+      : t("possibleMatchesFound", "Possible Matches Found");
   const subTitle =
     loading || matchResults.length === 0
-      ? "Looking for pets matching your pet's description."
-      : "These pets closely match the description.";
+      ? t(
+          "lookingForPetsMatchingYourPetsDescription",
+          "Looking for pets matching your pet's description.",
+        )
+      : t(
+          "thesePetsCloselyMatchTheDescription",
+          "These pets closely match the description.",
+        );
 
   const bodyText = loading ? (
-    <Text variant="bodyMedium">Looking for possible matches...</Text>
+    <Text variant="bodyMedium">
+      {t("lookingForPossibleMatches2", "Looking for possible matches...")}
+    </Text>
   ) : matchResults.length === 0 ? (
     <>
-      <Text variant="bodyLarge">No Matches Found Yet</Text>
+      <Text variant="bodyLarge">
+        {t("noMatchesFoundYet", "No Matches Found Yet")}
+      </Text>
       <Text variant="bodyMedium">
-        We will keep looking. Come back soon as new sightings are reported every
-        day.
+        {t(
+          "weWillKeepLookingComeBackSoonAsNewSightingsAreReportedEveryDay",
+          "We will keep looking. Come back soon as new sightings are reported every\n        day.",
+        )}
       </Text>
     </>
   ) : null;
