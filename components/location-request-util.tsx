@@ -168,14 +168,14 @@ export const ErrorDialog = ({
   setErrorDialogVisible,
   errorMessage,
 }: ErrorDialogProps) => {
-  const { t } = useTranslation(["dialog"]);
+  const { t } = useTranslation(["dialog", "translation"]);
   return (
     <Portal>
       <Dialog
         visible={errorDialogVisible}
         onDismiss={() => setErrorDialogVisible(false)}
       >
-        <Dialog.Title>{t("error")}</Dialog.Title>
+        <Dialog.Title>{t("error", { ns: "translation" })}</Dialog.Title>
         <Dialog.Content>
           <Text variant="bodyMedium">{errorMessage}</Text>
         </Dialog.Content>

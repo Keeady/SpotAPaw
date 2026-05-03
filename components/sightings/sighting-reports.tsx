@@ -23,10 +23,12 @@ import { createErrorLogMessage, isValidUuid } from "../util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { showMessage } from "react-native-flash-message";
+import { useTranslation } from "react-i18next";
 
 const GUEST_REPORTS_KEY = "@guest_reports";
 
 const ReportListPage = () => {
+  const { t } = useTranslation(["sightingpage", "owner", "translation"]);
   const router = useRouter();
   const theme = useTheme();
   const [reports, setReports] = useState<AggregatedSighting[]>([]);
@@ -116,8 +118,12 @@ const ReportListPage = () => {
       if (!isValidUuid(linkedSightingId)) {
         log(`Report: Invalid linkedSightingId: ${linkedSightingId}`);
         showMessage({
-          message: "Error",
-          description: "An error occurred. Please try again.",
+          message: t("error", "Error", { ns: "translation" }),
+          description: t(
+            "anErrorOccurredPleaseTryAgain",
+            "An error occurred. Please try again.",
+            { ns: "translation" },
+          ),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -131,8 +137,11 @@ const ReportListPage = () => {
         .then((sighting) => {
           if (!sighting) {
             showMessage({
-              message: "Error",
-              description: "Sighting report not found.",
+              message: t("error", "Error", { ns: "translation" }),
+              description: t(
+                "sightingReportNotFound",
+                "Sighting report not found.",
+              ),
               type: "warning",
               icon: "warning",
               statusBarHeight: 50,
@@ -148,8 +157,11 @@ const ReportListPage = () => {
           const errorMessage = createErrorLogMessage(error);
           log(`Report: Failed to fetch sighting: ${errorMessage}`);
           showMessage({
-            message: "Error",
-            description: "Failed to navigate to sighting details.",
+            message: t("error", "Error", { ns: "translation" }),
+            description: t(
+              "failedToNavigateToSightingDetails",
+              "Failed to navigate to sighting details.",
+            ),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,
@@ -173,18 +185,29 @@ const ReportListPage = () => {
       <View style={styles.cardContent}>
         {/* Thumbnail */}
         <Surface style={styles.thumbnailContainer} elevation={1}>
-          <Image
-            source={{ uri: item.photo }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />
+          {item.photo ? (
+            <Image
+              source={{ uri: item.photo }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+          ) : (
+            <View
+              style={[
+                styles.thumbnail,
+                { justifyContent: "center", alignItems: "center" },
+              ]}
+            >
+              <Text>{t("noPhoto", "No Photo", { ns: "translation" })}</Text>
+            </View>
+          )}
         </Surface>
 
         {/* Report Details */}
         <View style={styles.detailsContainer}>
           <View style={styles.headerRow}>
             <Text variant="titleMedium" style={styles.reportType}>
-              {item.species}
+              {t(`animal.${item.species}`, item.species, { ns: "translation" })}
             </Text>
             <Chip
               mode="flat"
@@ -194,7 +217,9 @@ const ReportListPage = () => {
                 { backgroundColor: getStatusColor(item.isActive) },
               ]}
             >
-              {item.isActive ? "ACTIVE" : "RESOLVED"}
+              {item.isActive
+                ? t("active", "ACTIVE")
+                : t("resolved", "RESOLVED")}
             </Chip>
           </View>
 
@@ -220,12 +245,15 @@ const ReportListPage = () => {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Text variant="titleMedium" style={styles.emptyText}>
-        No sighting reports found
+        {t("noSightingReportsFound", "No sighting reports found")}
       </Text>
       <Text variant="bodyMedium" style={styles.emptySubtext}>
         {isGuest
-          ? "Your reports will appear here"
-          : "Start creating sightings to see them here"}
+          ? t("yourReportsWillAppearHere", "Your reports will appear here")
+          : t(
+              "startCreatingSightingsToSeeThemHere",
+              "Start creating sightings to see them here",
+            )}
       </Text>
     </View>
   );
@@ -234,7 +262,9 @@ const ReportListPage = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
-        <Text style={styles.loadingText}>Loading reports...</Text>
+        <Text style={styles.loadingText}>
+          {t("loadingReports", "Loading reports...")}
+        </Text>
       </View>
     );
   }
@@ -242,9 +272,12 @@ const ReportListPage = () => {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>My Reports</Text>
+        <Text style={styles.headerTitle}>{t("myReports", "My Reports", { ns: "owner" })}</Text>
         <Text style={styles.headerSubtitle}>
-          Thank you for helping our furry friends!
+          {t(
+            "thankYouForHelpingOurFurryFriends",
+            "Thank you for helping our furry friends!",
+          )}
         </Text>
       </View>
       <FlatList

@@ -50,7 +50,6 @@
     "name": "Nombre:",
     "no": "No",
     "noMatchesFoundYet": "Aún no se encontraron coincidencias",
-    "noPhoto": "Sin foto",
     "petMatchingIsStillProcessingPleaseTryAgainInAMoment": "La búsqueda de coincidencias aún está en proceso. Por favor, inténtalo de nuevo en un momento.",
     "petsLastSeenLocation": "última ubicación vista de la mascota",
     "pleaseAddAPetName": "¡Por favor agrega el nombre de la mascota!",
@@ -108,5 +107,4 @@
     "reviewAndEditYourContactInfo": "Revisar y editar tu información de contacto.",
     "hangTightProcessingReport": "Mantente atento — estamos procesando tu informe.",
     "selectOrEnterSpecies": "Selecciona o ingresa la especie"
-
 }

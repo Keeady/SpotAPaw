@@ -1,6 +1,5 @@
 {
     "additionalDetails": "Additional details:",
-    
     "addPhoto": "Add Photo",
     "aDescriptionIsRequired": "A description is required!",
     "age": "Age:",
@@ -51,7 +50,6 @@
     "name": "Name:",
     "no": "No",
     "noMatchesFoundYet": "No Matches Found Yet",
-    "noPhoto": "No photo",
     "petMatchingIsStillProcessingPleaseTryAgainInAMoment": "Pet matching is still processing. Please try again in a moment.",
     "petsLastSeenLocation": "pet's last seen location",
     "pleaseAddAPetName": "Please add a pet name!",

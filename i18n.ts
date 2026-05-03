@@ -40,6 +40,7 @@ export const initI18next = async () => {
         "privacy",
         "terms",
         "wizard",
+        "owner",
       ],
     });
 
@@ -63,6 +64,7 @@ const locales: Record<string, Record<string, any>> = {
     privacy: require("./locales/en/privacy.json"),
     terms: require("./locales/en/terms.json"),
     wizard: require("./locales/en/wizard.json"),
+    owner: require("./locales/en/owner.json"),
   },
   es: {
     translation: require("./locales/es/translation.json"),
@@ -80,6 +82,7 @@ const locales: Record<string, Record<string, any>> = {
     privacy: require("./locales/es/privacy.json"),
     terms: require("./locales/es/terms.json"),
     wizard: require("./locales/es/wizard.json"),
+    owner: require("./locales/es/owner.json"),
   },
 };
 

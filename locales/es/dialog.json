@@ -5,7 +5,6 @@
   "continue": "Continuar",
   "delete": "ELIMINAR",
   "deleteAccountTitle": "¿Eliminar cuenta?",
-  "error": "Error",
   "grantLocationPermission": "Conceder permiso de ubicación",
   "locationPermissionEnabled": "El permiso de ubicación ha sido activado. La app usará ahora la ubicación de tu dispositivo.",
   "locationReset": "Ubicación restablecida",

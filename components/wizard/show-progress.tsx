@@ -194,7 +194,7 @@ export default function ShowProgress({
                   alignItems: "center",
                 }}
               >
-                <Text>{t("noPhoto", "No photo")}</Text>
+                <Text>{t("noPhoto", "No photo", { ns: "translation" })}</Text>
               </View>
             )}
           </View>

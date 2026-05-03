@@ -72,7 +72,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
         ) : (
           <View style={[styles.image, styles.placeholder]}>
             <Text style={styles.placeholderText}>
-              {t("noPhoto", "No Photo")}
+              {t("noPhoto", "No Photo", { ns: "translation" })}
             </Text>
           </View>
         )}

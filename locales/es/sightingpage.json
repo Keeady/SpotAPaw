@@ -2,5 +2,14 @@
   "anErrorOccurredWhileFetchingSightings": "Ocurrió un error al buscar los avistamientos.",
   "loadingNearbySightings": "Cargando avistamientos cercanos...",
   "reportNewSighting": "Reportar nuevo avistamiento",
-  "showingNearbySightings": "Mostrando avistamientos cercanos"
+  "showingNearbySightings": "Mostrando avistamientos cercanos",
+  "failedToNavigateToSightingDetails": "No se pudo navegar a los detalles del avistamiento.",
+  "active": "ACTIVO",
+  "resolved": "RESUELTO",
+  "noSightingReportsFound": "No se encontraron informes de avistamientos",
+  "yourReportsWillAppearHere": "Tus informes aparecerán aquí",
+  "startCreatingSightingsToSeeThemHere": "Comienza a crear avistamientos para verlos aquí",
+  "loadingReports": "Cargando informes...",
+  "thankYouForHelpingOurFurryFriends": "¡Gracias por ayudar a nuestros amigos peludos!",
+  "sightingReportNotFound": "Informe de avistamiento no encontrado."
 }

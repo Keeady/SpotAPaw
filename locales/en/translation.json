@@ -84,5 +84,9 @@
   "confirm": "Confirm",
   "yesPleaseDelete": "Yes, please delete",
   "loading": "Loading...",
-  "addPet": "Add Pet"
+  "addPet": "Add Pet",
+  "saveChanges": "Save Changes",
+  "error": "Error",
+  "anErrorOccurredPleaseTryAgain": "An error occurred. Please try again.",
+  "noPhoto": "No photo"
 }
