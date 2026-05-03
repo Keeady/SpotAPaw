@@ -10,12 +10,14 @@ import { PetRepository } from "@/db/repositories/pet-repository";
 import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { useTranslation } from "react-i18next";
 
 export function ChoosePet({
   updateSightingData,
   sightingFormData,
   isValidData,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const { user } = useContext(AuthContext);
   const router = useRouter();
   const [pets, setPets] = useState<SightingPet[]>([]);
@@ -58,7 +60,7 @@ export function ChoosePet({
           const errorMessage = createErrorLogMessage(error);
           log(`Failed to fetch pets for user: ${errorMessage}`);
           showMessage({
-            message: "Error fetching pets info.",
+            message: t("errorFetchingPetsInfo", "Error fetching pets info."),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,
@@ -100,8 +102,8 @@ export function ChoosePet({
   return (
     <View style={styles.container}>
       <WizardHeader
-        title="Select a pet profile"
-        subTitle="Sorry to hear your pet is missing. Let's bring them back!"
+        title={t("selectAPetProfile", "Select a pet profile")}
+        subTitle={t("sorryToHearYourPetIsMissing", "Sorry to hear your pet is missing. Let's bring them back!")}
       />
       <ScrollView
         style={{ flex: 1 }}
@@ -116,7 +118,7 @@ export function ChoosePet({
               onPress={() => router.navigate("/")}
               style={styles.button}
             >
-              Sign in or create an account
+              {t("signInOrCreateAnAccount", "Sign in or create an account")}
             </Button>
           </View>
         )}
@@ -128,7 +130,7 @@ export function ChoosePet({
             style={styles.helperText}
             padding="none"
           >
-            Please select a pet!
+            {t("pleaseSelectAPet", "Please select a pet!")}
           </HelperText>
         )}
         <PetSelection

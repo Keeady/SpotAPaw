@@ -6,6 +6,7 @@ import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetThumbnail } from "../sightings/pet-selection";
 import { SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
 
 export function EditPetContinued({
   updateSightingData,
@@ -15,6 +16,7 @@ export function EditPetContinued({
   isValidData,
   reportType,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [showAiGeneratedFlag, setShowAiGeneratedFlag] = useState(true);
   const [hasErrors, setHasErrors] = useState(false);
@@ -48,8 +50,11 @@ export function EditPetContinued({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="What did the pet look like? (Cont.)"
-        subTitle="Review and edit pet description"
+        title={t(
+          "whatDidThePetLookLikeCont",
+          "What did the pet look like? (Cont.)",
+        )}
+        subTitle={t("reviewAndEditPetDescription", "Review and edit pet description")}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -71,14 +76,16 @@ export function EditPetContinued({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Distinctive Features:</Text>
+            <Text variant="titleMedium">
+              {t("distinctiveFeatures", "Distinctive Features:")}
+            </Text>
             <HelperText
               type="error"
               visible={false}
               style={styles.helperText}
               padding="none"
             >
-              Feature is required
+              {t("featureIsRequired", "Feature is required")}
             </HelperText>
             <AIFieldAnalysisBanner
               loading={loadingAnalyzer}
@@ -87,7 +94,10 @@ export function EditPetContinued({
           </View>
 
           <TextInput
-            placeholder="Describe unique markings, scars, missing teeth, etc."
+            placeholder={t(
+              "describeUniqueMarkingsScarsMissingTeethEtc",
+              "Describe unique markings, scars, missing teeth, etc.",
+            )}
             value={features}
             onChangeText={(value) => updateSightingData("features", value)}
             mode={"outlined"}
@@ -109,14 +119,17 @@ export function EditPetContinued({
             style={styles.helperText}
             padding="none"
           >
-            Please select pet size!
+            {t("pleaseSelectPetSize", "Please select pet size!")}
           </HelperText>
           <AIFieldAnalysisBanner
             loading={loadingAnalyzer}
             aiGenerated={!!showAiGeneratedFlag && !!size}
           />
           <Text variant="titleMedium">
-            How would you describe the pet&#39;s size?
+            {t(
+              "howWouldYouDescribeThePetsSize",
+              "How would you describe the pet's size?",
+            )}
           </Text>
           <RadioButton.Group
             onValueChange={(value) => updateSightingData("size", value)}
@@ -125,17 +138,17 @@ export function EditPetContinued({
             <View style={styles.radioGroupCol}>
               <View style={styles.radioItem}>
                 <RadioButton value="small" />
-                <Text>Small (under 20 lbs)</Text>
+                <Text>{t("smallUnder20Lbs", "Small (under 20 lbs)")}</Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="medium" />
-                <Text>Medium (20-50 lbs)</Text>
+                <Text>{t("medium2050Lbs", "Medium (20-50 lbs)")}</Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="large" />
-                <Text>Large (over 50 lbs)</Text>
+                <Text>{t("largeOver50Lbs", "Large (over 50 lbs)")}</Text>
               </View>
             </View>
           </RadioButton.Group>
@@ -143,7 +156,10 @@ export function EditPetContinued({
 
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <Text variant="titleMedium">
-            Does the pet have any collars, tags, or harness on?
+            {t(
+              "doesThePetHaveAnyCollarsTagsOrHarnessOn",
+              "Does the pet have any collars, tags, or harness on?",
+            )}
           </Text>
           <RadioButton.Group
             onValueChange={(value) => updateSightingData("collar", value)}
@@ -152,12 +168,12 @@ export function EditPetContinued({
             <View style={styles.radioGroupRow}>
               <View style={styles.radioItem}>
                 <RadioButton value="yes_collar" />
-                <Text>Yes</Text>
+                <Text>{t("yes", "Yes")}</Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="no" />
-                <Text>No</Text>
+                <Text>{t("no", "No")}</Text>
               </View>
             </View>
           </RadioButton.Group>
@@ -171,18 +187,24 @@ export function EditPetContinued({
               style={styles.helperText}
               padding="none"
             >
-              A description is required!
+              {t("aDescriptionIsRequired", "A description is required!")}
             </HelperText>
             <AIFieldAnalysisBanner
               loading={loadingAnalyzer}
               aiGenerated={!!showAiGeneratedFlag && !!collarDescription}
             />
             <Text variant="labelLarge">
-              Please describe any Collar, Tag, or Harness:
+              {t(
+                "pleaseDescribeAnyCollarTagOrHarness",
+                "Please describe any Collar, Tag, or Harness:",
+              )}
             </Text>
             <TextInput
-              label={"Collar, Tag, & Harness"}
-              placeholder="Describe colors, numbers, markings, brand, etc."
+              label={t("collarTagHarness", "Collar, Tag, & Harness")}
+              placeholder={t(
+                "describeColorsNumbersMarkingsBrandEtc",
+                "Describe colors, numbers, markings, brand, etc.",
+              )}
               value={collarDescription}
               onChangeText={(value) =>
                 updateSightingData("collarDescription", value)
@@ -195,7 +217,9 @@ export function EditPetContinued({
         )}
 
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Text variant="titleMedium">How is the pet behaving?</Text>
+          <Text variant="titleMedium">
+            {t("howIsThePetBehaving", "How is the pet behaving?")}
+          </Text>
           <RadioButton.Group
             onValueChange={(value) => updateSightingData("petBehavior", value)}
             value={petBehavior}
@@ -203,22 +227,26 @@ export function EditPetContinued({
             <View style={styles.radioGroupCol}>
               <View style={styles.radioItem}>
                 <RadioButton value="friendly" />
-                <Text>Friendly & approachable</Text>
+                <Text>
+                  {t("friendlyApproachable", "Friendly & approachable")}
+                </Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="scared" />
-                <Text>Scared or skittish</Text>
+                <Text>{t("scaredOrSkittish", "Scared or skittish")}</Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="aggressive" />
-                <Text>Aggressive or defensive</Text>
+                <Text>
+                  {t("aggressiveOrDefensive", "Aggressive or defensive")}
+                </Text>
               </View>
 
               <View style={styles.radioItem}>
                 <RadioButton value="injured" />
-                <Text>Injured</Text>
+                <Text>{t("injured", "Injured")}</Text>
               </View>
             </View>
           </RadioButton.Group>

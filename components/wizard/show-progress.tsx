@@ -18,10 +18,12 @@ import { showMessage } from "react-native-flash-message";
 import { createErrorLogMessage, getLastSeenLocation, kmToMiles } from "../util";
 import { log } from "../logs";
 import { FunctionsHttpError } from "@supabase/supabase-js";
+import { useTranslation } from "react-i18next";
 
 export default function ShowProgress({
   sightingFormData,
 }: SightingWizardStepData) {
+  const { t } = useTranslation(["wizard", "translation"]);
   const [loading, setLoading] = useState(false);
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
   const { user } = useContext(AuthContext);
@@ -52,7 +54,7 @@ export default function ShowProgress({
         ? new Date(sightingFormData.lastSeenTime).toLocaleDateString()
         : "";
       const radiusMiles = kmToMiles(SIGHTING_RADIUSKM)
-        ? `${kmToMiles(SIGHTING_RADIUSKM)} miles`
+        ? t("valMiles", "{{val}} miles", { val: kmToMiles(SIGHTING_RADIUSKM) })
         : "";
 
       const tags = buildFilterTags(
@@ -60,6 +62,7 @@ export default function ShowProgress({
         lastSeenTime,
         radiusMiles,
         species,
+        t
       );
       setFilterTags(tags);
     };
@@ -69,8 +72,10 @@ export default function ShowProgress({
   const onViewMatches = useCallback(() => {
     if (!sightingId || !petDescriptionId) {
       showMessage({
-        message:
+        message: t(
+          "petMatchingIsStillProcessingPleaseTryAgainInAMoment",
           "Pet matching is still processing. Please try again in a moment.",
+        ),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,
@@ -132,8 +137,8 @@ export default function ShowProgress({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="Sighting Submitted!"
-        subTitle="Hang tight — we are processing your report."
+        title={t("sightingSubmitted", "Sighting Submitted!")}
+        subTitle={t("hangTightProcessingReport", "Hang tight — we are processing your report.")}
       />
       <ScrollView
         style={styles.screen}
@@ -141,9 +146,14 @@ export default function ShowProgress({
         showsVerticalScrollIndicator={false}
       >
         <Surface style={styles.card} elevation={1}>
-          <Text style={styles.cardTitle}>Matching Filters</Text>
+          <Text style={styles.cardTitle}>
+            {t("matchingFilters", "Matching Filters")}
+          </Text>
           <Text style={styles.cardSubtitle}>
-            We are searching for similar pets using these parameters
+            {t(
+              "weAreSearchingForSimilarPetsUsingTheseParameters",
+              "We are searching for similar pets using these parameters",
+            )}
           </Text>
           <View style={styles.chipGrid}>
             {filterTags.map((tag, idx) => (
@@ -184,7 +194,7 @@ export default function ShowProgress({
                   alignItems: "center",
                 }}
               >
-                <Text>No photo</Text>
+                <Text>{t("noPhoto", "No photo")}</Text>
               </View>
             )}
           </View>
@@ -197,7 +207,7 @@ export default function ShowProgress({
             onPress={onViewMatches}
             contentStyle={styles.btnContent}
           >
-            View Matches
+            {t("viewMatches", "View Matches")}
           </Button>
         </View>
       </ScrollView>

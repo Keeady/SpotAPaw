@@ -39,6 +39,7 @@ export const initI18next = async () => {
         "dialog",
         "privacy",
         "terms",
+        "wizard",
       ],
     });
 
@@ -61,6 +62,7 @@ const locales: Record<string, Record<string, any>> = {
     dialog: require("./locales/en/dialog.json"),
     privacy: require("./locales/en/privacy.json"),
     terms: require("./locales/en/terms.json"),
+    wizard: require("./locales/en/wizard.json"),
   },
   es: {
     translation: require("./locales/es/translation.json"),
@@ -77,6 +79,7 @@ const locales: Record<string, Record<string, any>> = {
     dialog: require("./locales/es/dialog.json"),
     privacy: require("./locales/es/privacy.json"),
     terms: require("./locales/es/terms.json"),
+    wizard: require("./locales/es/wizard.json"),
   },
 };
 

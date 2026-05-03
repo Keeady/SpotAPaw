@@ -10,12 +10,14 @@ import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
 
 export function AddContact({
   updateSightingData,
   sightingFormData,
   reportType,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const { user } = useContext(AuthContext);
   const isMountedRef = useRef(true);
 
@@ -48,7 +50,10 @@ export function AddContact({
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to fetch owner info for user: ${errorMessage}`);
         showMessage({
-          message: "Error fetching contact info.",
+          message: t(
+            "errorFetchingContactInfo",
+            "Error fetching contact info.",
+          ),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -70,8 +75,8 @@ export function AddContact({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="Update your contact info."
-        subTitle="Review and edit your contact Info"
+        title={t("updateYourContactInfo", "Update your contact info.")}
+        subTitle={t("reviewAndEditYourContactInfo", "Review and edit your contact info.")}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -80,23 +85,29 @@ export function AddContact({
       >
         {reportType === "found_stray" && (
           <Text variant="titleSmall" style={styles.title}>
-            Would you like to be contacted by pet owner about this sighting?
+            {t(
+              "wouldYouLikeToBeContactedByPetOwnerAboutThisSighting",
+              "Would you like to be contacted by pet owner about this sighting?",
+            )}
           </Text>
         )}
 
         {reportType === "lost_own" && (
           <Text variant="titleSmall" style={styles.title}>
-            Let us know how to reach you about your pet.
+            {t(
+              "letUsKnowHowToReachYouAboutYourPet",
+              "Let us know how to reach you about your pet.",
+            )}
           </Text>
         )}
 
         <View style={[styles.verticallySpaced, styles.mt10]}>
-          <Text variant="titleMedium">Contact Name:</Text>
+          <Text variant="titleMedium">{t("contactName", "Contact Name:")}</Text>
           <TextInput
             left={<TextInput.Icon icon="account" />}
             onChangeText={(text) => updateSightingData("reporterName", text)}
             value={reporterName}
-            placeholder="First & Last Name"
+            placeholder={t("firstLastName", "First & Last Name")}
             autoCapitalize={"none"}
             mode="outlined"
             textContentType="name"
@@ -108,14 +119,19 @@ export function AddContact({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Contact Number:</Text>
+            <Text variant="titleMedium">
+              {t("contactNumber", "Contact Number:")}
+            </Text>
             <HelperText
               type="error"
               visible={false}
               style={styles.helperText}
               padding="none"
             >
-              Please enter a valid phone number!
+              {t(
+                "pleaseEnterAValidPhoneNumber",
+                "Please enter a valid phone number!",
+              )}
             </HelperText>
           </View>
 

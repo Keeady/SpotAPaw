@@ -14,6 +14,7 @@ import {
   getCountryCallingCode,
   isValidPhoneNumber,
 } from "libphonenumber-js";
+import { useTranslation } from "react-i18next";
 
 export type PhoneNumberInputProps = {
   onPhoneNumberChange: (
@@ -34,6 +35,7 @@ export default function PhoneNumberInput({
   phoneCountryCode,
   phone,
 }: PhoneNumberInputProps) {
+  const {t} = useTranslation("translation");
   const defaultCountryCode = "US";
   const theme = useTheme();
 
@@ -112,7 +114,7 @@ export default function PhoneNumberInput({
     <View>
       <Text variant="labelSmall" style={{ color: theme.colors.error }}>
         {hasPhoneError
-          ? "Invalid phone number and country code combination."
+          ? t("invalidPhoneNumber", "Invalid phone number and country code combination.")
           : ""}
       </Text>
 
@@ -159,7 +161,7 @@ export default function PhoneNumberInput({
 
         <View style={styles.phoneInput}>
           <TextInput
-            label="Phone Number"
+            label={t("phoneNumber", "Phone Number")}
             onChangeText={(text) => {
               setEditedPhoneValue(text);
             }}

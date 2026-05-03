@@ -13,6 +13,7 @@ import { AuthContext } from "../Provider/auth-provider";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetImage, SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
 
 export function UploadPhoto({
   updateSightingData,
@@ -23,6 +24,7 @@ export function UploadPhoto({
   onResetErrorMessage,
   onResetAiGeneratedPhoto,
 }: SightingWizardStepData) {
+  const { t } = useTranslation(["wizard", "translation"]);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const settingsRoute = user ? "/(app)/my-settings" : "/settings";
@@ -55,8 +57,11 @@ export function UploadPhoto({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="Upload a photo"
-        subTitle="A photo would really help identify this pet faster."
+        title={t("uploadAPhoto", "Upload a photo")}
+        subTitle={t(
+          "aPhotoWouldReallyHelpIdentifyThisPetFaster",
+          "A photo would really help identify this pet faster.",
+        )}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -78,7 +83,9 @@ export function UploadPhoto({
               {isAiFeatureEnabled && loading && (
                 <>
                   <ActivityIndicator size="small" color="#1976d2" />
-                  <Text variant="labelMedium">Analyzing photo with AI...</Text>
+                  <Text variant="labelMedium">
+                    {t("analyzingPhotoWithAi", "Analyzing photo with AI...")}
+                  </Text>
                 </>
               )}
             </View>
@@ -92,7 +99,7 @@ export function UploadPhoto({
               {!!errorMessage
                 ? errorMessage
                 : hasErrors && !photo && !image.uri
-                  ? "Please add a photo!"
+                  ? t("pleaseAddAPhoto", "Please add a photo!")
                   : ""}
             </HelperText>
           </View>
@@ -110,32 +117,36 @@ export function UploadPhoto({
             />
           ) : (
             <View style={styles.emptyPreview}>
-              <Text>Add Photo</Text>
+              <Text>{t("addPhoto", "Add Photo", { ns: "translation" })}</Text>
             </View>
           )}
 
           <Button
             icon="camera"
             mode="contained"
-            onPress={() => uploadOrTakePhoto(onAddPhoto)}
+            onPress={() => uploadOrTakePhoto(onAddPhoto, t)}
             style={{ marginVertical: 10 }}
           >
             {sightingFormData.image.uri || sightingFormData.photo
-              ? "Change Photo"
-              : "Upload Photo"}
+              ? t("changePhoto", "Change Photo")
+              : t("uploadPhoto", "Upload Photo")}
           </Button>
 
           <View>
             <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
               <Icon source={"creation-outline"} size={20} />
               <Text variant="labelMedium" style={{ flex: 1 }}>
-                AI will fill out a detailed pet description from this photo. You
-                can review and edit before submitting.
+                {t(
+                  "aiWillFillOut",
+                  "AI will fill out a detailed pet description from this photo. You can review and edit before submitting.",
+                )}
               </Text>
             </View>
 
             <Button mode="text" onPress={() => router.navigate(settingsRoute)}>
-              {isAiFeatureEnabled ? "AI Settings" : "Turn AI On"}
+              {isAiFeatureEnabled
+                ? t("aiSettings", "AI Settings")
+                : t("turnAiOn", "Turn AI On")}
             </Button>
           </View>
         </View>
@@ -163,7 +174,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: 5,
-    aspectRatio: 1.5
+    aspectRatio: 1.5,
   },
   emptyPreview: {
     width: "100%",
