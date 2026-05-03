@@ -5,7 +5,6 @@
   "continue": "Continue",
   "delete": "DELETE",
   "deleteAccountTitle": "Delete Account?",
-  "error": "Error",
   "grantLocationPermission": "Grant Location Permission",
   "locationPermissionEnabled": "Location permission has been enabled. The app will now use your device location.",
   "locationReset": "Location Reset",

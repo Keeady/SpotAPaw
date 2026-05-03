@@ -1,0 +1,10 @@
+{
+    "errorFetchingAccountInfo": "Error fetching account info.",
+    "successfullySavedOwnerProfile": "Successfully saved owner profile.",
+    "errorSavingOwnerProfile": "Error saving owner profile.",
+    "myContactInformation": "My Contact Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "myReports": "My Reports",
+    "viewAndManageYourSightingReports": "View and manage your sighting reports"
+}

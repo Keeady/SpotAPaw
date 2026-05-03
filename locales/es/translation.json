@@ -84,5 +84,7 @@
   "confirm": "Confirmar",
   "yesPleaseDelete": "Sí, por favor elimina",
   "loading": "Cargando...",
-  "addPet": "Agregar mascota"
+  "addPet": "Agregar mascota",
+  "saveChanges": "Guardar cambios",
+  "delete": "ELIMINAR"
 }

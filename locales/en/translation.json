@@ -84,5 +84,7 @@
   "confirm": "Confirm",
   "yesPleaseDelete": "Yes, please delete",
   "loading": "Loading...",
-  "addPet": "Add Pet"
+  "addPet": "Add Pet",
+  "saveChanges": "Save Changes",
+  "error": "Error"
 }

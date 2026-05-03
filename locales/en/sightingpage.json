@@ -2,5 +2,13 @@
   "anErrorOccurredWhileFetchingSightings": "An error occurred while fetching sightings.",
   "loadingNearbySightings": "Loading Nearby Sightings...",
   "reportNewSighting": "Report New Sighting",
-  "showingNearbySightings": "Showing Nearby Sightings"
+  "showingNearbySightings": "Showing Nearby Sightings",
+  "failedToNavigateToSightingDetails": "Failed to navigate to sighting details.",
+  "active": "ACTIVE",
+  "resolved": "RESOLVED",
+  "noSightingReportsFound": "No sighting reports found",
+  "yourReportsWillAppearHere": "Your reports will appear here",
+  "startCreatingSightingsToSeeThemHere": "Start creating sightings to see them here",
+  "loadingReports": "Loading reports...",
+  "thankYouForHelpingOurFurryFriends": "Thank you for helping our furry friends!"
 }

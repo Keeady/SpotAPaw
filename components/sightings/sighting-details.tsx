@@ -169,7 +169,7 @@ export default function SightingDetail({
               )}
             </Card.Content>
             <Card.Actions>
-              <View style={{ flexDirection: "row", gap: 10 }}>
+              <View style={{ flexDirection: "row", gap: 2, flexWrap: "wrap" }}>
                 {claimed && (
                   <Chip mode="outlined" disabled={claimed}>
                     {t("ownerPending")}
