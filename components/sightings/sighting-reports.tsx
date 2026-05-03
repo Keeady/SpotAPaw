@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 const GUEST_REPORTS_KEY = "@guest_reports";
 
 const ReportListPage = () => {
-  const { t } = useTranslation(["sightingpage", "translation"]);
+  const { t } = useTranslation(["sightingpage", "owner", "translation"]);
   const router = useRouter();
   const theme = useTheme();
   const [reports, setReports] = useState<AggregatedSighting[]>([]);
@@ -198,7 +198,7 @@ const ReportListPage = () => {
                 { justifyContent: "center", alignItems: "center" },
               ]}
             >
-              <Text>{t("noPhoto", "No Photo")}</Text>
+              <Text>{t("noPhoto", "No Photo", { ns: "translation" })}</Text>
             </View>
           )}
         </Surface>
@@ -272,7 +272,7 @@ const ReportListPage = () => {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>{t("myReports", "My Reports")}</Text>
+        <Text style={styles.headerTitle}>{t("myReports", "My Reports", { ns: "owner" })}</Text>
         <Text style={styles.headerSubtitle}>
           {t(
             "thankYouForHelpingOurFurryFriends",

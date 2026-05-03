@@ -86,5 +86,7 @@
   "loading": "Loading...",
   "addPet": "Add Pet",
   "saveChanges": "Save Changes",
-  "error": "Error"
+  "error": "Error",
+  "anErrorOccurredPleaseTryAgain": "An error occurred. Please try again.",
+  "noPhoto": "No photo"
 }

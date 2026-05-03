@@ -1,10 +1,10 @@
 {
-    "errorFetchingAccountInfo": "Error al obtener la información de la cuenta.",
-    "successfullySavedOwnerProfile": "Perfil de propietario guardado con éxito.",
-    "errorSavingOwnerProfile": "Error al guardar el perfil del propietario.",
-    "myContactInformation": "Mi información de contacto",
-    "firstName": "Nombre",
-    "lastName": "Apellido",
-    "myReports": "Mis informes",
-    "viewAndManageYourSightingReports": "Ver y gestionar tus informes de avistamientos"
+  "errorFetchingAccountInfo": "Error al obtener la información de la cuenta.",
+  "successfullySavedOwnerProfile": "Perfil de propietario guardado con éxito.",
+  "errorSavingOwnerProfile": "Error al guardar el perfil del propietario.",
+  "myContactInformation": "Mi información de contacto",
+  "firstName": "Nombre",
+  "lastName": "Apellido",
+  "myReports": "Mis informes",
+  "viewAndManageYourSightingReports": "Ver y gestionar tus informes de avistamientos"
 }

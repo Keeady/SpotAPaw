@@ -32,7 +32,6 @@
     "enabled": "Enabled",
     "disabled": "Disabled",
     "language": "Language",
-    
     "pleaseTypeDeleteToConfirm": "Please type DELETE to confirm",
     "delete": "delete"
 }

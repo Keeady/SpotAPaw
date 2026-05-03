@@ -45,7 +45,7 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
             margin: 12,
           }}
         >
-          <Text>{t("noPhoto", "No photo")}</Text>
+          <Text>{t("noPhoto", "No photo", { ns: "translation" })}</Text>
         </View>
       )}
       <Card.Content style={{ alignItems: "center" }}>
