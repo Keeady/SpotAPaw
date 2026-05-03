@@ -125,7 +125,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
       <Text variant="bodyMedium">
         {t(
           "weWillKeepLookingComeBackSoonAsNewSightingsAreReportedEveryDay",
-          "We will keep looking. Come back soon as new sightings are reported every\n        day.",
+          "We will keep looking. Come back soon as new sightings are reported every day.",
         )}
       </Text>
     </>

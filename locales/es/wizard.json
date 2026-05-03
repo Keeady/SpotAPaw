@@ -34,7 +34,7 @@
     "genderIsRequired": "¡El género es obligatorio!",
     "howIsThePetBehaving": "¿Cómo se está comportando la mascota?",
     "howOld": "¿Qué edad tiene?",
-    "howWouldYouDescribeThePet39sSize": "¿Cómo describirías el tamaño de la mascota?",
+    "howWouldYouDescribeThePetsSize": "¿Cómo describirías el tamaño de la mascota?",
     "iFoundALostPet": "Encontré una mascota perdida",
     "injured": "Lesionada",
     "isPetLost": "¿La mascota está perdida?",
@@ -107,6 +107,7 @@
     "reviewAndEditPetDescription": "Revisar y editar la descripción de la mascota",
     "placeAPinOnMapToSharePetsLastLocation": "Coloca un pin en el mapa para compartir la última ubicación de la mascota.",
     "reviewAndEditYourContactInfo": "Revisar y editar tu información de contacto.",
-    "hangTightProcessingReport": "Mantente atento — estamos procesando tu informe."
+    "hangTightProcessingReport": "Mantente atento — estamos procesando tu informe.",
+    "selectOrEnterSpecies": "Selecciona o ingresa la especie"
 
 }

@@ -34,7 +34,7 @@
     "genderIsRequired": "Gender is required!",
     "howIsThePetBehaving": "How is the pet behaving?",
     "howOld": "how old?",
-    "howWouldYouDescribeThePet39sSize": "How would you describe the pet&#39;s size?",
+    "howWouldYouDescribeThePetsSize": "How would you describe the pet's size?",
     "iFoundALostPet": "I found a lost pet",
     "injured": "Injured",
     "isPetLost": "Is pet lost?",
@@ -89,7 +89,7 @@
     "valMiles": "{{val}} miles",
     "viewMatches": "View Matches",
     "weAreSearchingForSimilarPetsUsingTheseParameters": "We are searching for similar pets using these parameters",
-    "weWillKeepLookingComeBackSoonAsNewSightingsAreReportedEveryDay": "We will keep looking. Come back soon as new sightings are reported every\n        day.",
+    "weWillKeepLookingComeBackSoonAsNewSightingsAreReportedEveryDay": "We will keep looking. Come back soon as new sightings are reported every day.",
     "whatDidThePetLookLike": "What did the pet look like?",
     "whatDidThePetLookLikeCont": "What did the pet look like? (Cont.)",
     "whenWasThePetLastSeen": "When was the pet last seen?",
@@ -107,5 +107,6 @@
     "reviewAndEditPetDescription": "Review and edit pet description",
     "placeAPinOnMapToSharePetsLastLocation": "Place a pin on map to share pet's last location.",
     "reviewAndEditYourContactInfo": "Review and edit your contact info.",
-    "hangTightProcessingReport": "Hang tight — we are processing your report."
+    "hangTightProcessingReport": "Hang tight — we are processing your report.",
+    "selectOrEnterSpecies": "Select or Enter species"
 }

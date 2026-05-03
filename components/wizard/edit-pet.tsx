@@ -201,7 +201,7 @@ export function EditPet({
             onDismiss={closeMenu}
             anchor={
               <TextInput
-                placeholder="Select species"
+                placeholder={t("selectOrEnterSpecies", "Select or Enter species")}
                 value={selectedSpecies}
                 onPress={openMenu}
                 mode="outlined"

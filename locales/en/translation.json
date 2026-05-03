@@ -10,8 +10,8 @@
   "continueWithGoogle": "Continue with Google",
   "emailAndPasswordAreRequiredPleaseTryAgain": "Email and password are required. Please try again.",
   "invalidEmailAddress": "Invalid email address.",
-  "milesAway": "{{distance}} miles",
-  "feetAway": "{{distance}} feet",
+  "milesAway": "{{distance}} miles away",
+  "feetAway": "{{distance}} feet away",
   "iveSeenThisPet": "I've seen This Pet!",
   "shareSighting": "Share This Sighting",
   "report": "Report",
@@ -75,5 +75,10 @@
     "Ferret": "Ferret",
     "Hedgehog": "Hedgehog",
     "Chinchilla": "Chinchilla"
-  }
+  },
+  "photoLibraryPermissionRequired": "Photo Library Permission Required",
+  "pleaseEnablePhotoLibraryAccess": "Please enable photo library access in your device settings to share a pet photo to help identify pets faster.",
+  "openSettings": "Open Settings",
+  "cameraPermissionRequired": "Camera Permission Required",
+  "pleaseEnableCameraAccess": "Please enable camera access in your device settings to take a pet photo to help identify pets faster."
 }

@@ -60,9 +60,10 @@ export const pickImage = async (
 };
 
 export const takePhoto = async (
+  t: TFunction,
   setPhoto?: React.Dispatch<React.SetStateAction<string>>,
 ): Promise<ImagePicker.ImagePickerAsset | null> => {
-  await requestCameraPermission();
+  await requestCameraPermission(t);
 
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images", "livePhotos"],
@@ -96,7 +97,7 @@ const checkMediaLibraryPermission = async () => {
   return status === "granted";
 };
 
-export const requestCameraPermission = async () => {
+export const requestCameraPermission = async (t: TFunction) => {
   const existingStatus = await checkCameraPermission();
   if (existingStatus) {
     return true;
@@ -106,11 +107,20 @@ export const requestCameraPermission = async () => {
 
   if (status === "denied") {
     Alert.alert(
-      "Camera Permission Required",
-      "Please enable camera access in your device settings to take a pet photo to help identify pets faster.",
+      t("cameraPermissionRequired", "Camera Permission Required", {
+        ns: "translation",
+      }),
+      t(
+        "pleaseEnableCameraAccess",
+        "Please enable camera access in your device settings to take a pet photo to help identify pets faster.",
+        { ns: "translation" },
+      ),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
+        { text: t("cancel", "Cancel", { ns: "translation" }), style: "cancel" },
+        {
+          text: t("openSettings", "Open Settings", { ns: "translation" }),
+          onPress: () => Linking.openSettings(),
+        },
       ],
     );
     return false;
@@ -130,15 +140,18 @@ export const requestMediaLibraryPermission = async (t: TFunction) => {
 
   if (status === "denied") {
     Alert.alert(
-      t("photoLibraryPermissionRequired", "Photo Library Permission Required"),
+      t("photoLibraryPermissionRequired", "Photo Library Permission Required", {
+        ns: "translation",
+      }),
       t(
         "pleaseEnablePhotoLibraryAccess",
         "Please enable photo library access in your device settings to share a pet photo to help identify pets faster.",
+        { ns: "translation" },
       ),
       [
-        { text: t("cancel", "Cancel"), style: "cancel" },
+        { text: t("cancel", "Cancel", { ns: "translation" }), style: "cancel" },
         {
-          text: t("openSettings", "Open Settings"),
+          text: t("openSettings", "Open Settings", { ns: "translation" }),
           onPress: () => Linking.openSettings(),
         },
       ],
@@ -165,7 +178,7 @@ export const uploadOrTakePhoto = async (
       {
         text: t("takePhoto", "Take Photo", { ns: "translation" }),
         onPress: async () => {
-          const result = await takePhoto();
+          const result = await takePhoto(t);
           if (result) {
             callback(result.uri, result.fileName || "", result?.mimeType || "");
           }

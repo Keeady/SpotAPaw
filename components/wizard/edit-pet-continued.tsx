@@ -127,8 +127,8 @@ export function EditPetContinued({
           />
           <Text variant="titleMedium">
             {t(
-              "howWouldYouDescribeThePet39sSize",
-              "How would you describe the pet&#39;s size?",
+              "howWouldYouDescribeThePetsSize",
+              "How would you describe the pet's size?",
             )}
           </Text>
           <RadioButton.Group
