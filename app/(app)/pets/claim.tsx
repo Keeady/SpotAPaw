@@ -42,7 +42,7 @@ export default function ClaimLostPet() {
           log(`getPets: Error fetching pet info for claim: ${errorMessage}`);
 
           showMessage({
-            message: t("errorFetchingAccountInfo", "Error fetching pet info."),
+            message: t("errorFetchingPetInfo", "Error fetching pet info."),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,

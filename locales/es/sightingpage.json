@@ -12,7 +12,7 @@
   "loadingReports": "Cargando informes...",
   "thankYouForHelpingOurFurryFriends": "¡Gracias por ayudar a nuestros amigos peludos!",
   "sightingReportNotFound": "Informe de avistamiento no encontrado.",
-  "errorFetchingAccountInfo": "Error al obtener la información de la cuenta.",
+  "errorFetchingPetInfo": "Error al obtener la información de la mascota.",
   "errorFetchingPetSighting": "Error al obtener la información del avistamiento de la mascota.",
   "successfullySubmittedClaim": "Reclamo enviado con éxito.",
   "errorUpdatingPetSighting": "Error al actualizar el avistamiento de la mascota.",

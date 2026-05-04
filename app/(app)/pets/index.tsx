@@ -25,7 +25,6 @@ export default function PetListScreen() {
           if (data && data.length > 0) {
             setPets(data);
           }
-          setLoading(false);
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
@@ -36,6 +35,8 @@ export default function PetListScreen() {
             icon: "warning",
             statusBarHeight: 50,
           });
+        }).finally(() => {
+          setLoading(false);
         });
     }
   }, [user?.id]);

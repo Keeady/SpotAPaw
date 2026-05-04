@@ -89,5 +89,7 @@
   "noPhoto": "Sin foto",
   "error": "Error",
   "welcome": "¡Bienvenido!",
-  "joinCommunity": "Únete a una comunidad de mascotas y amantes de las mascotas"
+  "joinCommunity": "Únete a una comunidad de mascotas y amantes de las mascotas",
+  "anErrorOccurredPleaseTryAgain": "Ocurrió un error. Por favor, inténtalo de nuevo."
+
 }

@@ -96,7 +96,7 @@ export default function SightingProfile() {
   }, [petId, petName, onPetFound]);
 
   const onShareSighting = useCallback(async () => {
-    handleSharingSighting(sightingId, petName || summary?.name || "");
+    handleSharingSighting(sightingId, petName || summary?.name || "", t);
   }, [sightingId, petName, summary?.name]);
 
   const onFindMatches = useCallback(() => {

@@ -269,7 +269,7 @@ const SettingsContainer = () => {
         setDeletingAccount(false);
         // Clear all local data
         await AsyncStorage.clear();
-        await onDeleteAccount(user.id);
+        await onDeleteAccount(user.id, t);
       }
     } catch (error) {
       const errorMessage = createErrorLogMessage(error);
