@@ -8,12 +8,14 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Text } from "react-native-paper";
 
 export default function SightingAnonList() {
   const router = useRouter();
+  const { height } = useWindowDimensions();
 
   const rendererItem = useCallback(
     ({ item }: { item: AggregatedSighting }) => (
@@ -50,6 +52,7 @@ export default function SightingAnonList() {
           snapToAlignment="start"
           decelerationRate="fast"
           pagingEnabled
+          snapToInterval={height / 3}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.9}
           refreshControl={
