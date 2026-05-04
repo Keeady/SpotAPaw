@@ -9,9 +9,11 @@ import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { showMessage } from "react-native-flash-message";
 
 export default function ClaimLostPet() {
+  const { t } = useTranslation("sightingpage");
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [pets, setPets] = useState<SightingPet[]>([]);
@@ -40,7 +42,7 @@ export default function ClaimLostPet() {
           log(`getPets: Error fetching pet info for claim: ${errorMessage}`);
 
           showMessage({
-            message: "Error fetching pet info.",
+            message: t("errorFetchingPetInfo", "Error fetching pet info."),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,
@@ -68,7 +70,10 @@ export default function ClaimLostPet() {
           `getSighting: Error fetching pet sighting for claim: ${errorMessage}`,
         );
         showMessage({
-          message: "Error fetching pet sighting.",
+          message: t(
+            "errorFetchingPetSighting",
+            "Error fetching pet sighting.",
+          ),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -93,7 +98,10 @@ export default function ClaimLostPet() {
         })
         .then(() => {
           showMessage({
-            message: "Successfully submitted Claim.",
+            message: t(
+              "successfullySubmittedClaim",
+              "Successfully submitted Claim.",
+            ),
             type: "success",
             icon: "success",
             statusBarHeight: 50,
@@ -104,7 +112,10 @@ export default function ClaimLostPet() {
           const errorMessage = createErrorLogMessage(error);
           log(`createClaim: Error submitting claim ${errorMessage}`);
           showMessage({
-            message: "Error updating pet sighting.",
+            message: t(
+              "errorUpdatingPetSighting",
+              "Error updating pet sighting.",
+            ),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,

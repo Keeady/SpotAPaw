@@ -4,6 +4,7 @@ import * as Clipboard from "expo-clipboard";
 import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { TFunction } from "i18next";
 
 export function handleAddingSighting(
   router: Router,
@@ -46,15 +47,25 @@ export function handleAddingSighting(
 export async function handleSharingSighting(
   sightingId: string,
   petName: string,
+  t: TFunction,
 ) {
+  const thisPet = t("thisPet", "this pet", { ns: "sightingpage" });
   const sightingUrl = `https://spotapaw.com/og/sightings/${sightingId}`;
-  const shareMessage = `🐾 Have you seen ${petName || "this pet"}? Help them get home!`;
+  const shareMessage = t(
+    "shareSightingMessage",
+    `🐾 Have you seen ${petName}? Help them get home!`,
+    { ns: "sightingpage", petName: petName || thisPet },
+  );
 
+  const lostPet = t("lostPet", "Lost Pet", { ns: "sightingpage" });
   if (Platform.OS === "web") {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${petName || "Lost Pet"} spotted!`,
+          title: t("sightingSpottedTitle", `${petName || lostPet} spotted!`, {
+            ns: "sightingpage",
+            petName: petName || lostPet,
+          }),
           text: shareMessage,
           url: sightingUrl,
         });
@@ -65,7 +76,9 @@ export async function handleSharingSighting(
       await Clipboard.setStringAsync(sightingUrl)
         .then(() => {
           showMessage({
-            message: "Link copied to clipboard!",
+            message: t("linkCopiedToClipboard", "Link copied to clipboard!", {
+              ns: "sightingpage",
+            }),
             type: "success",
             icon: "success",
             statusBarHeight: 50,
@@ -75,7 +88,11 @@ export async function handleSharingSighting(
           const errorMessage = createErrorLogMessage(error);
           log(`Failed to copy link to clipboard on web: ${errorMessage}`);
           showMessage({
-            message: "Failed to copy link to clipboard.",
+            message: t(
+              "failedToCopyLinkToClipboard",
+              "Failed to copy link to clipboard.",
+              { ns: "sightingpage" },
+            ),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,
@@ -92,7 +109,10 @@ export async function handleSharingSighting(
           ? shareMessage
           : `${shareMessage}\n${sightingUrl}\n`,
       url: sightingUrl,
-      title: `🐾 ${petName || "Lost Pet"} spotted!`,
+      title: t("sightingSpottedTitle", `${petName || lostPet} spotted!`, {
+        ns: "sightingpage",
+        petName: petName || lostPet,
+      }),
     };
 
     await Share.share(shareObj);

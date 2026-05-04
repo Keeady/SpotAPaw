@@ -88,5 +88,7 @@
   "saveChanges": "Save Changes",
   "error": "Error",
   "anErrorOccurredPleaseTryAgain": "An error occurred. Please try again.",
-  "noPhoto": "No photo"
+  "noPhoto": "No photo",
+  "welcome": "Welcome!",
+  "joinCommunity": "Join a community of pets and pet lovers"
 }
