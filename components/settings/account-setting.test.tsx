@@ -110,7 +110,7 @@ describe("AccountSetting Component", () => {
     const mockHandleConfirmationAccountDeletion = jest.fn();
     const mockSetDeleteConfirmationText = jest.fn();
 
-    const { getByText, getByTestId, getByPlaceholderText } = render(
+    const { getByText, getByTestId } = render(
       <TestWrapper>
         <AccountSetting
           {...defaultProps}
@@ -160,7 +160,7 @@ describe("AccountSetting Component", () => {
     const mockHandleConfirmationAccountDeletion = jest.fn();
     const mockSetDeleteConfirmationText = jest.fn();
 
-    const { getByText, getByTestId, getByPlaceholderText } = render(
+    const { getByText, getByTestId } = render(
       <TestWrapper>
         <AccountSetting
           {...defaultProps}
