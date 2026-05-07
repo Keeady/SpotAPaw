@@ -49,10 +49,6 @@ export default function SightingList() {
           ListEmptyComponent={ListEmptyComponent}
           style={{ marginBottom: 20 }}
           showsVerticalScrollIndicator={false}
-          snapToAlignment="start"
-          decelerationRate="fast"
-          pagingEnabled
-          snapToInterval={height / 3}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.9}
           refreshControl={
