@@ -33,6 +33,7 @@ import TermsSetting from "./terms-setting";
 import AccountSetting from "./account-setting";
 import { useLocaleContext } from "../Provider/locale-provider";
 import { useTranslation } from "react-i18next";
+import ProSettings from "./pro-features-setting";
 
 // Define color scheme for icons
 const iconColors = {
@@ -47,6 +48,7 @@ const iconColors = {
   terms: "#607D8B", // Blue Grey
   delete: "#d32f2f", // Red
   information: "#009688", // Teal
+  pro: "#d11fec", // Pink/Magenta
 };
 
 // Available languages
@@ -228,7 +230,7 @@ const SettingsContainer = () => {
 
   const getLocationDisplayText = () => {
     if (locationLoading) {
-      return t("loading", {ns: "translation"});
+      return t("loading", { ns: "translation" });
     }
 
     if (locationPermission) {
@@ -413,6 +415,13 @@ const SettingsContainer = () => {
         )
       }
       versionText={versionText}
+      proFeatureSetting={
+        <ProSettings
+          iconColorPro={iconColors.pro}
+          iconColorAIOn={iconColors.location}
+          iconColorAIOff={iconColors.star}
+        />
+      }
     />
   );
 };

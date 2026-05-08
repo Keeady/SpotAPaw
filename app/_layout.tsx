@@ -21,6 +21,7 @@ import { I18nextProvider } from "react-i18next";
 import { initI18next } from "@/i18n";
 import { LocaleContextProvider } from "@/components/Provider/locale-provider";
 import type { i18n } from "i18next";
+import { ProContextProvider } from "@/components/Provider/pro-context-provider";
 
 export default function Layout() {
   const router = useRouter();
@@ -139,42 +140,44 @@ export default function Layout() {
         <LocaleContextProvider>
           <AuthProvider>
             <PermissionProvider>
-              <AIFeatureContextProvider>
-                <AppLifecycleProvider>
-                  <View style={styles.root}>
-                    <View style={styles.container}>
-                      <Stack
-                        screenOptions={{
-                          contentStyle: styles.content,
-                          headerShown: true,
-                          headerBackVisible: true,
-                          headerBackButtonDisplayMode: "minimal",
-                          headerTitle: HeaderLeft,
-                          headerRight: HeaderRight,
-                        }}
-                      >
-                        <Stack.Screen
-                          name="index"
-                          options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                          name="(app)"
-                          options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                          name="terms"
-                          options={{ headerShown: true }}
-                        />
-                        <Stack.Screen
-                          name="privacy"
-                          options={{ headerShown: true }}
-                        />
-                      </Stack>
-                      <FlashMessage position="top" duration={5000} />
+              <ProContextProvider>
+                <AIFeatureContextProvider>
+                  <AppLifecycleProvider>
+                    <View style={styles.root}>
+                      <View style={styles.container}>
+                        <Stack
+                          screenOptions={{
+                            contentStyle: styles.content,
+                            headerShown: true,
+                            headerBackVisible: true,
+                            headerBackButtonDisplayMode: "minimal",
+                            headerTitle: HeaderLeft,
+                            headerRight: HeaderRight,
+                          }}
+                        >
+                          <Stack.Screen
+                            name="index"
+                            options={{ headerShown: false }}
+                          />
+                          <Stack.Screen
+                            name="(app)"
+                            options={{ headerShown: false }}
+                          />
+                          <Stack.Screen
+                            name="terms"
+                            options={{ headerShown: true }}
+                          />
+                          <Stack.Screen
+                            name="privacy"
+                            options={{ headerShown: true }}
+                          />
+                        </Stack>
+                        <FlashMessage position="top" duration={5000} />
+                      </View>
                     </View>
-                  </View>
-                </AppLifecycleProvider>
-              </AIFeatureContextProvider>
+                  </AppLifecycleProvider>
+                </AIFeatureContextProvider>
+              </ProContextProvider>
             </PermissionProvider>
           </AuthProvider>
         </LocaleContextProvider>
