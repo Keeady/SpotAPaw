@@ -21,5 +21,6 @@
   "lostPet": "Mascota perdida",
   "sightingSpottedTitle": "¡{{petName}} avistado!",
   "linkCopiedToClipboard": "¡Enlace copiado al portapapeles!",
-  "failedToCopyLinkToClipboard": "No se pudo copiar el enlace al portapapeles."
+  "failedToCopyLinkToClipboard": "No se pudo copiar el enlace al portapapeles.",
+  "nosightings": "No hay avistamientos de mascotas para mostrar en tu área"
 }

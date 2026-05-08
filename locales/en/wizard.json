@@ -107,5 +107,6 @@
     "placeAPinOnMapToSharePetsLastLocation": "Place a pin on map to share pet's last location.",
     "reviewAndEditYourContactInfo": "Review and edit your contact info.",
     "hangTightProcessingReport": "Hang tight — we are processing your report.",
-    "selectOrEnterSpecies": "Select or Enter species"
+    "selectOrEnterSpecies": "Select or Enter species",
+    "noPetsFound": "No pets found."
 }

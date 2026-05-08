@@ -1,7 +1,12 @@
 import { useRouter } from "expo-router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, HelperText } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  HelperText,
+  Text,
+} from "react-native-paper";
 import { AuthContext } from "../Provider/auth-provider";
 import { PetSelection } from "../sightings/pet-selection";
 import { WizardHeader } from "./wizard-header";
@@ -103,7 +108,10 @@ export function ChoosePet({
     <View style={styles.container}>
       <WizardHeader
         title={t("selectAPetProfile", "Select a pet profile")}
-        subTitle={t("sorryToHearYourPetIsMissing", "Sorry to hear your pet is missing. Let's bring them back!")}
+        subTitle={t(
+          "sorryToHearYourPetIsMissing",
+          "Sorry to hear your pet is missing. Let's bring them back!",
+        )}
       />
       <ScrollView
         style={{ flex: 1 }}
@@ -133,11 +141,18 @@ export function ChoosePet({
             {t("pleaseSelectAPet", "Please select a pet!")}
           </HelperText>
         )}
-        <PetSelection
-          selectedPetId={selectedPetId || sightingFormData.id}
-          setSelectedPetId={setSelectedPetId}
-          pets={pets}
-        />
+        {user && !pets.length && !loading && (
+          <View style={{ flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+            <Text>{t("noPetsFound", "No pets found.")}</Text>
+          </View>
+        )}
+        {pets && (
+          <PetSelection
+            selectedPetId={selectedPetId || sightingFormData.id}
+            setSelectedPetId={setSelectedPetId}
+            pets={pets}
+          />
+        )}
       </ScrollView>
     </View>
   );

@@ -107,5 +107,6 @@
     "placeAPinOnMapToSharePetsLastLocation": "Coloca un pin en el mapa para compartir la última ubicación de la mascota.",
     "reviewAndEditYourContactInfo": "Revisar y editar tu información de contacto.",
     "hangTightProcessingReport": "Mantente atento — estamos procesando tu informe.",
-    "selectOrEnterSpecies": "Selecciona o ingresa la especie"
+    "selectOrEnterSpecies": "Selecciona o ingresa la especie",
+    "noPetsFound": "No se encontraron mascotas."
 }

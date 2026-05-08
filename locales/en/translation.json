@@ -90,5 +90,9 @@
   "anErrorOccurredPleaseTryAgain": "An error occurred. Please try again.",
   "noPhoto": "No photo",
   "welcome": "Welcome!",
-  "joinCommunity": "Join a community of pets and pet lovers"
+  "joinCommunity": "Join a community of pets and pet lovers",
+  "mySightings": "Sightings",
+  "myPets": "My Pets",
+  "myProfile": "My Profile",
+  "mySettings": "Settings"
 }

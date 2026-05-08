@@ -8,13 +8,13 @@ const AboutSection = ({
   onPress: () => void;
   iconColorInformation: string;
 }) => {
-  const { t } = useTranslation("settings");
+  const { t } = useTranslation(["settings", "translation"]);
 
   return (
     <List.Section>
       <List.Subheader>{t("about")}</List.Subheader>
       <List.Item
-        title={t("aboutSpotapaw")}
+        title={t("aboutSpotapaw", { ns: "translation" })}
         description={t("learnMoreAboutTheApp", { ns: "settings" })}
         left={(props) => (
           <List.Icon
