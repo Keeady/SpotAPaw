@@ -10,6 +10,7 @@ import { AuthContext } from "../Provider/auth-provider";
 import { isValidUuid } from "../util";
 import { validate } from "./util";
 import { WizardForm } from "./wizard-form";
+import { ProContext } from "../Provider/pro-context-provider";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
@@ -208,6 +209,8 @@ const mockPetRepository = PetRepository as jest.MockedClass<
 const mockValidate = validate as jest.MockedFunction<typeof validate>;
 const mockIsValidUuid = isValidUuid as jest.MockedFunction<typeof isValidUuid>;
 
+let mockAiPhotoAnalysisAllowed = true;
+
 describe("WizardForm", () => {
   const mockRouter = {
     replace: jest.fn(),
@@ -279,7 +282,9 @@ describe("WizardForm", () => {
   const renderWizardForm = (action = "new-sighting") => {
     return render(
       <AuthContext.Provider value={mockAuthContext}>
-        <WizardForm action={action as any} />
+        <ProContext.Provider value={{ aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed }}>
+          <WizardForm action={action as any} />
+        </ProContext.Provider>
       </AuthContext.Provider>,
     );
   };

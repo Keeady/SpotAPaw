@@ -5,7 +5,7 @@
     "defaultDistance": "Default Distance",
     "defaultdistancevalueKmRadius": "{{defaultDistanceValue}} km radius",
     "deleteAccount": "Delete Account",
-    "enableImageAnalysisForPetIdentification": "Enable image analysis for pet identification and matching",
+    "enableImageAnalysisForPetIdentification": "Enable image analysis for pet identification and matching. Your photos are not used for model training.",
     "failedToDeleteAccountPleaseTryAgainOrContactSupport": "Failed to delete account. Please try again or contact support.",
     "getNotifiedAboutUpdatesAndEvents": "Get notified about updates and events",
     "learnHowWeHandleYourData": "Learn how we handle your data",
@@ -33,5 +33,10 @@
     "disabled": "Disabled",
     "language": "Language",
     "pleaseTypeDeleteToConfirm": "Please type DELETE to confirm",
-    "delete": "delete"
+    "delete": "delete",
+    "proFeatures": "PRO Features",
+    "aiPhotoAnalysis": "Unlimited AI Photo Analysis",
+    "aiPhotoAnalysisDescription": "Unlock unlimited AI photo analysis for pet identification. Free for 1 pet profile.",
+    "expandedSearchDescription": "Our default search radius is 5 miles for everyone, up to 25 miles for Pro users.",
+    "expandedSearch": "Expanded Search Radius"
 }

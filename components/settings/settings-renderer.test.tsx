@@ -42,6 +42,7 @@ describe("SettingsRenderer Component", () => {
     privacySetting: <MockComponent testId="privacy-setting" />,
     termsSetting: <MockComponent testId="terms-setting" />,
     accountSetting: <MockComponent testId="account-setting" />,
+    proFeatureSetting: <MockComponent testId="pro-settings" />,
   };
 
   const defaultProps = {
@@ -70,6 +71,7 @@ describe("SettingsRenderer Component", () => {
     expect(getByTestId("location-permission")).toBeTruthy();
     expect(getByTestId("current-location")).toBeTruthy();
     expect(getByTestId("location-reset")).toBeTruthy();
+    expect(getByTestId("pro-settings")).toBeTruthy();
     expect(getByTestId("notification-setting")).toBeTruthy();
     expect(getByTestId("ai-setting")).toBeTruthy();
     expect(getByTestId("language-setting")).toBeTruthy();
@@ -145,6 +147,7 @@ describe("SettingsRenderer Component", () => {
     expect(getByTestId("ai-setting")).toBeTruthy();
     expect(getByTestId("language-setting")).toBeTruthy();
     expect(getByTestId("distance-setting")).toBeTruthy();
+    expect(getByTestId("notification-setting")).toBeTruthy();
   });
 
   it("renders legal section components in correct order", () => {
@@ -286,6 +289,7 @@ describe("SettingsRenderer Component", () => {
       termsSetting: <Text>Terms</Text>,
       accountSetting: <Text>Account</Text>,
       versionText: "test-version",
+      proFeatureSetting: <Text>Pro Settings</Text>,
     };
 
     const { getByText } = render(

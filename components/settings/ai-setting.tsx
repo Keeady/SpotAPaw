@@ -15,6 +15,7 @@ const AISetting = ({
     <List.Item
       title={t("aiImageAnalysis")}
       description={t("enableImageAnalysisForPetIdentification")}
+      descriptionNumberOfLines={5}
       left={(props) => (
         <List.Icon {...props} icon="creation-outline" color={iconColorAI} />
       )}

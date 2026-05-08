@@ -16,6 +16,7 @@ type SettingsRendererProps = {
   termsSetting: React.ReactNode;
   accountSetting: React.ReactNode;
   versionText: string;
+  proFeatureSetting: React.ReactNode;
 };
 
 const SettingsRenderer = ({
@@ -31,6 +32,7 @@ const SettingsRenderer = ({
   termsSetting,
   accountSetting,
   versionText,
+  proFeatureSetting,
 }: SettingsRendererProps) => {
   const { t } = useTranslation(["settings", "translation"]);
   return (
@@ -49,16 +51,17 @@ const SettingsRenderer = ({
         </List.Section>
         <Divider />
 
-        {/* Notifications Section (Future Feature) */}
-        {notificationSetting}
+        {/* Pro Features Section (Future Feature) */}
+        {proFeatureSetting}
         <Divider />
-
+        
         {/* Preferences Section (Future Feature) */}
         <List.Section>
           <List.Subheader>{t("preferences")}</List.Subheader>
           {aiSetting}
           {languageSetting}
           {distanceSetting}
+          {notificationSetting}
         </List.Section>
 
         <Divider />

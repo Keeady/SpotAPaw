@@ -6,6 +6,7 @@ import { AuthContext } from "../Provider/auth-provider";
 import { PermissionContext } from "../Provider/permission-provider";
 import { AIFeatureContext } from "../Provider/ai-context-provider";
 import { LocaleContext } from "../Provider/locale-provider";
+import { ProContext } from "../Provider/pro-context-provider";
 
 const fakeUser = { id: "test-user-id" };
 
@@ -70,6 +71,25 @@ jest.mock("../Provider/ai-context-provider", () => {
   return {
     AIFeatureContext,
     useAIFeatureContext,
+  };
+});
+
+let mockProUser = true;
+let mockAiPhotoAnalysisAllowed = true;
+jest.mock("../Provider/pro-context-provider", () => {
+  const React = require("react");
+  const useProContext = () => ({
+    isProUser: mockProUser,
+    aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
+  });
+  const ProContext = React.createContext({
+    isProUser: mockProUser,
+    aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
+  });
+
+  return {
+    ProContext,
+    useProContext,
   };
 });
 
@@ -140,9 +160,16 @@ const TestWrapper = ({
         }}
       >
         <AIFeatureContext.Provider value={{ isAiFeatureEnabled: true }}>
-          <PaperProvider settings={{ icon: MockIcon }}>
-            {children}
-          </PaperProvider>
+          <ProContext.Provider
+            value={{
+              isProUser: mockProUser,
+              aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
+            }}
+          >
+            <PaperProvider settings={{ icon: MockIcon }}>
+              {children}
+            </PaperProvider>
+          </ProContext.Provider>
         </AIFeatureContext.Provider>
       </LocaleContext.Provider>
     </PermissionContext.Provider>
@@ -180,6 +207,12 @@ describe("SettingsContainer Component", () => {
     expect(getByText("request")).toBeTruthy();
     expect(getByText("currentLocation")).toBeTruthy();
     expect(getByText("loading")).toBeTruthy();
+
+    expect(getByText("proFeatures")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysis")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysisDescription")).toBeTruthy();
+    expect(getByText("expandedSearch")).toBeTruthy();
+    expect(getByText("expandedSearchDescription")).toBeTruthy();
 
     expect(getByText("notifications")).toBeTruthy();
     expect(getByText("pushNotifications")).toBeTruthy();
@@ -246,9 +279,7 @@ describe("SettingsContainer Component", () => {
     const continueButton = getByText("continue");
     fireEvent.press(continueButton);
     expect(await findByText("confirmAccountDeletion")).toBeTruthy();
-    expect(
-      await findByTestId("confirm-delete-input-label"),
-    ).toBeTruthy();
+    expect(await findByTestId("confirm-delete-input-label")).toBeTruthy();
     expect(
       await findByTestId("confirm-delete-input-label-delete"),
     ).toBeTruthy();
@@ -451,5 +482,28 @@ describe("SettingsContainer Component", () => {
     fireEvent.press(spanishOption);
     expect(await findByText("language")).toBeTruthy();
     expect(getByText("Spanish (Español)")).toBeTruthy();
+  });
+
+  it("renders correctly when user is not pro and AI photo analysis is not allowed", async () => {
+    mockProUser = false;
+    mockAiPhotoAnalysisAllowed = false;
+
+    const { getByText, findByText } = render(
+      <TestWrapper user={fakeUser}>
+        <SettingsContainer />
+      </TestWrapper>,
+    );
+
+    expect(getByText("proFeatures")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysis")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysisDescription")).toBeTruthy();
+    expect(getByText("expandedSearch")).toBeTruthy();
+    expect(getByText("expandedSearchDescription")).toBeTruthy();
+
+    expect(await findByText("proFeatures")).toBeTruthy();
+    expect(await findByText("aiPhotoAnalysis")).toBeTruthy();
+    expect(await findByText("aiPhotoAnalysisDescription")).toBeTruthy();
+    expect(await findByText("expandedSearch")).toBeTruthy();
+    expect(await findByText("expandedSearchDescription")).toBeTruthy();
   });
 });

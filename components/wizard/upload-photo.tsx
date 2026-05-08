@@ -14,6 +14,7 @@ import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetImage, SightingWizardStepData } from "./wizard-interface";
 import { useTranslation } from "react-i18next";
+import { useProContext } from "../Provider/pro-context-provider";
 
 export function UploadPhoto({
   updateSightingData,
@@ -30,6 +31,7 @@ export function UploadPhoto({
   const settingsRoute = user ? "/(app)/my-settings" : "/settings";
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [hasErrors, setHasErrors] = useState(false);
+  const { aiPhotoAnalysisAllowed } = useProContext();
 
   useEffect(() => {
     if (!isValidData) {
@@ -80,7 +82,7 @@ export function UploadPhoto({
                 alignItems: "center",
               }}
             >
-              {isAiFeatureEnabled && loading && (
+              {isAiFeatureEnabled && aiPhotoAnalysisAllowed && loading && (
                 <>
                   <ActivityIndicator size="small" color="#1976d2" />
                   <Text variant="labelMedium">
@@ -92,28 +94,30 @@ export function UploadPhoto({
 
             <HelperText
               type="error"
-              visible={(hasErrors && !photo && !image.uri) || !!errorMessage}
+              visible={(hasErrors && !photo && !image?.uri) || !!errorMessage}
               style={styles.helperText}
               padding="none"
             >
               {!!errorMessage
                 ? errorMessage
-                : hasErrors && !photo && !image.uri
+                : hasErrors && !photo && !image?.uri
                   ? t("pleaseAddAPhoto", "Please add a photo!")
                   : ""}
             </HelperText>
           </View>
-          {sightingFormData.image.uri ? (
+          {sightingFormData.image?.uri ? (
             <Image
               source={{ uri: sightingFormData.image.uri }}
               style={styles.preview}
               resizeMode="contain"
+              testID="imageUri"
             />
           ) : sightingFormData.photo ? (
             <Image
               source={{ uri: sightingFormData.photo }}
               style={styles.preview}
               resizeMode="contain"
+              testID="photoUri"
             />
           ) : (
             <View style={styles.emptyPreview}>
@@ -126,8 +130,9 @@ export function UploadPhoto({
             mode="contained"
             onPress={() => uploadOrTakePhoto(onAddPhoto, t)}
             style={{ marginVertical: 10 }}
+            testID="addPhotoBtn"
           >
-            {sightingFormData.image.uri || sightingFormData.photo
+            {sightingFormData.image?.uri || sightingFormData.photo
               ? t("changePhoto", "Change Photo")
               : t("uploadPhoto", "Upload Photo")}
           </Button>
@@ -145,7 +150,9 @@ export function UploadPhoto({
 
             <Button mode="text" onPress={() => router.navigate(settingsRoute)}>
               {isAiFeatureEnabled
-                ? t("aiSettings", "AI Settings")
+                ? aiPhotoAnalysisAllowed
+                  ? t("aiSettings", "AI Settings")
+                  : t("purchasePro", "Purchase PRO")
                 : t("turnAiOn", "Turn AI On")}
             </Button>
           </View>

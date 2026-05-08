@@ -51,6 +51,7 @@ import {
 import { PetRepository } from "@/db/repositories/pet-repository";
 import ShowProgress from "./show-progress";
 import { useTranslation } from "react-i18next";
+import { useProContext } from "../Provider/pro-context-provider";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const { t } = useTranslation(["wizard", "translation"]);
@@ -87,6 +88,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     is_lost: string;
     linkedSightingId: string;
   }>();
+
+  const { aiPhotoAnalysisAllowed } = useProContext();
 
   const updateSightingData = useCallback(
     (
@@ -218,6 +221,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("photo", pet.photo);
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
+
+          if (pet.petDescriptionId) {
+            updateSightingData("petDescriptionId", pet.petDescriptionId);
+          }
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
@@ -251,7 +258,12 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   const processResponse = async () => {
     switch (currentStep) {
       case "upload_photo":
-        if (sightingFormData.image.uri && isAiFeatureEnabled && !aiGenerated) {
+        if (
+          sightingFormData.image.uri &&
+          isAiFeatureEnabled &&
+          !aiGenerated &&
+          aiPhotoAnalysisAllowed
+        ) {
           return analyze(
             sightingFormData.image.uri,
             sightingFormData.image.filename,
@@ -261,7 +273,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
         return Promise.resolve();
       case "submit":
-        if (isAiFeatureEnabled) {
+        if (isAiFeatureEnabled && aiPhotoAnalysisAllowed) {
           if (action === "new-sighting") {
             return saveNewSighting("", sightingFormData);
           } else if (action === "edit-sighting") {
@@ -759,7 +771,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   ) => {
     if (action === "add-pet") {
       return currentStep === "submit"
-        ? t("addPet", "Add Pet", {ns: "translation"})
+        ? t("addPet", "Add Pet", { ns: "translation" })
         : t("continue", "Continue");
     } else if (action === "edit-pet") {
       return currentStep === "submit"
