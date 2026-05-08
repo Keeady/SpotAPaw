@@ -37,5 +37,6 @@
     "proFeatures": "PRO Features",
     "aiPhotoAnalysis": "Unlimited AI Photo Analysis",
     "aiPhotoAnalysisDescription": "Unlock unlimited AI photo analysis for pet identification. Free for 1 pet profile.",
-    "expandedSearchDescription": "Our default search radius is 5 miles for everyone, up to 25 miles for Pro users."
+    "expandedSearchDescription": "Our default search radius is 5 miles for everyone, up to 25 miles for Pro users.",
+    "expandedSearch": "Expanded Search Radius"
 }

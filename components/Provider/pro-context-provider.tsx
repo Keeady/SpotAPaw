@@ -36,7 +36,7 @@ const ProContextProvider = (props: Props) => {
       repository.getPets(user.id).then((pets) => {
         if (pets.length > 0) {
           const usedAiFeature = pets.some(
-            (pet) => pet.petDescriptionId !== null,
+            (pet) => !!pet.petDescriptionId,
           );
           setAiPhotoAnalysisAllowed(!usedAiFeature);
         } else {
