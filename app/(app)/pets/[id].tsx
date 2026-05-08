@@ -45,7 +45,7 @@ export default function PetProfile() {
         const errorMessage = createErrorLogMessage(error);
         log(`getPet: Error fetching pet profile ${errorMessage}`);
         showMessage({
-          message: t("errorFetchingPetProfile", "Error fetch pet profile."),
+          message: t("errorFetchingPetProfile", "Error fetching pet profile."),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,

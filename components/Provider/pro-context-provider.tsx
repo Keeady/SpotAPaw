@@ -33,16 +33,21 @@ const ProContextProvider = (props: Props) => {
 
     if (user?.id) {
       const repository = new PetRepository();
-      repository.getPets(user.id).then((pets) => {
-        if (pets.length > 0) {
-          const usedAiFeature = pets.some(
-            (pet) => !!pet.petDescriptionId,
-          );
-          setAiPhotoAnalysisAllowed(!usedAiFeature);
-        } else {
+      repository
+        .getPets(user.id)
+        .then((pets) => {
+          if (pets.length > 0) {
+            const usedAiFeature = pets.some((pet) => !!pet.petDescriptionId);
+            setAiPhotoAnalysisAllowed(!usedAiFeature);
+          } else {
+            setAiPhotoAnalysisAllowed(true);
+          }
+        })
+        .catch(() => {
           setAiPhotoAnalysisAllowed(true);
-        }
-      });
+        });
+    } else {
+      setAiPhotoAnalysisAllowed(true);
     }
   }, [isProUser, user?.id]);
 

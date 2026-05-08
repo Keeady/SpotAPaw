@@ -79,7 +79,7 @@ describe("ProContextProvider", () => {
     });
   });
 
-  it("disallows AI photo analysis if no user is logged in", async () => {
+  it("allows AI photo analysis if no user is logged in", async () => {
     let contextValue: any;
     const TestComponent = () => {
       contextValue = useContext(ProContext);
@@ -98,7 +98,7 @@ describe("ProContextProvider", () => {
     await waitFor(() => {
       expect(contextValue).toBeDefined();
       expect(contextValue.isProUser).toBe(false);
-      expect(contextValue.aiPhotoAnalysisAllowed).toBe(false);
+      expect(contextValue.aiPhotoAnalysisAllowed).toBe(true);
     });
 
     expect(mockGetPets).not.toHaveBeenCalled();

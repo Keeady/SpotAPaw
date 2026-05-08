@@ -56,7 +56,7 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
         </Text>
         <Text style={{ fontSize: 16, color: "#555", marginTop: 2 }}>
           {pet.age
-            ? t("ageWithCount", "{{age}} years old", {
+            ? t("ageWithCount", `${pet.age} years old`, {
                 count: pet.age,
                 ns: "translation",
               })
