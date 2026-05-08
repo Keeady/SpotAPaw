@@ -126,7 +126,7 @@ describe("ShowProgress", () => {
       "sighting123",
       40.785091,
       -73.968285,
-      5,
+      8.05,
     );
 
     expect(await findByText("View Matches")).not.toBeDisabled();
@@ -221,7 +221,7 @@ describe("ShowProgress", () => {
       "sighting123",
       40.785091,
       -73.968285,
-      5,
+      8.05,
     );
 
     expect(await findByText("View Matches")).not.toBeDisabled();

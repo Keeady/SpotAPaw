@@ -22,7 +22,7 @@ export function ChoosePet({
   sightingFormData,
   isValidData,
 }: SightingWizardStepData) {
-  const { t } = useTranslation("wizard");
+  const { t } = useTranslation(["wizard", "petprofile"]);
   const { user } = useContext(AuthContext);
   const router = useRouter();
   const [pets, setPets] = useState<SightingPet[]>([]);
@@ -142,8 +142,15 @@ export function ChoosePet({
           </HelperText>
         )}
         {user && !pets.length && !loading && (
-          <View style={{ flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+          <View style={styles.noPetContainer}>
             <Text>{t("noPetsFound", "No pets found.")}</Text>
+            <Button
+              mode="contained"
+              onPress={() => router.navigate("/(app)/pets/new")}
+              style={{ marginTop: 16 }}
+            >
+              {t("addANewPet", "Add a new pet", { ns: "petprofile" })}
+            </Button>
           </View>
         )}
         {pets && (
@@ -175,5 +182,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderRadius: 12,
+  },
+  noPetContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
