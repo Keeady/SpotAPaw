@@ -35,7 +35,7 @@ const LocationResetSetting = ({
         )}
         right={() => (
           <Button
-            mode="outlined"
+            mode="text"
             compact
             onPress={() => setResetLocationDialogVisible(true)}
             testID="reset-button"

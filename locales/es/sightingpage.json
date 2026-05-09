@@ -22,5 +22,9 @@
   "sightingSpottedTitle": "¡{{petName}} avistado!",
   "linkCopiedToClipboard": "¡Enlace copiado al portapapeles!",
   "failedToCopyLinkToClipboard": "No se pudo copiar el enlace al portapapeles.",
-  "nosightings": "No hay avistamientos de mascotas para mostrar en tu área"
+  "nosightings": "No hay avistamientos de mascotas para mostrar en tu área",
+  "setYourLocation": "Establece tu ubicación",
+  "toShowYouNearby": "Para mostrarte los avistamientos de mascotas cercanos, necesitamos conocer tu ubicación.",
+  "useMyCurrentLocation": "Usar mi ubicación actual",
+  "chooseLocationManually": "Elegir ubicación manualmente"
 }

@@ -22,5 +22,9 @@
   "sightingSpottedTitle": "{{petName}} spotted!",
   "linkCopiedToClipboard": "Link copied to clipboard!",
   "failedToCopyLinkToClipboard": "Failed to copy link to clipboard.",
-  "nosightings": "No pet sightings to display in your area"
+  "nosightings": "No pet sightings to display in your area",
+  "setYourLocation": "Set Your Location",
+  "toShowYouNearby": "To show you nearby pet sightings, we need to know your location.",
+  "useMyCurrentLocation": "Use My Current Location",
+  "chooseLocationManually": "Choose Location Manually"
 }

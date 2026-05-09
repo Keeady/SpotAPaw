@@ -5,8 +5,10 @@ import DropPinOnMap from "../map-util";
 import { SightingLocation } from "../get-current-location";
 import DividerWithText from "../divider-with-text";
 import { PermissionContext } from "../Provider/permission-provider";
+import { useTranslation } from "react-i18next";
 
 export const SightingLocationManager = () => {
+  const { t } = useTranslation("sightingpage");
   const { saveLocation, setLocation, refreshPermission } =
     useContext(PermissionContext);
 
@@ -28,24 +30,27 @@ export const SightingLocationManager = () => {
     >
       <View>
         <Text variant="titleLarge" style={styles.promptTitle}>
-          Set Your Location
+          {t("setYourLocation", "Set Your Location")}
         </Text>
         <View style={styles.mapContainer}>
           <Text variant="labelLarge" style={styles.infoText}>
-            To show you nearby pet sightings, we need to know your location.
+            {t(
+              "toShowYouNearby",
+              "To show you nearby pet sightings, we need to know your location.",
+            )}
           </Text>
           <Button
             mode="contained"
             onPress={() => refreshPermission?.()}
             icon={"crosshairs-gps"}
           >
-            Use My Current Location
+            {t("useMyCurrentLocation", "Use My Current Location")}
           </Button>
         </View>
         <DividerWithText text="or"></DividerWithText>
         <View style={styles.mapContainer}>
           <Text variant="labelLarge" style={styles.infoText}>
-            Choose Location Manually
+            {t("chooseLocationManually", "Choose Location Manually")}
           </Text>
           <DropPinOnMap handleActionButton={onNewLocationSelected} />
         </View>

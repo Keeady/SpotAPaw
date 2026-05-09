@@ -108,13 +108,21 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
               <Text variant="labelLarge">{t("lastSeen")}</Text>
             </View>
             <View
-              style={{ flexDirection: "row", justifyContent: "space-around" }}
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                paddingHorizontal: 20,
+                paddingVertical: 5,
+                gap: 8,
+                justifyContent: "space-between",
+              }}
             >
               <View
                 style={{
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 2,
+                  flexWrap: "wrap",
                 }}
               >
                 <Icon
@@ -122,7 +130,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                   size={25}
                   color={theme.colors.primary}
                 />
-                <Text variant="bodyLarge" style={styles.title}>
+                <Text variant="bodyLarge">
                   {getLastSeenTimeDistance(pet.lastSeenTime, preferredLanguage)}
                 </Text>
               </View>
@@ -132,6 +140,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 2,
+                  flexWrap: "wrap",
                 }}
               >
                 <Icon
@@ -139,7 +148,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                   size={25}
                   color={theme.colors.primary}
                 />
-                <Text variant="bodyLarge" style={styles.title}>
+                <Text variant="bodyLarge">
                   {userCurrentLocation
                     ? getLastSeenLocationDistance(
                         userCurrentLocation,
