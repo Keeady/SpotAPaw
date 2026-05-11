@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { WizardHeader } from "./wizard-header";
 import DatePicker from "../date-picker";
 import { SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
 
 export function AddTime({
   updateSightingData,
   sightingFormData,
   isValidData,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const [hasErrors, setHasErrors] = useState(false);
 
   useEffect(() => {
@@ -25,8 +27,8 @@ export function AddTime({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="When was the pet last seen?"
-        subTitle="Select a date and time"
+        title={t("whenWasThePetLastSeen", "When was the pet last seen?")}
+        subTitle={t("selectADateAndTime", "Select a date and time")}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -40,7 +42,10 @@ export function AddTime({
             style={styles.helperText}
             padding="none"
           >
-            Please select a valid date and time!
+            {t(
+              "pleaseSelectAValidDateAndTime",
+              "Please select a valid date and time!",
+            )}
           </HelperText>
           <Text
             variant="bodyLarge"
@@ -50,7 +55,7 @@ export function AddTime({
               marginBottom: 10,
             }}
           >
-            Select a date and time:
+            {t("selectADateAndTime", "Select a date and time:")}
           </Text>
           <DatePicker
             dateLabel="Last Seen Date"
@@ -65,7 +70,9 @@ export function AddTime({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text variant="titleMedium">Additional details:</Text>
+            <Text variant="titleMedium">
+              {t("additionalDetails", "Additional details:")}
+            </Text>
           </View>
           <TextInput
             value={note}

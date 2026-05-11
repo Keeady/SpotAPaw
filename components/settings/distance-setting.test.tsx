@@ -4,9 +4,22 @@ import { Text } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import DistanceSetting from "./distance-setting";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, options: any) => {
+      if (options && options.defaultDistanceValue) {
+        return `${options.defaultDistanceValue} km radius`;
+      } else if (options && options.versionText) {
+        return `Version ${options.versionText}`;
+      }
+      return key;
+    },
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <PaperProvider settings={{icon: MockIcon}}>{children}</PaperProvider>
+  <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
 );
 
 describe("DistanceSetting Component", () => {
@@ -30,7 +43,7 @@ describe("DistanceSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Default Distance")).toBeTruthy();
+    expect(getByText("defaultDistance")).toBeTruthy();
     expect(getByText("10 km radius")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
@@ -57,7 +70,7 @@ describe("DistanceSetting Component", () => {
       </TestWrapper>,
     );
 
-    const listItem = getByText("Default Distance");
+    const listItem = getByText("defaultDistance");
     fireEvent.press(listItem);
 
     expect(defaultProps.onDistancePress).toHaveBeenCalledTimes(1);
@@ -71,7 +84,7 @@ describe("DistanceSetting Component", () => {
     );
 
     // Dialog should not be visible when distanceDialogVisible is false
-    expect(queryByText("Pet Sighting Distance")).toBeNull();
+    expect(queryByText("petSightingDistance")).toBeNull();
   });
 
   it("renders the DistanceSelectionDialog when dialog is visible", async () => {
@@ -87,14 +100,14 @@ describe("DistanceSetting Component", () => {
     );
 
     // Dialog should be visible when distanceDialogVisible is true
-    expect(await findByText("Pet Sighting Distance")).toBeTruthy();
+    expect(await findByText("petSightingDistance")).toBeTruthy();
     expect(await findByText("1 km")).toBeTruthy();
     expect(await findByText("5 km")).toBeTruthy();
     expect(await findByText("10 km")).toBeTruthy();
     expect(await findByText("25 km")).toBeTruthy();
     expect(await findByText("50 km")).toBeTruthy();
     expect(await findByText("100 km")).toBeTruthy();
-    expect(await findByText("Cancel")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
   });
 
   it("calls handleDistanceChange when a radio button is selected in the dialog", () => {
@@ -131,7 +144,7 @@ describe("DistanceSetting Component", () => {
       </TestWrapper>,
     );
 
-    const cancelButton = getByText("Cancel");
+    const cancelButton = getByText("cancel");
     fireEvent.press(cancelButton);
 
     expect(mockOnDistancePress).toHaveBeenCalledTimes(1);

@@ -4,6 +4,12 @@ import { Text } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import LocationResetSetting from "./location-reset-setting";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, options: any) => key,
+  }),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
@@ -30,9 +36,9 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Reset Saved Location")).toBeTruthy();
-    expect(getByText("Remove your manually selected location")).toBeTruthy();
-    expect(getByText("Reset")).toBeTruthy();
+    expect(getByText("resetSavedLocationTitle")).toBeTruthy();
+    expect(getByText("removeYourManuallySelectedLocation")).toBeTruthy();
+    expect(getByText("reset")).toBeTruthy();
     expect(getByText("Icon")).toBeTruthy();
   });
 
@@ -58,7 +64,7 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(queryByText("Reset Saved Location?")).toBeNull();
+    expect(queryByText("resetSavedLocation")).toBeNull();
   });
 
   it("renders confirmation dialog when visible", () => {
@@ -73,13 +79,9 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Reset Saved Location?")).toBeTruthy();
-    expect(
-      getByText(
-        "This will remove your manually selected location. You will need to select a new location from the map or grant location permission.",
-      ),
-    ).toBeTruthy();
-    expect(getByText("Cancel")).toBeTruthy();
+    expect(getByText("resetSavedLocation")).toBeTruthy();
+    expect(getByText("resetSavedLocationMessage")).toBeTruthy();
+    expect(getByText("cancel")).toBeTruthy();
     expect(getByTestId("reset-confirm-button")).toBeTruthy();
   });
 
@@ -97,7 +99,7 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    const cancelButton = getByText("Cancel");
+    const cancelButton = getByText("cancel");
     fireEvent.press(cancelButton);
 
     expect(mockSetResetLocationDialogVisible).toHaveBeenCalledWith(false);
@@ -131,7 +133,7 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(queryByText("Location Reset")).toBeNull();
+    expect(queryByText("locationReset")).toBeNull();
   });
 
   it("renders success dialog when visible", () => {
@@ -146,13 +148,9 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByText("Location Reset")).toBeTruthy();
-    expect(
-      getByText(
-        "Your saved location has been removed. You can select a new location from the map.",
-      ),
-    ).toBeTruthy();
-    expect(getByText("OK")).toBeTruthy();
+    expect(getByText("locationReset")).toBeTruthy();
+    expect(getByText("locationResetMessage")).toBeTruthy();
+    expect(getByText("ok")).toBeTruthy();
   });
 
   it("calls setLocationResetSuccessDialogVisible when OK button is pressed in success dialog", () => {
@@ -170,7 +168,7 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    const okButton = getByText("OK");
+    const okButton = getByText("ok");
     fireEvent.press(okButton);
 
     expect(mockSetLocationResetSuccessDialogVisible).toHaveBeenCalledWith(
@@ -190,7 +188,7 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByTextConfirmation("Reset Saved Location?")).toBeTruthy();
+    expect(getByTextConfirmation("resetSavedLocation")).toBeTruthy();
 
     unmount();
 
@@ -205,7 +203,7 @@ describe("LocationResetSetting Component", () => {
       </TestWrapper>,
     );
 
-    expect(getByTextSuccess("Location Reset")).toBeTruthy();
+    expect(getByTextSuccess("locationReset")).toBeTruthy();
   });
 
   it("handles dialog visibility states correctly", () => {
@@ -250,15 +248,15 @@ describe("LocationResetSetting Component", () => {
         );
 
         if (shouldShowReset) {
-          expect(queryByText("Reset Saved Location?")).toBeTruthy();
+          expect(queryByText("resetSavedLocation")).toBeTruthy();
         } else {
-          expect(queryByText("Reset Saved Location?")).toBeNull();
+          expect(queryByText("resetSavedLocation")).toBeNull();
         }
 
         if (shouldShowSuccess) {
-          expect(queryByText("Location Reset")).toBeTruthy();
+          expect(queryByText("locationReset")).toBeTruthy();
         } else {
-          expect(queryByText("Location Reset")).toBeNull();
+          expect(queryByText("locationReset")).toBeNull();
         }
 
         unmount();

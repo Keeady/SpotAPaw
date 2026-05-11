@@ -7,6 +7,7 @@ import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { useTranslation } from "react-i18next";
 
 export default function OneTimePasscodeScreen() {
   const theme = useTheme();
@@ -21,6 +22,8 @@ export default function OneTimePasscodeScreen() {
 
   const debounceTimer = useRef<number>(null);
 
+  const { t } = useTranslation(["auth", "translation"]);
+
   async function resetWithEmail() {
     if (extra_info.trim()) {
       return;
@@ -28,7 +31,9 @@ export default function OneTimePasscodeScreen() {
 
     if (!email) {
       showMessage({
-        message: "Email is required. Please try again.",
+        message: t("emailRequired", "Email is required. Please try again.", {
+          ns: "auth",
+        }),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -48,7 +53,11 @@ export default function OneTimePasscodeScreen() {
       .signInWithOtp(email)
       .then(() => {
         showMessage({
-          message: "Please check your email for a verification code.",
+          message: t(
+            "checkEmailForVerificationCode",
+            "Please check your email for a verification code.",
+            { ns: "auth" },
+          ),
           type: "success",
           icon: "success",
           autoHide: true,
@@ -60,7 +69,11 @@ export default function OneTimePasscodeScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to send OTP to email: ${errorMessage}`);
         showMessage({
-          message: "Failed to send verification code. Please try again.",
+          message: t(
+            "failedToSendVerificationCode",
+            "Failed to send verification code. Please try again.",
+            { ns: "auth" },
+          ),
           type: "warning",
           icon: "warning",
           autoHide: true,
@@ -87,7 +100,9 @@ export default function OneTimePasscodeScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to verify OTP for email: ${errorMessage}`);
         showMessage({
-          message: "Invalid code. Please try again.",
+          message: t("invalidCode", "Invalid code. Please try again.", {
+            ns: "auth",
+          }),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -122,24 +137,34 @@ export default function OneTimePasscodeScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome Back!</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcomeBack", "Welcome Back!", { ns: "translation" })}
+        </Text>
         <Text style={styles.headerSubtitle}>
-          Help find and protect our furry friends
+          {t(
+            "helpFindAndProtectOurFurryFriends",
+            "Help find and protect our furry friends",
+            { ns: "translation" },
+          )}
         </Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.buttonContainer}>
           <Text variant="titleMedium" style={styles.largeText}>
-            Login with a one time passcode.
+            {t("loginWithOneTimePasscode", "Login with a one time passcode.")}
           </Text>
           {!showCodeVerification && (
             <View>
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Text variant="labelSmall" style={{ color: "red" }}>
-                  {hasEmailError ? "Invalid email address." : ""}
+                  {hasEmailError
+                    ? t("invalidEmailAddress", "Invalid email address.", {
+                        ns: "translation",
+                      })
+                    : ""}
                 </Text>
                 <TextInput
-                  label="Email"
+                  label={t("email", "Email", { ns: "translation" })}
                   left={<TextInput.Icon icon="mail" />}
                   onChangeText={(text) => {
                     setEmail(text);
@@ -160,7 +185,7 @@ export default function OneTimePasscodeScreen() {
                   onPress={() => resetWithEmail()}
                   style={styles.button}
                 >
-                  Send code
+                  {t("sendCode", "Send code", { ns: "auth" })}
                 </Button>
               </View>
             </View>
@@ -170,12 +195,18 @@ export default function OneTimePasscodeScreen() {
             <View>
               <View style={[styles.verticallySpaced, styles.mt20]}>
                 <TextInput
-                  label="Verification Code"
+                  label={t("verificationCode", "Verification Code", {
+                    ns: "auth",
+                  })}
                   onChangeText={(text) => {
                     setCode(text);
                   }}
                   value={code}
-                  placeholder="Enter verification code sent to your email"
+                  placeholder={t(
+                    "enterVerificationCode",
+                    "Enter verification code sent to your email",
+                    { ns: "auth" },
+                  )}
                   autoCapitalize={"none"}
                   mode="outlined"
                   keyboardType="numeric"
@@ -189,7 +220,7 @@ export default function OneTimePasscodeScreen() {
                   onPress={() => verify()}
                   style={styles.button}
                 >
-                  Verify code
+                  {t("verifyCode", "Verify code", { ns: "auth" })}
                 </Button>
               </View>
             </View>
@@ -198,13 +229,15 @@ export default function OneTimePasscodeScreen() {
 
         <View>
           <View style={styles.secondary}>
-            <Text>{"Don't have an account?"}</Text>
+            <Text>
+              {t("dontHaveAnAccount", "Don't have an account?", { ns: "auth" })}
+            </Text>
             <Button
               mode="text"
               disabled={loading}
               onPress={() => router.push("/(auth)/signup")}
             >
-              Register
+              {t("register", "Register", { ns: "auth" })}
             </Button>
           </View>
           <TextInput

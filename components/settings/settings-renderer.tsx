@@ -1,6 +1,7 @@
 import React from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { List, Divider, Text } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 type SettingsRendererProps = {
   aboutSection: React.ReactNode;
@@ -15,6 +16,7 @@ type SettingsRendererProps = {
   termsSetting: React.ReactNode;
   accountSetting: React.ReactNode;
   versionText: string;
+  proFeatureSetting: React.ReactNode;
 };
 
 const SettingsRenderer = ({
@@ -30,7 +32,9 @@ const SettingsRenderer = ({
   termsSetting,
   accountSetting,
   versionText,
+  proFeatureSetting,
 }: SettingsRendererProps) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -40,29 +44,30 @@ const SettingsRenderer = ({
 
         {/* Location Settings Section */}
         <List.Section>
-          <List.Subheader>Location</List.Subheader>
+          <List.Subheader>{t("location")}</List.Subheader>
           {locationPermissionSetting}
           {currentLocationSetting}
           {locationResetSetting}
         </List.Section>
         <Divider />
 
-        {/* Notifications Section (Future Feature) */}
-        {notificationSetting}
+        {/* Pro Features Section (Future Feature) */}
+        {proFeatureSetting}
         <Divider />
-
+        
         {/* Preferences Section (Future Feature) */}
         <List.Section>
-          <List.Subheader>Preferences</List.Subheader>
+          <List.Subheader>{t("preferences")}</List.Subheader>
           {aiSetting}
           {languageSetting}
           {distanceSetting}
+          {notificationSetting}
         </List.Section>
 
         <Divider />
         {/* Legal Section */}
         <List.Section>
-          <List.Subheader>Legal</List.Subheader>
+          <List.Subheader>{t("legal")}</List.Subheader>
 
           {privacySetting}
           {termsSetting}
@@ -76,7 +81,7 @@ const SettingsRenderer = ({
 
         <View style={styles.footer}>
           <Text variant="bodySmall" style={styles.footerText}>
-            Version {versionText}
+            {t("versionVersiontext", { versionText })}
           </Text>
           <Text variant="bodySmall">
             SpotAPaw &#169; {new Date().getFullYear()}

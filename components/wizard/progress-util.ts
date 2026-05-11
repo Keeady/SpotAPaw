@@ -1,3 +1,4 @@
+import { TFunction } from "i18next";
 import { getIconByAnimalSpecies } from "../util";
 
 export interface FilterTag {
@@ -12,36 +13,37 @@ export function buildFilterTags(
   lastSeenTime: string,
   radiusMiles: string,
   species: string,
+  t: TFunction,
 ): FilterTag[] {
   const FILTER_TAGS: FilterTag[] = [
     {
       icon: "map-marker",
-      label: "Last seen location",
+      label: t("lastSeenLocation", "Last seen location", { ns: "translation" }),
       value: lastSeenLocation || "",
       delayMs: 0,
     },
     {
       icon: "paw",
-      label: "Last seen date",
+      label: t("lastSeenDate", "Last seen date", { ns: "translation" }),
       value: lastSeenTime,
       delayMs: 200,
     },
     {
       icon: "calendar",
-      label: "Date range",
-      value: "Last 30 days",
+      label: t("dateRange", "Date range", { ns: "translation" }),
+      value: t("last30Days", "Last 30 days", { ns: "translation" }),
       delayMs: 400,
     },
     {
       icon: "radar",
-      label: "Radius",
+      label: t("radius", "Radius", { ns: "translation" }),
       value: radiusMiles,
       delayMs: 600,
     },
     {
       icon: getIconByAnimalSpecies(species),
-      label: "Species",
-      value: species,
+      label: t("species", "Species", { ns: "translation" }),
+      value: t(`animal.${species}`, species, { ns: "translation" }),
       delayMs: 800,
     },
   ];

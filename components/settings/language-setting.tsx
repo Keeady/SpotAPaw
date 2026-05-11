@@ -3,6 +3,7 @@ import {
   LanguageSelectionDialog,
   SupportedLanguage,
 } from "../location-request-util";
+import { useTranslation } from "react-i18next";
 
 const LanguageSetting = ({
   iconColorLanguage,
@@ -21,10 +22,11 @@ const LanguageSetting = ({
   selectedLanguage: string;
   languages: SupportedLanguage[];
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
     <>
       <List.Item
-        title="Language"
+        title={t("language")}
         description={languageSelectedDescription}
         left={(props) => (
           <List.Icon {...props} icon="translate" color={iconColorLanguage} />

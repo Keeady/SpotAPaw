@@ -14,6 +14,7 @@ import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { useTranslation } from "react-i18next";
 
 export default function ResendEmailScreen() {
   const theme = useTheme();
@@ -28,6 +29,7 @@ export default function ResendEmailScreen() {
 
   const debounceTimer = useRef<number>(null);
   const timeout = useRef<number>(null);
+  const { t } = useTranslation(["auth", "translation"]);
 
   async function resendVerificationWithEmail() {
     if (extra_info.trim()) {
@@ -36,7 +38,7 @@ export default function ResendEmailScreen() {
 
     if (!confirmationEmail) {
       showMessage({
-        message: "Email is required. Please try again.",
+        message: t("emailRequired", "Email is required. Please try again."),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -56,7 +58,10 @@ export default function ResendEmailScreen() {
       .resend(confirmationEmail)
       .then(() => {
         showMessage({
-          message: "Please check your email for the confirmation URL.",
+          message: t(
+            "checkEmailForURL",
+            "Please check your email for the confirmation URL.",
+          ),
           type: "success",
           icon: "success",
           autoHide: true,
@@ -67,7 +72,10 @@ export default function ResendEmailScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to resend confirmation email: ${errorMessage}`);
         showMessage({
-          message: "Failed to resend confirmation email. Please try again.",
+          message: t(
+            "failedToResendConfirmationEmail",
+            "Failed to resend confirmation email. Please try again.",
+          ),
           type: "warning",
           icon: "warning",
           autoHide: true,
@@ -136,9 +144,13 @@ export default function ResendEmailScreen() {
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome!</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcome", "Welcome!", { ns: "translation" })}
+        </Text>
         <Text style={styles.headerSubtitle}>
-          Join a community of pets and pet lovers
+          {t("joinCommunity", "Join a community of pets and pet lovers", {
+            ns: "translation",
+          })}
         </Text>
       </View>
 
@@ -150,15 +162,21 @@ export default function ResendEmailScreen() {
       >
         <View style={{ paddingVertical: 20 }}>
           <Text variant="titleLarge" style={{ textAlign: "center" }}>
-            Check your email for confirmation link or re-enter email to resend
-            confirmation
+            {t(
+              "checkEmailForConfirmation",
+              "Check your email for confirmation link or re-enter email to resend confirmation",
+            )}
           </Text>
           <View style={[styles.verticallySpaced, styles.mt10]}>
             <Text variant="labelSmall" style={{ color: "red" }}>
-              {hasEmailError ? "Invalid email address." : ""}
+              {hasEmailError
+                ? t("invalidEmailAddress", "Invalid email address.", {
+                    ns: "translation",
+                  })
+                : ""}
             </Text>
             <TextInput
-              label="Email"
+              label={t("email", "Email", { ns: "translation" })}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setConfirmationEmail(text);
@@ -179,20 +197,24 @@ export default function ResendEmailScreen() {
               onPress={() => resendVerificationWithEmail()}
               style={styles.button}
             >
-              Resend
+              {t("resend", "Resend")}
             </Button>
           </View>
         </View>
 
         <View>
           <View style={styles.secondary}>
-            <Text>Already have an account?</Text>
+            <Text>
+              {t("alreadyHaveAnAccount", "Already have an account?", {
+                ns: "auth",
+              })}
+            </Text>
             <Button
               mode="text"
               disabled={loading}
               onPress={() => router.push("/(auth)/signin")}
             >
-              Sign in
+              {t("signIn", "Sign in", { ns: "translation" })}
             </Button>
           </View>
           <TextInput

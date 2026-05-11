@@ -7,6 +7,7 @@ import MapView, {
 } from "react-native-maps";
 import { useCallback, useMemo, useState } from "react";
 import { SightingLocation } from "./get-current-location";
+import { useTranslation } from "react-i18next";
 
 type Pin = {
   latitude: number;
@@ -25,6 +26,7 @@ export default function DropPinOnMap({
   handleActionButton,
   pins,
 }: DropPinOnMapProps) {
+  const { t } = useTranslation("translation");
   const { width } = useWindowDimensions();
   const [disabled, setDisabled] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -90,8 +92,8 @@ export default function DropPinOnMap({
       <Card.Content style={styles.mapFooter}>
         <Text style={styles.mapFooterText}>
           {selectedLocation
-            ? "Pin placed! Tap button to confirm."
-            : "Tap the map to place a pin or double tap to zoom."}
+            ? t("pinPlaced", "Pin placed! Tap button to confirm.")
+            : t("tapMap", "Tap the map to place a pin or double tap to zoom.")}
         </Text>
         <Button
           mode="contained"
@@ -105,7 +107,7 @@ export default function DropPinOnMap({
           disabled={!selectedLocation || disabled}
           style={styles.confirmButton}
         >
-          Confirm Location
+          {t("confirmLocation", "Confirm Location")}
         </Button>
       </Card.Content>
     </Card>

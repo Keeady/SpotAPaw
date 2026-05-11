@@ -19,6 +19,7 @@ import {
 import isEmail from "validator/es/lib/isEmail";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { useTranslation } from "react-i18next";
 
 export default function ResetPasswordForEmailScreen() {
   const theme = useTheme();
@@ -30,6 +31,7 @@ export default function ResetPasswordForEmailScreen() {
   const [disabled, setDisabled] = useState(false);
 
   const debounceTimer = useRef<number>(null);
+  const { t } = useTranslation(["auth", "translation"]);
 
   async function signUpWithEmail() {
     if (extra_info.trim()) {
@@ -38,7 +40,11 @@ export default function ResetPasswordForEmailScreen() {
 
     if (!email) {
       showMessage({
-        message: "Email and password are required. Please try again.",
+        message: t(
+          "emailAndPasswordAreRequiredPleaseTryAgain",
+          "Email and password are required. Please try again.",
+          { ns: "translation" },
+        ),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -58,7 +64,10 @@ export default function ResetPasswordForEmailScreen() {
       .resetPasswordForEmail(email)
       .then(() => {
         showMessage({
-          message: "Please check your inbox for password link.",
+          message: t(
+            "checkInboxForPasswordLink",
+            "Please check your inbox for password link.",
+          ),
           type: "success",
           icon: "success",
           autoHide: true,
@@ -69,7 +78,10 @@ export default function ResetPasswordForEmailScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to reset password for email: ${errorMessage}`);
         showMessage({
-          message: "Failed to reset password. Please try again.",
+          message: t(
+            "failedToResetPassword",
+            "Failed to reset password. Please try again.",
+          ),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -123,9 +135,13 @@ export default function ResetPasswordForEmailScreen() {
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome!</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcome", "Welcome!", { ns: "translation" })}
+        </Text>
         <Text style={styles.headerSubtitle}>
-          Join a community of pets and pet lovers
+          {t("joinCommunity", "Join a community of pets and pet lovers", {
+            ns: "translation",
+          })}
         </Text>
       </View>
 
@@ -137,7 +153,10 @@ export default function ResetPasswordForEmailScreen() {
       >
         <View style={styles.buttonContainer}>
           <Text variant="titleMedium" style={styles.largeText}>
-            Enter account email to reset your password.
+            {t(
+              "enterAccountEmailToResetPassword",
+              "Enter account email to reset your password.",
+            )}
           </Text>
           <View style={[styles.verticallySpaced]}>
             <HelperText
@@ -146,10 +165,12 @@ export default function ResetPasswordForEmailScreen() {
               style={{ color: theme.colors.error }}
               padding="none"
             >
-              Invalid email address.
+              {t("invalidEmailAddress", "Invalid email address.", {
+                ns: "translation",
+              })}
             </HelperText>
             <TextInput
-              label="Email"
+              label={t("email", "Email", { ns: "translation" })}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setEmail(text);
@@ -170,7 +191,7 @@ export default function ResetPasswordForEmailScreen() {
               onPress={() => signUpWithEmail()}
               style={styles.button}
             >
-              Reset your password
+              {t("resetYourPassword", "Reset your password")}
             </Button>
           </View>
           <TextInput

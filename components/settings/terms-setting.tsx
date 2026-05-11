@@ -1,4 +1,5 @@
 import { List } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 const TermsSetting = ({
   iconColorTerms,
@@ -7,10 +8,11 @@ const TermsSetting = ({
   iconColorTerms: string;
   onOpenTermsOfService: () => void;
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   return (
     <List.Item
-      title="Terms of Service"
-      description="Read our terms and conditions"
+      title={t("termsOfService")}
+      description={t("readOurTermsAndConditions")}
       left={(props) => (
         <List.Icon {...props} icon="file-document" color={iconColorTerms} />
       )}

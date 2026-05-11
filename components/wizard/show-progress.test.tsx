@@ -1,7 +1,19 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import ShowProgress from "./show-progress";
 import { AuthContext } from "../Provider/auth-provider";
-import { Text } from "react-native-paper";
+
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (key: string, defaultValue?: string, options?: any) => {
+        if (options && options.val) {
+          return defaultValue?.replace("{{val}}", options.val) || key;
+        }
+        return defaultValue || key;
+      },
+    };
+  },
+}));
 
 const mockRouterPush = jest.fn();
 jest.mock("expo-router", () => ({
@@ -114,7 +126,7 @@ describe("ShowProgress", () => {
       "sighting123",
       40.785091,
       -73.968285,
-      20,
+      8.05,
     );
 
     expect(await findByText("View Matches")).not.toBeDisabled();
@@ -209,7 +221,7 @@ describe("ShowProgress", () => {
       "sighting123",
       40.785091,
       -73.968285,
-      20,
+      8.05,
     );
 
     expect(await findByText("View Matches")).not.toBeDisabled();

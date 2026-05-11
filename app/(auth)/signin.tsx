@@ -9,8 +9,10 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { AuthHandler } from "@/auth/auth";
 import { log } from "@/components/logs";
 import { createErrorLogMessage } from "@/components/util";
+import { useTranslation } from "react-i18next";
 
 export default function SignInScreen() {
+  const { t } = useTranslation(["signin", "translation"]);
   const theme = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +32,7 @@ export default function SignInScreen() {
 
     if (!email || !password) {
       showMessage({
-        message: "Email and password are required. Please try again.",
+        message: t("emailAndPasswordAreRequiredPleaseTryAgain", { ns: "translation" }),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -58,7 +60,7 @@ export default function SignInScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`SigninWithPassword failed: ${errorMessage}`);
         showMessage({
-          message: "Invalid email or password. Please try again.",
+          message: t("invalidEmailOrPasswordPleaseTryAgain"),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -93,19 +95,19 @@ export default function SignInScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome Back!</Text>
+        <Text style={styles.headerTitle}>{t("welcomeBack", { ns: "translation" })}</Text>
         <Text style={styles.headerSubtitle}>
-          Help find and protect our furry friends
+          {t("helpFindAndProtectOurFurryFriends", { ns: "translation" })}
         </Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.buttonContainer}>
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Text variant="labelSmall" style={{ color: "red" }}>
-              {hasEmailError ? "Invalid email address." : ""}
+              {hasEmailError ? t("invalidEmailAddress", { ns: "translation" }) : ""}
             </Text>
             <TextInput
-              label="Email"
+              label={t("email", { ns: "translation" })}
               left={<TextInput.Icon icon="mail" />}
               onChangeText={(text) => {
                 setEmail(text);
@@ -120,12 +122,12 @@ export default function SignInScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label="Password"
+              label={t("password", { ns: "translation" })}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry={isHidden}
-              placeholder="Password"
+              placeholder={t("password", { ns: "translation" })}
               autoCapitalize={"none"}
               mode="outlined"
               right={
@@ -139,7 +141,7 @@ export default function SignInScreen() {
           </View>
           <View style={{ alignSelf: "flex-end" }}>
             <Button mode="text" onPress={() => router.push("/(auth)/forgot")}>
-              Forgot Password?
+              {t("forgotPassword")}
             </Button>
           </View>
           <View style={[styles.verticallySpaced]}>
@@ -149,10 +151,10 @@ export default function SignInScreen() {
               onPress={() => signInWithEmail()}
               style={styles.button}
             >
-              Sign in
+              {t("signIn", { ns: "translation" })}
             </Button>
           </View>
-          <DividerWithText text="OR" />
+          <DividerWithText text={t("or", { ns: "translation" }).toUpperCase()} />
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button
               icon="google"
@@ -160,7 +162,7 @@ export default function SignInScreen() {
               onPress={() => router.push("/(auth)/oauth")}
               style={styles.button}
             >
-              Continue with Google
+              {t("continueWithGoogle", { ns: "translation" })}
             </Button>
           </View>
           {Platform.OS === "ios" && (
@@ -182,13 +184,13 @@ export default function SignInScreen() {
 
         <View>
           <View style={styles.secondary}>
-            <Text>{"Don't have an account?"}</Text>
+            <Text>{t("dontHaveAnAccount")}</Text>
             <Button
               mode="text"
               disabled={loading}
               onPress={() => router.push("/(auth)/signup")}
             >
-              Register
+              {t("register")}
             </Button>
           </View>
           <TextInput

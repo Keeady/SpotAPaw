@@ -1,9 +1,11 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import { Redirect, Tabs } from "expo-router";
 import React, { useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "react-native-paper";
 
 export default function AppLayout() {
+  const { t } = useTranslation("translation");
   const { user, loading } = useContext(AuthContext);
 
   if (loading) return null;
@@ -19,7 +21,7 @@ export default function AppLayout() {
           tabBarIcon: ({ size }) => (
             <Icon source={"map-marker-multiple"} size={size} />
           ),
-          title: "Sightings",
+          title: t("mySightings", "Sightings"),
           headerTitle: "",
         }}
       />
@@ -27,7 +29,7 @@ export default function AppLayout() {
         name="pets"
         options={{
           tabBarIcon: ({ size }) => <Icon source={"paw"} size={size} />,
-          title: "My Pets",
+          title: t("myPets", "My Pets"),
           headerTitle: "",
         }}
       />
@@ -37,7 +39,7 @@ export default function AppLayout() {
           tabBarIcon: ({ size }) => (
             <Icon source={"account"} size={size} />
           ),
-          title: "My Profile",
+          title: t("myProfile", "My Profile"),
           headerTitle: "",
         }}
         
@@ -47,7 +49,7 @@ export default function AppLayout() {
         name="my-settings"
         options={{
           tabBarIcon: ({ size }) => <Icon source={"cog"} size={size} />,
-          title: "Settings",
+          title: t("mySettings", "Settings"),
           headerTitle: "",
         }}
       />

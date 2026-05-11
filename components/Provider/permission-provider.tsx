@@ -62,15 +62,27 @@ const PermissionProvider = (props: Props) => {
         setEnabledLocationPermission(true);
         if (location) {
           setLocation(location);
+        } else {
+          getSavedLocation().then((location) => {
+            if (location) {
+              setLocation(location);
+            }
+          });
         }
       })
       .catch(() => {
-        log("Failed to get existing location");
+        log("Using saved location");
+
+        getSavedLocation().then((location) => {
+          if (location) {
+            setLocation(location);
+          }
+        });
       })
       .finally(() => {
         setLoadingLocation(false);
       });
-  }, []);
+  }, [getSavedLocation]);
 
   const refreshPermission = useCallback(async () => {
     setLoadingLocation(true);
@@ -119,7 +131,7 @@ const PermissionProvider = (props: Props) => {
         getSavedLocation,
         setLocation,
         isLoadingLocation,
-        getExistingPermission
+        getExistingPermission,
       }}
     >
       {props.children}

@@ -4,10 +4,12 @@ import { AuthContext } from "../Provider/auth-provider";
 import { handleSignOut } from "../util";
 import { Button } from "react-native-paper";
 import styles from "../layout.style";
+import { useTranslation } from "react-i18next";
 
 export default function HeaderRight() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
+  const {t} = useTranslation("translation");
 
   if (!user) {
     return (
@@ -15,14 +17,14 @@ export default function HeaderRight() {
         onPress={() => router.push("/(auth)/signin")}
         style={styles.button}
       >
-        Sign In
+        {t("signIn")}
       </Button>
     );
   }
 
   return (
     <Button onPress={() => handleSignOut(router)} style={styles.button}>
-      Sign Out
+      {t("signOut")}
     </Button>
   );
 }

@@ -5,8 +5,27 @@ import { Text } from "react-native";
 import { AuthContext } from "../Provider/auth-provider";
 import { PermissionContext } from "../Provider/permission-provider";
 import { AIFeatureContext } from "../Provider/ai-context-provider";
+import { LocaleContext } from "../Provider/locale-provider";
+import { ProContext } from "../Provider/pro-context-provider";
 
 const fakeUser = { id: "test-user-id" };
+
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, options: any) => {
+      if (options && options.defaultDistanceValue) {
+        return `${options.defaultDistanceValue} km radius`;
+      } else if (options && options.versionText) {
+        return `Version ${options.versionText}`;
+      }
+      return key;
+    },
+  }),
+}));
+
+jest.mock("i18next", () => ({
+  t: (key: string, options: any) => key,
+}));
 
 const mockSetItem = jest.fn();
 const mockGetItem = jest.fn();
@@ -55,6 +74,43 @@ jest.mock("../Provider/ai-context-provider", () => {
   };
 });
 
+let mockProUser = true;
+let mockAiPhotoAnalysisAllowed = true;
+jest.mock("../Provider/pro-context-provider", () => {
+  const React = require("react");
+  const useProContext = () => ({
+    isProUser: mockProUser,
+    aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
+  });
+  const ProContext = React.createContext({
+    isProUser: mockProUser,
+    aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
+  });
+
+  return {
+    ProContext,
+    useProContext,
+  };
+});
+
+let mockPreferredLanguage = "en";
+jest.mock("../Provider/locale-provider", () => {
+  const React = require("react");
+  const useLocaleContext = () => ({
+    preferredLanguage: mockPreferredLanguage,
+    saveLanguageContext: jest.fn(),
+  });
+  const LocaleContext = React.createContext({
+    preferredLanguage: mockPreferredLanguage,
+    saveLanguageContext: jest.fn(),
+  });
+
+  return {
+    LocaleContext,
+    useLocaleContext,
+  };
+});
+
 jest.mock("../util", () => ({
   isValidUuid: jest.fn(() => true),
   saveStorageItem: jest.fn(),
@@ -97,9 +153,25 @@ const TestWrapper = ({
         getSavedLocation: mockGetSavedLocation,
       }}
     >
-      <AIFeatureContext.Provider value={{ isAiFeatureEnabled: true }}>
-        <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
-      </AIFeatureContext.Provider>
+      <LocaleContext.Provider
+        value={{
+          preferredLanguage: mockPreferredLanguage,
+          saveLanguageContext: jest.fn(),
+        }}
+      >
+        <AIFeatureContext.Provider value={{ isAiFeatureEnabled: true }}>
+          <ProContext.Provider
+            value={{
+              isProUser: mockProUser,
+              aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
+            }}
+          >
+            <PaperProvider settings={{ icon: MockIcon }}>
+              {children}
+            </PaperProvider>
+          </ProContext.Provider>
+        </AIFeatureContext.Provider>
+      </LocaleContext.Provider>
     </PermissionContext.Provider>
   </AuthContext.Provider>
 );
@@ -126,49 +198,55 @@ describe("SettingsContainer Component", () => {
         <SettingsContainer />
       </TestWrapper>,
     );
-    expect(getByText("About")).toBeTruthy();
-    expect(getByText("Learn more about the app")).toBeTruthy();
+    expect(getByText("about")).toBeTruthy();
+    expect(getByText("learnMoreAboutTheApp")).toBeTruthy();
 
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Location Permission")).toBeTruthy();
-    expect(getByText("Disabled")).toBeTruthy();
-    expect(getByText("Request")).toBeTruthy();
-    expect(getByText("Current Location")).toBeTruthy();
-    expect(getByText("Loading...")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("locationPermission")).toBeTruthy();
+    expect(getByText("disabled")).toBeTruthy();
+    expect(getByText("request")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
+    expect(getByText("loading")).toBeTruthy();
 
-    expect(getByText("Notifications")).toBeTruthy();
-    expect(getByText("Push Notifications")).toBeTruthy();
-    expect(getByText("Get notified about updates and events")).toBeTruthy();
+    expect(getByText("proFeatures")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysis")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysisDescription")).toBeTruthy();
+    expect(getByText("expandedSearch")).toBeTruthy();
+    expect(getByText("expandedSearchDescription")).toBeTruthy();
 
-    expect(getByText("Terms of Service")).toBeTruthy();
-    expect(getByText("Read our terms and conditions")).toBeTruthy();
+    expect(getByText("notifications")).toBeTruthy();
+    expect(getByText("pushNotifications")).toBeTruthy();
+    expect(getByText("getNotifiedAboutUpdatesAndEvents")).toBeTruthy();
 
-    expect(getByText("Privacy Policy")).toBeTruthy();
-    expect(getByText("Learn how we handle your data")).toBeTruthy();
+    expect(getByText("termsOfService")).toBeTruthy();
+    expect(getByText("readOurTermsAndConditions")).toBeTruthy();
 
-    expect(getByText("Language")).toBeTruthy();
+    expect(getByText("privacyPolicy")).toBeTruthy();
+    expect(getByText("learnHowWeHandleYourData")).toBeTruthy();
+
+    expect(getByText("language")).toBeTruthy();
     expect(getByText("English (English)")).toBeTruthy();
 
-    expect(getByText("Default Distance")).toBeTruthy();
+    expect(getByText("defaultDistance")).toBeTruthy();
     expect(getByText("25 km radius")).toBeTruthy();
 
-    expect(getByText("Delete Account")).toBeTruthy();
-    expect(getByText("Permanently delete your account and data")).toBeTruthy();
+    expect(getByText("deleteAccount")).toBeTruthy();
+    expect(getByText("permanentlyDeleteYourAccountAndData")).toBeTruthy();
 
     expect(getByText("Version 1.0.0")).toBeTruthy();
 
-    expect(await findByText("No location set")).toBeTruthy();
-    expect(queryByText("Loading...")).toBeNull();
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
 
-    const aboutButton = getByText("About");
+    const aboutButton = getByText("about");
     fireEvent.press(aboutButton);
     expect(mockRouterPush).toHaveBeenCalledWith("/about");
 
-    const requestLocationButton = getByText("Request");
+    const requestLocationButton = getByText("request");
     fireEvent.press(requestLocationButton);
     expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
-    expect(await findByText("Current Location")).toBeTruthy();
-    expect(await findByText("Granted")).toBeTruthy();
+    expect(await findByText("currentLocation")).toBeTruthy();
+    expect(await findByText("granted")).toBeTruthy();
 
     const notificationSwitch = getByTestId("notification-switch");
     expect(notificationSwitch.props.value).toBe(false);
@@ -176,42 +254,40 @@ describe("SettingsContainer Component", () => {
     expect(notificationSwitch.props.value).toBe(true);
     expect(mockSetItem).toHaveBeenCalledWith("notificationsEnabled", "true");
 
-    const privacyButton = getByText("Privacy Policy");
+    const privacyButton = getByText("privacyPolicy");
     fireEvent.press(privacyButton);
     expect(mockRouterPush).toHaveBeenCalledWith("/privacy");
 
-    const termsButton = getByText("Terms of Service");
+    const termsButton = getByText("termsOfService");
     fireEvent.press(termsButton);
     expect(mockRouterPush).toHaveBeenCalledWith("/terms");
 
-    const languageButton = getByText("Language");
+    const languageButton = getByText("language");
     fireEvent.press(languageButton);
-    expect(await findByText("Select Language")).toBeTruthy();
+    expect(await findByText("selectLanguage")).toBeTruthy();
     expect((await findAllByText("English (English)")).at(1)).toBeTruthy();
-    expect(await findByText("Cancel")).toBeTruthy();
+    expect(await findByText("Spanish (Español)")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
 
-    const deleteAccountButton = getByText("Delete Account");
+    const deleteAccountButton = getByText("deleteAccount");
     fireEvent.press(deleteAccountButton);
-    expect(await findByText("Delete Account?")).toBeTruthy();
-    expect(
-      await findByText(
-        "This action cannot be undone. Deleting your account will:",
-      ),
-    ).toBeTruthy();
-    expect(await findByText("Are you sure you want to continue?")).toBeTruthy();
-    expect(await findByText("Continue")).toBeTruthy();
+    expect(await findByText("deleteAccount")).toBeTruthy();
+    expect(await findByText("thisActionCannotBeUndone")).toBeTruthy();
+    expect(await findByText("areYouSureYouWantToContinue")).toBeTruthy();
+    expect(await findByText("continue")).toBeTruthy();
 
-    const continueButton = getByText("Continue");
+    const continueButton = getByText("continue");
     fireEvent.press(continueButton);
-    expect(await findByText("Confirm Account Deletion")).toBeTruthy();
+    expect(await findByText("confirmAccountDeletion")).toBeTruthy();
+    expect(await findByTestId("confirm-delete-input-label")).toBeTruthy();
     expect(
-      await findByText("Type DELETE to permanently delete your account:"),
+      await findByTestId("confirm-delete-input-label-delete"),
     ).toBeTruthy();
     expect(await findByTestId("confirm-delete-btn-text")).toBeTruthy();
 
-    const distanceButton = getByText("Default Distance");
+    const distanceButton = getByText("defaultDistance");
     fireEvent.press(distanceButton);
-    expect(await findByText("Pet Sighting Distance")).toBeTruthy();
+    expect(await findByText("petSightingDistance")).toBeTruthy();
     expect(await findByText("1 km")).toBeTruthy();
     expect(await findByText("5 km")).toBeTruthy();
     expect(await findByText("10 km")).toBeTruthy();
@@ -228,34 +304,30 @@ describe("SettingsContainer Component", () => {
         <SettingsContainer />
       </TestWrapper>,
     );
-    expect(getByText("About")).toBeTruthy();
-    expect(getByText("Learn more about the app")).toBeTruthy();
+    expect(getByText("about")).toBeTruthy();
+    expect(getByText("learnMoreAboutTheApp")).toBeTruthy();
 
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Location Permission")).toBeTruthy();
-    expect(getByText("Disabled")).toBeTruthy();
-    expect(getByText("Request")).toBeTruthy();
-    expect(getByText("Current Location")).toBeTruthy();
-    expect(getByText("Loading...")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("locationPermission")).toBeTruthy();
+    expect(getByText("disabled")).toBeTruthy();
+    expect(getByText("request")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
+    expect(getByText("loading")).toBeTruthy();
 
-    expect(await findByText("No location set")).toBeTruthy();
-    expect(queryByText("Loading...")).toBeNull();
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
 
-    const requestLocationButton = getByText("Request");
+    const requestLocationButton = getByText("request");
     fireEvent.press(requestLocationButton);
     expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
 
-    expect(await findByText("Grant Location Permission")).toBeTruthy();
-    expect(
-      await findByText(
-        "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.",
-      ),
-    ).toBeTruthy();
-    expect(await findByText("Open Settings")).toBeTruthy();
-    expect(await findByText("Cancel")).toBeTruthy();
-    expect(await findByText("No location set")).toBeTruthy();
-    expect(queryByText("Loading...")).toBeNull();
-    expect(getByText("Disabled")).toBeTruthy();
+    expect(await findByText("grantLocationPermission")).toBeTruthy();
+    expect(await findByText("turningOnLocationMobile")).toBeTruthy();
+    expect(await findByText("openSettings")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
+    expect(getByText("disabled")).toBeTruthy();
   });
 
   it("renders correctly when location access is denied", async () => {
@@ -266,34 +338,30 @@ describe("SettingsContainer Component", () => {
         <SettingsContainer />
       </TestWrapper>,
     );
-    expect(getByText("About")).toBeTruthy();
-    expect(getByText("Learn more about the app")).toBeTruthy();
+    expect(getByText("about")).toBeTruthy();
+    expect(getByText("learnMoreAboutTheApp")).toBeTruthy();
 
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Location Permission")).toBeTruthy();
-    expect(getByText("Disabled")).toBeTruthy();
-    expect(getByText("Request")).toBeTruthy();
-    expect(getByText("Current Location")).toBeTruthy();
-    expect(getByText("Loading...")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("locationPermission")).toBeTruthy();
+    expect(getByText("disabled")).toBeTruthy();
+    expect(getByText("request")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
+    expect(getByText("loading")).toBeTruthy();
 
-    expect(await findByText("No location set")).toBeTruthy();
-    expect(queryByText("Loading...")).toBeNull();
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
 
-    const requestLocationButton = getByText("Request");
+    const requestLocationButton = getByText("request");
     fireEvent.press(requestLocationButton);
     expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
 
-    expect(await findByText("Grant Location Permission")).toBeTruthy();
-    expect(
-      await findByText(
-        "Turning on your location will allow us to show you nearby pet sightings. You can enable it in your device settings.",
-      ),
-    ).toBeTruthy();
-    expect(await findByText("Open Settings")).toBeTruthy();
-    expect(await findByText("Cancel")).toBeTruthy();
-    expect(await findByText("No location set")).toBeTruthy();
-    expect(queryByText("Loading...")).toBeNull();
-    expect(getByText("Disabled")).toBeTruthy();
+    expect(await findByText("grantLocationPermission")).toBeTruthy();
+    expect(await findByText("turningOnLocationMobile")).toBeTruthy();
+    expect(await findByText("openSettings")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
+    expect(getByText("disabled")).toBeTruthy();
   });
 
   it("renders correctly with no user", async () => {
@@ -302,38 +370,140 @@ describe("SettingsContainer Component", () => {
         <SettingsContainer />
       </TestWrapper>,
     );
-    expect(getByText("About")).toBeTruthy();
-    expect(getByText("Learn more about the app")).toBeTruthy();
+    expect(getByText("about")).toBeTruthy();
+    expect(getByText("learnMoreAboutTheApp")).toBeTruthy();
 
-    expect(getByText("Location")).toBeTruthy();
-    expect(getByText("Location Permission")).toBeTruthy();
-    expect(getByText("Disabled")).toBeTruthy();
-    expect(getByText("Request")).toBeTruthy();
-    expect(getByText("Current Location")).toBeTruthy();
-    expect(getByText("Loading...")).toBeTruthy();
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("locationPermission")).toBeTruthy();
+    expect(getByText("disabled")).toBeTruthy();
+    expect(getByText("request")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
+    expect(getByText("loading")).toBeTruthy();
 
-    expect(getByText("Notifications")).toBeTruthy();
-    expect(getByText("Push Notifications")).toBeTruthy();
-    expect(getByText("Get notified about updates and events")).toBeTruthy();
+    expect(getByText("notifications")).toBeTruthy();
+    expect(getByText("pushNotifications")).toBeTruthy();
+    expect(getByText("getNotifiedAboutUpdatesAndEvents")).toBeTruthy();
 
-    expect(getByText("Terms of Service")).toBeTruthy();
-    expect(getByText("Read our terms and conditions")).toBeTruthy();
+    expect(getByText("termsOfService")).toBeTruthy();
+    expect(getByText("readOurTermsAndConditions")).toBeTruthy();
 
-    expect(getByText("Privacy Policy")).toBeTruthy();
-    expect(getByText("Learn how we handle your data")).toBeTruthy();
+    expect(getByText("privacyPolicy")).toBeTruthy();
+    expect(getByText("learnHowWeHandleYourData")).toBeTruthy();
 
-    expect(getByText("Language")).toBeTruthy();
+    expect(getByText("language")).toBeTruthy();
     expect(getByText("English (English)")).toBeTruthy();
 
-    expect(getByText("Default Distance")).toBeTruthy();
+    expect(getByText("defaultDistance")).toBeTruthy();
     expect(getByText("25 km radius")).toBeTruthy();
 
-    expect(queryByText("Delete Account")).toBeNull();
-    expect(queryByText("Permanently delete your account and data")).toBeNull();
+    expect(queryByText("deleteAccount")).toBeNull();
+    expect(queryByText("permanentlyDeleteYourAccountAndData")).toBeNull();
 
     expect(getByText("Version 1.0.0")).toBeTruthy();
 
-    expect(await findByText("No location set")).toBeTruthy();
-    expect(queryByText("Loading...")).toBeNull();
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
+  });
+
+  it("renders correctly with default language", async () => {
+    mockPreferredLanguage = "";
+    const { getByText, findByText, queryByText, getByTestId } = render(
+      <TestWrapper user={fakeUser}>
+        <SettingsContainer />
+      </TestWrapper>,
+    );
+    expect(getByText("about")).toBeTruthy();
+    expect(getByText("learnMoreAboutTheApp")).toBeTruthy();
+
+    expect(getByText("location")).toBeTruthy();
+    expect(getByText("locationPermission")).toBeTruthy();
+    expect(getByText("disabled")).toBeTruthy();
+    expect(getByText("request")).toBeTruthy();
+    expect(getByText("currentLocation")).toBeTruthy();
+    expect(getByText("loading")).toBeTruthy();
+
+    expect(getByText("notifications")).toBeTruthy();
+    expect(getByText("pushNotifications")).toBeTruthy();
+    expect(getByText("getNotifiedAboutUpdatesAndEvents")).toBeTruthy();
+
+    expect(getByText("termsOfService")).toBeTruthy();
+    expect(getByText("readOurTermsAndConditions")).toBeTruthy();
+
+    expect(getByText("privacyPolicy")).toBeTruthy();
+    expect(getByText("learnHowWeHandleYourData")).toBeTruthy();
+
+    expect(getByText("language")).toBeTruthy();
+    expect(getByText("English (Default)")).toBeTruthy();
+
+    expect(getByText("defaultDistance")).toBeTruthy();
+    expect(getByText("25 km radius")).toBeTruthy();
+
+    expect(getByText("deleteAccount")).toBeTruthy();
+    expect(getByText("permanentlyDeleteYourAccountAndData")).toBeTruthy();
+
+    expect(getByText("Version 1.0.0")).toBeTruthy();
+
+    expect(await findByText("noLocationSet")).toBeTruthy();
+    expect(queryByText("loading")).toBeNull();
+
+    const aboutButton = getByText("about");
+    fireEvent.press(aboutButton);
+    expect(mockRouterPush).toHaveBeenCalledWith("/about");
+
+    const requestLocationButton = getByText("request");
+    fireEvent.press(requestLocationButton);
+    expect(mockGetCurrentUserLocationV3).toHaveBeenCalled();
+    expect(await findByText("currentLocation")).toBeTruthy();
+    expect(await findByText("granted")).toBeTruthy();
+
+    const notificationSwitch = getByTestId("notification-switch");
+    expect(notificationSwitch.props.value).toBe(false);
+    fireEvent(notificationSwitch, "valueChange", true);
+    expect(notificationSwitch.props.value).toBe(true);
+    expect(mockSetItem).toHaveBeenCalledWith("notificationsEnabled", "true");
+
+    const privacyButton = getByText("privacyPolicy");
+    fireEvent.press(privacyButton);
+    expect(mockRouterPush).toHaveBeenCalledWith("/privacy");
+
+    const termsButton = getByText("termsOfService");
+    fireEvent.press(termsButton);
+    expect(mockRouterPush).toHaveBeenCalledWith("/terms");
+
+    const languageButton = getByText("language");
+    fireEvent.press(languageButton);
+    expect(await findByText("selectLanguage")).toBeTruthy();
+    expect(await findByText("English (English)")).toBeTruthy();
+    expect(await findByText("Spanish (Español)")).toBeTruthy();
+    expect(await findByText("cancel")).toBeTruthy();
+
+    // select Spanish and verify
+    const spanishOption = await findByText("Spanish (Español)");
+    fireEvent.press(spanishOption);
+    expect(await findByText("language")).toBeTruthy();
+    expect(getByText("Spanish (Español)")).toBeTruthy();
+  });
+
+  it("renders correctly when user is not pro and AI photo analysis is not allowed", async () => {
+    mockProUser = false;
+    mockAiPhotoAnalysisAllowed = false;
+
+    const { getByText, findByText } = render(
+      <TestWrapper user={fakeUser}>
+        <SettingsContainer />
+      </TestWrapper>,
+    );
+
+    expect(getByText("proFeatures")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysis")).toBeTruthy();
+    expect(getByText("aiPhotoAnalysisDescription")).toBeTruthy();
+    expect(getByText("expandedSearch")).toBeTruthy();
+    expect(getByText("expandedSearchDescription")).toBeTruthy();
+
+    expect(await findByText("proFeatures")).toBeTruthy();
+    expect(await findByText("aiPhotoAnalysis")).toBeTruthy();
+    expect(await findByText("aiPhotoAnalysisDescription")).toBeTruthy();
+    expect(await findByText("expandedSearch")).toBeTruthy();
+    expect(await findByText("expandedSearchDescription")).toBeTruthy();
   });
 });

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { List } from "react-native-paper";
 
 const AboutSection = ({
@@ -6,18 +7,26 @@ const AboutSection = ({
 }: {
   onPress: () => void;
   iconColorInformation: string;
-}) => (
-  <List.Section>
-    <List.Subheader>About</List.Subheader>
-    <List.Item
-      title="About SpotAPaw"
-      description="Learn more about the app"
-      left={(props) => (
-        <List.Icon {...props} icon="information" color={iconColorInformation} />
-      )}
-      onPress={onPress}
-    />
-  </List.Section>
-);
+}) => {
+  const { t } = useTranslation(["settings", "translation"]);
+
+  return (
+    <List.Section>
+      <List.Subheader>{t("about", { ns: "translation" })}</List.Subheader>
+      <List.Item
+        title={t("aboutSpotapaw", { ns: "translation" })}
+        description={t("learnMoreAboutTheApp", { ns: "settings" })}
+        left={(props) => (
+          <List.Icon
+            {...props}
+            icon="information"
+            color={iconColorInformation}
+          />
+        )}
+        onPress={onPress}
+      />
+    </List.Section>
+  );
+};
 
 export default AboutSection;

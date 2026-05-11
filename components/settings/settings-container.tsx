@@ -6,7 +6,6 @@ import {
   SightingLocation,
 } from "@/components/get-current-location";
 import {
-  PREFERRED_LANGUAGE,
   SIGHTING_DISTANCE_KEY,
   SIGHTING_LOCATION_KEY,
   SIGHTING_NOTIFICATION_ENABLED_KEY,
@@ -32,6 +31,9 @@ import DistanceSetting from "./distance-setting";
 import PrivacySetting from "./privacy-setting";
 import TermsSetting from "./terms-setting";
 import AccountSetting from "./account-setting";
+import { useLocaleContext } from "../Provider/locale-provider";
+import { useTranslation } from "react-i18next";
+import ProSettings from "./pro-features-setting";
 
 // Define color scheme for icons
 const iconColors = {
@@ -46,16 +48,19 @@ const iconColors = {
   terms: "#607D8B", // Blue Grey
   delete: "#d32f2f", // Red
   information: "#009688", // Teal
+  pro: "#d11fec", // Pink/Magenta
 };
 
 // Available languages
 const languages: SupportedLanguage[] = [
   { code: "en", name: "English", nativeName: "English" },
+  { code: "es", name: "Spanish", nativeName: "Español" },
 ];
 
 const defaultDistance = "25";
 
 const SettingsContainer = () => {
+  const { t } = useTranslation(["settings", "translation"]);
   const router = useRouter();
 
   // Location states
@@ -103,6 +108,7 @@ const SettingsContainer = () => {
   const { getSavedLocation } = useContext(PermissionContext);
 
   const { isAiFeatureEnabled, saveAIFeatureContext } = useAIFeatureContext();
+  const { preferredLanguage, saveLanguageContext } = useLocaleContext();
 
   const loadSavedLocation = useCallback(async () => {
     try {
@@ -128,14 +134,16 @@ const SettingsContainer = () => {
     setAIFeatureEnabled(!!isAiFeatureEnabled);
   }, [isAiFeatureEnabled]);
 
+  useEffect(() => {
+    // Load language settings
+    setSelectedLanguage(preferredLanguage || "en");
+  }, [preferredLanguage]);
+
   const loadSettings = useCallback(async () => {
     try {
       // Check location permission
       const { status } = await Location.getForegroundPermissionsAsync();
       setLocationPermission(status === "granted");
-
-      const language = await AsyncStorage.getItem(PREFERRED_LANGUAGE);
-      setSelectedLanguage(language || "en");
 
       // Load notification settings
       const notifications = await AsyncStorage.getItem(
@@ -209,22 +217,32 @@ const SettingsContainer = () => {
 
   const handleLanguageChange = async (selectedLanguageCode: string) => {
     setSelectedLanguage(selectedLanguageCode);
-    await AsyncStorage.setItem(PREFERRED_LANGUAGE, selectedLanguageCode);
+    saveLanguageContext?.(selectedLanguageCode);
     setLanguageDialogVisible(false);
   };
 
   const getSelectedLanguageDisplay = () => {
-    const language = languages.find((lang) => lang.code === selectedLanguage);
-    return language ? `${language.name} (${language.nativeName})` : "English";
+    const language = languages.find((lang) => lang.code === preferredLanguage);
+    return language
+      ? `${language.name} (${language.nativeName})`
+      : "English (Default)";
   };
 
   const getLocationDisplayText = () => {
+    if (locationLoading) {
+      return t("loading", { ns: "translation" });
+    }
+
     if (locationPermission) {
-      return "Using device location";
+      return t("usingDeviceLocation");
     } else if (savedLocation) {
-      return `Saved: ${savedLocation.locationAddress || `${savedLocation.lat?.toFixed(6)}, ${savedLocation.lng?.toFixed(6)}`}`;
+      return t("savedVal", {
+        val:
+          savedLocation.locationAddress ||
+          `${savedLocation.lat?.toFixed(6)}, ${savedLocation.lng?.toFixed(6)}`,
+      });
     } else {
-      return "No location set";
+      return t("noLocationSet");
     }
   };
 
@@ -239,8 +257,8 @@ const SettingsContainer = () => {
   };
 
   const handleConfirmAccountDeletion = async () => {
-    if (deleteConfirmText.trim().toLowerCase() !== "delete") {
-      setErrorMessage("Please type DELETE to confirm");
+    if (deleteConfirmText.trim().toLowerCase() !== t("delete")) {
+      setErrorMessage(t("pleaseTypeDeleteToConfirm"));
       setErrorDialogVisible(true);
       return;
     }
@@ -253,14 +271,12 @@ const SettingsContainer = () => {
         setDeletingAccount(false);
         // Clear all local data
         await AsyncStorage.clear();
-        await onDeleteAccount(user.id);
+        await onDeleteAccount(user.id, t);
       }
     } catch (error) {
       const errorMessage = createErrorLogMessage(error);
       log(`onDeleteAccount: Failed to delete account: ${errorMessage}`);
-      setErrorMessage(
-        "Failed to delete account. Please try again or contact support.",
-      );
+      setErrorMessage(t("failedToDeleteAccountPleaseTryAgainOrContactSupport"));
       setErrorDialogVisible(true);
       setDeletingAccount(false);
     }
@@ -278,7 +294,13 @@ const SettingsContainer = () => {
     router.push("/about");
   };
 
-  const versionText = Application.nativeApplicationVersion ?? "1.2.0";
+  const versionText = Application.nativeApplicationVersion ?? "1.3.0";
+  const locationPermissionStatusDisplayText = locationPermission
+    ? t("granted", "Granted")
+    : t("request", "Request");
+  const locationPermissionDescription = locationPermission
+    ? t("enabled", "Enabled")
+    : t("disabled", "Disabled");
 
   return (
     <SettingsRenderer
@@ -291,13 +313,11 @@ const SettingsContainer = () => {
       locationPermissionSetting={
         <LocationPermissionSetting
           iconColorLocation={iconColors.location}
-          locationPermissionDescription={
-            locationPermission ? "Enabled" : "Disabled"
-          }
+          locationPermissionDescription={locationPermissionDescription}
           handleRequestLocationPermission={handleRequestLocationPermission}
           locationPermissionButtonDisabled={locationPermission}
           locationPermissionStatusDisplayText={
-            locationPermission ? "Granted" : "Request"
+            locationPermissionStatusDisplayText
           }
           permissionGrantedDialogVisible={permissionGrantedDialogVisible}
           setPermissionGrantedDialogVisible={setPermissionGrantedDialogVisible}
@@ -308,9 +328,7 @@ const SettingsContainer = () => {
       currentLocationSetting={
         <CurrentLocationSetting
           iconColorLocationCheck={iconColors.locationCheck}
-          locationUsedDisplayText={
-            locationLoading ? "Loading..." : getLocationDisplayText()
-          }
+          locationUsedDisplayText={getLocationDisplayText()}
         />
       }
       locationResetSetting={
@@ -397,6 +415,13 @@ const SettingsContainer = () => {
         )
       }
       versionText={versionText}
+      proFeatureSetting={
+        <ProSettings
+          iconColorPro={iconColors.pro}
+          iconColorAIOn={iconColors.location}
+          iconColorAIOff={iconColors.star}
+        />
+      }
     />
   );
 };

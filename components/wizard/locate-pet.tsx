@@ -5,12 +5,14 @@ import { usePermission } from "../Provider/permission-provider";
 import DropPinOnMap from "../map-util";
 import { HelperText } from "react-native-paper";
 import { SightingWizardStepData } from "./wizard-interface";
+import { useTranslation } from "react-i18next";
 
 export function LocatePet({
   updateSightingData,
   sightingFormData,
   isValidData,
 }: SightingWizardStepData) {
+  const { t } = useTranslation("wizard");
   const { location } = usePermission();
   const [hasErrors, setHasErrors] = useState(false);
 
@@ -26,8 +28,8 @@ export function LocatePet({
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
-        title="Where was the pet last seen?"
-        subTitle="Place a pin on map to share pet's last location."
+        title={t("whereWasThePetLastSeen", "Where was the pet last seen?")}
+        subTitle={t("placeAPinOnMapToSharePetsLastLocation", "Place a pin on map to share pet's last location.")}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -40,7 +42,7 @@ export function LocatePet({
           style={styles.helperText}
           padding="none"
         >
-          Please select a location!
+          {t("pleaseSelectALocation", "Please select a location!")}
         </HelperText>
 
         <DropPinOnMap
@@ -51,7 +53,10 @@ export function LocatePet({
                   {
                     latitude: lastSeenLat,
                     longitude: lastSeenLong,
-                    title: "pet's last seen location",
+                    title: t(
+                      "petsLastSeenLocation",
+                      "pet's last seen location",
+                    ),
                   },
                 ]
               : []

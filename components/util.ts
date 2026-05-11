@@ -55,7 +55,7 @@ export async function getLastSeenLocation(
         const cityInfo = city ? `${city}, ` : "";
 
         if (showFullAddress) {
-        return `${streetInfo}${cityInfo}${state}`;
+          return `${streetInfo}${cityInfo}${state}`;
         } else {
           return `${cityInfo}${state}`;
         }
@@ -67,7 +67,9 @@ export async function getLastSeenLocation(
       }
     } catch (error) {
       const errorMessage = createErrorLogMessage(error);
-      log(`Reverse geocoding failed, falling back to coordinates: ${errorMessage}`);
+      log(
+        `Reverse geocoding failed, falling back to coordinates: ${errorMessage}`,
+      );
       return await convertToFullAddress(
         lastSeenLocationLat,
         lastSeenLocationLng,
@@ -184,7 +186,7 @@ export function createErrorLogMessage(error: unknown) {
     return error;
   }
 
-  if (error instanceof PostgrestError  && "message" in error) {
+  if (error instanceof PostgrestError && "message" in error) {
     return error.message;
   }
 
@@ -206,3 +208,33 @@ export function kmToMiles(km: number) {
 export function milesToKm(miles: number) {
   return (miles / 0.621371).toFixed(0);
 }
+
+export const supportedSpecies = [
+  "Dog",
+  "Cat",
+  "Rabbit",
+  "Horse",
+  "Snake",
+  "Cow",
+  "Pig",
+  "Bird",
+  "Donkey",
+  "Elephant",
+  "Camel",
+  "Llama",
+  "Alpaca",
+  "Goat",
+  "Sheep",
+  "Other",
+  "Chicken",
+  "Duck",
+  "Turkey",
+  "Fish",
+  "Turtle",
+  "Frog",
+  "Hamster",
+  "Guinea Pig",
+  "Ferret",
+  "Hedgehog",
+  "Chinchilla",
+];

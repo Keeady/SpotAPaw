@@ -19,6 +19,7 @@ import {
 } from "react-native-paper";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
+import { useTranslation } from "react-i18next";
 
 export default function ResetPasswordScreen() {
   const theme = useTheme();
@@ -39,6 +40,8 @@ export default function ResetPasswordScreen() {
     return passwordRegex.test(password);
   }, []);
 
+  const { t } = useTranslation(["auth", "translation"]);
+
   async function resetPassword() {
     if (extra_info.trim()) {
       return;
@@ -46,7 +49,11 @@ export default function ResetPasswordScreen() {
 
     if (!password) {
       showMessage({
-        message: "Email and password are required. Please try again.",
+        message: t(
+          "emailAndPasswordAreRequiredPleaseTryAgain",
+          "Email and password are required. Please try again.",
+          { ns: "translation" },
+        ),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -57,7 +64,10 @@ export default function ResetPasswordScreen() {
 
     if (password !== rePassword) {
       showMessage({
-        message: "Passwords do not match. Please try again.",
+        message: t(
+          "passwordsDoNotMatch",
+          "Passwords do not match. Please try again.",
+        ),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -69,7 +79,7 @@ export default function ResetPasswordScreen() {
     const isValid = validate(password);
     if (!isValid) {
       showMessage({
-        message: "Please use a strong password.",
+        message: t("pleaseUseStrongPassword", "Please use a strong password."),
         type: "warning",
         icon: "warning",
         autoHide: true,
@@ -84,7 +94,10 @@ export default function ResetPasswordScreen() {
       .updatePassword(password)
       .then(() => {
         showMessage({
-          message: "Successfully reset your password!",
+          message: t(
+            "sucessfullyResetYourPassword",
+            "Successfully reset your password!",
+          ),
           type: "success",
           icon: "success",
           autoHide: true,
@@ -95,7 +108,10 @@ export default function ResetPasswordScreen() {
         const errorMessage = createErrorLogMessage(error);
         log(`Failed to update password: ${errorMessage}`);
         showMessage({
-          message: "Failed to reset password. Please try again.",
+          message: t(
+            "failedToResetPassword",
+            "Failed to reset password. Please try again.",
+          ),
           type: "danger",
           icon: "danger",
           autoHide: true,
@@ -131,9 +147,13 @@ export default function ResetPasswordScreen() {
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>Welcome!</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcome", "Welcome!", { ns: "translation" })}
+        </Text>
         <Text style={styles.headerSubtitle}>
-          Join a community of pets and pet lovers
+          {t("joinCommunity", "Join a community of pets and pet lovers", {
+            ns: "translation",
+          })}
         </Text>
       </View>
 
@@ -146,12 +166,12 @@ export default function ResetPasswordScreen() {
         <View style={styles.buttonContainer}>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label="Password"
+              label={t("password", "Password", { ns: "translation" })}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry={isHidden}
-              placeholder="Password"
+              placeholder={t("password", "Password", { ns: "translation" })}
               autoCapitalize={"none"}
               right={
                 <TextInput.Icon
@@ -165,20 +185,21 @@ export default function ResetPasswordScreen() {
           </View>
           <View style={styles.verticallySpaced}>
             <TextInput
-              label="Confirm Password"
+              label={t("confirmPassword", "Confirm Password")}
               left={<TextInput.Icon icon="lock" />}
               onChangeText={(text) => setRePassword(text)}
               value={rePassword}
               secureTextEntry={isHidden}
-              placeholder="Confirm Password"
+              placeholder={t("confirmPassword", "Confirm Password")}
               autoCapitalize={"none"}
               mode="outlined"
               textContentType="password"
             />
             <HelperText visible={true} type="info" padding="none">
-              Password must be at least 8 characters long, include one uppercase
-              letter, one lowercase letter, one number, and one special
-              character.
+              {t(
+                "passwordRequirements",
+                "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character.",
+              )}
             </HelperText>
           </View>
           <View style={[styles.verticallySpaced]}>
@@ -188,7 +209,7 @@ export default function ResetPasswordScreen() {
               onPress={() => resetPassword()}
               style={styles.button}
             >
-              Reset your password
+              {t("resetYourPassword", "Reset your password")}
             </Button>
           </View>
           <TextInput

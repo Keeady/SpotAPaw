@@ -4,6 +4,7 @@ import { Button } from "react-native-paper";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { useTranslation } from "react-i18next";
 
 export default function DatePicker({
   dateLabel,
@@ -16,6 +17,7 @@ export default function DatePicker({
   value: Date;
   onChange: (date: Date) => void;
 }) {
+  const { t } = useTranslation("translation");
   const [showTime, setShowTime] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const [currentDate, setDate] = useState(value);
@@ -52,7 +54,7 @@ export default function DatePicker({
         onPress={() => setShowDate(true)}
         style={styles.button}
       >
-        Date: {currentDate.toLocaleDateString()}
+        {t("dateLabel", "Date")}: {currentDate.toLocaleDateString()}
       </Button>
       <Button
         icon={"clock"}
@@ -60,7 +62,7 @@ export default function DatePicker({
         onPress={() => setShowTime(true)}
         style={styles.button}
       >
-        Time: {currentDate.toLocaleTimeString()}
+        {t("timeLabel", "Time")}: {currentDate.toLocaleTimeString()}
       </Button>
       {showDate && (
         <DateTimePicker

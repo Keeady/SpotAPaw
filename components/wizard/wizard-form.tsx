@@ -50,8 +50,11 @@ import {
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import ShowProgress from "./show-progress";
+import { useTranslation } from "react-i18next";
+import { useProContext } from "../Provider/pro-context-provider";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
+  const { t } = useTranslation(["wizard", "translation"]);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const isMountedRef = useRef(true);
@@ -85,6 +88,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     is_lost: string;
     linkedSightingId: string;
   }>();
+
+  const { aiPhotoAnalysisAllowed } = useProContext();
 
   const updateSightingData = useCallback(
     (
@@ -159,10 +164,17 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
           log(
-            `Wizard: Failed to fetch sighting info for sighting: ${errorMessage}`,
+            t(
+              "wizardFailedToFetchSightingInfoForSightingErrormessage",
+              "Wizard: Failed to fetch sighting info for sighting: {{errorMessage}}",
+              { errorMessage },
+            ),
           );
           showMessage({
-            message: "Error fetching pet sighting.",
+            message: t(
+              "errorFetchingPetSighting",
+              "Error fetching pet sighting.",
+            ),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,
@@ -209,12 +221,19 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("photo", pet.photo);
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
+
+          if (pet.petDescriptionId) {
+            updateSightingData("petDescriptionId", pet.petDescriptionId);
+          }
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
           log(`Wizard: Failed to fetch pet info for pet: ${errorMessage}`);
           showMessage({
-            message: "Error fetching pet information.",
+            message: t(
+              "errorFetchingPetInformation",
+              "Error fetching pet information.",
+            ),
             type: "warning",
             icon: "warning",
             statusBarHeight: 50,
@@ -239,7 +258,12 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   const processResponse = async () => {
     switch (currentStep) {
       case "upload_photo":
-        if (sightingFormData.image.uri && isAiFeatureEnabled && !aiGenerated) {
+        if (
+          sightingFormData.image.uri &&
+          isAiFeatureEnabled &&
+          !aiGenerated &&
+          aiPhotoAnalysisAllowed
+        ) {
           return analyze(
             sightingFormData.image.uri,
             sightingFormData.image.filename,
@@ -249,7 +273,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
         return Promise.resolve();
       case "submit":
-        if (isAiFeatureEnabled) {
+        if (isAiFeatureEnabled && aiPhotoAnalysisAllowed) {
           if (action === "new-sighting") {
             return saveNewSighting("", sightingFormData);
           } else if (action === "edit-sighting") {
@@ -399,7 +423,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           }
         } else if (currentStep === "submit" && action === "new-sighting") {
           showMessage({
-            message: "Successfully added pet sighting.",
+            message: t(
+              "successfullyAddedPetSighting",
+              "Successfully added pet sighting.",
+            ),
             type: "success",
             icon: "success",
             statusBarHeight: 50,
@@ -408,7 +435,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           setCurrentStep("find_match");
         } else if (currentStep === "submit" && action === "edit-sighting") {
           showMessage({
-            message: "Successfully updated pet sighting.",
+            message: t(
+              "successfullyUpdatedPetSighting",
+              "Successfully updated pet sighting.",
+            ),
             type: "success",
             icon: "success",
             statusBarHeight: 50,
@@ -416,7 +446,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           setCurrentStep("find_match");
         } else if (currentStep === "submit" && action === "add-pet") {
           showMessage({
-            message: "Successfully added pet profile.",
+            message: t(
+              "successfullyAddedPetProfile",
+              "Successfully added pet profile.",
+            ),
             type: "success",
             icon: "success",
             statusBarHeight: 50,
@@ -425,7 +458,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           router.replace(`/(app)/pets`);
         } else if (currentStep === "submit" && action === "edit-pet") {
           showMessage({
-            message: "Successfully updated pet profile.",
+            message: t(
+              "successfullyUpdatedPetProfile",
+              "Successfully updated pet profile.",
+            ),
             type: "success",
             icon: "success",
             statusBarHeight: 50,
@@ -561,14 +597,20 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
     if (action === "add-pet" || action === "edit-pet") {
       showMessage({
-        message: "Error saving pet profile. Please try again.",
+        message: t(
+          "errorSavingPetProfilePleaseTryAgain",
+          "Error saving pet profile. Please try again.",
+        ),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,
       });
     } else {
       showMessage({
-        message: "Error saving sighting info. Please try again.",
+        message: t(
+          "errorSavingSightingInfoPleaseTryAgain",
+          "Error saving sighting info. Please try again.",
+        ),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,
@@ -728,16 +770,22 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     action: WizardFormAction,
   ) => {
     if (action === "add-pet") {
-      return currentStep === "submit" ? "Add Pet" : "Continue";
+      return currentStep === "submit"
+        ? t("addPet", "Add Pet", { ns: "translation" })
+        : t("continue", "Continue");
     } else if (action === "edit-pet") {
-      return currentStep === "submit" ? "Update Pet" : "Continue";
+      return currentStep === "submit"
+        ? t("updatePet", "Update Pet")
+        : t("continue", "Continue");
     }
 
     if (currentStep === "find_match") {
-      return "Done";
+      return t("done", "Done");
     }
 
-    return currentStep === "submit" ? "Submit" : "Continue";
+    return currentStep === "submit"
+      ? t("submit", "Submit")
+      : t("continue", "Continue");
   };
 
   return (
@@ -754,7 +802,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             onPress={handleBack}
             disabled={loading || disabledBack || stepHistory.length === 0}
           >
-            Back
+            {t("back", "Back")}
           </Button>
           <Button
             mode={currentStep === "submit" ? "contained" : "text"}

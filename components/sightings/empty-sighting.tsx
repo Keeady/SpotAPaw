@@ -2,12 +2,14 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Icon, Text } from "react-native-paper";
 import { ShowHappyDogAnimation } from "@/components/animate";
+import { useTranslation } from "react-i18next";
 
 type EmptySightingProps = {
   error: string;
 };
 
 export const EmptySighting = ({ error }: EmptySightingProps) => {
+  const { t } = useTranslation("sightingpage");
   return (
     <View style={styles.container}>
       <ShowHappyDogAnimation />
@@ -22,7 +24,7 @@ export const EmptySighting = ({ error }: EmptySightingProps) => {
         <View style={styles.iconWithText}>
           <Icon source="paw-outline" size={32} color="green" />
           <Text variant="bodyLarge" style={styles.successText}>
-            No pet sightings to display in your area
+            {t("nosightings", "No pet sightings to display in your area")}
           </Text>
         </View>
       )}
@@ -38,11 +40,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
-  },
-  content: {
-    justifyContent: "center",
-    padding: 24,
-    flexGrow: 1,
   },
   iconWithText: {
     flexDirection: "row",

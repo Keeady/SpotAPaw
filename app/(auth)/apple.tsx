@@ -5,9 +5,11 @@ import { log } from "@/components/logs";
 import { useRouter } from "expo-router";
 import { AuthHandler } from "@/auth/auth";
 import { createErrorLogMessage } from "@/components/util";
+import { useTranslation } from "react-i18next";
 
 export default function Auth() {
   const router = useRouter();
+  const { t } = useTranslation("auth");
 
   async function signInWithApple() {
     try {
@@ -25,7 +27,10 @@ export default function Auth() {
             const errorMessage = createErrorLogMessage(error);
             log(`signInWithIdToken: Error signing in ${errorMessage}`);
             showMessage({
-              message: "Authentication failed. Please try again.",
+              message: t(
+                "authenticationFailedPleaseTryAgain",
+                "Authentication failed. Please try again.",
+              ),
               type: "warning",
               icon: "warning",
               statusBarHeight: 50,
@@ -35,7 +40,10 @@ export default function Auth() {
       } else {
         log("Apple login: No credential found.");
         showMessage({
-          message: "Authentication failed. Please try again.",
+          message: t(
+            "authenticationFailedPleaseTryAgain",
+            "Authentication failed. Please try again.",
+          ),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -44,7 +52,10 @@ export default function Auth() {
     } catch {
       log("Apple login failed.");
       showMessage({
-        message: "Authentication failed. Please try again.",
+        message: t(
+          "authenticationFailedPleaseTryAgain",
+          "Authentication failed. Please try again.",
+        ),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,

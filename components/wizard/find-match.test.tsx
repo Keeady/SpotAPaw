@@ -5,6 +5,14 @@ import { FindMatch } from "./find-match";
 import { Text } from "react-native-paper";
 import { TouchableOpacity } from "react-native";
 
+jest.mock("react-i18next", () => ({
+  useTranslation: () => {
+    return {
+      t: (key: string, defaultValue?: string) => defaultValue || key,
+    };
+  },
+}));
+
 jest.mock("@react-native-async-storage/async-storage", () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),

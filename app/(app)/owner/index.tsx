@@ -27,8 +27,10 @@ import {
   Avatar,
 } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
+import { useTranslation } from "react-i18next";
 
 const ProfileScreen = () => {
+  const { t } = useTranslation(["owner", "translation"]);
   const router = useRouter();
   const theme = useTheme();
 
@@ -113,7 +115,10 @@ const ProfileScreen = () => {
         const errorMessage = createErrorLogMessage(error);
         log(`getOwner: Error fetching account info: ${errorMessage}`);
         showMessage({
-          message: "Error fetching account info.",
+          message: t(
+            "errorFetchingAccountInfo",
+            "Error fetching account info.",
+          ),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -199,7 +204,10 @@ const ProfileScreen = () => {
 
       setIsEditing(false);
       showMessage({
-        message: "Successfully saved owner profile.",
+        message: t(
+          "successfullySavedOwnerProfile",
+          "Successfully saved owner profile.",
+        ),
         type: "success",
         icon: "success",
         statusBarHeight: 50,
@@ -212,7 +220,7 @@ const ProfileScreen = () => {
       const errorMessage = createErrorLogMessage(error);
       log(`createContact: Error saving owner profile: ${errorMessage}`);
       showMessage({
-        message: "Error saving owner profile.",
+        message: t("errorSavingOwnerProfile", "Error saving owner profile."),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,
@@ -269,7 +277,7 @@ const ProfileScreen = () => {
         <View style={styles.content}>
           <View style={styles.sectionHeader}>
             <Text variant="titleMedium" style={styles.sectionTitle}>
-              My Contact Information
+              {t("myContactInformation", "My Contact Information")}
             </Text>
             {!isEditing ? (
               <IconButton
@@ -282,11 +290,11 @@ const ProfileScreen = () => {
 
           <View style={styles.formContainer}>
             <TextInput
-              label="First Name"
+              label={t("firstName", "First Name")}
               left={<TextInput.Icon icon="account" />}
               onChangeText={(text) => setFirstName(text)}
               value={firstName}
-              placeholder="First Name"
+              placeholder={t("firstName", "First Name")}
               autoCapitalize={"none"}
               mode="outlined"
               disabled={!isEditing}
@@ -294,22 +302,24 @@ const ProfileScreen = () => {
             />
 
             <TextInput
-              label="Last Name"
+              label={t("lastName", "Last Name")}
               left={<TextInput.Icon icon="account" />}
               onChangeText={(text) => setLastName(text)}
               value={lastName}
-              placeholder="Last Name"
+              placeholder={t("lastName", "Last Name")}
               autoCapitalize={"none"}
               mode="outlined"
               disabled={!isEditing}
             />
             <View>
               <Text variant="labelSmall" style={{ color: theme.colors.error }}>
-                {hasEmailError ? "Invalid email address." : ""}
+                {hasEmailError
+                  ? t("invalidEmailAddress", "Invalid email address.", { ns: "translation" })
+                  : ""}
               </Text>
               <TextInput
                 error={hasEmailError}
-                label="Email"
+                label={t("email", "Email", { ns: "translation" })}
                 left={<TextInput.Icon icon="email" />}
                 onChangeText={(text) => setEmail(text)}
                 value={email}
@@ -338,7 +348,7 @@ const ProfileScreen = () => {
                   onPress={handleCancel}
                   style={[styles.button, styles.cancelButton]}
                 >
-                  Cancel
+                  {t("cancel", "Cancel", { ns: "translation" })}
                 </Button>
                 <Button
                   mode="contained"
@@ -351,7 +361,7 @@ const ProfileScreen = () => {
                     hasEmailError
                   }
                 >
-                  Save Changes
+                  {t("saveChanges", "Save Changes", { ns: "translation" })}
                 </Button>
               </View>
             )}
@@ -373,10 +383,13 @@ const ProfileScreen = () => {
                 </View>
                 <View style={styles.navigationText}>
                   <Text variant="titleMedium" style={styles.navigationTitle}>
-                    My Reports
+                    {t("myReports", "My Reports")}
                   </Text>
                   <Text variant="bodySmall" style={styles.navigationSubtitle}>
-                    View and manage your sighting reports
+                    {t(
+                      "viewAndManageYourSightingReports",
+                      "View and manage your sighting reports",
+                    )}
                   </Text>
                 </View>
               </View>

@@ -5,11 +5,13 @@ import { showMessage } from "react-native-flash-message";
 import { AuthHandler } from "@/auth/auth";
 import { log } from "@/components/logs";
 import { createErrorLogMessage } from "@/components/util";
+import { useTranslation } from "react-i18next";
 
 // Required for web browser to close properly on iOS
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Auth() {
+  const { t } = useTranslation("auth");
   const redirectUrl = makeRedirectUri({
     scheme: "spotapaw",
     path: "auth/v1/callback",
@@ -25,7 +27,10 @@ export default function Auth() {
       } else {
         log("No URL returned from signInWithOAuth");
         showMessage({
-          message: "Authentication failed. Please try again.",
+          message: t(
+            "authenticationFailedPleaseTryAgain",
+            "Authentication failed. Please try again.",
+          ),
           type: "warning",
           icon: "warning",
           statusBarHeight: 50,
@@ -35,7 +40,10 @@ export default function Auth() {
       const errorMessage = createErrorLogMessage(error);
       log(`signInWithOAuth failed: ${errorMessage}`);
       showMessage({
-        message: "Authentication failed. Please try again.",
+        message: t(
+          "authenticationFailedPleaseTryAgain",
+          "Authentication failed. Please try again.",
+        ),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,

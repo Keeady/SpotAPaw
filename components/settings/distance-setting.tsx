@@ -1,5 +1,6 @@
 import { List } from "react-native-paper";
 import { DistanceSelectionDialog } from "../location-request-util";
+import { useTranslation } from "react-i18next";
 
 const DistanceSetting = ({
   iconColorDistance,
@@ -16,13 +17,16 @@ const DistanceSetting = ({
   distanceDialogVisible: boolean;
   handleDistanceChange: (distance: string) => Promise<void>;
 }) => {
+  const { t } = useTranslation(["settings", "translation"]);
   const defaultDistanceValue = selectedDistance || defaultDistance;
 
   return (
     <>
       <List.Item
-        title="Default Distance"
-        description={`${defaultDistanceValue} km radius`}
+        title={t("defaultDistance")}
+        description={t("defaultdistancevalueKmRadius", {
+          defaultDistanceValue,
+        })}
         left={(props) => (
           <List.Icon
             {...props}

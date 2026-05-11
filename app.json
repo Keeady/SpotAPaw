@@ -2,7 +2,7 @@
   "expo": {
     "name": "SpotAPaw",
     "slug": "SpotAPaw",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/spotapaw-icon.png",
     "scheme": "spotapaw",
@@ -70,7 +70,8 @@
           "cameraPermission": "Allow SpotAPaw to access your camera so you can take a pet photo and help identify pets more quickly."
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
