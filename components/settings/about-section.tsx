@@ -12,7 +12,7 @@ const AboutSection = ({
 
   return (
     <List.Section>
-      <List.Subheader>{t("about")}</List.Subheader>
+      <List.Subheader>{t("about", { ns: "translation" })}</List.Subheader>
       <List.Item
         title={t("aboutSpotapaw", { ns: "translation" })}
         description={t("learnMoreAboutTheApp", { ns: "settings" })}
