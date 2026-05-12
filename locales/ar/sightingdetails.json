@@ -1,0 +1,21 @@
+{
+  "colors": "الألوان:",
+  "features": "الميزات:",
+  "gender": "الجنس:",
+  "noDistanceData": "لا توجد بيانات مسافة",
+  "breed": "السلالة:",
+  "call": "اتصال",
+  "editSighting": "تعديل المشاهدة",
+  "featuresFeatures": "الميزات: {{features}}",
+  "iveSeenThisPet": "لقد رأيت هذا الحيوان الأليف!",
+  "notes": "ملاحظات:",
+  "notesNote": "ملاحظات: {{note}}",
+  "ownerPending": "في انتظار المالك",
+  "petFound": "تم العثور على الحيوان الأليف",
+  "reportedBy": "أُبلغ من قِبل:",
+  "sightingTimeline": "الجدول الزمني للمشاهدات",
+  "text": "رسالة",
+  "thisIsMyPet": "هذا حيواني الأليف.",
+  "viewMatches": "عرض التطابقات",
+  "unknown": "غير معروف"
+}

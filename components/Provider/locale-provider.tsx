@@ -10,6 +10,8 @@ import { PREFERRED_LANGUAGE } from "../constants";
 import { log } from "../logs";
 import { getLocales } from "expo-localization";
 import { changeLanguage } from "i18next";
+import { I18nManager } from "react-native";
+import * as Updates from "expo-updates";
 
 type ContextProps = {
   preferredLanguage: string;
@@ -26,10 +28,23 @@ const LocaleContextProvider = (props: Props) => {
   const defaultLanguage = getLocales()[0].languageCode || "en";
   const [language, setLanguage] = useState<string>(defaultLanguage);
 
+  const switchLanguage = async (locale: string) => {
+    const isArabic = locale === "ar";
+    console.log(
+      `Switching app layout to ${isArabic ? "RTL" : "LTR"} for locale: ${locale} ${I18nManager.isRTL ? "(currently RTL)" : "(currently LTR)"}`,
+    );
+    if (I18nManager.isRTL !== isArabic) {
+      I18nManager.forceRTL(isArabic);
+      I18nManager.allowRTL(isArabic);
+      await Updates.reloadAsync();
+    }
+  };
+
   const getLanguage = useCallback(async () => {
     try {
       const storedLanguage = await getStorageItem(PREFERRED_LANGUAGE);
       setLanguage(storedLanguage || defaultLanguage);
+      switchLanguage(storedLanguage || defaultLanguage);
     } catch {
       log("Error loading language context");
       return false;
@@ -39,9 +54,18 @@ const LocaleContextProvider = (props: Props) => {
   const saveLanguageContext = useCallback((value: string) => {
     setLanguage(value);
     saveStorageItem(PREFERRED_LANGUAGE, value);
-    changeLanguage(value).catch(() => {
-      log("Failed to change language");
-    });
+    changeLanguage(value)
+      .then(() => {
+        if (value === "ar") {
+          console.log(
+            "Language changed to Arabic, consider changing app layout to RTL.",
+          );
+          switchLanguage("ar");
+        }
+      })
+      .catch(() => {
+        log("Failed to change language");
+      });
   }, []);
 
   useEffect(() => {

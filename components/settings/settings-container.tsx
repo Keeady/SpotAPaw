@@ -55,6 +55,8 @@ const iconColors = {
 const languages: SupportedLanguage[] = [
   { code: "en", name: "English", nativeName: "English" },
   { code: "es", name: "Spanish", nativeName: "Español" },
+  { code: "ar", name: "Arabic", nativeName: "العربية" },
+  { code: "fr", name: "French", nativeName: "Français" },
 ];
 
 const defaultDistance = "25";

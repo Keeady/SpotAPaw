@@ -1,12 +1,14 @@
 import { formatDistanceToNow, Locale } from "date-fns";
 import { SightingLocation } from "../get-current-location";
 import { getDistance, convertDistance } from "geolib";
-import { enUS, es } from "date-fns/locale";
+import { enUS, es, fr, ar } from "date-fns/locale";
 import { TFunction } from "i18next";
 
 const supportedLocales: { [key: string]: Locale } = {
   en: enUS,
   es: es,
+  ar: ar,
+  fr: fr,
 };
 
 export function getLastSeenLocationDistance(

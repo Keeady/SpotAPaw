@@ -1,0 +1,10 @@
+{
+  "errorFetchingAccountInfo": "Erreur lors de la récupération des informations du compte.",
+  "successfullySavedOwnerProfile": "Profil du propriétaire enregistré avec succès.",
+  "errorSavingOwnerProfile": "Erreur lors de l'enregistrement du profil du propriétaire.",
+  "myContactInformation": "Mes Informations de Contact",
+  "firstName": "Prénom",
+  "lastName": "Nom de Famille",
+  "myReports": "Mes Rapports",
+  "viewAndManageYourSightingReports": "Voir et gérer vos rapports de sightings"
+}
