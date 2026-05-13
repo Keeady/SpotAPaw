@@ -30,9 +30,6 @@ const LocaleContextProvider = (props: Props) => {
 
   const switchLanguage = async (locale: string) => {
     const isArabic = locale === "ar";
-    console.log(
-      `Switching app layout to ${isArabic ? "RTL" : "LTR"} for locale: ${locale} ${I18nManager.isRTL ? "(currently RTL)" : "(currently LTR)"}`,
-    );
     if (I18nManager.isRTL !== isArabic) {
       I18nManager.forceRTL(isArabic);
       I18nManager.allowRTL(isArabic);
@@ -44,24 +41,18 @@ const LocaleContextProvider = (props: Props) => {
     try {
       const storedLanguage = await getStorageItem(PREFERRED_LANGUAGE);
       setLanguage(storedLanguage || defaultLanguage);
-      switchLanguage(storedLanguage || defaultLanguage);
     } catch {
       log("Error loading language context");
       return false;
     }
   }, [defaultLanguage]);
 
-  const saveLanguageContext = useCallback((value: string) => {
+  const saveLanguageContext = useCallback(async (value: string) => {
     setLanguage(value);
     saveStorageItem(PREFERRED_LANGUAGE, value);
     changeLanguage(value)
-      .then(() => {
-        if (value === "ar") {
-          console.log(
-            "Language changed to Arabic, consider changing app layout to RTL.",
-          );
-          switchLanguage("ar");
-        }
+      .then(async () => {
+        await switchLanguage(value);
       })
       .catch(() => {
         log("Failed to change language");
