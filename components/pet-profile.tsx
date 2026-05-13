@@ -54,7 +54,7 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
           <Text>{t("noPhoto", { ns: "translation" })}</Text>
         </View>
       )}
-      <Card.Content style={{ alignItems: "left" }}>
+      <Card.Content>
         {pet?.name && (
           <View style={styles.header}>
             <Text variant="labelLarge" style={{ alignSelf: "center" }}>

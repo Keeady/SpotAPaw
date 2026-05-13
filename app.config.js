@@ -14,11 +14,12 @@ export default ({ config }) => {
       ios: {
         ...(config.ios || {}),
         config: {
-          googleMapsApiKey: process.env.EXPO_GOOGLE_MAP_API_KEY_IOS
+          googleMapsApiKey: process.env.EXPO_GOOGLE_MAP_API_KEY_IOS,
         },
       },
     },
     extra: {
+      supportsRTL: true,
       eas: {
         projectId: "f8aec9d1-5a47-4313-90ce-b3793194513d",
       },

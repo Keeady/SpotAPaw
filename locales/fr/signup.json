@@ -1,0 +1,10 @@
+{
+  "alreadyHaveAnAccount": "Vous avez déjà un compte ?",
+  "anErrorOccuredPleaseTryAgain": "Une erreur s'est produite. Veuillez réessayer.",
+  "confirmPassword": "Confirmer le mot de passe",
+  "joinACommunityOfPetsAndPetLovers": "Rejoignez une communauté d'animaux et d'amoureux des animaux",
+  "passwordRequirements": "Le mot de passe doit comporter au moins 8 caractères, inclure une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+  "passwordsDoNotMatchPleaseTryAgain": "Les mots de passe ne correspondent pas. Veuillez réessayer.",
+  "pleaseCheckYourInboxForEmailVerification": "Veuillez vérifier votre boîte de réception pour la vérification de l'e-mail !",
+  "pleaseUseAStrongPassword": "Veuillez utiliser un mot de passe fort."
+}

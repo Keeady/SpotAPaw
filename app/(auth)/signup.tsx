@@ -164,7 +164,7 @@ export default function SignUpScreen() {
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>{t("welcome", "Welcome!")}</Text>
+        <Text style={styles.headerTitle}>{t("welcome", "Welcome!", { ns: "translation" })}</Text>
         <Text style={styles.headerSubtitle}>
           {t("joinACommunityOfPetsAndPetLovers")}
         </Text>

@@ -25,7 +25,7 @@ export default function PublicHome() {
       <View style={styles.logoContainer}>
         <HomePageHeader />
         <View>
-          <Text variant="titleMedium" style={styles.largeText}>
+          <Text variant="titleMedium" style={styles.largeText} >
             {t("title")}
           </Text>
         </View>
