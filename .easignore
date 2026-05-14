@@ -72,5 +72,3 @@ test-plan.md
 .firebase/
 .vscode/
 *.md
-
-google-services.json
