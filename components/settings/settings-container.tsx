@@ -8,7 +8,7 @@ import {
 import {
   SIGHTING_DISTANCE_KEY,
   SIGHTING_LOCATION_KEY,
-  SIGHTING_NOTIFICATION_ENABLED_KEY,
+  SIGHTING_RADIUSKM_NOTIFICATION,
 } from "@/components/constants";
 import { SupportedLanguage } from "@/components/location-request-util";
 import { onDeleteAccount } from "@/components/account/delete";
@@ -34,6 +34,8 @@ import AccountSetting from "./account-setting";
 import { useLocaleContext } from "../Provider/locale-provider";
 import { useTranslation } from "react-i18next";
 import ProSettings from "./pro-features-setting";
+import { useNotificationPermission } from "../Provider/notification-permission-provider";
+import { updateNotificationSubscriptionEnabled } from "../notification-util";
 
 // Define color scheme for icons
 const iconColors = {
@@ -59,8 +61,6 @@ const languages: SupportedLanguage[] = [
   { code: "fr", name: "French", nativeName: "Français" },
 ];
 
-const defaultDistance = "25";
-
 const SettingsContainer = () => {
   const { t } = useTranslation(["settings", "translation"]);
   const router = useRouter();
@@ -72,9 +72,8 @@ const SettingsContainer = () => {
   >();
   const [locationLoading, setLocationLoading] = useState(true);
 
-  // Future features states (placeholders)
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [selectedDistance, setSelectedDistance] = useState("25");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [selectedDistance, setSelectedDistance] = useState(SIGHTING_RADIUSKM_NOTIFICATION.toString());
 
   // languages
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -111,6 +110,7 @@ const SettingsContainer = () => {
 
   const { isAiFeatureEnabled, saveAIFeatureContext } = useAIFeatureContext();
   const { preferredLanguage, saveLanguageContext } = useLocaleContext();
+  const { enabledNotificationPermission, saveNotificationPermission } = useNotificationPermission();
 
   const loadSavedLocation = useCallback(async () => {
     try {
@@ -141,20 +141,17 @@ const SettingsContainer = () => {
     setSelectedLanguage(preferredLanguage || "en");
   }, [preferredLanguage]);
 
+  useEffect(() => {
+    setNotificationsEnabled(enabledNotificationPermission === true);
+  }, [enabledNotificationPermission]);
+
   const loadSettings = useCallback(async () => {
     try {
       // Check location permission
       const { status } = await Location.getForegroundPermissionsAsync();
       setLocationPermission(status === "granted");
-
-      // Load notification settings
-      const notifications = await AsyncStorage.getItem(
-        SIGHTING_NOTIFICATION_ENABLED_KEY,
-      );
-      setNotificationsEnabled(notifications === "true");
-
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
-      setSelectedDistance(distance || "25");
+      setSelectedDistance(distance || SIGHTING_RADIUSKM_NOTIFICATION.toString());
     } catch {
       log("Error loading settings");
     }
@@ -194,10 +191,8 @@ const SettingsContainer = () => {
 
   const handleToggleNotifications = async (value: boolean) => {
     setNotificationsEnabled(value);
-    await AsyncStorage.setItem(
-      SIGHTING_NOTIFICATION_ENABLED_KEY,
-      value.toString(),
-    );
+    saveNotificationPermission?.(value);
+    updateNotificationSubscriptionEnabled(value, Number(selectedDistance));
   };
 
   const handleToggleAIFeature = async (value: boolean) => {
@@ -214,6 +209,7 @@ const SettingsContainer = () => {
 
     setSelectedDistance(value);
     await AsyncStorage.setItem(SIGHTING_DISTANCE_KEY, value);
+    updateNotificationSubscriptionEnabled(notificationsEnabled, Number(value));
     setDistanceDialogVisible(false);
   };
 
@@ -381,7 +377,7 @@ const SettingsContainer = () => {
           onDistancePress={setDistanceDialogVisible}
           distanceDialogVisible={distanceDialogVisible}
           handleDistanceChange={handleDistanceChange}
-          defaultDistance={defaultDistance}
+          defaultDistance={SIGHTING_RADIUSKM_NOTIFICATION.toString()}
         />
       }
       privacySetting={

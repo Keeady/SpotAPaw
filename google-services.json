@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "247145460804",
+    "project_id": "spotapaw",
+    "storage_bucket": "spotapaw.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247145460804:android:3cfd0497499866fd63f811",
+        "android_client_info": {
+          "package_name": "com.bcamaria.SpotAPaw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "247145460804-4hjq0ec60g4le6v0kg28d7er5napca2e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bcamaria.SpotAPaw",
+            "certificate_hash": "7605f80bb68c23751f8e26851b8d213cb3bd4cfc"
+          }
+        },
+        {
+          "client_id": "247145460804-u3u9i7bqsu9csqio8qjl21mg39nbm831.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtXXwYCRZMrqW5UVN_SAJHXkxv81btuqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "247145460804-u3u9i7bqsu9csqio8qjl21mg39nbm831.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "247145460804-hp31raq2n9vosvrdtvb8uke89m8ute0p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bcamaria.SpotAPaw",
+                "app_store_id": "6757455715"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
