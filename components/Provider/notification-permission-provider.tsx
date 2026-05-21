@@ -53,7 +53,7 @@ const NotificationPermissionProvider = (props: Props) => {
       saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "false");
       setEnabledNotificationPermission(false);
     }
-  }, []);
+  }, [requestNotificationPermission]);
 
   const getExistingNotificationPermission = useCallback(async () => {
     setLoadingNotification(true);
