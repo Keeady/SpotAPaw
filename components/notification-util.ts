@@ -22,7 +22,41 @@ export async function isNotificationPermissionGranted() {
 }
 
 export async function registerForNotifications() {
-  updateNotificationSubscriptionEnabled(true);
+  const isGranted = await isNotificationPermissionGranted();
+  if (!isGranted) {
+    console.log("Notification permission not granted");
+    return;
+  }
+
+  try {
+    let notificationToken: string | null = "";
+    notificationToken = await getNotificationToken();
+    console.log("Notification token:", notificationToken);
+    if (!notificationToken) return;
+    const userLocation = await getUserLocationForNotifications();
+    console.log("User location for notifications:", userLocation);
+    if (!userLocation) return;
+
+    const { data, error } = await supabase.functions.invoke(
+      "register_push_notification",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          notificationToken: notificationToken,
+          locationLat: userLocation.lat,
+          locationLong: userLocation.lng,
+          radius_km: SIGHTING_RADIUSKM_NOTIFICATION,
+        }),
+      },
+    );
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.log("Failed to register for notifications:", error);
+  }
 }
 
 export async function unregisterFromNotifications() {

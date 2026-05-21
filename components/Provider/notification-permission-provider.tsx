@@ -5,10 +5,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { saveStorageItem } from "../util";
-import {
-  SIGHTING_NOTIFICATION_ENABLED_KEY,
-} from "../constants";
 import * as Notifications from "expo-notifications";
 import { isNotificationPermissionGranted } from "../notification-util";
 

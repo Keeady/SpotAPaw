@@ -21,7 +21,7 @@ Deno.serve(async (req: Request) => {
   const petName = record.name || `this ${species}`;
   const colors = record.colors || "";
   const breed = record.breed || "";
-  const collar = `${record.collar_description} and` || "";
+  const collar = record.collar_description ? `${record.collar_description} and` : "";
   const features = record.features || "";
 
   let subscribers;
@@ -52,7 +52,7 @@ Deno.serve(async (req: Request) => {
     to: s.notification_push_token,
     sound: "default",
     title: messageTitle,
-    body: messageBody,
+    body: messageBody.trim(),
     data: { sightingId: sightingId },
   }));
 
