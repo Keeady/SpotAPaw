@@ -3,9 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const accessToken = Deno.env.get("EXPO_PUSH_NOTIFICATION_ACCESS_TOKEN");
 
-if (!supabaseUrl || !supabaseKey || !accessToken) {
+if (!supabaseUrl || !supabaseKey) {
   const error = "Missing environment variables";
   throw new Error(error);
 }
@@ -63,13 +62,17 @@ Deno.serve(async (req: Request) => {
   const { notificationToken, locationLat, locationLong, radius_km } =
     await req.json();
 
-  if (!notificationToken || !locationLat || !locationLong || !radius_km) {
+  if (
+    !notificationToken ||
+    locationLat === undefined ||
+    locationLong === undefined ||
+    radius_km === undefined
+  ) {
     return new Response("Missing required fields", { status: 400 });
   }
 
-  const existingSubscription = await getExistingSightingSubscription(
-    notificationToken,
-  );
+  const existingSubscription =
+    await getExistingSightingSubscription(notificationToken);
 
   if (existingSubscription && existingSubscription.length > 0) {
     return new Response("Subscription already exists", { status: 200 });

@@ -13,33 +13,10 @@ if (!supabaseUrl || !supabaseKey || !accessToken) {
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 Deno.serve(async (req: Request) => {
-  const { record } = await req.json();
-  const latitude = record.last_seen_lat;
-  const longitude = record.last_seen_long;
-  const sightingId = record.id;
-  const species = record.species;
-  const petName = record.name || `this ${species}`;
-  const colors = record.colors || "";
-  const breed = record.breed || "";
-  const collar = record.collar_description ? `${record.collar_description} and` : "";
-  const features = record.features || "";
-
   let subscribers;
 
   try {
-    const { data, error } = await supabaseClient.rpc(
-      "get_nearby_sighting_subscribers",
-      {
-        last_seen_long: longitude,
-        last_seen_lat: latitude,
-      },
-    );
-
-    if (error) {
-      console.log("Error fetching subscribers:", error);
-      return new Response("Error fetching subscribers", { status: 500 });
-    }
-
+    const { data } = await supabaseClient.from("sighting_subscriptions").select("*").eq("enabled", true);
     subscribers = data;
     if (!subscribers || subscribers.length === 0) {
       return new Response("No subscribers found", { status: 200 });
@@ -49,8 +26,8 @@ Deno.serve(async (req: Request) => {
     return new Response("Error fetching subscribers", { status: 500 });
   }
 
-  const messageTitle = `Have you seen ${petName}?`;
-  const messageBody = `Looking for a ${colors} ${breed} ${species} nearby with ${collar} ${features}.`;
+  const messageTitle = `Have you seen this pet?`;
+  const messageBody = `Looking for a pet nearby.`;
 
   // handle first 100 subscribers
   // TODO: implement batching for more subscribers if needed
@@ -59,7 +36,7 @@ Deno.serve(async (req: Request) => {
     sound: "default",
     title: messageTitle,
     body: messageBody.trim(),
-    data: { sightingId: sightingId },
+    data: { sightingId: "c7deb858-4d03-4cf2-a8ed-746a9ea32df8" },
   }));
 
   try {
@@ -77,11 +54,6 @@ Deno.serve(async (req: Request) => {
     if (!response.ok) {
       console.log("Failed to send notifications:", results);
       return new Response("Failed to send notifications", { status: 500 });
-    }
-
-    if (!results.data || results.data.length === 0) {
-      console.log("No notifications were sent:", results);
-      return new Response("No notifications were sent", { status: 200 });
     }
 
     const staleTokens = results.data

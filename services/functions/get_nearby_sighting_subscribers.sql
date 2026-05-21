@@ -5,7 +5,7 @@ returns table(notification_push_token text) as $$
   where 
   enabled = true and
   notification_push_token is not null and
-  and notification_push_token <> '' and
+  notification_push_token <> '' and
   ST_DWithin(
     center,
     ST_MakePoint(last_seen_long, last_seen_lat)::geography,

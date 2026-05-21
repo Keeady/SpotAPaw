@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import * as Notifications from "expo-notifications";
 import { isNotificationPermissionGranted } from "../notification-util";
+import { saveStorageItem } from "../util";
+import { SIGHTING_NOTIFICATION_ENABLED_KEY } from "../constants";
 
 type ContextProps = {
   enabledNotificationPermission?: boolean;
@@ -32,7 +34,7 @@ const NotificationPermissionProvider = (props: Props) => {
   }, []);
 
   const saveNotificationPermission = useCallback((value: boolean) => {
-    if (value) {
+    if (value === true) {
       isNotificationPermissionGranted()
         .then((granted) => {
           if (!granted) {
@@ -41,12 +43,14 @@ const NotificationPermissionProvider = (props: Props) => {
           return granted;
         })
         .then((granted) => {
+          saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "true");
           setEnabledNotificationPermission(granted);
         })
         .catch(() => {
           setEnabledNotificationPermission(false);
         });
     } else {
+      saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "false");
       setEnabledNotificationPermission(false);
     }
   }, []);
