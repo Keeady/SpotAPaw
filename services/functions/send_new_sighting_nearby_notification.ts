@@ -83,17 +83,6 @@ Deno.serve(async (req: Request) => {
       console.log("No notifications were sent:", results);
       return new Response("No notifications were sent", { status: 200 });
     }
-
-    const staleTokens = results.data
-      .filter((r) => r.details?.error === "DeviceNotRegistered")
-      .map((r) => r.details.expoPushToken); // Expo echoes the token back on error
-
-    if (staleTokens.length > 0) {
-      await supabaseClient
-        .from("sighting_subscriptions")
-        .delete()
-        .in("notification_push_token", staleTokens);
-    }
   } catch (error) {
     console.log("Error sending notifications:", error);
     return new Response("Error sending notifications", { status: 500 });
