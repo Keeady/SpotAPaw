@@ -1,8 +1,8 @@
-import { AuthProvider } from "@/components/Provider/auth-provider";
+import { AuthContext, AuthProvider } from "@/components/Provider/auth-provider";
 import { Stack, useRouter } from "expo-router";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { Linking, View } from "react-native";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   MD3LightTheme,
@@ -24,10 +24,20 @@ import type { i18n } from "i18next";
 import { ProContextProvider } from "@/components/Provider/pro-context-provider";
 import { registerForNotifications } from "@/components/notification-util";
 import { NotificationPermissionProvider } from "@/components/Provider/notification-permission-provider";
+import * as Notifications from "expo-notifications";
 
 export default function Layout() {
   const router = useRouter();
   const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
 
   useEffect(() => {
     initI18next()
@@ -150,38 +160,7 @@ export default function Layout() {
                 <ProContextProvider>
                   <AIFeatureContextProvider>
                     <AppLifecycleProvider>
-                      <View style={styles.root}>
-                        <View style={styles.container}>
-                          <Stack
-                            screenOptions={{
-                              contentStyle: styles.content,
-                              headerShown: true,
-                              headerBackVisible: true,
-                              headerBackButtonDisplayMode: "minimal",
-                              headerTitle: HeaderLeft,
-                              headerRight: HeaderRight,
-                            }}
-                          >
-                            <Stack.Screen
-                              name="index"
-                              options={{ headerShown: false }}
-                            />
-                            <Stack.Screen
-                              name="(app)"
-                              options={{ headerShown: false }}
-                            />
-                            <Stack.Screen
-                              name="terms"
-                              options={{ headerShown: true }}
-                            />
-                            <Stack.Screen
-                              name="privacy"
-                              options={{ headerShown: true }}
-                            />
-                          </Stack>
-                          <FlashMessage position="top" duration={5000} />
-                        </View>
-                      </View>
+                      <App />
                     </AppLifecycleProvider>
                   </AIFeatureContextProvider>
                 </ProContextProvider>
@@ -191,5 +170,70 @@ export default function Layout() {
         </NotificationPermissionProvider>
       </PaperProvider>
     </I18nextProvider>
+  );
+}
+
+function App() {
+  const router = useRouter();
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const sightingRoute = user ? "/(app)/my-sightings" : "/sightings";
+
+    const response = Notifications.getLastNotificationResponse();
+    if (response) {
+      const data = response.notification.request.content.data;
+      if (data?.sightingId) {
+        router.push(`${sightingRoute}/${data.sightingId}`);
+
+        Notifications.dismissNotificationAsync(
+          response.notification.request.identifier,
+        );
+      }
+    }
+
+    const notificationResponseListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response.notification.request.content.data;
+        if (data && data.sightingId) {
+          router.push(`${sightingRoute}/${data.sightingId}`);
+        }
+      });
+
+    const notificationReceivedListener =
+      Notifications.addNotificationReceivedListener((notification) => {
+        const data = notification.request.content.data;
+        if (data && data.sightingId) {
+          router.push(`${sightingRoute}/${data.sightingId}`);
+        }
+      });
+
+    return () => {
+      notificationResponseListener.remove();
+      notificationReceivedListener.remove();
+    };
+  }, [router, user]);
+
+  return (
+    <View style={styles.root}>
+      <View style={styles.container}>
+        <Stack
+          screenOptions={{
+            contentStyle: styles.content,
+            headerShown: true,
+            headerBackVisible: true,
+            headerBackButtonDisplayMode: "minimal",
+            headerTitle: HeaderLeft,
+            headerRight: HeaderRight,
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          <Stack.Screen name="terms" options={{ headerShown: true }} />
+          <Stack.Screen name="privacy" options={{ headerShown: true }} />
+        </Stack>
+        <FlashMessage position="top" duration={5000} />
+      </View>
+    </View>
   );
 }
