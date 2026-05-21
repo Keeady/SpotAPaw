@@ -1,8 +1,8 @@
-import { AuthProvider } from "@/components/Provider/auth-provider";
+import { AuthContext, AuthProvider } from "@/components/Provider/auth-provider";
 import { Stack, useRouter } from "expo-router";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { Linking, View } from "react-native";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   MD3LightTheme,
@@ -24,9 +24,11 @@ import type { i18n } from "i18next";
 import { ProContextProvider } from "@/components/Provider/pro-context-provider";
 import { registerForNotifications } from "@/components/notification-util";
 import { NotificationPermissionProvider } from "@/components/Provider/notification-permission-provider";
+import * as Notifications from "expo-notifications";
 
 export default function Layout() {
   const router = useRouter();
+  const { user } = useContext(AuthContext);
   const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
 
   useEffect(() => {
@@ -135,6 +137,22 @@ export default function Layout() {
   useEffect(() => {
     registerForNotifications();
   }, []);
+
+  useEffect(() => {
+    const notificationListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const sightingRoute = user ? "/(app)/my-sightings" : "/sightings";
+
+        const data = response.notification.request.content.data;
+        if (data && data.sightingId) {
+          router.push(`${sightingRoute}/${data.sightingId}`);
+        }
+      });
+
+    return () => {
+      notificationListener.remove();
+    };
+  }, [router, user]);
 
   if (!i18nInstance) {
     return <ActivityIndicator />;
