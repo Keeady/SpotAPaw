@@ -25,7 +25,6 @@ async function getExistingSightingSubscription(
 
     return data;
   } catch (error) {
-    console.log("Failed to update notification subscription:", error);
     return;
   }
 }

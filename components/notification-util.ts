@@ -6,12 +6,10 @@ import {
   SightingLocation,
 } from "./get-current-location";
 import { SIGHTING_RADIUSKM_NOTIFICATION } from "./constants";
+import { log } from "./logs";
+import { createErrorLogMessage } from "./util";
 
 export async function isNotificationPermissionGranted() {
-  console.log(
-    "Checking notification permission",
-    await Notifications.getPermissionsAsync(),
-  );
   return Notifications.getPermissionsAsync()
     .then(
       ({ status, ios }) =>
@@ -24,17 +22,15 @@ export async function isNotificationPermissionGranted() {
 export async function registerForNotifications() {
   const isGranted = await isNotificationPermissionGranted();
   if (!isGranted) {
-    console.log("Notification permission not granted");
+    log("Failed to register. Notification permission not granted");
     return;
   }
 
   try {
     let notificationToken: string | null = "";
     notificationToken = await getNotificationToken();
-    console.log("Notification token:", notificationToken);
     if (!notificationToken) return;
     const userLocation = await getUserLocationForNotifications();
-    console.log("User location for notifications:", userLocation);
     if (!userLocation) return;
 
     const { data, error } = await supabase.functions.invoke(
@@ -55,7 +51,8 @@ export async function registerForNotifications() {
 
     return data;
   } catch (error) {
-    console.log("Failed to register for notifications:", error);
+    const errorMessage = createErrorLogMessage(error);
+    log("Failed to register for notifications: " + errorMessage);
   }
 }
 
@@ -77,18 +74,10 @@ export async function updateNotificationSubscriptionEnabled(
   enabled: boolean,
   radius_km?: number,
 ) {
-  console.log(
-    "Updating notification subscription enabled:",
-    enabled,
-    "radius_km:",
-    radius_km,
-  );
   let notificationToken: string | null = "";
   notificationToken = await getNotificationToken();
-  console.log("Notification token:", notificationToken);
   if (!notificationToken) return;
   const userLocation = await getUserLocationForNotifications();
-  console.log("User location for notifications:", userLocation);
   if (!userLocation) return;
   await updateNotificationSubscription(
     notificationToken,
@@ -101,12 +90,12 @@ export async function updateNotificationSubscriptionEnabled(
 async function getNotificationToken() {
   try {
     const { data } = await Notifications.getExpoPushTokenAsync().catch(() => {
-      console.log("Failed to get push token");
       return { data: null };
     });
     return data;
-  } catch {
-    console.log("Error while getting push token");
+  } catch (error) {
+    const errorMessage = createErrorLogMessage(error);
+    log("Error while getting push token: " + errorMessage);
   }
   return null;
 }
@@ -128,10 +117,12 @@ async function updateNotificationSubscription(
       { onConflict: "notification_push_token" },
     );
     if (error) {
-      console.log("Failed to update notification subscription:", error);
+      const errorMessage = createErrorLogMessage(error);
+      log("Failed to update notification subscription: " + errorMessage);
     }
   } catch (error) {
-    console.log("Failed to update notification subscription:", error);
+    const errorMessage = createErrorLogMessage(error);
+    log("Failed to update notification subscription: " + errorMessage);
   }
 }
 

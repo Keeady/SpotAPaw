@@ -22,7 +22,6 @@ Deno.serve(async (req: Request) => {
       return new Response("No subscribers found", { status: 200 });
     }
   } catch (error) {
-    console.log("Error fetching subscribers:", error);
     return new Response("Error fetching subscribers", { status: 500 });
   }
 
@@ -52,7 +51,6 @@ Deno.serve(async (req: Request) => {
     const results = await response.json();
 
     if (!response.ok) {
-      console.log("Failed to send notifications:", results);
       return new Response("Failed to send notifications", { status: 500 });
     }
 
@@ -67,7 +65,6 @@ Deno.serve(async (req: Request) => {
         .in("notification_push_token", staleTokens);
     }
   } catch (error) {
-    console.log("Error sending notifications:", error);
     return new Response("Error sending notifications", { status: 500 });
   }
 
