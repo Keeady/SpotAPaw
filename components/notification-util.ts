@@ -8,6 +8,7 @@ import {
 import { SIGHTING_RADIUSKM_NOTIFICATION } from "./constants";
 import { log } from "./logs";
 import { createErrorLogMessage } from "./util";
+import Constants from "expo-constants";
 
 export async function isNotificationPermissionGranted() {
   return Notifications.getPermissionsAsync()
@@ -89,7 +90,15 @@ export async function updateNotificationSubscriptionEnabled(
 
 async function getNotificationToken() {
   try {
-    const { data } = await Notifications.getExpoPushTokenAsync().catch(() => {
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ??
+      Constants?.easConfig?.projectId;
+    if (!projectId) {
+      throw new Error("Project ID not found");
+    }
+    const { data } = await Notifications.getExpoPushTokenAsync({
+      projectId,
+    }).catch(() => {
       return { data: null };
     });
     return data;

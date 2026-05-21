@@ -30,6 +30,15 @@ export default function Layout() {
   const router = useRouter();
   const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
 
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
   useEffect(() => {
     initI18next()
       .then((v) => {
@@ -175,7 +184,7 @@ function App() {
     if (response) {
       const data = response.notification.request.content.data;
       if (data?.sightingId) {
-        router.push(`/${sightingRoute}/${data.sightingId}`);
+        router.push(`${sightingRoute}/${data.sightingId}`);
 
         Notifications.dismissNotificationAsync(
           response.notification.request.identifier,
