@@ -6,6 +6,7 @@ import { SightingLocation } from "../get-current-location";
 import DividerWithText from "../divider-with-text";
 import { PermissionContext } from "../Provider/permission-provider";
 import { useTranslation } from "react-i18next";
+import { updateNotificationSubscriptionLocation } from "../notification-util";
 
 export const SightingLocationManager = () => {
   const { t } = useTranslation("sightingpage");
@@ -17,6 +18,7 @@ export const SightingLocationManager = () => {
       if (location) {
         saveLocation?.(location);
         setLocation?.(location);
+        updateNotificationSubscriptionLocation(location);
       }
     },
     [saveLocation, setLocation],

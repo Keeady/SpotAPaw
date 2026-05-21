@@ -21,6 +21,7 @@
       "usesAppleSignIn": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
@@ -71,7 +72,8 @@
         }
       ],
       "expo-apple-authentication",
-      "expo-localization"
+      "expo-localization",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true
