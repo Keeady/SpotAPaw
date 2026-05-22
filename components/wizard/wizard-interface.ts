@@ -21,6 +21,7 @@ export type SightingReport = AggregatedSighting & {
   petBehavior: string;
   isLost: boolean;
   sightingId: string;
+  images: PetImage[];
 };
 
 export type PetImage = {
@@ -50,7 +51,7 @@ export type SightingWizardStepData = {
   sightingFormData: SightingReport;
   updateSightingData: (
     field: keyof SightingReport,
-    value: string | number | PetImage | boolean,
+    value: string | number | PetImage | boolean | PetImage[],
   ) => void;
   loading: boolean;
   setReportType: (type: SightingReportType) => void;
