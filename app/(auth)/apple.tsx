@@ -49,8 +49,9 @@ export default function Auth() {
           statusBarHeight: 50,
         });
       }
-    } catch {
-      log("Apple login failed.");
+    } catch (error) {
+      const errorMessage = createErrorLogMessage(error);
+      log(`Apple login failed: ${errorMessage}`);
       showMessage({
         message: t(
           "authenticationFailedPleaseTryAgain",
