@@ -6,4 +6,7 @@ export interface Owner {
   email: string;
   countryCode: string;
   ownerId: string;
+  deletedAt: string;
+  createdAt: string;
+  markedForDeletion: boolean;
 }

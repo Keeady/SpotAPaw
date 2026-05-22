@@ -98,6 +98,9 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
       countryCode: "country_code",
       email: "email",
       ownerId: "owner_id",
+      deletedAt: "deleted_at",
+      createdAt: "created_at",
+      markedForDeletion: "marked_for_deletion",
     };
 
     const normalizedPayload = {};
@@ -125,6 +128,9 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
       countryCode: "country_code",
       email: "email",
       ownerId: "owner_id",
+      deletedAt: "deleted_at",
+      createdAt: "created_at",
+      markedForDeletion: "marked_for_deletion",
     };
 
     const deNormalizedPayload = {} as Owner;
