@@ -82,7 +82,7 @@ export class SupabasePetRepository extends BasePetRepository {
     }
     const { error } = await this.supabaseClient
       .from("pets")
-      .delete()
+      .update({ deleted_at: new Date().toISOString() })
       .eq("id", id)
       .eq("owner_id", ownerId);
 
