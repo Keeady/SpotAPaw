@@ -17,7 +17,8 @@ export class SupabasePetRepository extends BasePetRepository {
     const { error, data } = await this.supabaseClient
       .from("pets")
       .select("*")
-      .eq("id", id);
+      .eq("id", id)
+      .eq("deleted_at", null);
 
     if (error) {
       throw error;
@@ -38,7 +39,8 @@ export class SupabasePetRepository extends BasePetRepository {
     const { error, data } = await this.supabaseClient
       .from("pets")
       .select("*")
-      .eq("owner_id", ownerId);
+      .eq("owner_id", ownerId)
+      .eq("deleted_at", null);
 
     if (error) {
       throw error;
@@ -82,7 +84,7 @@ export class SupabasePetRepository extends BasePetRepository {
     }
     const { error } = await this.supabaseClient
       .from("pets")
-      .delete()
+      .update({ deleted_at: new Date().toISOString() })
       .eq("id", id)
       .eq("owner_id", ownerId);
 
@@ -130,6 +132,7 @@ export class SupabasePetRepository extends BasePetRepository {
       createdAt: "created_at",
       lastSeenTime: "last_seen_time",
       petDescriptionId: "pet_description_id",
+      deletedAt: "deleted_at",
     };
 
     const normalizedPayload = {};
@@ -168,6 +171,7 @@ export class SupabasePetRepository extends BasePetRepository {
       createdAt: "created_at",
       lastSeenTime: "last_seen_time",
       petDescriptionId: "pet_description_id",
+      deletedAt: "deleted_at",
     };
 
     const deNormalizedPayload = {} as Pet;

@@ -1,6 +1,7 @@
 export interface Pet {
     id: string,
     createdAt: string,
+    deletedAt: string,
     ownerId: string,
     name: string;
     species: string;
