@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import * as Notifications from "expo-notifications";
 import {
   isNotificationPermissionGranted,
   requestNotificationPermission,

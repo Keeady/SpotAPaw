@@ -61,12 +61,12 @@ export async function registerForNotifications() {
     const { data, error } = await supabase.functions.invoke(
       "register_push_notification",
       {
-        body: JSON.stringify({
+        body: {
           notificationToken: notificationToken,
           locationLat: userLocation.lat,
           locationLong: userLocation.lng,
           radius_km: SIGHTING_RADIUSKM_NOTIFICATION,
-        }),
+        },
       },
     );
     if (error) {
