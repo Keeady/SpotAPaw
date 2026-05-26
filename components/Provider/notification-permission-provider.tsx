@@ -6,7 +6,10 @@ import React, {
   useState,
 } from "react";
 import * as Notifications from "expo-notifications";
-import { isNotificationPermissionGranted } from "../notification-util";
+import {
+  isNotificationPermissionGranted,
+  requestNotificationPermission,
+} from "../notification-util";
 import { saveStorageItem } from "../util";
 import { SIGHTING_NOTIFICATION_ENABLED_KEY } from "../constants";
 
@@ -28,32 +31,30 @@ const NotificationPermissionProvider = (props: Props) => {
     useState<boolean>(false);
   const [isLoadingNotification, setLoadingNotification] = useState(false);
 
-  const requestNotificationPermission = useCallback(async (): Promise<boolean> => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    return status === "granted";
-  }, []);
-
-  const saveNotificationPermission = useCallback((value: boolean) => {
-    if (value === true) {
-      isNotificationPermissionGranted()
-        .then((granted) => {
-          if (!granted) {
-            return requestNotificationPermission();
-          }
-          return granted;
-        })
-        .then((granted) => {
-          saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "true");
-          setEnabledNotificationPermission(granted);
-        })
-        .catch(() => {
-          setEnabledNotificationPermission(false);
-        });
-    } else {
-      saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "false");
-      setEnabledNotificationPermission(false);
-    }
-  }, [requestNotificationPermission]);
+  const saveNotificationPermission = useCallback(
+    (value: boolean) => {
+      if (value === true) {
+        isNotificationPermissionGranted()
+          .then((granted) => {
+            if (!granted) {
+              return requestNotificationPermission();
+            }
+            return granted;
+          })
+          .then((granted) => {
+            saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "true");
+            setEnabledNotificationPermission(granted);
+          })
+          .catch(() => {
+            setEnabledNotificationPermission(false);
+          });
+      } else {
+        saveStorageItem(SIGHTING_NOTIFICATION_ENABLED_KEY, "false");
+        setEnabledNotificationPermission(false);
+      }
+    },
+    [requestNotificationPermission],
+  );
 
   const getExistingNotificationPermission = useCallback(async () => {
     setLoadingNotification(true);

@@ -11,50 +11,32 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-async function getExistingSightingSubscription(
-  notification_push_token: string,
-) {
-  try {
-    const { error, data } = await supabaseClient
-      .from("sighting_subscriptions")
-      .select("*")
-      .eq("notification_push_token", notification_push_token);
-    if (error) {
-      return;
-    }
-
-    return data;
-  } catch (error) {
-    return;
-  }
+function getErrorResponse(error: string, status: number = 400, code?: string) {
+  return new Response(
+    JSON.stringify({
+      error,
+      success: false,
+      code,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status,
+    },
+  );
 }
 
-async function registerForPushNotification(
-  notificationToken: string,
-  locationLat: number,
-  locationLong: number,
-  radius_km: number,
-) {
-  try {
-    const { error, data } = await supabaseClient
-      .from("sighting_subscriptions")
-      .insert(
-        {
-          notification_push_token: notificationToken,
-          center: `POINT(${locationLong} ${locationLat})`, // PostGIS: lon first
-          radius_km: radius_km,
-          enabled: true,
-        },
-        { onConflict: "notification_push_token" },
-      );
-    if (error) {
-      return;
-    }
-
-    return data;
-  } catch (error) {
-    return;
-  }
+function getSuccessResponse(message: string, data: any = []) {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message,
+      data,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    },
+  );
 }
 
 Deno.serve(async (req: Request) => {
@@ -67,26 +49,49 @@ Deno.serve(async (req: Request) => {
     locationLong === undefined ||
     radius_km === undefined
   ) {
-    return new Response("Missing required fields", { status: 400 });
+    return getErrorResponse("Missing required fields", 400);
   }
 
-  const existingSubscription =
-    await getExistingSightingSubscription(notificationToken);
+  let existingSubscription;
+  try {
+    const { error, data } = await supabaseClient
+      .from("sighting_subscriptions")
+      .select("*")
+      .eq("notification_push_token", notificationToken);
+
+    if (error) {
+      return getErrorResponse(error.message, 500);
+    }
+
+    existingSubscription = data;
+  } catch (error) {
+    return getErrorResponse(error.message, 500);
+  }
 
   if (existingSubscription && existingSubscription.length > 0) {
-    return new Response("Subscription already exists", { status: 200 });
+    return getSuccessResponse("Subscription already exists");
   }
 
-  const subscription = await registerForPushNotification(
-    notificationToken,
-    locationLat,
-    locationLong,
-    radius_km,
-  );
+  try {
+    const { error } = await supabaseClient
+      .from("sighting_subscriptions")
+      .insert(
+        {
+          notification_push_token: notificationToken,
+          center: `POINT(${locationLong} ${locationLat})`, // PostGIS: lon first
+          radius_km: radius_km,
+          enabled: true,
+        },
+        { onConflict: "notification_push_token" },
+      );
 
-  if (!subscription) {
-    return new Response("Failed to register subscription", { status: 500 });
+    if (error) {
+      return getErrorResponse(error.message, 500);
+    }
+
+  } catch (error) {
+    return getErrorResponse(error.message, 500);
   }
 
-  return new Response("Subscription registered successfully", { status: 201 });
+  return getSuccessResponse("Subscription registered successfully.")
 });
