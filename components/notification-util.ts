@@ -7,23 +7,47 @@ import {
 } from "./get-current-location";
 import { SIGHTING_RADIUSKM_NOTIFICATION } from "./constants";
 import { log } from "./logs";
-import { createErrorLogMessage } from "./util";
+import { createErrorLogMessage, createErrorLogMessageAsync } from "./util";
 import Constants from "expo-constants";
 
 export async function isNotificationPermissionGranted() {
   return Notifications.getPermissionsAsync()
-    .then(
-      ({ status, ios }) =>
+    .then(({ status, ios }) => {
+      log(
+        `Notification permission status: ${status} iOS status: ${ios?.status}`,
+      );
+      return (
         status === "granted" ||
-        ios?.status !== Notifications.IosAuthorizationStatus.DENIED,
-    )
-    .catch(() => false);
+        ios?.status === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+        ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+        ios?.status === Notifications.IosAuthorizationStatus.EPHEMERAL
+      );
+    })
+    .catch((error) => {
+      const errorMessage = createErrorLogMessage(error);
+      log("Error while checking notification permissions: " + errorMessage);
+      return false;
+    });
+}
+
+export async function requestNotificationPermission(): Promise<boolean> {
+  const { status, ios } = await Notifications.requestPermissionsAsync();
+  return (
+    status === "granted" ||
+    ios?.status === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+    ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+    ios?.status === Notifications.IosAuthorizationStatus.EPHEMERAL
+  );
 }
 
 export async function registerForNotifications() {
-  const isGranted = await isNotificationPermissionGranted();
+  let isGranted = await isNotificationPermissionGranted();
   if (!isGranted) {
-    log("Failed to register. Notification permission not granted");
+    isGranted = await requestNotificationPermission();
+  }
+
+  if (!isGranted) {
+    log("Notification permission not granted");
     return;
   }
 
@@ -37,23 +61,26 @@ export async function registerForNotifications() {
     const { data, error } = await supabase.functions.invoke(
       "register_push_notification",
       {
-        method: "POST",
-        body: JSON.stringify({
+        body: {
           notificationToken: notificationToken,
           locationLat: userLocation.lat,
           locationLong: userLocation.lng,
           radius_km: SIGHTING_RADIUSKM_NOTIFICATION,
-        }),
+        },
       },
     );
     if (error) {
-      throw error;
+      createErrorLogMessageAsync(error).then((errorMessage) => {
+        log(`register_push_notification Function error : ${errorMessage}`);
+      });
+      return;
     }
 
     return data;
   } catch (error) {
-    const errorMessage = createErrorLogMessage(error);
-    log("Failed to register for notifications: " + errorMessage);
+    createErrorLogMessageAsync(error).then((errorMessage) => {
+      log(`register_push_notification Function error : ${errorMessage}`);
+    });
   }
 }
 
