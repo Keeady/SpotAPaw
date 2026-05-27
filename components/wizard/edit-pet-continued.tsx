@@ -33,6 +33,8 @@ export function EditPetContinued({
     collar,
     collarDescription,
     image,
+    images,
+    photos,
   } = sightingFormData;
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export function EditPetContinued({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={image.uri || photo}
+          petPhoto={images[0]?.uri || image?.uri || photos[0] || photo}
           showDetails={false}
         />
 

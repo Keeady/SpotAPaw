@@ -10,7 +10,7 @@ export type WizardFormAction =
 export type SightingPet = Pet & {
   photoUrl?: string;
   image?: PetImage;
-  images: PetImage[];
+  images?: PetImage[];
 };
 
 export type SightingReport = AggregatedSighting & {

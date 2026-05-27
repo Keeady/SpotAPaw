@@ -2,6 +2,7 @@ import React from "react";
 import { View, Image, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, Chip, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import SightingGallery from "../sightings/gallery";
 
 type PetProfile = {
   id: string;
@@ -15,6 +16,7 @@ type PetProfile = {
   features?: string;
   species?: string;
   note?: string;
+  photos?: string[];
 };
 
 type PetProfileCardProps = {
@@ -35,6 +37,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   viewPetSightings,
 }) => {
   const { t } = useTranslation(["petprofile", "translation"]);
+  const [isVisibleGallery, setIsVisibleGallery] = React.useState(false);
   const {
     name,
     breed,
@@ -46,6 +49,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     features,
     species,
     note,
+    photos,
   } = petProfile;
   const getStatusColor = () => {
     switch (status) {
@@ -63,7 +67,14 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   return (
     <ScrollView>
       <Card style={styles.card}>
-        {photo ? (
+        {photos && photos.length > 0 ? (
+          <SightingGallery
+            images={photos.map((photo) => ({ uri: photo }))}
+            isVisible={isVisibleGallery}
+            setIsVisible={setIsVisibleGallery}
+            mainPhoto={photos[0]}
+          />
+        ) : photo ? (
           <Image
             source={{ uri: photo }}
             style={styles.image}
@@ -125,7 +136,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
           )}
           {features && (
             <Text style={styles.detail}>
-              ⭐ {t("features", "Features:" )} {features}
+              ⭐ {t("features", "Features:")} {features}
             </Text>
           )}
           {note && (

@@ -2,11 +2,15 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { encodeHex } from "jsr:@std/encoding/hex";
 
-interface reqPayload {
+interface imagePayload {
   photo: string;
   filename: string;
   filetype: string;
   hash: string;
+}
+
+interface reqPayload {
+  images: imagePayload[];
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -86,9 +90,14 @@ async function getFileHash(base64String: string): Promise<string> {
 }
 
 Deno.serve(async (req: Request) => {
-  const images: reqPayload[] = await req.json();
+  const { images }: reqPayload = await req.json();
 
   const photoPayloads = [];
+
+  if (!images || images.length === 0) {
+    const error = "No photos provided";
+    return getErrorResponse(error, 400);
+  }
 
   if (images.length > 5) {
     const error = "Too many photos";
@@ -180,15 +189,16 @@ Deno.serve(async (req: Request) => {
       }
 
       photoPayloads.push({
-        inlineData: {
+        file_data: {
           mimeType: filetype,
           file_uri: photoPublicUrl,
         },
       });
     }
-  } catch {
-    const error = "Failed to save or get photos.";
-    return getErrorResponse(error, 500);
+  } catch (error) {
+    console.error(error);
+    const errorMessage = "Failed to save or get photos.";
+    return getErrorResponse(errorMessage, 500);
   }
 
   if (photoPayloads.length === 0) {
@@ -242,7 +252,8 @@ Deno.serve(async (req: Request) => {
       const error = "Empty response from Gemini API";
       return getErrorResponse(error, 500);
     }
-  } catch {
+  } catch (error) {
+    console.error(error);
     return getErrorResponse("Failed to process photos", 500);
   }
 
@@ -275,7 +286,7 @@ Deno.serve(async (req: Request) => {
       JSON.stringify({
         success: true,
         result: textResponse,
-        publicUrls: photoPayloads.map((p) => p.inlineData.file_uri),
+        publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
         petDescriptionId: petDescriptionResultId,
       }),
       {
@@ -283,7 +294,8 @@ Deno.serve(async (req: Request) => {
         status: 200,
       },
     );
-  } catch {
-    return getErrorResponse("Failed to save photos", 500);
+  } catch (error) {
+    console.error(error);
+    return getErrorResponse("Failed to save pet description", 500);
   }
 });

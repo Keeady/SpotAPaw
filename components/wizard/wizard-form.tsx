@@ -142,6 +142,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             updateSightingData("photo", sighting.photo);
             updateSightingData("note", sighting.note);
             updateSightingData("collarDescription", sighting.collarDescription);
+            updateSightingData("photos", sighting.photos);
           }
 
           if (sighting.petId) {
@@ -221,6 +222,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("photo", pet.photo);
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
+          updateSightingData("photos", pet.photos);
 
           if (pet.petDescriptionId) {
             updateSightingData("petDescriptionId", pet.petDescriptionId);

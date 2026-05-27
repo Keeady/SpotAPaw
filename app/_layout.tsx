@@ -184,7 +184,7 @@ function App() {
     if (response) {
       const data = response.notification.request.content.data;
       if (data?.sightingId) {
-        router.push(`${sightingRoute}/${data.sightingId}`);
+        router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
 
         Notifications.dismissNotificationAsync(
           response.notification.request.identifier,
@@ -196,7 +196,7 @@ function App() {
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         if (data && data.sightingId) {
-          router.push(`${sightingRoute}/${data.sightingId}`);
+          router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
         }
       });
 
@@ -204,7 +204,7 @@ function App() {
       Notifications.addNotificationReceivedListener((notification) => {
         const data = notification.request.content.data;
         if (data && data.sightingId) {
-          router.push(`${sightingRoute}/${data.sightingId}`);
+          router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
         }
       });
 

@@ -8,7 +8,7 @@ import AppConstant, {
   UNSUPPORTED_MIME_TYPE,
 } from "./constants";
 import { log } from "./logs";
-import { createErrorLogMessage } from "./util";
+import { createErrorLogMessage, createErrorLogMessageAsync } from "./util";
 import * as Crypto from "expo-crypto";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -148,8 +148,8 @@ export const uploadMultiplePhotosWithProcessing = async (
         const base64Image = await readImageAsBase64(image.uri);
         const imageHash = await getFileHash(base64Image);
         return {
-          base64Image,
-          filename: image.filename,
+          photo: base64Image,
+          filename: imageHash + "." + image.filetype.split("/")[1],
           filetype: image.filetype,
           hash: imageHash,
         };
@@ -160,17 +160,21 @@ export const uploadMultiplePhotosWithProcessing = async (
       "upload-multiple-photos-with-ai-processing",
       {
         body: {
-          photos: processedImages,
+          images: processedImages,
         },
       },
     );
 
     if (error) {
+      const errorMessage = await createErrorLogMessageAsync(error);
+      log(`Error invoking upload-multiple-photos-with-ai-processing function: ${errorMessage}`);
       throw error;
     }
 
     return data;
   } catch (error) {
+    const errorMessage = await createErrorLogMessageAsync(error);
+    log(`Error uploading multiple photos: ${errorMessage}`);
     throw error;
   }
 };
@@ -187,8 +191,8 @@ export function useUploadMultiplePetImage() {
             const base64Image = await readImageAsBase64(image.uri);
             const imageHash = await getFileHash(base64Image);
             return {
-              base64Image,
-              filename: image.filename,
+              photo: base64Image,
+              filename: imageHash + "." + image.filetype.split("/")[1],
               filetype: image.filetype,
               hash: imageHash,
             };
@@ -199,12 +203,14 @@ export function useUploadMultiplePetImage() {
           "upload-multiple-photos",
           {
             body: {
-              photos: processedImages,
+              images: processedImages,
             },
           },
         );
 
         if (error) {
+          const errorMessage = await createErrorLogMessageAsync(error);
+          log(`Error invoking upload-multiple-photos function: ${errorMessage}`);
           throw error;
         }
 
@@ -215,7 +221,8 @@ export function useUploadMultiplePetImage() {
 
         callback(data.publicUrls);
       } catch (error) {
-        const errorMessage = createErrorLogMessage(error);
+        const errorMessage = await createErrorLogMessageAsync(error);
+        log(`Error uploading photos: ${errorMessage}`);
         callback([], `Error uploading photos ${errorMessage}`);
       }
     },

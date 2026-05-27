@@ -2,11 +2,15 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { encodeHex } from "jsr:@std/encoding/hex";
 
-interface reqPayload {
+interface imagePayload {
   photo: string;
   filename: string;
   filetype: string;
   hash: string;
+}
+
+interface reqPayload {
+  images: imagePayload[];
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -14,9 +18,8 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const geminiApiKey = Deno.env.get("GOOGLE_GENAI_API_KEY");
 
-if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
+if (!supabaseUrl || !supabaseKey) {
   const error = "Missing environment variables";
   throw new Error(error);
 }
@@ -44,9 +47,14 @@ async function getFileHash(base64String: string): Promise<string> {
 }
 
 Deno.serve(async (req: Request) => {
-  const images: reqPayload[] = await req.json();
+  const { images }: reqPayload = await req.json();
 
   const photoUris = [];
+
+  if (!images || images.length === 0) {
+    const error = "No photos provided";
+    return getErrorResponse(error, 400);
+  }
 
   if (images.length > 5) {
     const error = "Too many photos";
@@ -139,9 +147,9 @@ Deno.serve(async (req: Request) => {
 
       photoUris.push(photoPublicUrl);
     }
-  } catch {
-    const error = "Failed to save or get photos.";
-    return getErrorResponse(error, 500);
+  } catch (error) {
+    console.error(error);
+    return getErrorResponse("Failed to save or get photos.", 500);
   }
 
   if (photoUris.length === 0) {
@@ -150,7 +158,6 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-
     return new Response(
       JSON.stringify({
         success: true,

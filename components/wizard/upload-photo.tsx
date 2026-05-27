@@ -15,6 +15,7 @@ import { WizardHeader } from "./wizard-header";
 import { PetImage, SightingWizardStepData } from "./wizard-interface";
 import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
+import SightingGallery from "../sightings/gallery";
 
 export function UploadPhoto({
   updateSightingData,
@@ -32,6 +33,7 @@ export function UploadPhoto({
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [hasErrors, setHasErrors] = useState(false);
   const { aiPhotoAnalysisAllowed, multiPhotoUploadAllowed } = useProContext();
+  const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
   useEffect(() => {
     if (!isValidData) {
@@ -114,14 +116,7 @@ export function UploadPhoto({
                   : ""}
             </HelperText>
           </View>
-          {sightingFormData.image?.uri ? (
-            <Image
-              source={{ uri: sightingFormData.image.uri }}
-              style={styles.preview}
-              resizeMode="contain"
-              testID="imageUri"
-            />
-          ) : sightingFormData.images && sightingFormData.images.length > 0 ? (
+          {sightingFormData.images && sightingFormData.images.length > 0 ? (
             <View style={styles.emptyPreview}>
               {sightingFormData.images.map((img, index) => (
                 <Image
@@ -140,6 +135,20 @@ export function UploadPhoto({
                 />
               ))}
             </View>
+          ) : sightingFormData.image?.uri ? (
+            <Image
+              source={{ uri: sightingFormData.image.uri }}
+              style={styles.preview}
+              resizeMode="contain"
+              testID="imageUri"
+            />
+          ) : sightingFormData.photos && sightingFormData.photos.length > 0 ? (
+            <SightingGallery
+              images={sightingFormData.photos.map((photo) => ({ uri: photo }))}
+              isVisible={isVisibleGallery}
+              setIsVisible={setIsVisibleGallery}
+              mainPhoto={sightingFormData.photos[0]}
+            />
           ) : sightingFormData.photo ? (
             <Image
               source={{ uri: sightingFormData.photo }}
@@ -149,7 +158,11 @@ export function UploadPhoto({
             />
           ) : (
             <View style={[styles.emptyPreview, { backgroundColor: "#ddd" }]}>
-              <Text>{t("addPhoto", "Add Photo", { count: multiPhotoUploadAllowed ? 2 : 1 })}</Text>
+              <Text>
+                {t("addPhoto", "Add Photo", {
+                  count: multiPhotoUploadAllowed ? 2 : 1,
+                })}
+              </Text>
             </View>
           )}
 

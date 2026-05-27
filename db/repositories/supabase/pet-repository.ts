@@ -133,6 +133,7 @@ export class SupabasePetRepository extends BasePetRepository {
       lastSeenTime: "last_seen_time",
       petDescriptionId: "pet_description_id",
       deletedAt: "deleted_at",
+      photos: "photos",
     };
 
     const normalizedPayload = {};
@@ -172,6 +173,7 @@ export class SupabasePetRepository extends BasePetRepository {
       lastSeenTime: "last_seen_time",
       petDescriptionId: "pet_description_id",
       deletedAt: "deleted_at",
+      photos: "photos",
     };
 
     const deNormalizedPayload = {} as Pet;
