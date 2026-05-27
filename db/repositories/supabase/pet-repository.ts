@@ -18,7 +18,7 @@ export class SupabasePetRepository extends BasePetRepository {
       .from("pets")
       .select("*")
       .eq("id", id)
-      .eq("deleted_at", null);
+      .is("deleted_at", null);
 
     if (error) {
       throw error;
@@ -40,7 +40,7 @@ export class SupabasePetRepository extends BasePetRepository {
       .from("pets")
       .select("*")
       .eq("owner_id", ownerId)
-      .eq("deleted_at", null);
+      .is("deleted_at", null);
 
     if (error) {
       throw error;

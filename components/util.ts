@@ -5,7 +5,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppConstants, { GOOGLE_GEOCODE_URL } from "./constants";
 import { AuthHandler } from "@/auth/auth";
 import { log } from "./logs";
-import { AuthError, PostgrestError } from "@supabase/supabase-js";
+import {
+  AuthError,
+  FunctionsFetchError,
+  FunctionsHttpError,
+  FunctionsRelayError,
+  PostgrestError,
+} from "@supabase/supabase-js";
 
 export const isValidUuid = (id: string | null | undefined) => {
   return (
@@ -199,6 +205,22 @@ export function createErrorLogMessage(error: unknown) {
   }
 
   return String(error);
+}
+
+export async function createErrorLogMessageAsync(error: unknown) {
+  if (!error) {
+    return "";
+  }
+
+  if (error instanceof FunctionsHttpError) {
+    return await error.context.json();
+  } else if (error instanceof FunctionsRelayError) {
+    return error.message;
+  } else if (error instanceof FunctionsFetchError) {
+    return error.message;
+  } else {
+    return createErrorLogMessage(error);
+  }
 }
 
 export function kmToMiles(km: number) {
