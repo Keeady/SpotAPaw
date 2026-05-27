@@ -1,6 +1,5 @@
 import { isFuture } from "date-fns";
-import { SightingReportType } from "./wizard-form";
-import { SightingReport } from "./wizard-interface";
+import { SightingReport, SightingReportType } from "./wizard-interface";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import { isValidUuid } from "../util";
 
@@ -40,8 +39,9 @@ export const defaultSightingFormData = {
   isActive: true,
   reporterId: "",
   petDescriptionId: "",
-  photoUrls: [],
+  photos: [],
   images: [],
+  deletedAt: "",
 } as SightingReport;
 
 export const validate = (
@@ -163,7 +163,7 @@ export function validateEditPetContinued(
 
 export function validateEditPhoto(sightingFormData: SightingReport) {
   let isValid = false;
-  if (sightingFormData.image.uri || sightingFormData.photo || sightingFormData.photoUrls?.length || sightingFormData.images?.length) {
+  if (sightingFormData.image.uri || sightingFormData.photo || sightingFormData.photos?.length || sightingFormData.images?.length) {
     isValid = true;
   } else if (sightingFormData.linkedSightingId) {
     isValid = true;

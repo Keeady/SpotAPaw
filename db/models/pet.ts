@@ -18,5 +18,5 @@ export interface Pet {
     note: string,
     photo: string,
     petDescriptionId: string,
-    photoUrls: string[];
+    photos: string[];
 }

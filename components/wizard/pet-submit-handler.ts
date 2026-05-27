@@ -13,13 +13,23 @@ export async function saveNewPetPhoto(
     newPetId: string,
     sightingFormData: SightingReport,
   ) => Promise<string | undefined>,
+  uploadMultiplePetImages?: (
+    images: { uri: string; filename: string; filetype: string }[],
+    callback: (uri: string[], error?: string) => void,
+  ) => Promise<void>,
 ) {
-  if (sightingFormData.image?.uri) {
+  if (sightingFormData.images && sightingFormData.images.length > 0) {
+    await uploadMultiplePetImages?.(
+      sightingFormData.images,
+      (photoUrls: string[]) =>
+        saveNewPet("", sightingFormData, userId, onPetCreated, photoUrls),
+    );
+  } else if (sightingFormData.image?.uri) {
     await uploadImage(sightingFormData.image.uri, (photoUrl: string) =>
-      saveNewPet(photoUrl, sightingFormData, userId, onPetCreated),
+      saveNewPet(photoUrl, sightingFormData, userId, onPetCreated, []),
     );
   } else {
-    await saveNewPet("", sightingFormData, userId, onPetCreated);
+    await saveNewPet("", sightingFormData, userId, onPetCreated, []);
   }
 }
 
@@ -33,17 +43,27 @@ export async function updateNewPetPhoto(
     newPetId: string,
     sightingFormData: SightingReport,
   ) => Promise<string | undefined>,
+  uploadMultiplePetImages?: (
+    images: { uri: string; filename: string; filetype: string }[],
+    callback: (uri: string[], error?: string) => void,
+  ) => Promise<void>,
 ) {
   if (!sightingFormData.id || !isValidUuid(sightingFormData.id)) {
     throw new Error("Missing or invalid pet id");
   }
 
-  if (sightingFormData.image?.uri) {
+  if (sightingFormData.images && sightingFormData.images.length > 0) {
+    await uploadMultiplePetImages?.(
+      sightingFormData.images,
+      (photoUrls: string[]) =>
+        updatePet("", sightingFormData, onPetUpdated, photoUrls),
+    );
+  } else if (sightingFormData.image?.uri) {
     await uploadImage(sightingFormData.image.uri, (photoUrl: string) =>
-      updatePet(photoUrl, sightingFormData, onPetUpdated),
+      updatePet(photoUrl, sightingFormData, onPetUpdated, []),
     );
   } else {
-    await updatePet("", sightingFormData, onPetUpdated);
+    await updatePet("", sightingFormData, onPetUpdated, []);
   }
 }
 
@@ -55,8 +75,14 @@ export async function saveNewPet(
     newPetId: string,
     sightingFormData: SightingReport,
   ) => Promise<string | undefined>,
+  photoUrls: string[] = [],
 ) {
-  const payload = await buildPetPayload(photoUrl, sightingFormData, userId);
+  const payload = await buildPetPayload(
+    photoUrl,
+    sightingFormData,
+    userId,
+    photoUrls,
+  );
 
   const petRepository = new PetRepository();
   return await petRepository.createPet(payload).then(async (newPetId) => {
@@ -78,12 +104,18 @@ export async function updatePet(
     newPetId: string,
     sightingFormData: SightingReport,
   ) => Promise<string | undefined>,
+  photoUrls: string[] = [],
 ) {
   if (!sightingFormData.id || !isValidUuid(sightingFormData.id)) {
     throw new Error("Missing or invalid pet id");
   }
 
-  const payload = await buildPetPayload(photoUrl, sightingFormData, "");
+  const payload = await buildPetPayload(
+    photoUrl,
+    sightingFormData,
+    "",
+    photoUrls,
+  );
 
   const petRepository = new PetRepository();
   return await petRepository
@@ -102,6 +134,7 @@ async function buildPetPayload(
   photoUrl: string,
   sightingFormData: SightingPet,
   userId: string,
+  photoUrls: string[],
 ) {
   const lastSeenFormatted = await getLastSeenLocation(
     sightingFormData.lastSeenLocation,
@@ -124,6 +157,7 @@ async function buildPetPayload(
     lastSeenLat: sightingFormData.lastSeenLat,
     lastSeenLong: sightingFormData.lastSeenLong,
     lastSeenLocation: lastSeenFormatted,
+    photos: photoUrls ? photoUrls : sightingFormData.photos,
   } as Partial<SightingPet>;
 
   if (userId && isValidUuid(userId)) {
@@ -134,7 +168,10 @@ async function buildPetPayload(
     payload.id = sightingFormData.id;
   }
 
-  if (sightingFormData.petDescriptionId && isValidUuid(sightingFormData.petDescriptionId)) {
+  if (
+    sightingFormData.petDescriptionId &&
+    isValidUuid(sightingFormData.petDescriptionId)
+  ) {
     payload.petDescriptionId = sightingFormData.petDescriptionId;
   }
 

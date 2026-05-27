@@ -63,8 +63,8 @@ export default function useUploadPetImageUrl() {
 
         xhr.send(blob);
       } catch (e) {
-        callback("", `Error saving photo ${e}`);
         const errorMessage = createErrorLogMessage(e);
+        callback("", `Error saving photo ${errorMessage}`);
         log(`Error saving photo ${errorMessage}`);
       }
     },
@@ -138,3 +138,89 @@ export const uploadPhotoWithProcessing = async (
     throw error;
   }
 };
+
+export const uploadMultiplePhotosWithProcessing = async (
+  images: { uri: string; filename: string; filetype: string }[],
+) => {
+  try {
+    const processedImages = await Promise.all(
+      images.map(async (image) => {
+        const base64Image = await readImageAsBase64(image.uri);
+        const imageHash = await getFileHash(base64Image);
+        return {
+          base64Image,
+          filename: image.filename,
+          filetype: image.filetype,
+          hash: imageHash,
+        };
+      }),
+    );
+
+    const { data, error } = await supabase.functions.invoke(
+      "upload-multiple-photos-with-ai-processing",
+      {
+        body: {
+          photos: processedImages,
+        },
+      },
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export function useUploadMultiplePetImage() {
+  const uploadMultiplePetImages = useCallback(
+    async (
+      images: { uri: string; filename: string; filetype: string }[],
+      callback: (uri: string[], error?: string) => void,
+    ) => {
+      try {
+        const processedImages = await Promise.all(
+          images.map(async (image) => {
+            const base64Image = await readImageAsBase64(image.uri);
+            const imageHash = await getFileHash(base64Image);
+            return {
+              base64Image,
+              filename: image.filename,
+              filetype: image.filetype,
+              hash: imageHash,
+            };
+          }),
+        );
+
+        const { data, error } = await supabase.functions.invoke(
+          "upload-multiple-photos",
+          {
+            body: {
+              photos: processedImages,
+            },
+          },
+        );
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data || !data.publicUrls) {
+          callback([], "No public URLs returned from upload");
+          return;
+        }
+
+        callback(data.publicUrls);
+      } catch (error) {
+        const errorMessage = createErrorLogMessage(error);
+        callback([], `Error uploading photos ${errorMessage}`);
+      }
+    },
+    [],
+  );
+
+  return { uploadMultiplePetImages };
+}
