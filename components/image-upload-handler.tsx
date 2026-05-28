@@ -8,7 +8,7 @@ import AppConstant, {
   UNSUPPORTED_MIME_TYPE,
 } from "./constants";
 import { log } from "./logs";
-import { createErrorLogMessage } from "./util";
+import { createErrorLogMessage, createErrorLogMessageAsync } from "./util";
 import * as Crypto from "expo-crypto";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -63,8 +63,8 @@ export default function useUploadPetImageUrl() {
 
         xhr.send(blob);
       } catch (e) {
-        callback("", `Error saving photo ${e}`);
         const errorMessage = createErrorLogMessage(e);
+        callback("", `Error saving photo ${errorMessage}`);
         log(`Error saving photo ${errorMessage}`);
       }
     },
@@ -138,3 +138,96 @@ export const uploadPhotoWithProcessing = async (
     throw error;
   }
 };
+
+export const uploadMultiplePhotosWithProcessing = async (
+  images: { uri: string; filename: string; filetype: string }[],
+) => {
+  try {
+    const processedImages = await Promise.all(
+      images.map(async (image) => {
+        const base64Image = await readImageAsBase64(image.uri);
+        const imageHash = await getFileHash(base64Image);
+        return {
+          photo: base64Image,
+          filename: imageHash + "." + image.filetype.split("/")[1],
+          filetype: image.filetype,
+          hash: imageHash,
+        };
+      }),
+    );
+
+    const { data, error } = await supabase.functions.invoke(
+      "upload-multiple-photos-with-ai-processing",
+      {
+        body: {
+          images: processedImages,
+        },
+      },
+    );
+
+    if (error) {
+      const errorMessage = await createErrorLogMessageAsync(error);
+      log(`Error invoking upload-multiple-photos-with-ai-processing function: ${errorMessage}`);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    const errorMessage = await createErrorLogMessageAsync(error);
+    log(`Error uploading multiple photos: ${errorMessage}`);
+    throw error;
+  }
+};
+
+export function useUploadMultiplePetImage() {
+  const uploadMultiplePetImages = useCallback(
+    async (
+      images: { uri: string; filename: string; filetype: string }[],
+      callback: (uri: string[], error?: string) => void,
+    ) => {
+      try {
+        const processedImages = await Promise.all(
+          images.map(async (image) => {
+            const base64Image = await readImageAsBase64(image.uri);
+            const imageHash = await getFileHash(base64Image);
+            return {
+              photo: base64Image,
+              filename: imageHash + "." + image.filetype.split("/")[1],
+              filetype: image.filetype,
+              hash: imageHash,
+            };
+          }),
+        );
+
+        const { data, error } = await supabase.functions.invoke(
+          "upload-multiple-photos",
+          {
+            body: {
+              images: processedImages,
+            },
+          },
+        );
+
+        if (error) {
+          const errorMessage = await createErrorLogMessageAsync(error);
+          log(`Error invoking upload-multiple-photos function: ${errorMessage}`);
+          throw error;
+        }
+
+        if (!data || !data.publicUrls) {
+          callback([], "No public URLs returned from upload");
+          return;
+        }
+
+        callback(data.publicUrls);
+      } catch (error) {
+        const errorMessage = await createErrorLogMessageAsync(error);
+        log(`Error uploading photos: ${errorMessage}`);
+        callback([], `Error uploading photos ${errorMessage}`);
+      }
+    },
+    [],
+  );
+
+  return { uploadMultiplePetImages };
+}

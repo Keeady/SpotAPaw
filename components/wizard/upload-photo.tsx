@@ -15,6 +15,7 @@ import { WizardHeader } from "./wizard-header";
 import { PetImage, SightingWizardStepData } from "./wizard-interface";
 import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
+import SightingGallery from "../sightings/gallery";
 
 export function UploadPhoto({
   updateSightingData,
@@ -31,7 +32,8 @@ export function UploadPhoto({
   const settingsRoute = user ? "/(app)/my-settings" : "/settings";
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [hasErrors, setHasErrors] = useState(false);
-  const { aiPhotoAnalysisAllowed } = useProContext();
+  const { aiPhotoAnalysisAllowed, multiPhotoUploadAllowed } = useProContext();
+  const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
   useEffect(() => {
     if (!isValidData) {
@@ -54,7 +56,16 @@ export function UploadPhoto({
     [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
   );
 
-  const { photo, image } = sightingFormData;
+  const onAddMultiplePhotos = useCallback(
+    (photos: PetImage[]) => {
+      updateSightingData("images", photos);
+      onResetErrorMessage?.();
+      onResetAiGeneratedPhoto?.();
+    },
+    [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
+  );
+
+  const { photo, image, photos, images } = sightingFormData;
 
   return (
     <View style={{ flex: 1 }}>
@@ -100,17 +111,43 @@ export function UploadPhoto({
             >
               {!!errorMessage
                 ? errorMessage
-                : hasErrors && !photo && !image?.uri
+                : hasErrors && !photo && !image?.uri && !photos?.length && !images?.length
                   ? t("pleaseAddAPhoto", "Please add a photo!")
                   : ""}
             </HelperText>
           </View>
-          {sightingFormData.image?.uri ? (
+          {sightingFormData.images && sightingFormData.images.length > 0 ? (
+            <View style={styles.emptyPreview}>
+              {sightingFormData.images.map((img, index) => (
+                <Image
+                  key={index}
+                  source={{ uri: img.uri }}
+                  style={[
+                    styles.preview,
+                    {
+                      position: "absolute",
+                      top: index * 10, // vertical offset per layer
+                      zIndex: sightingFormData.images.length - index, // ensure the first image is on top
+                    },
+                  ]}
+                  resizeMode="contain"
+                  testID={`imageUri-${index}`}
+                />
+              ))}
+            </View>
+          ) : sightingFormData.image?.uri ? (
             <Image
               source={{ uri: sightingFormData.image.uri }}
               style={styles.preview}
               resizeMode="contain"
               testID="imageUri"
+            />
+          ) : sightingFormData.photos && sightingFormData.photos.length > 0 ? (
+            <SightingGallery
+              images={sightingFormData.photos.map((photo) => ({ uri: photo }))}
+              isVisible={isVisibleGallery}
+              setIsVisible={setIsVisibleGallery}
+              mainPhoto={sightingFormData.photos[0]}
             />
           ) : sightingFormData.photo ? (
             <Image
@@ -120,21 +157,36 @@ export function UploadPhoto({
               testID="photoUri"
             />
           ) : (
-            <View style={styles.emptyPreview}>
-              <Text>{t("addPhoto", "Add Photo", { ns: "translation" })}</Text>
+            <View style={[styles.emptyPreview, { backgroundColor: "#ddd" }]}>
+              <Text>
+                {t("addPhoto", "Add Photo", {
+                  count: multiPhotoUploadAllowed ? 2 : 1,
+                })}
+              </Text>
             </View>
           )}
 
           <Button
             icon="camera"
             mode="contained"
-            onPress={() => uploadOrTakePhoto(onAddPhoto, t)}
+            onPress={() =>
+              uploadOrTakePhoto(
+                onAddPhoto,
+                t,
+                onAddMultiplePhotos,
+                multiPhotoUploadAllowed,
+              )
+            }
             style={{ marginVertical: 10 }}
             testID="addPhotoBtn"
           >
             {sightingFormData.image?.uri || sightingFormData.photo
-              ? t("changePhoto", "Change Photo")
-              : t("uploadPhoto", "Upload Photo")}
+              ? t("changePhoto", "Change Photo", {
+                  count: multiPhotoUploadAllowed ? 2 : 1,
+                })
+              : t("uploadPhoto", "Upload Photo", {
+                  count: multiPhotoUploadAllowed ? 2 : 1,
+                })}
           </Button>
 
           <View>
@@ -190,7 +242,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#ddd",
     marginTop: 5,
   },
   content: {

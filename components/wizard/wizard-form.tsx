@@ -12,7 +12,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
 import { AnalysisResponse } from "../analyzer/types";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import useUploadPetImageUrl from "../image-upload-handler";
+import useUploadPetImageUrl, { useUploadMultiplePetImage } from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { AddContact } from "./add-contact";
@@ -94,7 +94,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   const updateSightingData = useCallback(
     (
       field: keyof SightingReport,
-      value: string | number | PetImage | boolean,
+      value: string | number | PetImage | boolean | PetImage[] | string[],
     ) => {
       setSightingFormData((prev) => ({ ...prev, [field]: value }));
     },
@@ -142,6 +142,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             updateSightingData("photo", sighting.photo);
             updateSightingData("note", sighting.note);
             updateSightingData("collarDescription", sighting.collarDescription);
+            updateSightingData("photos", sighting.photos);
           }
 
           if (sighting.petId) {
@@ -221,6 +222,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("photo", pet.photo);
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
+          updateSightingData("photos", pet.photos);
 
           if (pet.petDescriptionId) {
             updateSightingData("petDescriptionId", pet.petDescriptionId);
@@ -254,30 +256,32 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   }, [stepHistory]);
 
   const uploadImage = useUploadPetImageUrl();
+  const { uploadMultiplePetImages } = useUploadMultiplePetImage();
 
   const processResponse = async () => {
     switch (currentStep) {
       case "upload_photo":
-        if (
-          sightingFormData.image.uri &&
-          isAiFeatureEnabled &&
-          !aiGenerated &&
-          aiPhotoAnalysisAllowed
-        ) {
-          return analyze(
-            sightingFormData.image.uri,
-            sightingFormData.image.filename,
-            sightingFormData.image.filetype,
-          );
+        if (isAiFeatureEnabled && !aiGenerated && aiPhotoAnalysisAllowed) {
+          if (sightingFormData.images && sightingFormData.images.length > 0) {
+            return analyzeMultiple(sightingFormData.images);
+          }
+
+          if (sightingFormData.image.uri) {
+            return analyze(
+              sightingFormData.image.uri,
+              sightingFormData.image.filename,
+              sightingFormData.image.filetype,
+            );
+          }
         }
 
         return Promise.resolve();
       case "submit":
         if (isAiFeatureEnabled && aiPhotoAnalysisAllowed) {
           if (action === "new-sighting") {
-            return saveNewSighting("", sightingFormData);
+            return saveNewSighting("", sightingFormData, []);
           } else if (action === "edit-sighting") {
-            return updateSighting("", sightingFormData);
+            return updateSighting("", sightingFormData, []);
           } else if (action === "add-pet") {
             if (sightingFormData.isLost) {
               return saveNewPet(
@@ -285,20 +289,21 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 sightingFormData,
                 user?.id || "",
                 createSightingFromPet,
+                [],
               );
             }
 
-            return saveNewPet("", sightingFormData, user?.id || "");
+            return saveNewPet("", sightingFormData, user?.id || "", undefined, []);
           } else if (action === "edit-pet") {
             if (sightingFormData.isLost) {
-              return updatePet("", sightingFormData, createSightingFromPet);
+              return updatePet("", sightingFormData, createSightingFromPet, []);
             }
 
-            return updatePet("", sightingFormData);
+            return updatePet("", sightingFormData, undefined, []);
           }
         } else {
           if (action === "new-sighting" || action === "edit-sighting") {
-            return saveSightingPhoto(sightingFormData, uploadImage, action);
+            return saveSightingPhoto(sightingFormData, uploadImage, action, uploadMultiplePetImages);
           } else if (action === "add-pet") {
             if (sightingFormData.isLost) {
               return saveNewPetPhoto(
@@ -306,6 +311,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 uploadImage,
                 user?.id || "",
                 createSightingFromPet,
+                uploadMultiplePetImages,
               );
             }
 
@@ -313,6 +319,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               sightingFormData,
               uploadImage,
               user?.id || "",
+              undefined,
+              uploadMultiplePetImages,
             );
           } else if (action === "edit-pet") {
             if (sightingFormData.isLost) {
@@ -320,10 +328,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 sightingFormData,
                 uploadImage,
                 createSightingFromPet,
+                uploadMultiplePetImages,
               );
             }
 
-            return updateNewPetPhoto(sightingFormData, uploadImage);
+            return updateNewPetPhoto(sightingFormData, uploadImage, undefined, uploadMultiplePetImages);
           }
         }
       case "find_match":
@@ -497,6 +506,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       data?: AnalysisResponse,
       publicUrl?: string,
       petDescriptionId?: string,
+      publicUrls?: string[],
     ) => {
       if (!isMountedRef.current) {
         return;
@@ -549,6 +559,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
         if (petInfo.size) {
           updateSightingData("size", petInfo.size);
+        }
+
+        if (publicUrls) {
+          updateSightingData("photos", publicUrls);
         }
       } else if (data && "note" in data && data.note) {
         throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
@@ -618,7 +632,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     }
   };
 
-  const { analyze } = usePetAnalyzer({
+  const { analyze, analyzeMultiple } = usePetAnalyzer({
     onSuccess: onImageAnalyzeSuccess,
   });
 

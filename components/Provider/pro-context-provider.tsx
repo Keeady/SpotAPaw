@@ -11,6 +11,7 @@ import { AuthContext } from "./auth-provider";
 type ContextProps = {
   isProUser: boolean;
   aiPhotoAnalysisAllowed?: boolean;
+  multiPhotoUploadAllowed?: boolean;
 };
 
 const ProContext = createContext<Partial<ContextProps>>({});
@@ -23,6 +24,8 @@ const ProContextProvider = (props: Props) => {
   const { user } = useContext(AuthContext);
   const isProUser = false;
   const [aiPhotoAnalysisAllowed, setAiPhotoAnalysisAllowed] =
+    useState<boolean>(false);
+  const [multiPhotoUploadAllowed, setMultiPhotoUploadAllowed] =
     useState<boolean>(false);
 
   const checkPhotoAnalysisAllowed = useCallback(() => {
@@ -51,15 +54,28 @@ const ProContextProvider = (props: Props) => {
     }
   }, [isProUser, user?.id]);
 
+  const checkMultiPhotoUploadAllowed = useCallback(() => {
+    if (isProUser) {
+      setMultiPhotoUploadAllowed(true);
+    } else {
+      setMultiPhotoUploadAllowed(false);
+    }
+  }, [isProUser]);
+
   useEffect(() => {
     checkPhotoAnalysisAllowed();
   }, [checkPhotoAnalysisAllowed]);
+
+  useEffect(() => {
+    checkMultiPhotoUploadAllowed();
+  }, [checkMultiPhotoUploadAllowed]);
 
   return (
     <ProContext.Provider
       value={{
         isProUser,
         aiPhotoAnalysisAllowed,
+        multiPhotoUploadAllowed,
       }}
     >
       {props.children}

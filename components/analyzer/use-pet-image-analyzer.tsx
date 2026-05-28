@@ -1,5 +1,8 @@
 import { useCallback, useState } from "react";
-import { uploadPhotoWithProcessing } from "../image-upload-handler";
+import {
+  uploadMultiplePhotosWithProcessing,
+  uploadPhotoWithProcessing,
+} from "../image-upload-handler";
 import type { AnalysisResponse } from "./types";
 
 interface UsePetAnalyzerOptions {
@@ -7,11 +10,15 @@ interface UsePetAnalyzerOptions {
     result?: AnalysisResponse,
     publicUrl?: string,
     petDescriptionId?: string,
+    publicUrls?: string[],
   ) => void;
 }
 
 interface UsePetAnalyzerReturn {
   analyze: (uri: string, filename: string, filetype: string) => Promise<void>;
+  analyzeMultiple: (
+    images: { uri: string; filename: string; filetype: string }[],
+  ) => Promise<void>;
   loading: boolean;
 }
 
@@ -84,8 +91,57 @@ export function usePetAnalyzer(
     [onSuccess],
   );
 
+  const analyzeMultiple = useCallback(
+    async (images: { uri: string; filename: string; filetype: string }[]) => {
+      try {
+        let hasError = false;
+        images.forEach(({ uri, filename, filetype }) => {
+          if (!uri || !filename || !filetype) {
+            hasError = true;
+            return;
+          }
+        });
+
+        if (hasError) {
+          throw new Error(
+            "Missing required parameters uri or filename or filetype.",
+          );
+        }
+        setLoading(true);
+        const response = await uploadMultiplePhotosWithProcessing(images);
+
+        if (!response) {
+          throw new Error("Failed with no response");
+        }
+
+        const { result, publicUrls, petDescriptionId } = response;
+
+        if (result) {
+          const data = parseJsonResponse(result);
+          onSuccess?.(data, undefined, petDescriptionId, publicUrls);
+          return;
+        }
+
+        if (petDescriptionId) {
+          onSuccess?.(undefined, undefined, petDescriptionId, publicUrls);
+          return;
+        }
+
+        if (publicUrls) {
+          onSuccess?.(undefined, undefined, undefined, publicUrls);
+        }
+      } catch (error) {
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [onSuccess],
+  );
+
   return {
     analyze,
+    analyzeMultiple,
     loading,
   };
 }
