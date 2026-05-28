@@ -157,7 +157,7 @@ async function buildPetPayload(
     lastSeenLat: sightingFormData.lastSeenLat,
     lastSeenLong: sightingFormData.lastSeenLong,
     lastSeenLocation: lastSeenFormatted,
-    photos: photoUrls ? photoUrls : sightingFormData.photos,
+    photos: photoUrls?.length > 0 ? photoUrls : sightingFormData.photos,
   } as Partial<SightingPet>;
 
   if (userId && isValidUuid(userId)) {

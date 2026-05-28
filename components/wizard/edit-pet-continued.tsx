@@ -70,7 +70,7 @@ export function EditPetContinued({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={images[0]?.uri || image?.uri || photos[0] || photo}
+          petPhoto={images?.[0]?.uri || image?.uri || photos?.[0] || photo}
           showDetails={false}
         />
 

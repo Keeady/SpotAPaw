@@ -22,7 +22,7 @@ interface Props {
 
 const ProContextProvider = (props: Props) => {
   const { user } = useContext(AuthContext);
-  const isProUser = true;
+  const isProUser = false;
   const [aiPhotoAnalysisAllowed, setAiPhotoAnalysisAllowed] =
     useState<boolean>(false);
   const [multiPhotoUploadAllowed, setMultiPhotoUploadAllowed] =

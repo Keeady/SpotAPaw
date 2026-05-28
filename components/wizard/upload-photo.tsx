@@ -65,7 +65,7 @@ export function UploadPhoto({
     [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
   );
 
-  const { photo, image, images } = sightingFormData;
+  const { photo, image, photos, images } = sightingFormData;
 
   return (
     <View style={{ flex: 1 }}>
@@ -111,7 +111,7 @@ export function UploadPhoto({
             >
               {!!errorMessage
                 ? errorMessage
-                : hasErrors && !photo && !image?.uri
+                : hasErrors && !photo && !image?.uri && !photos?.length && !images?.length
                   ? t("pleaseAddAPhoto", "Please add a photo!")
                   : ""}
             </HelperText>
@@ -126,7 +126,7 @@ export function UploadPhoto({
                     styles.preview,
                     {
                       position: "absolute",
-                      top: sightingFormData.images.length - index * 10, // vertical offset per layer
+                      top: index * 10, // vertical offset per layer
                       zIndex: sightingFormData.images.length - index, // ensure the first image is on top
                     },
                   ]}

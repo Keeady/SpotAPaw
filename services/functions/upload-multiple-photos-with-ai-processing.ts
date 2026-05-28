@@ -257,45 +257,62 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse("Failed to process photos", 500);
   }
 
+  let petDescriptionResultId = "";
   try {
-    let petDescriptionResultId = "";
     // Save result to Supabase
-    const { data: insertedData } = await supabaseClient
+    const { data: insertedData, error: insertError } = await supabaseClient
       .from("pet_desc_results")
       .insert({
         description: textResponse,
       })
       .select("id");
 
-    if (insertedData && insertedData.length > 0) {
-      petDescriptionResultId = insertedData[0].id;
-
-      // Save photos to pet_photos table with reference to pet_desc_results
-      for (const image of images) {
-        const { hash } = image;
-        await supabaseClient
-          .from("pet_photos")
-          .update({
-            pet_description_id: petDescriptionResultId,
-          })
-          .eq("photo_hash", hash);
-      }
+    if (insertError) {
+      console.error(insertError);
+      return getErrorResponse("Failed to save pet description", 500);
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        result: textResponse,
-        publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
-        petDescriptionId: petDescriptionResultId,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    if (!insertedData || insertedData.length === 0) {
+      const error = "Failed to save pet description";
+      return getErrorResponse(error, 500);
+    }
+
+    petDescriptionResultId = insertedData[0].id;
   } catch (error) {
     console.error(error);
     return getErrorResponse("Failed to save pet description", 500);
   }
+
+  try {
+    // Save photos to pet_photos table with reference to pet_desc_results
+    for (const image of images) {
+      const { hash } = image;
+      const { error } = await supabaseClient
+        .from("pet_photos")
+        .update({
+          pet_description_id: petDescriptionResultId,
+        })
+        .eq("photo_hash", hash);
+
+      if (error) {
+        console.error(error);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    return getErrorResponse("Failed to link photos to pet description", 500);
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      result: textResponse,
+      publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
+      petDescriptionId: petDescriptionResultId,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    },
+  );
 });

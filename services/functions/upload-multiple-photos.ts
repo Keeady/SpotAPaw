@@ -139,10 +139,15 @@ Deno.serve(async (req: Request) => {
         photoPublicUrl = publicUrl;
 
         // Save photo record to pet_photos table
-        await supabaseClient.from("pet_photos").insert({
-          photo_hash: hash,
-          public_url: photoPublicUrl,
-        });
+        const { error: insertPetPhotoError } = await supabaseClient
+          .from("pet_photos")
+          .insert({
+            photo_hash: hash,
+            public_url: photoPublicUrl,
+          });
+        if (insertPetPhotoError) {
+          console.error(insertPetPhotoError);
+        }
       }
 
       photoUris.push(photoPublicUrl);
@@ -157,18 +162,14 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error, 400);
   }
 
-  try {
-    return new Response(
-      JSON.stringify({
-        success: true,
-        publicUrls: photoUris,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
-  } catch {
-    return getErrorResponse("Failed to save photos", 500);
-  }
+  return new Response(
+    JSON.stringify({
+      success: true,
+      publicUrls: photoUris,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    },
+  );
 });

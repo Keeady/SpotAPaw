@@ -83,7 +83,7 @@ export function EditPet({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={images[0]?.uri || image?.uri || photos[0] || photo}
+          petPhoto={images?.[0]?.uri || image?.uri || photos?.[0] || photo}
           showDetails={false}
         />
         {(reportType === "new_pet" || reportType === "edit_pet") && (

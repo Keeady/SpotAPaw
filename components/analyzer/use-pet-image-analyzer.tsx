@@ -136,7 +136,7 @@ export function usePetAnalyzer(
         setLoading(false);
       }
     },
-    [],
+    [onSuccess],
   );
 
   return {

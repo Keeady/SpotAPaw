@@ -53,7 +53,7 @@ export type SightingWizardStepData = {
   sightingFormData: SightingReport;
   updateSightingData: (
     field: keyof SightingReport,
-    value: string | number | PetImage | boolean | PetImage[],
+    value: string | number | PetImage | boolean | PetImage[] | string[],
   ) => void;
   loading: boolean;
   setReportType: (type: SightingReportType) => void;

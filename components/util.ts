@@ -213,7 +213,8 @@ export async function createErrorLogMessageAsync(error: unknown) {
   }
 
   if (error instanceof FunctionsHttpError) {
-    return await error.context.json();
+    const errorContext = await error.context.json().catch(() => "");
+    return errorContext?.message;
   } else if (error instanceof FunctionsRelayError) {
     return error.message;
   } else if (error instanceof FunctionsFetchError) {

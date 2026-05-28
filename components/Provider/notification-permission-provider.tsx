@@ -52,7 +52,7 @@ const NotificationPermissionProvider = (props: Props) => {
         setEnabledNotificationPermission(false);
       }
     },
-    [requestNotificationPermission],
+    [],
   );
 
   const getExistingNotificationPermission = useCallback(async () => {
