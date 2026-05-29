@@ -95,6 +95,10 @@ export function usePetAnalyzer(
     async (images: { uri: string; filename: string; filetype: string }[]) => {
       try {
         let hasError = false;
+        if (!images || images.length === 0) {
+          throw new Error("No images provided for analysis.");
+        }
+        
         images.forEach(({ uri, filename, filetype }) => {
           if (!uri || !filename || !filetype) {
             hasError = true;
