@@ -30,6 +30,7 @@ export default function Layout() {
   const router = useRouter();
   const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
 
+  useEffect(() => {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowBanner: true,
@@ -38,6 +39,7 @@ export default function Layout() {
       shouldSetBadge: true,
     }),
   });
+}, []);
 
   useEffect(() => {
     initI18next()
@@ -213,6 +215,7 @@ function App() {
       notificationReceivedListener.remove();
     };
   }, [router, user]);
+
 
   return (
     <View style={styles.root}>
