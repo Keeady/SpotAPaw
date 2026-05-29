@@ -43,7 +43,7 @@ jest.mock("@/components/account/delete", () => ({
 const mockGetSavedLocation = jest.fn();
 
 jest.mock("../Provider/permission-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const PermissionContext = React.createContext({
     enabledLocationPermission: true,
     getSavedLocation: mockGetSavedLocation,
@@ -55,7 +55,7 @@ jest.mock("../Provider/permission-provider", () => {
 });
 
 jest.mock("@/components/Provider/auth-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const fakeUser = { id: "test-user-id" };
   const AuthContext = React.createContext({ user: fakeUser });
 
@@ -65,7 +65,7 @@ jest.mock("@/components/Provider/auth-provider", () => {
 });
 
 jest.mock("../Provider/ai-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useAIFeatureContext = () => ({ isAiFeatureEnabled: true });
   const AIFeatureContext = React.createContext({ isAiFeatureEnabled: true });
 
@@ -78,7 +78,7 @@ jest.mock("../Provider/ai-context-provider", () => {
 let mockProUser = true;
 let mockAiPhotoAnalysisAllowed = true;
 jest.mock("../Provider/pro-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useProContext = () => ({
     isProUser: mockProUser,
     aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
@@ -96,7 +96,7 @@ jest.mock("../Provider/pro-context-provider", () => {
 
 let mockPreferredLanguage = "en";
 jest.mock("../Provider/locale-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useLocaleContext = () => ({
     preferredLanguage: mockPreferredLanguage,
     saveLanguageContext: jest.fn(),
@@ -114,7 +114,7 @@ jest.mock("../Provider/locale-provider", () => {
 
 const mockEnabledNotificationPermission = false;
 jest.mock("../Provider/notification-permission-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useNotificationPermission = () => ({
     enabledNotificationPermission: false,
     saveNotificationPermission: jest.fn(),

@@ -28,7 +28,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 jest.mock("../Provider/auth-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const AuthContext = React.createContext({ user: null });
 
   return {
@@ -38,7 +38,7 @@ jest.mock("../Provider/auth-provider", () => {
 });
 
 jest.mock("../Provider/ai-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const AIFeatureContext = React.createContext({ isAiFeatureEnabled: false });
 
   return {
@@ -48,7 +48,7 @@ jest.mock("../Provider/ai-context-provider", () => {
 });
 
 jest.mock("../Provider/pro-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const ProContext = React.createContext({ aiPhotoAnalysisAllowed: false });
 
   return {
