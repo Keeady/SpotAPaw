@@ -67,4 +67,6 @@ export default function Auth() {
   useEffect(() => {
     signInWithApple();
   }, []);
+
+  return null;
 }
