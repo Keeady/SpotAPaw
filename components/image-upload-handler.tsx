@@ -14,7 +14,7 @@ import * as Crypto from "expo-crypto";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png"];
 
-export default function useUploadPetImageUrl() {
+export function useUploadPetImageUrl() {
   const SUPABASE_URL = AppConstant.EXPO_PUBLIC_SUPABASE_URL;
   const SUPABASE_KEY = AppConstant.EXPO_PUBLIC_SUPABASE_ANON_KEY;
   const BUCKET = "pet_photos";

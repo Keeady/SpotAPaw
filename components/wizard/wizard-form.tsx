@@ -12,7 +12,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
 import { AnalysisResponse } from "../analyzer/types";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import useUploadPetImageUrl, { useUploadMultiplePetImage } from "../image-upload-handler";
+import { useUploadPetImageUrl, useUploadMultiplePetImage } from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { AddContact } from "./add-contact";
