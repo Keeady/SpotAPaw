@@ -31,6 +31,7 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
             borderTopRightRadius: 12,
             aspectRatio: 1.5,
           }}
+          testID="pet-photos"
         />
       ) : pet.photo ? (
         <Image
@@ -43,6 +44,7 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
             borderTopRightRadius: 12,
             aspectRatio: 1.5,
           }}
+          testID="pet-photo"
         />
       ) : (
         <View
