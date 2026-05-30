@@ -79,6 +79,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             source={{ uri: photo }}
             style={styles.image}
             resizeMode="contain"
+            testID={"pet-photo"}
           />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
