@@ -40,6 +40,7 @@ const LocaleContextProvider = (props: Props) => {
   const getLanguage = useCallback(async () => {
     try {
       const storedLanguage = await getStorageItem(PREFERRED_LANGUAGE);
+      console.log("Loaded stored language:", storedLanguage);
       setLanguage(storedLanguage || defaultLanguage);
     } catch {
       log("Error loading language context");

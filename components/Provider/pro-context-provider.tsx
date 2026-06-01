@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { AuthContext } from "./auth-provider";
+import { checkIsProUser } from "./pro-context-util";
 
 type ContextProps = {
   isProUser: boolean;
@@ -22,7 +23,7 @@ interface Props {
 
 const ProContextProvider = (props: Props) => {
   const { user } = useContext(AuthContext);
-  const isProUser = false;
+  const isProUser = checkIsProUser();
   const [aiPhotoAnalysisAllowed, setAiPhotoAnalysisAllowed] =
     useState<boolean>(false);
   const [multiPhotoUploadAllowed, setMultiPhotoUploadAllowed] =
