@@ -7,6 +7,7 @@ import { PermissionContext } from "../Provider/permission-provider";
 import { AIFeatureContext } from "../Provider/ai-context-provider";
 import { LocaleContext } from "../Provider/locale-provider";
 import { ProContext } from "../Provider/pro-context-provider";
+import { NotificationPermissionContext } from "../Provider/notification-permission-provider";
 
 const fakeUser = { id: "test-user-id" };
 
@@ -42,7 +43,7 @@ jest.mock("@/components/account/delete", () => ({
 const mockGetSavedLocation = jest.fn();
 
 jest.mock("../Provider/permission-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const PermissionContext = React.createContext({
     enabledLocationPermission: true,
     getSavedLocation: mockGetSavedLocation,
@@ -54,7 +55,7 @@ jest.mock("../Provider/permission-provider", () => {
 });
 
 jest.mock("@/components/Provider/auth-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const fakeUser = { id: "test-user-id" };
   const AuthContext = React.createContext({ user: fakeUser });
 
@@ -64,7 +65,7 @@ jest.mock("@/components/Provider/auth-provider", () => {
 });
 
 jest.mock("../Provider/ai-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useAIFeatureContext = () => ({ isAiFeatureEnabled: true });
   const AIFeatureContext = React.createContext({ isAiFeatureEnabled: true });
 
@@ -77,7 +78,7 @@ jest.mock("../Provider/ai-context-provider", () => {
 let mockProUser = true;
 let mockAiPhotoAnalysisAllowed = true;
 jest.mock("../Provider/pro-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useProContext = () => ({
     isProUser: mockProUser,
     aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
@@ -95,7 +96,7 @@ jest.mock("../Provider/pro-context-provider", () => {
 
 let mockPreferredLanguage = "en";
 jest.mock("../Provider/locale-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const useLocaleContext = () => ({
     preferredLanguage: mockPreferredLanguage,
     saveLanguageContext: jest.fn(),
@@ -108,6 +109,31 @@ jest.mock("../Provider/locale-provider", () => {
   return {
     LocaleContext,
     useLocaleContext,
+  };
+});
+
+const mockEnabledNotificationPermission = false;
+const mockSaveNotificationPermission = jest.fn();
+jest.mock("../Provider/notification-permission-provider", () => {
+  const React = jest.requireActual("react");
+  const useNotificationPermission = () => ({
+    enabledNotificationPermission: false,
+    saveNotificationPermission: (value: any) =>
+      mockSaveNotificationPermission(value),
+    isLoadingNotification: false,
+    getExistingNotificationPermission: jest.fn(),
+  });
+  const NotificationPermissionContext = React.createContext({
+    enabledNotificationPermission: false,
+    saveNotificationPermission: (value: any) =>
+      mockSaveNotificationPermission(value),
+    isLoadingNotification: false,
+    getExistingNotificationPermission: jest.fn(),
+  });
+
+  return {
+    NotificationPermissionContext,
+    useNotificationPermission,
   };
 });
 
@@ -138,6 +164,12 @@ jest.mock("@/components/get-current-location", () => ({
   getCurrentUserLocationV3: () => mockGetCurrentUserLocationV3(),
 }));
 
+const mockUpdateNotificationSubscriptionEnabled = jest.fn();
+jest.mock("../notification-util", () => ({
+  updateNotificationSubscriptionEnabled: (arg1: any, arg2: any) =>
+    mockUpdateNotificationSubscriptionEnabled(arg1, arg2),
+}));
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({
   children,
@@ -166,9 +198,20 @@ const TestWrapper = ({
               aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed,
             }}
           >
-            <PaperProvider settings={{ icon: MockIcon }}>
-              {children}
-            </PaperProvider>
+            <NotificationPermissionContext.Provider
+              value={{
+                enabledNotificationPermission:
+                  mockEnabledNotificationPermission,
+                saveNotificationPermission: (value: any) =>
+                  mockSaveNotificationPermission(value),
+                isLoadingNotification: false,
+                getExistingNotificationPermission: jest.fn(),
+              }}
+            >
+              <PaperProvider settings={{ icon: MockIcon }}>
+                {children}
+              </PaperProvider>
+            </NotificationPermissionContext.Provider>
           </ProContext.Provider>
         </AIFeatureContext.Provider>
       </LocaleContext.Provider>
@@ -252,7 +295,11 @@ describe("SettingsContainer Component", () => {
     expect(notificationSwitch.props.value).toBe(false);
     fireEvent(notificationSwitch, "valueChange", true);
     expect(notificationSwitch.props.value).toBe(true);
-    expect(mockSetItem).toHaveBeenCalledWith("notificationsEnabled", "true");
+    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(
+      true,
+      25,
+    );
+    expect(mockSaveNotificationPermission).toHaveBeenCalledWith(true);
 
     const privacyButton = getByText("privacyPolicy");
     fireEvent.press(privacyButton);
@@ -460,7 +507,19 @@ describe("SettingsContainer Component", () => {
     expect(notificationSwitch.props.value).toBe(false);
     fireEvent(notificationSwitch, "valueChange", true);
     expect(notificationSwitch.props.value).toBe(true);
-    expect(mockSetItem).toHaveBeenCalledWith("notificationsEnabled", "true");
+    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(
+      true,
+      25,
+    );
+    expect(mockSaveNotificationPermission).toHaveBeenCalledWith(true);
+
+    fireEvent(notificationSwitch, "valueChange", false);
+    expect(notificationSwitch.props.value).toBe(false);
+    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(
+      false,
+      25,
+    );
+    expect(mockSaveNotificationPermission).toHaveBeenCalledWith(false);
 
     const privacyButton = getByText("privacyPolicy");
     fireEvent.press(privacyButton);

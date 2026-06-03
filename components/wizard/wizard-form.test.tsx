@@ -4,7 +4,6 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { showMessage } from "react-native-flash-message";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import useUploadPetImageUrl from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { isValidUuid } from "../util";
@@ -33,9 +32,13 @@ jest.mock("../analyzer/use-pet-image-analyzer", () => ({
   usePetAnalyzer: jest.fn(),
 }));
 
+const mockUploadImage = jest.fn();
+const mockUploadMultiplePetImages = jest.fn();
 jest.mock("../image-upload-handler", () => ({
-  __esModule: true,
-  default: jest.fn(),
+  useUploadMultiplePetImage: jest
+    .fn()
+    .mockReturnValue({ uploadMultiplePetImages: mockUploadMultiplePetImages }),
+  useUploadPetImageUrl: jest.fn().mockReturnValue(mockUploadImage),
 }));
 
 jest.mock("../Provider/ai-context-provider", () => ({
@@ -194,9 +197,7 @@ const mockShowMessage = showMessage as jest.MockedFunction<typeof showMessage>;
 const mockUsePetAnalyzer = usePetAnalyzer as jest.MockedFunction<
   typeof usePetAnalyzer
 >;
-const mockUseUploadPetImageUrl = useUploadPetImageUrl as jest.MockedFunction<
-  typeof useUploadPetImageUrl
->;
+
 const mockUseAIFeatureContext = useAIFeatureContext as jest.MockedFunction<
   typeof useAIFeatureContext
 >;
@@ -231,7 +232,7 @@ describe("WizardForm", () => {
   } as any;
 
   const mockAnalyze = jest.fn();
-  const mockUploadImage = jest.fn();
+  const mockAnalyzeMultiple = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -246,8 +247,8 @@ describe("WizardForm", () => {
     mockUsePetAnalyzer.mockReturnValue({
       analyze: mockAnalyze,
       loading: false,
+      analyzeMultiple: mockAnalyzeMultiple,
     });
-    mockUseUploadPetImageUrl.mockReturnValue(mockUploadImage);
 
     // Mock repositories
     mockSightingRepository.mockImplementation(
@@ -282,7 +283,9 @@ describe("WizardForm", () => {
   const renderWizardForm = (action = "new-sighting") => {
     return render(
       <AuthContext.Provider value={mockAuthContext}>
-        <ProContext.Provider value={{ aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed }}>
+        <ProContext.Provider
+          value={{ aiPhotoAnalysisAllowed: mockAiPhotoAnalysisAllowed }}
+        >
           <WizardForm action={action as any} />
         </ProContext.Provider>
       </AuthContext.Provider>,
@@ -292,7 +295,7 @@ describe("WizardForm", () => {
   describe("Component Rendering", () => {
     it("should render start step by default for new-sighting", () => {
       const { getByText } = renderWizardForm("new-sighting");
-      
+
       expect(getByText("Start Step")).toBeTruthy();
       expect(getByText("Continue")).toBeTruthy();
       expect(getByText("Back")).toBeTruthy();
@@ -350,7 +353,7 @@ describe("WizardForm", () => {
 
     it("should navigate back to previous step", async () => {
       const { getByText } = renderWizardForm("new-sighting");
-      
+
       // First navigate forward to have history
       await act(async () => {
         fireEvent.press(getByText("Continue"));
@@ -377,12 +380,12 @@ describe("WizardForm", () => {
       });
 
       const { getByText } = renderWizardForm("new-sighting");
-      
+
       // Start -> Upload Photo
       await act(async () => {
         fireEvent.press(getByText("Continue"));
       });
-      
+
       await waitFor(() => {
         expect(getByText("Upload Photo Step")).toBeTruthy();
       });
@@ -391,7 +394,7 @@ describe("WizardForm", () => {
       await act(async () => {
         fireEvent.press(getByText("Continue"));
       });
-      
+
       await waitFor(() => {
         expect(getByText("Edit Pet Step")).toBeTruthy();
       });
@@ -399,7 +402,7 @@ describe("WizardForm", () => {
 
     it("should skip steps appropriately for add-pet action", async () => {
       const { getByText } = renderWizardForm("add-pet");
-      
+
       // Should start at upload_photo step
       expect(getByText("Upload Photo Step")).toBeTruthy();
 
@@ -407,7 +410,7 @@ describe("WizardForm", () => {
       await act(async () => {
         fireEvent.press(getByText("Continue"));
       });
-      
+
       await waitFor(() => {
         expect(getByText("Edit Pet Step")).toBeTruthy();
       });
@@ -423,7 +426,7 @@ describe("WizardForm", () => {
         name: "Test Pet",
         breed: "Labrador",
         lastSeenLat: 40.7128,
-        lastSeenLong: -74.0060,
+        lastSeenLong: -74.006,
         lastSeenLocation: "Test Location",
       };
 
@@ -435,10 +438,12 @@ describe("WizardForm", () => {
       mockUseLocalSearchParams.mockReturnValue({ id: "sighting-123" });
       mockIsValidUuid.mockReturnValue(true);
 
-      const {findByText} = renderWizardForm("edit-sighting");
+      const { findByText } = renderWizardForm("edit-sighting");
 
       await waitFor(() => {
-        expect(mockSightingRepo.getSighting).toHaveBeenCalledWith("sighting-123");
+        expect(mockSightingRepo.getSighting).toHaveBeenCalledWith(
+          "sighting-123",
+        );
       });
 
       expect(await findByText("Upload Photo Step")).toBeTruthy();
@@ -465,7 +470,7 @@ describe("WizardForm", () => {
       mockUseLocalSearchParams.mockReturnValue({ petId: "pet-456" });
       mockIsValidUuid.mockReturnValue(true);
 
-      const {findByText} = renderWizardForm("edit-pet");
+      const { findByText } = renderWizardForm("edit-pet");
 
       await waitFor(() => {
         expect(mockPetRepo.getPet).toHaveBeenCalledWith("pet-456");
@@ -515,7 +520,7 @@ describe("WizardForm", () => {
       mockIsValidUuid.mockReturnValue(false);
 
       const { getByText } = renderWizardForm("edit-sighting");
-      
+
       // Should render normally despite invalid ID
       expect(getByText("Start Step")).toBeTruthy();
     });

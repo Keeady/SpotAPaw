@@ -1,0 +1,10 @@
+{
+  "alreadyHaveAnAccount": "هل لديك حساب بالفعل؟",
+  "anErrorOccuredPleaseTryAgain": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "joinACommunityOfPetsAndPetLovers": "انضم إلى مجتمع من الحيوانات الأليفة ومحبيها",
+  "passwordRequirements": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل، وتشمل حرفاً كبيراً وحرفاً صغيراً ورقماً وحرفاً خاصاً.",
+  "passwordsDoNotMatchPleaseTryAgain": "كلمتا المرور غير متطابقتين. يرجى المحاولة مرة أخرى.",
+  "pleaseCheckYourInboxForEmailVerification": "يرجى التحقق من صندوق الوارد للتحقق من البريد الإلكتروني!",
+  "pleaseUseAStrongPassword": "يرجى استخدام كلمة مرور قوية."
+}

@@ -164,7 +164,7 @@ export default function SignUpScreen() {
       keyboardVerticalOffset={100}
     >
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.headerTitle}>{t("welcome", "Welcome!")}</Text>
+        <Text style={styles.headerTitle}>{t("welcome", "Welcome!", { ns: "translation" })}</Text>
         <Text style={styles.headerSubtitle}>
           {t("joinACommunityOfPetsAndPetLovers")}
         </Text>
@@ -198,6 +198,7 @@ export default function SignUpScreen() {
               mode="outlined"
               keyboardType="email-address"
               error={hasEmailError}
+              testID="email-input"
             />
           </View>
           <View style={styles.verticallySpaced}>
@@ -217,6 +218,7 @@ export default function SignUpScreen() {
               }
               mode="outlined"
               textContentType="password"
+              testID="password-input"
             />
           </View>
           <View style={styles.verticallySpaced}>
@@ -230,6 +232,7 @@ export default function SignUpScreen() {
               autoCapitalize={"none"}
               mode="outlined"
               textContentType="password"
+              testID="confirm-password-input"
             />
             <HelperText visible={true} type="info" padding="none">
               {t("passwordRequirements")}
@@ -254,6 +257,7 @@ export default function SignUpScreen() {
               mode="outlined"
               onPress={() => router.push("/(auth)/oauth")}
               style={styles.button}
+              testID="google-signup-button"
             >
               {t("continueWithGoogle", { ns: "translation" })}
             </Button>
@@ -270,6 +274,7 @@ export default function SignUpScreen() {
                 cornerRadius={12}
                 style={styles.button}
                 onPress={() => router.push("/(auth)/apple")}
+                testID="apple-signup-button"
               />
             </View>
           )}
@@ -281,6 +286,7 @@ export default function SignUpScreen() {
               mode="text"
               disabled={loading}
               onPress={() => router.push("/(auth)/signin")}
+              testID="signin-button"
             >
               {t("signIn", { ns: "translation" })}
             </Button>

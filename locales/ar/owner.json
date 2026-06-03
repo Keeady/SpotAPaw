@@ -1,0 +1,10 @@
+{
+  "errorFetchingAccountInfo": "خطأ عند جلب معلومات الحساب.",
+  "successfullySavedOwnerProfile": "تم حفظ ملف تعريف المالك بنجاح.",
+  "errorSavingOwnerProfile": "خطأ عند حفظ ملف تعريف المالك.",
+  "myContactInformation": "معلومات الاتصال الخاصة بي",
+  "firstName": "الاسم الأول",
+  "lastName": "اسم العائلة",
+  "myReports": "تقاريري",
+  "viewAndManageYourSightingReports": "عرض و إدارة تقارير رصد الحيوانات الأليفة"
+}

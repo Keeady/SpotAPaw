@@ -20,7 +20,7 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 }));
 
 jest.mock("@/components/Provider/auth-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const fakeUser = { id: "test-user-id" };
   const AuthContext = React.createContext({ user: fakeUser });
 

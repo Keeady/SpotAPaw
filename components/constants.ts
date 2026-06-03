@@ -14,6 +14,8 @@ export default AppConstants;
 
 export const MAX_SIGHTINGS = 19;
 export const SIGHTING_RADIUSKM = 8.05;
+export const SIGHTING_RADIUSKM_NOTIFICATION = 25;
+export const MAX_SELECTED_IMAGES = 5;
 
 export const GOOGLE_GEOCODE_URL =
   "https://maps.googleapis.com/maps/api/geocode/json";

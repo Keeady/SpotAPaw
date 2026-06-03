@@ -24,8 +24,9 @@ For EACH pet in the image, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
+      "narrative": "a single fluent sentence describing the pet for embedding to include species, breed, colors, size, collar descriptions and distinctive features.",
     }
-  ],
+  ]
 }
 
 Guidelines:
@@ -41,7 +42,7 @@ Guidelines:
   - Medium: 20-50 lbs (9-23 kg) for dogs, average cats
   - Large: Over 50 lbs (23 kg) for dogs, large cats
 - **Distinctive Features**: 
-  - Notable characteristics like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
+  - Notable characteristics and coat length/pattern/texture, like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
 - **Collar, Tag, or Harness**:
   - Describe Collar, tag, or harness found on the pet such as colors, patterns, and extract any visible writings or brandings
 
@@ -85,9 +86,9 @@ async function getFileHash(base64String: string): Promise<string> {
 }
 
 Deno.serve(async (req: Request) => {
-  const { photo, filename, filetype, hash }: reqPayload = await req.json();
+  const { photo, filetype, hash }: reqPayload = await req.json();
 
-  if (!photo || !filename || !filetype || !hash) {
+  if (!photo || !hash) {
     const error = "Missing required parameters";
 
     return getErrorResponse(error);
@@ -99,7 +100,7 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error);
   }
 
-  if (!ALLOWED_TYPES.includes(filetype)) {
+  if (filetype && !ALLOWED_TYPES.includes(filetype)) {
     const error = "Invalid file type";
     return getErrorResponse(error);
   }
@@ -164,12 +165,12 @@ Deno.serve(async (req: Request) => {
       return getErrorResponse(error, 400, "MAX_FILE_SIZE_ERROR");
     }
 
-    const filePath = `ai_sightings/${filename}`;
+    const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
     // Upload to Supabase Storage
     const { error } = await supabaseClient.storage
       .from("pet_photos")
       .upload(filePath, bytes, {
-        contentType: filetype,
+        contentType: mimeFromBase64,
         upsert: false,
       });
 
@@ -199,7 +200,7 @@ Deno.serve(async (req: Request) => {
           parts: [
             {
               inlineData: {
-                mimeType: filetype,
+                mimeType: mimeFromBase64,
                 data: photoData,
               },
             },

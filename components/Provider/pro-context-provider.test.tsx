@@ -19,7 +19,7 @@ jest.mock("@/db/repositories/pet-repository", () => ({
 }));
 
 jest.mock("@/components/Provider/auth-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const fakeUser = { id: "test-user-id" };
   const AuthContext = React.createContext({ user: fakeUser });
 
@@ -27,6 +27,11 @@ jest.mock("@/components/Provider/auth-provider", () => {
     AuthContext,
   };
 });
+
+const mockCheckIsProUser = jest.fn().mockReturnValue(false);
+jest.mock("./pro-context-util", () => ({
+  checkIsProUser: () => mockCheckIsProUser(),
+}));
 
 describe("ProContextProvider", () => {
   beforeEach(() => {
@@ -102,5 +107,73 @@ describe("ProContextProvider", () => {
     });
 
     expect(mockGetPets).not.toHaveBeenCalled();
+  });
+
+  it("allows AI photo analysis if user is a Pro user", async () => {
+    mockCheckIsProUser.mockReturnValue(true); // Simulate Pro user
+    let contextValue: any;
+    const TestComponent = () => {
+      contextValue = useContext(ProContext);
+      return null;
+    };
+
+    render(
+      <ProContextProvider>
+        <TestComponent />
+      </ProContextProvider>,
+    );
+
+    // Wait for the async operations to complete
+    await waitFor(() => {
+      expect(contextValue).toBeDefined();
+      expect(contextValue.isProUser).toBe(true);
+      expect(contextValue.aiPhotoAnalysisAllowed).toBe(true);
+    });
+
+    expect(mockGetPets).not.toHaveBeenCalled();
+  });
+
+  it("allows multi photo upload if user is a Pro user", async () => {
+    mockCheckIsProUser.mockReturnValue(true); // Simulate Pro user
+    let contextValue: any;
+    const TestComponent = () => {
+      contextValue = useContext(ProContext);
+      return null;
+    };
+
+    render(
+      <ProContextProvider>
+        <TestComponent />
+      </ProContextProvider>,
+    );
+
+    // Wait for the async operations to complete
+    await waitFor(() => {
+      expect(contextValue).toBeDefined();
+      expect(contextValue.isProUser).toBe(true);
+      expect(contextValue.multiPhotoUploadAllowed).toBe(true);
+    });
+  });
+
+  it("does not allow multi photo upload if user is not a Pro user", async () => {
+    mockCheckIsProUser.mockReturnValue(false); // Simulate non-Pro user
+    let contextValue: any;
+    const TestComponent = () => {
+      contextValue = useContext(ProContext);
+      return null;
+    };
+
+    render(
+      <ProContextProvider>
+        <TestComponent />
+      </ProContextProvider>,
+    );
+
+    // Wait for the async operations to complete
+    await waitFor(() => {
+      expect(contextValue).toBeDefined();
+      expect(contextValue.isProUser).toBe(false);
+      expect(contextValue.multiPhotoUploadAllowed).toBe(false);
+    });
   });
 });

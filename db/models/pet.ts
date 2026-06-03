@@ -1,6 +1,7 @@
 export interface Pet {
     id: string,
     createdAt: string,
+    deletedAt: string,
     ownerId: string,
     name: string;
     species: string;
@@ -16,5 +17,6 @@ export interface Pet {
     lastSeenLocation: string,
     note: string,
     photo: string,
-    petDescriptionId: string
+    petDescriptionId: string,
+    photos: string[];
 }

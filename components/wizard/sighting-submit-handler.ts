@@ -11,7 +11,7 @@ export async function createSightingFromPet(
     return;
   }
 
-  return saveNewSighting("", { ...sightingFormData, petId });
+  return saveNewSighting("", { ...sightingFormData, petId }, []);
 }
 
 export async function saveSightingPhoto(
@@ -21,18 +21,33 @@ export async function saveSightingPhoto(
     callback: (uri: string, error?: string) => void,
   ) => Promise<void>,
   action: "new-sighting" | "edit-sighting",
+  uploadMultiplePetImages: (
+    images: { uri: string; filename: string; filetype: string }[],
+    callback: (uri: string[], error?: string) => void,
+  ) => Promise<void>,
 ) {
-  if (sightingFormData.image.uri) {
+  if (sightingFormData.images && sightingFormData.images.length > 0) {
+    await uploadMultiplePetImages?.(
+      sightingFormData.images,
+      (photoUrls: string[]) => {
+        if (action === "new-sighting") {
+          return saveNewSighting("", sightingFormData, photoUrls);
+        } else {
+          return updateSighting("", sightingFormData, photoUrls);
+        }
+      },
+    );
+  } else if (sightingFormData.image.uri) {
     await uploadImage(sightingFormData.image.uri, (photo: string) =>
       action === "new-sighting"
-        ? saveNewSighting(photo, sightingFormData)
-        : updateSighting(photo, sightingFormData),
+        ? saveNewSighting(photo, sightingFormData, [])
+        : updateSighting(photo, sightingFormData, []),
     );
   } else {
     if (action === "new-sighting") {
-      await saveNewSighting("", sightingFormData);
+      await saveNewSighting("", sightingFormData, []);
     } else {
-      await updateSighting("", sightingFormData);
+      await updateSighting("", sightingFormData, []);
     }
   }
 }
@@ -40,8 +55,9 @@ export async function saveSightingPhoto(
 export async function saveNewSighting(
   photo: string,
   sightingFormData: SightingReport,
+  photos: string[],
 ) {
-  const payload = await buildSightingPayload(photo, sightingFormData);
+  const payload = await buildSightingPayload(photo, sightingFormData, photos);
 
   const repository = new SightingRepository();
   return await repository.createSighting(payload);
@@ -50,6 +66,7 @@ export async function saveNewSighting(
 export async function updateSighting(
   photo: string,
   sightingFormData: SightingReport,
+  photos: string[],
 ) {
   if (
     !sightingFormData.sightingId ||
@@ -58,7 +75,7 @@ export async function updateSighting(
     throw new Error("Missing or invalid sighting id");
   }
 
-  const payload = await buildSightingPayload(photo, sightingFormData);
+  const payload = await buildSightingPayload(photo, sightingFormData, photos);
   const sightingRepository = new SightingRepository();
   return await sightingRepository.updateSighting(
     sightingFormData.sightingId,
@@ -79,6 +96,7 @@ function saveNotes(report: SightingReport) {
 async function buildSightingPayload(
   photo: string,
   sightingFormData: SightingReport,
+  photoUrls: string[],
 ) {
   const lastSeenFormatted = await getLastSeenLocation(
     sightingFormData.lastSeenLocation,
@@ -103,6 +121,7 @@ async function buildSightingPayload(
     lastSeenTime: sightingFormData.lastSeenTime,
     reporterName: sightingFormData.reporterName,
     reporterPhone: sightingFormData.reporterPhone,
+    photos: photoUrls?.length > 0 ? photoUrls : sightingFormData.photos,
   } as Partial<AggregatedSighting>;
 
   if (sightingFormData.id && isValidUuid(sightingFormData.id)) {
@@ -120,7 +139,10 @@ async function buildSightingPayload(
     payload.reporterId = sightingFormData.reporterId;
   }
 
-  if (sightingFormData.petDescriptionId && isValidUuid(sightingFormData.petDescriptionId)) {
+  if (
+    sightingFormData.petDescriptionId &&
+    isValidUuid(sightingFormData.petDescriptionId)
+  ) {
     payload.petDescriptionId = sightingFormData.petDescriptionId;
   }
 

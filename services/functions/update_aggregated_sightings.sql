@@ -22,7 +22,11 @@ BEGIN
       -- Only update photo if NEW.photo is not empty/null
       photo = CASE 
         WHEN NEW.photo IS NOT NULL AND NEW.photo != '' THEN NEW.photo 
-        ELSE photo 
+        ELSE photo
+      END,
+      photos = CASE 
+        WHEN NEW.photos IS NOT NULL THEN NEW.photos
+        ELSE photos 
       END,
       -- Only update name if provided by this sighting data
       name = CASE 
@@ -66,7 +70,10 @@ BEGIN
       updated_at,
       owner_id,
       reporter_phone,
-      reporter_name
+      reporter_name,
+      reporter_id,
+      pet_description_id,
+      photos
     ) VALUES (
       NEW.id,
       NEW.pet_id,
@@ -88,7 +95,10 @@ BEGIN
       NOW(),
       pet_owner,
       NEW.reporter_phone,
-      NEW.reporter_name
+      NEW.reporter_name,
+      NEW.reporter_id,
+      NEW.pet_description_id,
+      NEW.photos
     );
     
   END IF;

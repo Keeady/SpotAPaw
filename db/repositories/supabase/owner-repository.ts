@@ -74,7 +74,10 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
 
     const { error } = await this.supabaseClient
       .from("owner")
-      .update({ marked_for_deletion: true })
+      .update({
+        marked_for_deletion: true,
+        deleted_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
     if (error) {
@@ -95,6 +98,9 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
       countryCode: "country_code",
       email: "email",
       ownerId: "owner_id",
+      deletedAt: "deleted_at",
+      createdAt: "created_at",
+      markedForDeletion: "marked_for_deletion",
     };
 
     const normalizedPayload = {};
@@ -122,6 +128,9 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
       countryCode: "country_code",
       email: "email",
       ownerId: "owner_id",
+      deletedAt: "deleted_at",
+      createdAt: "created_at",
+      markedForDeletion: "marked_for_deletion",
     };
 
     const deNormalizedPayload = {} as Owner;

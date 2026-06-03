@@ -20,7 +20,20 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
         paddingVertical: 12,
       }}
     >
-      {pet.photo ? (
+      {pet.photos && pet.photos.length > 0 ? (
+        <Image
+          source={{ uri: pet.photos[0] }}
+          resizeMode="contain"
+          style={{
+            width: "100%",
+            height: "auto",
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+            aspectRatio: 1.5,
+          }}
+          testID="pet-photos"
+        />
+      ) : pet.photo ? (
         <Image
           source={{ uri: pet.photo }}
           resizeMode="contain"
@@ -31,6 +44,7 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
             borderTopRightRadius: 12,
             aspectRatio: 1.5,
           }}
+          testID="pet-photo"
         />
       ) : (
         <View

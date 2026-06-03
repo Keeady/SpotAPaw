@@ -12,7 +12,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 jest.mock("../Provider/pro-context-provider", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const ProContext = React.createContext({ isProUser: false });
 
   return {

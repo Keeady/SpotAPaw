@@ -134,7 +134,9 @@ export default function SightingDetail({
               {petSummary?.gender && (
                 <View style={{ flexDirection: "row", marginBottom: 10 }}>
                   <Text variant="labelLarge">{t("gender")} </Text>
-                  <Text>{petSummary?.gender}</Text>
+                  <Text>
+                    {t(`gender.${petSummary?.gender}`, { ns: "translation" })}
+                  </Text>
                 </View>
               )}
               <Divider />
@@ -321,7 +323,10 @@ export default function SightingDetail({
                         )}
                         {sighting?.gender && (
                           <Text style={styles.detail}>
-                            {t("gender")} {sighting?.gender}
+                            {t("gender")}{" "}
+                            {t(`gender.${sighting?.gender}`, {
+                              ns: "translation",
+                            })}
                           </Text>
                         )}
                       </View>

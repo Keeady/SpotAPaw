@@ -3,45 +3,21 @@ import { Alert, Linking } from "react-native";
 import { log } from "./logs";
 import { createErrorLogMessage } from "./util";
 import { t, TFunction } from "i18next";
-
-export const ImagePickerHandler = async (
-  handleChange: (f: string, v: string) => void,
-  callback?: () => void,
-) => {
-  await requestMediaLibraryPermission(t);
-
-  // No permissions request is necessary for launching the image library
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ["images"],
-    allowsEditing: true,
-    quality: 1,
-  }).catch((err) => {
-    const errorMessage = createErrorLogMessage(err);
-    log(`launchImageLibraryAsync: ${errorMessage}`);
-    return;
-  });
-
-  if (result && !result.canceled) {
-    handleChange("photoUrl", result.assets[0].uri);
-    handleChange("image", {
-      uri: result.assets[0].uri,
-      filename: result.assets[0].fileName,
-      filetype: result.assets[0].mimeType,
-    } as any);
-    callback?.();
-  }
-};
+import { PetImage } from "./wizard/wizard-interface";
+import { MAX_SELECTED_IMAGES } from "./constants";
 
 export const pickImage = async (
   t: TFunction,
-  setPhoto?: React.Dispatch<React.SetStateAction<string>>,
-): Promise<ImagePicker.ImagePickerAsset | null> => {
+  allowsMultipleSelection = false,
+): Promise<ImagePicker.ImagePickerAsset[] | null> => {
   await requestMediaLibraryPermission(t);
 
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
-    allowsEditing: true,
+    allowsEditing: !allowsMultipleSelection,
     quality: 0.8,
+    allowsMultipleSelection: !!allowsMultipleSelection,
+    selectionLimit: MAX_SELECTED_IMAGES,
   }).catch((err) => {
     const errorMessage = createErrorLogMessage(err);
     log(`pickImage: ${errorMessage}`);
@@ -51,25 +27,22 @@ export const pickImage = async (
     return null;
   }
 
-  const photUri = result.assets[0].uri;
-  if (setPhoto) {
-    setPhoto(photUri);
-  }
-
-  return result.assets[0];
+  return result.assets;
 };
 
 export const takePhoto = async (
   t: TFunction,
-  setPhoto?: React.Dispatch<React.SetStateAction<string>>,
-): Promise<ImagePicker.ImagePickerAsset | null> => {
+  allowsMultipleSelection = false,
+): Promise<ImagePicker.ImagePickerAsset[] | null> => {
   await requestCameraPermission(t);
 
   const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ["images", "livePhotos"],
-    allowsEditing: true,
+    allowsEditing: !allowsMultipleSelection,
     quality: 0.8,
     cameraType: ImagePicker.CameraType.back,
+    allowsMultipleSelection: !!allowsMultipleSelection,
+    selectionLimit: MAX_SELECTED_IMAGES,
   }).catch((err) => {
     const errorMessage = createErrorLogMessage(err);
     log(`takePhoto: ${errorMessage}`);
@@ -79,12 +52,7 @@ export const takePhoto = async (
     return null;
   }
 
-  const photUri = result.assets[0].uri;
-  if (setPhoto) {
-    setPhoto(photUri);
-  }
-
-  return result.assets[0];
+  return result.assets;
 };
 
 const checkCameraPermission = async () => {
@@ -169,18 +137,40 @@ export const uploadOrTakePhoto = async (
     mimeType: string | null,
   ) => void,
   t: TFunction,
+  callbackForMultiplePhotos?: (photos: PetImage[]) => void,
+  allowsMultipleSelection = false,
 ): Promise<void> => {
   Alert.alert(
-    t("addPhoto", "Add Photo", { ns: "translation" }),
+    t("addPhoto", "Add Photo", {
+      ns: "translation",
+      count: allowsMultipleSelection ? 2 : 1,
+    }),
     t("chooseOption", "Choose an option", { ns: "translation" }),
     [
       { text: t("cancel", "Cancel", { ns: "translation" }), style: "cancel" },
       {
-        text: t("takePhoto", "Take Photo", { ns: "translation" }),
+        text: t("takePhoto", "Take Photo", {
+          ns: "translation",
+          count: allowsMultipleSelection ? 2 : 1,
+        }),
         onPress: async () => {
-          const result = await takePhoto(t);
-          if (result) {
-            callback(result.uri, result.fileName || "", result?.mimeType || "");
+          const result = await takePhoto(t, allowsMultipleSelection);
+          if (result && result.length > 0) {
+            if (allowsMultipleSelection && callbackForMultiplePhotos) {
+              callbackForMultiplePhotos(
+                result.map((asset) => ({
+                  uri: asset.uri,
+                  filename: asset.fileName || "",
+                  filetype: asset.mimeType || "",
+                })),
+              );
+            } else {
+              callback(
+                result[0].uri,
+                result[0].fileName || "",
+                result[0].mimeType || "",
+              );
+            }
           }
         },
       },
@@ -189,9 +179,23 @@ export const uploadOrTakePhoto = async (
           ns: "translation",
         }),
         onPress: async () => {
-          const result = await pickImage(t);
-          if (result) {
-            callback(result.uri, result.fileName || "", result?.mimeType || "");
+          const result = await pickImage(t, allowsMultipleSelection);
+          if (result && result.length > 0) {
+            if (allowsMultipleSelection && callbackForMultiplePhotos) {
+              callbackForMultiplePhotos(
+                result.map((asset) => ({
+                  uri: asset.uri,
+                  filename: asset.fileName || "",
+                  filetype: asset.mimeType || "",
+                })),
+              );
+            } else {
+              callback(
+                result[0].uri,
+                result[0].fileName || "",
+                result[0].mimeType || "",
+              );
+            }
           }
         },
       },

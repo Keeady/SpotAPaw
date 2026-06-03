@@ -8,10 +8,10 @@ import React, {
 import {
   getCurrentUserLocationV3,
   getExistingUserLocation,
+  getSavedLocation,
+  saveLocation,
   SightingLocation,
 } from "../get-current-location";
-import { getStorageItem, saveStorageItem } from "../util";
-import { SIGHTING_LOCATION_KEY } from "../constants";
 import { LocationPermissionDeniedDialog } from "../location-request-util";
 import { log } from "../logs";
 type ContextProps = {
@@ -38,22 +38,6 @@ const PermissionProvider = (props: Props) => {
     useState<boolean>(false);
   const [location, setLocation] = useState<SightingLocation>();
   const [isLoadingLocation, setLoadingLocation] = useState(false);
-
-  const getSavedLocation = useCallback(async () => {
-    try {
-      const location = await getStorageItem(SIGHTING_LOCATION_KEY);
-      if (location) {
-        return JSON.parse(location);
-      }
-    } catch {
-      log("Failed to get saved location");
-      return;
-    }
-  }, []);
-
-  const saveLocation = useCallback((location: SightingLocation) => {
-    saveStorageItem(SIGHTING_LOCATION_KEY, JSON.stringify(location));
-  }, []);
 
   const getExistingPermission = useCallback(async () => {
     setLoadingLocation(true);
@@ -82,7 +66,7 @@ const PermissionProvider = (props: Props) => {
       .finally(() => {
         setLoadingLocation(false);
       });
-  }, [getSavedLocation]);
+  }, []);
 
   const refreshPermission = useCallback(async () => {
     setLoadingLocation(true);
@@ -115,7 +99,7 @@ const PermissionProvider = (props: Props) => {
       .finally(() => {
         setLoadingLocation(false);
       });
-  }, [getSavedLocation, saveLocation]);
+  }, []);
 
   useEffect(() => {
     getExistingPermission();

@@ -1,0 +1,21 @@
+{
+  "colors": "Couleurs :",
+  "features": "Caractéristiques :",
+  "gender": "Sexe :",
+  "noDistanceData": "Aucune donnée de distance",
+  "breed": "Race :",
+  "call": "Appeler",
+  "editSighting": "Modifier le signalement",
+  "featuresFeatures": "Caractéristiques : {{features}}",
+  "iveSeenThisPet": "J'ai vu cet animal !",
+  "notes": "Notes :",
+  "notesNote": "Notes : {{note}}",
+  "ownerPending": "Propriétaire en attente",
+  "petFound": "Animal trouvé",
+  "reportedBy": "Signalé par :",
+  "sightingTimeline": "Historique des signalements",
+  "text": "Message",
+  "thisIsMyPet": "C'est mon animal.",
+  "viewMatches": "Voir les correspondances",
+  "unknown": "Inconnu"
+}

@@ -1,4 +1,6 @@
 import * as Location from "expo-location";
+import { SIGHTING_LOCATION_KEY } from "./constants";
+import { getStorageItem, saveStorageItem } from "./util";
 
 export type SightingLocation = {
   lat: number;
@@ -104,3 +106,18 @@ const getUserLocationFast =
       throw new Error("Unable to get user location");
     }
   };
+
+export const getSavedLocation = async () => {
+  try {
+    const location = await getStorageItem(SIGHTING_LOCATION_KEY);
+    if (location) {
+      return JSON.parse(location);
+    }
+  } catch {
+    return;
+  }
+};
+
+export const saveLocation = (location: SightingLocation) => {
+  saveStorageItem(SIGHTING_LOCATION_KEY, JSON.stringify(location));
+};
