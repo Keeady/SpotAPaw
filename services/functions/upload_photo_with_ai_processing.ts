@@ -26,7 +26,7 @@ For EACH pet in the image, provide the following information in JSON format:
       "collar_descriptions": ["description 1", "description 2", "description 3"],
       "narrative": "a single fluent sentence describing the pet for embedding to include species, breed, colors, size, collar descriptions and distinctive features.",
     }
-  ],
+  ]
 }
 
 Guidelines:
