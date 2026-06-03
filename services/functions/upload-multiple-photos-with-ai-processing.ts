@@ -134,6 +134,11 @@ Deno.serve(async (req: Request) => {
       const mimeFromBase64 = match[1];
       const photoData = match[2];
 
+      if (!ALLOWED_TYPES.includes(mimeFromBase64)) {
+        const error = "Invalid file type";
+        return getErrorResponse(error);
+      }
+
       if (filetype && mimeFromBase64 !== filetype) {
         const error = "MIME type mismatch";
         return getErrorResponse(error);
