@@ -116,7 +116,12 @@ Deno.serve(async (req: Request) => {
   const mimeFromBase64 = match[1];
   const photoData = match[2];
 
-  if (mimeFromBase64 !== filetype) {
+  if (!ALLOWED_TYPES.includes(mimeFromBase64)) {
+    const error = "Invalid file type";
+    return getErrorResponse(error);
+  }
+
+  if (filetype && mimeFromBase64 !== filetype) {
     const error = "MIME type mismatch";
     return getErrorResponse(error);
   }
@@ -246,11 +251,14 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save result to Supabase
-    const { data: insertedData } = await supabaseClient.from("pet_desc_results").insert({
-      photo_hash: hash,
-      description: textResponse,
-      public_url: photoPublicUrl,
-    }).select("id");
+    const { data: insertedData } = await supabaseClient
+      .from("pet_desc_results")
+      .insert({
+        photo_hash: hash,
+        description: textResponse,
+        public_url: photoPublicUrl,
+      })
+      .select("id");
 
     if (insertedData && insertedData.length > 0) {
       petDescriptionResultId = insertedData[0].id;
