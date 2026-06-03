@@ -113,17 +113,20 @@ jest.mock("../Provider/locale-provider", () => {
 });
 
 const mockEnabledNotificationPermission = false;
+const mockSaveNotificationPermission = jest.fn();
 jest.mock("../Provider/notification-permission-provider", () => {
   const React = jest.requireActual("react");
   const useNotificationPermission = () => ({
     enabledNotificationPermission: false,
-    saveNotificationPermission: jest.fn(),
+    saveNotificationPermission: (value: any) =>
+      mockSaveNotificationPermission(value),
     isLoadingNotification: false,
     getExistingNotificationPermission: jest.fn(),
   });
   const NotificationPermissionContext = React.createContext({
     enabledNotificationPermission: false,
-    saveNotificationPermission: jest.fn(),
+    saveNotificationPermission: (value: any) =>
+      mockSaveNotificationPermission(value),
     isLoadingNotification: false,
     getExistingNotificationPermission: jest.fn(),
   });
@@ -163,7 +166,8 @@ jest.mock("@/components/get-current-location", () => ({
 
 const mockUpdateNotificationSubscriptionEnabled = jest.fn();
 jest.mock("../notification-util", () => ({
-  updateNotificationSubscriptionEnabled: (arg1: any, arg2: any) => mockUpdateNotificationSubscriptionEnabled(arg1, arg2),
+  updateNotificationSubscriptionEnabled: (arg1: any, arg2: any) =>
+    mockUpdateNotificationSubscriptionEnabled(arg1, arg2),
 }));
 
 const MockIcon = () => <Text testID="icon">Icon</Text>;
@@ -196,16 +200,18 @@ const TestWrapper = ({
           >
             <NotificationPermissionContext.Provider
               value={{
-                enabledNotificationPermission: mockEnabledNotificationPermission,
-                saveNotificationPermission: jest.fn(),
+                enabledNotificationPermission:
+                  mockEnabledNotificationPermission,
+                saveNotificationPermission: (value: any) =>
+                  mockSaveNotificationPermission(value),
                 isLoadingNotification: false,
                 getExistingNotificationPermission: jest.fn(),
               }}
             >
-            <PaperProvider settings={{ icon: MockIcon }}>
-              {children}
-            </PaperProvider>
-          </NotificationPermissionContext.Provider>
+              <PaperProvider settings={{ icon: MockIcon }}>
+                {children}
+              </PaperProvider>
+            </NotificationPermissionContext.Provider>
           </ProContext.Provider>
         </AIFeatureContext.Provider>
       </LocaleContext.Provider>
@@ -289,7 +295,11 @@ describe("SettingsContainer Component", () => {
     expect(notificationSwitch.props.value).toBe(false);
     fireEvent(notificationSwitch, "valueChange", true);
     expect(notificationSwitch.props.value).toBe(true);
-    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(true, 25);
+    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(
+      true,
+      25,
+    );
+    expect(mockSaveNotificationPermission).toHaveBeenCalledWith(true);
 
     const privacyButton = getByText("privacyPolicy");
     fireEvent.press(privacyButton);
@@ -497,7 +507,19 @@ describe("SettingsContainer Component", () => {
     expect(notificationSwitch.props.value).toBe(false);
     fireEvent(notificationSwitch, "valueChange", true);
     expect(notificationSwitch.props.value).toBe(true);
-    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(true, 25);
+    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(
+      true,
+      25,
+    );
+    expect(mockSaveNotificationPermission).toHaveBeenCalledWith(true);
+
+    fireEvent(notificationSwitch, "valueChange", false);
+    expect(notificationSwitch.props.value).toBe(false);
+    expect(mockUpdateNotificationSubscriptionEnabled).toHaveBeenCalledWith(
+      false,
+      25,
+    );
+    expect(mockSaveNotificationPermission).toHaveBeenCalledWith(false);
 
     const privacyButton = getByText("privacyPolicy");
     fireEvent.press(privacyButton);

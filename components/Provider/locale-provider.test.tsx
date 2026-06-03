@@ -1,7 +1,6 @@
 import { render, waitFor } from "@testing-library/react-native";
 import { LocaleContext, LocaleContextProvider } from "./locale-provider";
 import { useContext } from "react";
-import { I18nManager } from "react-native";
 
 const mockGetStorageItem = jest.fn().mockResolvedValue(null);
 const mockSaveStorageItem = jest.fn();
@@ -93,7 +92,6 @@ describe("LocaleProvider", () => {
   });
 
   it("provides the correct preferred language from storage when storage fails", async () => {
-    const defaultLanguage = "en";
     mockGetLocales.mockReturnValue([{ languageCode: "it" }]);
     mockGetStorageItem.mockRejectedValueOnce(new Error("Storage error"));
     let contextValue: any;

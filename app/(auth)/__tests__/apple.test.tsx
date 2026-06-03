@@ -1,6 +1,6 @@
 import React from "react";
 import Auth from "../apple";
-import { render, renderHook, waitFor } from "@testing-library/react-native";
+import { render, waitFor } from "@testing-library/react-native";
 
 const mockCredential = {
   identityToken: "mockIdentityToken",
