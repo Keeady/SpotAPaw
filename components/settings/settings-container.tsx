@@ -292,7 +292,7 @@ const SettingsContainer = () => {
     router.push("/about");
   };
 
-  const versionText = Application.nativeApplicationVersion ?? "1.4.0";
+  const versionText = Application.nativeApplicationVersion ?? "1.5.0";
   const locationPermissionStatusDisplayText = locationPermission
     ? t("granted", "Granted")
     : t("request", "Request");
