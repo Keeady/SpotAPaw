@@ -214,35 +214,43 @@ describe("usePetAnalyzer", () => {
       await expect(
         result.current.analyze("", testFilename, testFiletype),
       ).rejects.toThrow(
-        "Missing required parameters uri or filename or filetype.",
+        "Missing required parameter uri.",
       );
     });
 
-    it("should throw error for missing filename parameter", async () => {
+    it("should not throw error for missing filename parameter", async () => {
       const { result } = renderHook(() =>
         usePetAnalyzer({
           onSuccess: mockOnSuccess,
         }),
       );
 
-      await expect(
-        result.current.analyze(testUri, "", testFiletype),
-      ).rejects.toThrow(
-        "Missing required parameters uri or filename or filetype.",
+      await act(async () => {
+        await result.current.analyze(testUri, "", testFiletype);
+      });
+
+      expect(mockUploadPhotoWithProcessing).toHaveBeenCalledWith(
+        testUri,
+        "",
+        testFiletype,
       );
     });
 
-    it("should throw error for missing filetype parameter", async () => {
+    it("should not throw error for missing filetype parameter", async () => {
       const { result } = renderHook(() =>
         usePetAnalyzer({
           onSuccess: mockOnSuccess,
         }),
       );
 
-      await expect(
-        result.current.analyze(testUri, testFilename, ""),
-      ).rejects.toThrow(
-        "Missing required parameters uri or filename or filetype.",
+      await act(async () => {
+        await result.current.analyze(testUri, testFilename, "");
+      });
+
+      expect(mockUploadPhotoWithProcessing).toHaveBeenCalledWith(
+        testUri,
+        testFilename,
+        "",
       );
     });
 
@@ -492,7 +500,7 @@ describe("usePetAnalyzer", () => {
           { uri: testUri, filename: testFilename, filetype: "" },
         ]).catch((error) => {
           expect(error).toBeInstanceOf(Error);
-          expect(error.message).toBe("Missing required parameters uri or filename or filetype.");
+          expect(error.message).toBe("Missing required parameter uri.");
         });
       });
 
