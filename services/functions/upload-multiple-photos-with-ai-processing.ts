@@ -106,8 +106,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     for (const image of images) {
-      const { photo, filename, filetype, hash } = image;
-      if (!photo || !filename || !filetype || !hash) {
+      const { photo, filetype, hash } = image;
+      if (!photo || !hash) {
         const error = "Missing required parameters";
         return getErrorResponse(error);
       }
@@ -118,7 +118,7 @@ Deno.serve(async (req: Request) => {
         return getErrorResponse(error);
       }
 
-      if (!ALLOWED_TYPES.includes(filetype)) {
+      if (filetype && !ALLOWED_TYPES.includes(filetype)) {
         const error = "Invalid file type";
         return getErrorResponse(error);
       }
@@ -160,12 +160,12 @@ Deno.serve(async (req: Request) => {
       if (data) {
         photoPublicUrl = data.public_url;
       } else {
-        const filePath = `ai_sightings/${filename}`;
+        const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
         const { error } = await supabaseClient.storage
           .from("pet_photos")
           .upload(filePath, bytes, {
-            contentType: filetype,
+            contentType: mimeFromBase64,
             upsert: false,
           });
 
@@ -190,7 +190,7 @@ Deno.serve(async (req: Request) => {
 
       photoPayloads.push({
         file_data: {
-          mimeType: filetype,
+          mimeType: mimeFromBase64,
           file_uri: photoPublicUrl,
         },
       });

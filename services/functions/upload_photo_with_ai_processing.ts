@@ -86,9 +86,9 @@ async function getFileHash(base64String: string): Promise<string> {
 }
 
 Deno.serve(async (req: Request) => {
-  const { photo, filename, filetype, hash }: reqPayload = await req.json();
+  const { photo, filetype, hash }: reqPayload = await req.json();
 
-  if (!photo || !filename || !filetype || !hash) {
+  if (!photo || !hash) {
     const error = "Missing required parameters";
 
     return getErrorResponse(error);
@@ -100,7 +100,7 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error);
   }
 
-  if (!ALLOWED_TYPES.includes(filetype)) {
+  if (filetype && !ALLOWED_TYPES.includes(filetype)) {
     const error = "Invalid file type";
     return getErrorResponse(error);
   }
@@ -165,12 +165,12 @@ Deno.serve(async (req: Request) => {
       return getErrorResponse(error, 400, "MAX_FILE_SIZE_ERROR");
     }
 
-    const filePath = `ai_sightings/${filename}`;
+    const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
     // Upload to Supabase Storage
     const { error } = await supabaseClient.storage
       .from("pet_photos")
       .upload(filePath, bytes, {
-        contentType: filetype,
+        contentType: mimeFromBase64,
         upsert: false,
       });
 
@@ -200,7 +200,7 @@ Deno.serve(async (req: Request) => {
           parts: [
             {
               inlineData: {
-                mimeType: filetype,
+                mimeType: mimeFromBase64,
                 data: photoData,
               },
             },

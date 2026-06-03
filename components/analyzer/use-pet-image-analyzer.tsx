@@ -49,9 +49,9 @@ export function usePetAnalyzer(
   const analyze = useCallback(
     async (uri: string, filename: string, filetype: string) => {
       try {
-        if (!uri || !filename || !filetype) {
+        if (!uri) {
           throw new Error(
-            "Missing required parameters uri or filename or filetype.",
+            "Missing required parameter uri.",
           );
         }
 
@@ -99,8 +99,8 @@ export function usePetAnalyzer(
           throw new Error("No images provided for analysis.");
         }
         
-        images.forEach(({ uri, filename, filetype }) => {
-          if (!uri || !filename || !filetype) {
+        images.forEach(({ uri }) => {
+          if (!uri) {
             hasError = true;
             return;
           }
@@ -108,7 +108,7 @@ export function usePetAnalyzer(
 
         if (hasError) {
           throw new Error(
-            "Missing required parameters uri or filename or filetype.",
+            "Missing required parameter uri.",
           );
         }
         setLoading(true);

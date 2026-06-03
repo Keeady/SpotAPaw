@@ -149,7 +149,7 @@ export const uploadMultiplePhotosWithProcessing = async (
         const imageHash = await getFileHash(base64Image);
         return {
           photo: base64Image,
-          filename: imageHash + "." + image.filetype.split("/")[1],
+          filename: image.filename,
           filetype: image.filetype,
           hash: imageHash,
         };
@@ -192,7 +192,7 @@ export function useUploadMultiplePetImage() {
             const imageHash = await getFileHash(base64Image);
             return {
               photo: base64Image,
-              filename: imageHash + "." + image.filetype.split("/")[1],
+              filename: image.filename,
               filetype: image.filetype,
               hash: imageHash,
             };
