@@ -67,6 +67,8 @@ export default function PublicHome() {
           <View style={styles.mediaBtnsContainer}>
             <View style={styles.mediaBtns}>
               <TouchableOpacity
+                accessibilityLabel="Download SpotAPaw on Google Play"
+                accessibilityRole="button"
                 onPress={() =>
                   Linking.openURL(
                     "https://play.google.com/store/apps/details?id=com.bcamaria.SpotAPaw",
@@ -83,6 +85,8 @@ export default function PublicHome() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
+                accessibilityLabel="Download SpotAPaw on the App Store"
+                accessibilityRole="button"
                 onPress={() =>
                   Linking.openURL(
                     "https://apps.apple.com/us/app/spotapaw/id6757455715",
