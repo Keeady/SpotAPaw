@@ -318,6 +318,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       linkedSightings: "linked_sightings",
       petDescriptionId: "pet_description_id",
       similarityScore: "similarity_score",
+      photos: "photos",
     };
 
     const normalizedPayload = {};
@@ -366,6 +367,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       linkedSightings: "linked_sightings",
       petDescriptionId: "pet_description_id",
       similarityScore: "similarity_score",
+      photos: "photos",
     };
 
     const deNormalizedPayload = {} as AggregatedSighting;
