@@ -76,10 +76,9 @@ export default function PublicHome() {
                 <Image
                   source={require("../assets/images/google-play-badge.png")}
                   style={{
-                    width: 120,
+                    width: 135,
                     height: 40,
-                    resizeMode: "cover",
-                    borderRadius: 8,
+                    resizeMode: "contain",
                   }}
                 />
               </TouchableOpacity>
@@ -92,7 +91,7 @@ export default function PublicHome() {
               >
                 <Image
                   source={require("../assets/images/app-store-badge.svg")}
-                  style={{ width: 120, height: 40, resizeMode: "cover" }}
+                  style={{ width: 135, height: 40, resizeMode: "contain" }}
                 />
               </TouchableOpacity>
             </View>
