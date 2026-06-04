@@ -1,6 +1,12 @@
 import HomePageHeader from "@/components/header/homepage-header";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { Button, Text } from "react-native-paper";
 import * as Linking from "expo-linking";
 import Head from "expo-router/head";
@@ -58,6 +64,39 @@ export default function PublicHome() {
               {t("title", "A community helping lost pets find their way home.")}
             </Text>
           </View>
+          <View style={styles.mediaBtnsContainer}>
+            <View style={styles.mediaBtns}>
+              <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(
+                    "https://play.google.com/store/apps/details?id=com.bcamaria.SpotAPaw",
+                  )
+                }
+              >
+                <Image
+                  source={require("../assets/images/google-play-badge.png")}
+                  style={{
+                    width: 120,
+                    height: 40,
+                    resizeMode: "cover",
+                    borderRadius: 8,
+                  }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(
+                    "https://apps.apple.com/us/app/spotapaw/id6757455715",
+                  )
+                }
+              >
+                <Image
+                  source={require("../assets/images/app-store-badge.svg")}
+                  style={{ width: 120, height: 40, resizeMode: "cover" }}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
 
         <View>
@@ -71,39 +110,6 @@ export default function PublicHome() {
               "Browse Nearby Lost Pet Sightings",
             )}
           </Button>
-
-          <View style={styles.mediaBtnsContainer}>
-            <Text variant="bodyMedium" style={styles.mediaBtnsText}>
-              {t(
-                "lostYourPetFoundAPetDownloadTheApps",
-                "Lost your pet? Found a pet? Download the apps:",
-              )}
-            </Text>
-            <View style={styles.mediaBtns}>
-              <Button
-                icon={"android"}
-                mode="outlined"
-                onPress={() =>
-                  Linking.openURL(
-                    "https://play.google.com/store/apps/details?id=com.bcamaria.SpotAPaw",
-                  )
-                }
-              >
-                Android
-              </Button>
-              <Button
-                icon={"apple"}
-                mode="outlined"
-                onPress={() =>
-                  Linking.openURL(
-                    "https://apps.apple.com/us/app/spotapaw/id6757455715",
-                  )
-                }
-              >
-                iOS
-              </Button>
-            </View>
-          </View>
 
           <View style={styles.usageText}>
             <Text variant="bodySmall">{t("byUsing", "By using ")} </Text>
