@@ -44,7 +44,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     gender,
     age,
     colors,
-    photo,
     status,
     features,
     species,
@@ -73,13 +72,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             isVisible={isVisibleGallery}
             setIsVisible={setIsVisibleGallery}
             mainPhoto={photos[0]}
-          />
-        ) : photo ? (
-          <Image
-            source={{ uri: photo }}
-            style={styles.image}
-            resizeMode="contain"
-            testID={"pet-photo"}
           />
         ) : (
           <View style={[styles.image, styles.placeholder]}>

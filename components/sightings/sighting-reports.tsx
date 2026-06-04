@@ -185,9 +185,9 @@ const ReportListPage = () => {
       <View style={styles.cardContent}>
         {/* Thumbnail */}
         <Surface style={styles.thumbnailContainer} elevation={1}>
-          {item.photo ? (
+          {item.photos && item.photos.length > 0 ? (
             <Image
-              source={{ uri: item.photo }}
+              source={{ uri: item.photos[0] }}
               style={styles.thumbnail}
               resizeMode="cover"
             />

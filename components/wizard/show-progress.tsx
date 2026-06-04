@@ -28,7 +28,7 @@ export default function ShowProgress({
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
   const { user } = useContext(AuthContext);
   const router = useRouter();
-  const { sightingId, petDescriptionId, photo } = sightingFormData;
+  const { sightingId, petDescriptionId, photos } = sightingFormData;
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -171,9 +171,9 @@ export default function ShowProgress({
         </Surface>
         <Surface style={styles.card} elevation={1}>
           <View style={styles.animationWrapper}>
-            {photo ? (
+            {photos && photos.length > 0 ? (
               <Image
-                source={{ uri: photo }}
+                source={{ uri: photos[0] }}
                 resizeMode={"contain"}
                 style={{
                   width: 350,

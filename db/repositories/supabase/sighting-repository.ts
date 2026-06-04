@@ -5,6 +5,7 @@ import {
   SightingFilters,
   SightingRepositoryResponse,
 } from "../base-sighting-repository";
+import { log } from "@/components/logs";
 
 export class SupabaseSightingRepository extends BaseSightingRepository {
   supabaseClient: SupabaseClient | undefined;
@@ -266,7 +267,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
-    
+
     const { error, data } = await this.supabaseClient.functions.invoke(
       "process_pet_matching",
       {
@@ -325,9 +326,11 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
 
     Object.keys(payload).map((key) => {
       const dbKey = key in dbKeys && dbKeys[key as keyOfPet];
-      if (dbKey) {
-        normalizedPayload[dbKey] = payload[key as keyOfPet];
+      if (!dbKey) {
+        log(`No db key found for ${key}`);
+        return;
       }
+      normalizedPayload[dbKey] = payload[key as keyOfPet];
     });
 
     return normalizedPayload;
@@ -374,6 +377,10 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
 
     Object.keys(dbKeys).map((key) => {
       const dbKey = dbKeys[key as keyOfPet];
+      if (!dbKey) {
+        log(`No db key found for ${key}`);
+        return;
+      }
       const dbValue = dbKey in payload && payload[dbKey as keyOfPet];
       if (dbValue !== undefined) {
         deNormalizedPayload[key] = dbValue;

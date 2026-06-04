@@ -80,10 +80,7 @@ exports.sightingPreview = onRequest(
         res.status(500).send("Server misconfigured: SUPABASE URL or KEY");
         return;
       }
-      supabase = createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY,
-      );
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
     // Fetch sighting from Supabase
@@ -104,7 +101,10 @@ exports.sightingPreview = onRequest(
     const description = escape(
       `Help reunite this pet: ${data.gender} ${data.breed} ${data.species}. Features: ${data.features}`,
     );
-    const image = escape(data.photo) || `${WEBSITE_URL}/default-og.png`;
+    const image =
+      data.photos && data.photos.length > 0
+        ? escape(data.photos[0])
+        : `${WEBSITE_URL}/default-og.png`;
     const safeAppName = escape(APP_NAME);
     const safeAppStoreId = escape(APP_STORE_ID);
     const safePlayStoreId = escape(PLAY_STORE_ID);

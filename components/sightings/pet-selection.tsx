@@ -28,7 +28,7 @@ export function PetSelection({
           petName={pet.name}
           petGender={pet.gender}
           petAge={pet.age}
-          petPhoto={pet.photo}
+          petPhoto={pet.photos[0]}
           showDetails={true}
         />
       ))}

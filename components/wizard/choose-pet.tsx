@@ -95,7 +95,7 @@ export function ChoosePet({
         updateSightingData("gender", pet.gender);
         updateSightingData("features", pet.features);
         updateSightingData("note", pet.note);
-        updateSightingData("photo", pet.photo);
+        updateSightingData("photos", pet.photos);
         updateSightingData("isLost", pet.isLost);
         updateSightingData("id", pet.id);
       }

@@ -73,9 +73,9 @@ export default function ClaimSighting({
             title={sighting.name || "Unknown"}
             titleVariant="titleLarge"
           />
-          {sighting.photo && (
+          {sighting.photos && sighting.photos.length > 0 && (
             <Image
-              source={{ uri: sighting.photo }}
+              source={{ uri: sighting.photos[0] }}
               style={styles.sightingImage}
               resizeMode="contain"
             />
