@@ -12,7 +12,7 @@ import { createErrorLogMessage, createErrorLogMessageAsync } from "./util";
 import * as Crypto from "expo-crypto";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/heic"];
 
 export function useUploadPetImageUrl() {
   const SUPABASE_URL = AppConstant.EXPO_PUBLIC_SUPABASE_URL;
@@ -78,13 +78,13 @@ async function readImageAsBase64(uri: string): Promise<string> {
     const blob = await response.blob();
 
     if (blob.size > MAX_FILE_SIZE) {
-      throw new Error("File exceeds max size", {
+      throw new Error(`File exceeds max size: ${blob.size} bytes`, {
         cause: MAX_FILE_SIZE_ERROR,
       });
     }
 
     if (!ALLOWED_TYPES.includes(blob.type)) {
-      throw new Error("Unsupported file type", {
+      throw new Error(`Unsupported file type: ${blob.type}`, {
         cause: UNSUPPORTED_MIME_TYPE,
       });
     }
