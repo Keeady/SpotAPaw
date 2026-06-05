@@ -32,13 +32,11 @@ jest.mock("../analyzer/use-pet-image-analyzer", () => ({
   usePetAnalyzer: jest.fn(),
 }));
 
-const mockUploadImage = jest.fn();
 const mockUploadMultiplePetImages = jest.fn();
 jest.mock("../image-upload-handler", () => ({
   useUploadMultiplePetImage: jest
     .fn()
     .mockReturnValue({ uploadMultiplePetImages: mockUploadMultiplePetImages }),
-  useUploadPetImageUrl: jest.fn().mockReturnValue(mockUploadImage),
 }));
 
 jest.mock("../Provider/ai-context-provider", () => ({
