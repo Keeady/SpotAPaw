@@ -150,7 +150,7 @@ describe("ShowProgress", () => {
         petDescriptionId: "petDesc123",
         lastSeenLat: 40.785091,
         lastSeenLong: -73.968285,
-        photo: "http://example.co/photo"
+        photos: ["http://example.co/photo"],
       },
       { user: { id: "user123" } },
     );
@@ -194,7 +194,7 @@ describe("ShowProgress", () => {
         petDescriptionId: "petDesc123",
         lastSeenLat: 40.785091,
         lastSeenLong: -73.968285,
-        photo: "http://example.co/photo"
+        photos: ["http://example.co/photo"],
       },
       { user: null },
     );

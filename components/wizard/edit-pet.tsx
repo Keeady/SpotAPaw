@@ -36,7 +36,6 @@ export function EditPet({
   const closeMenu = () => setVisible(false);
 
   const {
-    photo,
     colors,
     species,
     breed,
@@ -44,7 +43,6 @@ export function EditPet({
     age,
     name,
     id,
-    image,
     isLost,
     photos,
     images,
@@ -83,7 +81,7 @@ export function EditPet({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={images?.[0]?.uri || image?.uri || photos?.[0] || photo}
+          petPhoto={images?.[0]?.uri || photos?.[0]}
           showDetails={false}
         />
         {(reportType === "new_pet" || reportType === "edit_pet") && (

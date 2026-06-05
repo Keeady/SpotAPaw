@@ -92,9 +92,9 @@ export function SightingThumbnail({
         )}
       />
       <Card.Content>
-        {sighting.photo ? (
+        {sighting.photos && sighting.photos.length > 0 ? (
           <Image
-            source={{ uri: sighting.photo }}
+            source={{ uri: sighting.photos[0] }}
             resizeMode={"contain"}
             style={styles.petImage}
           />

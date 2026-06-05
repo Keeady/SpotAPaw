@@ -22,7 +22,6 @@ export function EditPetContinued({
   const [hasErrors, setHasErrors] = useState(false);
 
   const {
-    photo,
     gender,
     size,
     features,
@@ -32,7 +31,6 @@ export function EditPetContinued({
     petBehavior,
     collar,
     collarDescription,
-    image,
     images,
     photos,
   } = sightingFormData;
@@ -70,7 +68,7 @@ export function EditPetContinued({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={images?.[0]?.uri || image?.uri || photos?.[0] || photo}
+          petPhoto={images?.[0]?.uri || photos?.[0]}
           showDetails={false}
         />
 

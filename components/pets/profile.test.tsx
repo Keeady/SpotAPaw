@@ -130,7 +130,8 @@ describe("PetProfile", () => {
       expect(getByText("🐾 species: animal.Cat")).toBeTruthy();
       expect(getByText("📝 notes Friendly and loves people")).toBeTruthy();
       expect(getByText("⭐ features Fluffy tail")).toBeTruthy();
-      expect(queryByTestId("pet-photo")).toBeTruthy();
+      expect(queryByTestId("pet-photo")).toBeNull();
+      expect(getByText("noPhoto")).toBeTruthy();
 
       expect(getByText("edit")).toBeTruthy();
       fireEvent.press(getByText("edit"));

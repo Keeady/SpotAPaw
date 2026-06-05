@@ -12,7 +12,10 @@ import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
 import { AnalysisResponse } from "../analyzer/types";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import { useUploadPetImageUrl, useUploadMultiplePetImage } from "../image-upload-handler";
+import {
+  useUploadPetImageUrl,
+  useUploadMultiplePetImage,
+} from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { AddContact } from "./add-contact";
@@ -139,7 +142,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             updateSightingData("lastSeenLocation", sighting.lastSeenLocation);
             updateSightingData("lastSeenTime", sighting.lastSeenTime);
             updateSightingData("features", sighting.features);
-            updateSightingData("photo", sighting.photo);
             updateSightingData("note", sighting.note);
             updateSightingData("collarDescription", sighting.collarDescription);
             updateSightingData("photos", sighting.photos);
@@ -219,7 +221,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           updateSightingData("gender", pet.gender);
           updateSightingData("features", pet.features);
           updateSightingData("note", pet.note);
-          updateSightingData("photo", pet.photo);
           updateSightingData("isLost", pet.isLost || Boolean(isPetLost));
           updateSightingData("id", pet.id);
           updateSightingData("photos", pet.photos);
@@ -262,15 +263,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     switch (currentStep) {
       case "upload_photo":
         if (isAiFeatureEnabled && !aiGenerated && aiPhotoAnalysisAllowed) {
-          if (sightingFormData.images && sightingFormData.images.length > 0) {
+          if (sightingFormData.images && sightingFormData.images.length > 1) {
             return analyzeMultiple(sightingFormData.images);
-          }
-
-          if (sightingFormData.image.uri) {
+          } else if (
+            sightingFormData.images &&
+            sightingFormData.images.length === 1
+          ) {
             return analyze(
-              sightingFormData.image.uri,
-              sightingFormData.image.filename,
-              sightingFormData.image.filetype,
+              sightingFormData.images[0].uri,
+              sightingFormData.images[0].filename,
+              sightingFormData.images[0].filetype,
             );
           }
         }
@@ -279,13 +281,12 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       case "submit":
         if (isAiFeatureEnabled && aiPhotoAnalysisAllowed) {
           if (action === "new-sighting") {
-            return saveNewSighting("", sightingFormData, []);
+            return saveNewSighting(sightingFormData, []);
           } else if (action === "edit-sighting") {
-            return updateSighting("", sightingFormData, []);
+            return updateSighting(sightingFormData, []);
           } else if (action === "add-pet") {
             if (sightingFormData.isLost) {
               return saveNewPet(
-                "",
                 sightingFormData,
                 user?.id || "",
                 createSightingFromPet,
@@ -293,22 +294,30 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               );
             }
 
-            return saveNewPet("", sightingFormData, user?.id || "", undefined, []);
+            return saveNewPet(
+              sightingFormData,
+              user?.id || "",
+              undefined,
+              [],
+            );
           } else if (action === "edit-pet") {
             if (sightingFormData.isLost) {
-              return updatePet("", sightingFormData, createSightingFromPet, []);
+              return updatePet(sightingFormData, createSightingFromPet, []);
             }
 
-            return updatePet("", sightingFormData, undefined, []);
+            return updatePet(sightingFormData, undefined, []);
           }
         } else {
           if (action === "new-sighting" || action === "edit-sighting") {
-            return saveSightingPhoto(sightingFormData, uploadImage, action, uploadMultiplePetImages);
+            return saveSightingPhoto(
+              sightingFormData,
+              action,
+              uploadMultiplePetImages,
+            );
           } else if (action === "add-pet") {
             if (sightingFormData.isLost) {
               return saveNewPetPhoto(
                 sightingFormData,
-                uploadImage,
                 user?.id || "",
                 createSightingFromPet,
                 uploadMultiplePetImages,
@@ -317,7 +326,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
             return saveNewPetPhoto(
               sightingFormData,
-              uploadImage,
               user?.id || "",
               undefined,
               uploadMultiplePetImages,
@@ -326,13 +334,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             if (sightingFormData.isLost) {
               return updateNewPetPhoto(
                 sightingFormData,
-                uploadImage,
                 createSightingFromPet,
                 uploadMultiplePetImages,
               );
             }
 
-            return updateNewPetPhoto(sightingFormData, uploadImage, undefined, uploadMultiplePetImages);
+            return updateNewPetPhoto(
+              sightingFormData,
+              undefined,
+              uploadMultiplePetImages,
+            );
           }
         }
       case "find_match":
@@ -513,7 +524,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       }
 
       if (publicUrl) {
-        updateSightingData("photo", publicUrl);
+        updateSightingData("photos", [publicUrl]);
       }
 
       if (petDescriptionId) {

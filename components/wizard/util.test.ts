@@ -2,15 +2,15 @@ import { isFuture } from "date-fns";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { isValidUuid } from "../util";
 import {
-    defaultSightingFormData,
-    validate,
-    validateChoosePet,
-    validateEditPet,
-    validateEditPetContinued,
-    validateEditPhoto,
-    validateLastSeen,
-    validateLocatePet,
-    validateStart,
+  defaultSightingFormData,
+  validate,
+  validateChoosePet,
+  validateEditPet,
+  validateEditPetContinued,
+  validateEditPhoto,
+  validateLastSeen,
+  validateLocatePet,
+  validateStart,
 } from "./util";
 import type { SightingReport } from "./wizard-interface";
 
@@ -60,6 +60,14 @@ describe("Wizard Util Functions", () => {
       filename: "photo.jpg",
       filetype: "image/jpeg",
     },
+    photos: ["photo.jpg"],
+    images: [
+      {
+        uri: "file://photo.jpg",
+        filename: "photo.jpg",
+        filetype: "image/jpeg",
+      },
+    ],
   };
 
   beforeEach(() => {
@@ -117,8 +125,8 @@ describe("Wizard Util Functions", () => {
 
       const invalidSighting = {
         ...mockSightingReport,
-        image: { uri: "", filename: "", filetype: "" },
-        photo: "",
+        images: [],
+        photos: [],
       };
       const resultInvalid = validate(invalidSighting, "upload_photo");
 
@@ -235,11 +243,13 @@ describe("Wizard Util Functions", () => {
     it("should return true when image URI is provided", () => {
       const sighting = {
         ...mockSightingReport,
-        image: {
-          uri: "file://photo.jpg",
-          filename: "photo.jpg",
-          filetype: "image/jpeg",
-        },
+        images: [
+          {
+            uri: "file://photo.jpg",
+            filename: "photo.jpg",
+            filetype: "image/jpeg",
+          },
+        ],
       };
 
       expect(validateEditPhoto(sighting)).toBe(true);
@@ -248,8 +258,8 @@ describe("Wizard Util Functions", () => {
     it("should return true when photo URL is provided", () => {
       const sighting = {
         ...mockSightingReport,
-        photo: "photo.jpg",
-        image: { uri: "", filename: "", filetype: "" },
+        photos: ["photo.jpg"],
+        images: [{ uri: "", filename: "", filetype: "" }],
       };
 
       expect(validateEditPhoto(sighting)).toBe(true);
@@ -259,8 +269,8 @@ describe("Wizard Util Functions", () => {
       const sighting = {
         ...mockSightingReport,
         linkedSightingId: "linked-123",
-        photo: "",
-        image: { uri: "", filename: "", filetype: "" },
+        photos: [],
+        images: [{ uri: "", filename: "", filetype: "" }],
       };
 
       expect(validateEditPhoto(sighting)).toBe(true);
@@ -269,9 +279,9 @@ describe("Wizard Util Functions", () => {
     it("should return false when no photo or linkedSightingId is provided", () => {
       const sighting = {
         ...mockSightingReport,
-        photo: "",
+        photos: [],
         linkedSightingId: "",
-        image: { uri: "", filename: "", filetype: "" },
+        images: [],
       };
 
       expect(validateEditPhoto(sighting)).toBe(false);

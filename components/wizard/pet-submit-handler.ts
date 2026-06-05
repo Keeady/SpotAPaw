@@ -4,10 +4,6 @@ import { getLastSeenLocation, isValidUuid } from "../util";
 
 export async function saveNewPetPhoto(
   sightingFormData: SightingPet,
-  uploadImage: (
-    uri: string,
-    callback: (photoUrl: string) => void,
-  ) => Promise<void>,
   userId: string,
   onPetCreated?: (
     newPetId: string,
@@ -22,23 +18,15 @@ export async function saveNewPetPhoto(
     await uploadMultiplePetImages?.(
       sightingFormData.images,
       (photoUrls: string[]) =>
-        saveNewPet("", sightingFormData, userId, onPetCreated, photoUrls),
-    );
-  } else if (sightingFormData.image?.uri) {
-    await uploadImage(sightingFormData.image.uri, (photoUrl: string) =>
-      saveNewPet(photoUrl, sightingFormData, userId, onPetCreated, []),
+        saveNewPet(sightingFormData, userId, onPetCreated, photoUrls),
     );
   } else {
-    await saveNewPet("", sightingFormData, userId, onPetCreated, []);
+    await saveNewPet(sightingFormData, userId, onPetCreated, []);
   }
 }
 
 export async function updateNewPetPhoto(
   sightingFormData: SightingPet,
-  uploadImage: (
-    uri: string,
-    callback: (photoUrl: string) => void,
-  ) => Promise<void>,
   onPetUpdated?: (
     newPetId: string,
     sightingFormData: SightingReport,
@@ -56,19 +44,14 @@ export async function updateNewPetPhoto(
     await uploadMultiplePetImages?.(
       sightingFormData.images,
       (photoUrls: string[]) =>
-        updatePet("", sightingFormData, onPetUpdated, photoUrls),
-    );
-  } else if (sightingFormData.image?.uri) {
-    await uploadImage(sightingFormData.image.uri, (photoUrl: string) =>
-      updatePet(photoUrl, sightingFormData, onPetUpdated, []),
+        updatePet(sightingFormData, onPetUpdated, photoUrls),
     );
   } else {
-    await updatePet("", sightingFormData, onPetUpdated, []);
+    await updatePet(sightingFormData, onPetUpdated, []);
   }
 }
 
 export async function saveNewPet(
-  photoUrl: string,
   sightingFormData: SightingPet,
   userId: string,
   onPetCreated?: (
@@ -78,7 +61,6 @@ export async function saveNewPet(
   photoUrls: string[] = [],
 ) {
   const payload = await buildPetPayload(
-    photoUrl,
     sightingFormData,
     userId,
     photoUrls,
@@ -98,7 +80,6 @@ export async function saveNewPet(
 }
 
 export async function updatePet(
-  photoUrl: string,
   sightingFormData: SightingPet,
   onPetUpdated?: (
     newPetId: string,
@@ -111,7 +92,6 @@ export async function updatePet(
   }
 
   const payload = await buildPetPayload(
-    photoUrl,
     sightingFormData,
     "",
     photoUrls,
@@ -131,7 +111,6 @@ export async function updatePet(
 }
 
 async function buildPetPayload(
-  photoUrl: string,
   sightingFormData: SightingPet,
   userId: string,
   photoUrls: string[],
@@ -147,7 +126,6 @@ async function buildPetPayload(
     species: sightingFormData.species,
     breed: sightingFormData.breed,
     colors: sightingFormData.colors,
-    photo: photoUrl ? photoUrl : sightingFormData.photo,
     gender: sightingFormData.gender,
     age: sightingFormData.age,
     features: sightingFormData.features,
