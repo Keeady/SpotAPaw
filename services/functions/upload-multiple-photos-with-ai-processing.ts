@@ -93,6 +93,8 @@ Deno.serve(async (req: Request) => {
   const { images }: reqPayload = await req.json();
 
   const photoPayloads = [];
+  let petDescriptionResultId = "";
+  const petDescriptionIds = new Set<string>();
 
   if (!images || images.length === 0) {
     const error = "No photos provided";
@@ -164,6 +166,7 @@ Deno.serve(async (req: Request) => {
 
       if (data) {
         photoPublicUrl = data.public_url;
+        petDescriptionIds.add(data.pet_description_id || "");
       } else {
         const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
@@ -185,6 +188,7 @@ Deno.serve(async (req: Request) => {
           data: { publicUrl },
         } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
         photoPublicUrl = publicUrl;
+        petDescriptionIds.add("");
 
         // Save photo record to pet_photos table
         await supabaseClient.from("pet_photos").insert({
@@ -204,6 +208,22 @@ Deno.serve(async (req: Request) => {
     console.error(error);
     const errorMessage = "Failed to save or get photos.";
     return getErrorResponse(errorMessage, 500);
+  }
+
+  // If all photos have the same pet description ID and it's not empty,
+  // we can return early with the existing description and photo URLs
+  if (petDescriptionIds.size === 1 && !petDescriptionIds.has("")) {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
+        petDescriptionId: petDescriptionIds.values().next().value,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 200,
+      },
+    );
   }
 
   if (photoPayloads.length === 0) {
@@ -262,7 +282,6 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse("Failed to process photos", 500);
   }
 
-  let petDescriptionResultId = "";
   try {
     // Save result to Supabase
     const { data: insertedData, error: insertError } = await supabaseClient

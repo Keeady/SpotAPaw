@@ -13,7 +13,6 @@ import { Button } from "react-native-paper";
 import { AnalysisResponse } from "../analyzer/types";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
 import {
-  useUploadPetImageUrl,
   useUploadMultiplePetImage,
 } from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
@@ -256,7 +255,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     }
   }, [stepHistory]);
 
-  const uploadImage = useUploadPetImageUrl();
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
 
   const processResponse = async () => {

@@ -50,6 +50,7 @@ Deno.serve(async (req: Request) => {
   const { images }: reqPayload = await req.json();
 
   const photoUris = [];
+  let petDescriptionResultId = "";
 
   if (!images || images.length === 0) {
     const error = "No photos provided";
@@ -121,6 +122,7 @@ Deno.serve(async (req: Request) => {
 
       if (data) {
         photoPublicUrl = data.public_url;
+        petDescriptionResultId = data.pet_description_result_id;
       } else {
         const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
@@ -171,6 +173,7 @@ Deno.serve(async (req: Request) => {
     JSON.stringify({
       success: true,
       publicUrls: photoUris,
+      petDescriptionId: petDescriptionResultId,
     }),
     {
       headers: { "Content-Type": "application/json" },
