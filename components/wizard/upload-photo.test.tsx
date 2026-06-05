@@ -3,6 +3,7 @@ import { UploadPhoto } from "./upload-photo";
 import { AuthContext } from "../Provider/auth-provider";
 import { AIFeatureContext } from "../Provider/ai-context-provider";
 import { ProContext } from "../Provider/pro-context-provider";
+import { Text } from "react-native";
 
 const mockUpdateSightingData = jest.fn();
 const mockOnResetErrorMessage = jest.fn();
@@ -12,6 +13,8 @@ const defaultProps = {
   sightingFormData: {
     photo: null,
     image: null,
+    photos: null,
+    images: null,
   } as any,
   loading: false,
   isValidData: true,
@@ -59,12 +62,28 @@ jest.mock("../Provider/pro-context-provider", () => {
 
 const mockUploadOrTakePhoto = jest
   .fn()
-  .mockImplementation((onAddPhoto: any) => {
-    onAddPhoto("test-uri", "test-file-name", "image/jpeg");
-  });
+  .mockImplementation(
+    (t: any, onAddMultiplePhotos: any, multiPhotoUploadAllowed: any) => {
+      onAddMultiplePhotos([
+        { uri: "test-uri", name: "test-file-name", type: "image/jpeg" },
+      ]);
+    },
+  );
 jest.mock("../image-picker", () => ({
-  uploadOrTakePhoto: (c: any) => mockUploadOrTakePhoto(c),
+  uploadOrTakePhoto: (
+    t: any,
+    onAddMultiplePhotos: any,
+    multiPhotoUploadAllowed: any,
+  ) => mockUploadOrTakePhoto(t, onAddMultiplePhotos, multiPhotoUploadAllowed),
 }));
+
+const GalleryMock = () => <Text>{"Gallery Mock"}</Text>;
+jest.mock("../sightings/gallery", () => {
+  return {
+    __esModule: true,
+    default: () => GalleryMock(),
+  };
+});
 
 const renderWithContexts = (
   props: any,
@@ -113,8 +132,8 @@ describe("UploadPhoto Component", () => {
     const props = {
       ...defaultProps,
       sightingFormData: {
-        photo: null,
-        image: { uri: "test-uri" },
+        photos: null,
+        images: [{ uri: "test-uri" }],
       } as any,
     };
     const { getByText, findByText, queryByText, getByTestId } =
@@ -128,7 +147,7 @@ describe("UploadPhoto Component", () => {
     expect(
       getByText("aPhotoWouldReallyHelpIdentifyThisPetFaster"),
     ).toBeTruthy();
-    expect(getByTestId("imageUri")).toBeTruthy();
+    expect(getByTestId("imageUri-0")).toBeTruthy();
     expect(getByText("changePhoto")).toBeTruthy();
     expect(getByText("aiWillFillOut")).toBeTruthy();
     expect(getByText("turnAiOn")).toBeTruthy();
@@ -141,22 +160,21 @@ describe("UploadPhoto Component", () => {
     const props = {
       ...defaultProps,
       sightingFormData: {
-        photo: { uri: "test-uri" },
-        image: null,
+        photos: [{ uri: "test-uri" }],
+        images: null,
       } as any,
     };
-    const { getByText, findByText, queryByText, getByTestId } =
-      renderWithContexts(props, {
-        user: { id: "123", name: "Test User" },
-        isAiFeatureEnabled: true,
-        aiPhotoAnalysisAllowed: false,
-      });
+    const { getByText, findByText, queryByText } = renderWithContexts(props, {
+      user: { id: "123", name: "Test User" },
+      isAiFeatureEnabled: true,
+      aiPhotoAnalysisAllowed: false,
+    });
 
     expect(getByText("uploadAPhoto")).toBeTruthy();
     expect(
       getByText("aPhotoWouldReallyHelpIdentifyThisPetFaster"),
     ).toBeTruthy();
-    expect(getByTestId("photoUri")).toBeTruthy();
+    expect(getByText("Gallery Mock")).toBeTruthy();
     expect(getByText("changePhoto")).toBeTruthy();
     expect(getByText("aiWillFillOut")).toBeTruthy();
     expect(getByText("purchasePro")).toBeTruthy();

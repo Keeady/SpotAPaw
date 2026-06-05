@@ -213,8 +213,8 @@ const styles = StyleSheet.create({
   card: {
     margin: 12,
     borderRadius: 16,
-    overflow: "hidden",
     elevation: 3,
+    flexWrap: "wrap",
   },
   image: {
     width: "100%",

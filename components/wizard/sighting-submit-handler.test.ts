@@ -1,10 +1,10 @@
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { getLastSeenLocation, isValidUuid } from "../util";
 import {
-    createSightingFromPet,
-    saveNewSighting,
-    saveSightingPhoto,
-    updateSighting,
+  createSightingFromPet,
+  saveNewSighting,
+  saveSightingPhoto,
+  updateSighting,
 } from "./sighting-submit-handler";
 import type { SightingReport } from "./wizard-interface";
 
@@ -41,6 +41,7 @@ describe("Sighting Submit Handler", () => {
   const mockPetId = "pet-456";
   const mockPhotoUrl = "https://example.com/sighting.jpg";
   const mockUploadImage = jest.fn();
+  const mockUploadMultiplePetImages = jest.fn();
 
   const mockSightingReport: SightingReport = {
     id: mockPetId,
@@ -79,6 +80,17 @@ describe("Sighting Submit Handler", () => {
     linkedSightingId: "linked-456",
     isActive: true,
     petId: mockPetId,
+    photos: [],
+    deletedAt: "",
+    updatedAt: "2026-04-08T00:00:00Z",
+    linkedSightings: [],
+    images: [
+      {
+        uri: "file://sighting.jpg",
+        filename: "sighting.jpg",
+        filetype: "image/jpeg",
+      },
+    ],
   };
 
   // Get references to the mocked methods
@@ -139,18 +151,26 @@ describe("Sighting Submit Handler", () => {
     it("should upload image and save new sighting when image is provided and action is new-sighting", async () => {
       mockCreateSighting.mockResolvedValue(mockSightingId);
 
-      mockUploadImage.mockImplementation(async (uri, callback) => {
-        await callback(mockPhotoUrl);
-      });
+      mockUploadMultiplePetImages.mockImplementation(
+        async (images: any[], callback) => {
+          await callback(images.map((img) => img.uri));
+        },
+      );
 
       await saveSightingPhoto(
         mockSightingReport,
-        mockUploadImage,
         "new-sighting",
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).toHaveBeenCalledWith(
-        "file://sighting.jpg",
+      expect(mockUploadMultiplePetImages).toHaveBeenCalledWith(
+        [
+          {
+            filename: "sighting.jpg",
+            filetype: "image/jpeg",
+            uri: "file://sighting.jpg",
+          },
+        ],
         expect.any(Function),
       );
       expect(mockCreateSighting).toHaveBeenCalled();
@@ -160,18 +180,26 @@ describe("Sighting Submit Handler", () => {
     it("should upload image and update sighting when image is provided and action is edit-sighting", async () => {
       mockUpdateSighting.mockResolvedValue(undefined);
 
-      mockUploadImage.mockImplementation(async (uri, callback) => {
-        await callback(mockPhotoUrl);
-      });
+      mockUploadMultiplePetImages.mockImplementation(
+        async (images: any[], callback) => {
+          await callback(images.map((img) => img.uri));
+        },
+      );
 
       await saveSightingPhoto(
         mockSightingReport,
-        mockUploadImage,
         "edit-sighting",
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).toHaveBeenCalledWith(
-        "file://sighting.jpg",
+      expect(mockUploadMultiplePetImages).toHaveBeenCalledWith(
+        [
+          {
+            filename: "sighting.jpg",
+            filetype: "image/jpeg",
+            uri: "file://sighting.jpg",
+          },
+        ],
         expect.any(Function),
       );
       expect(mockUpdateSighting).toHaveBeenCalled();
@@ -183,16 +211,16 @@ describe("Sighting Submit Handler", () => {
 
       const sightingWithoutImage = {
         ...mockSightingReport,
-        image: { ...mockSightingReport.image!, uri: "" },
+        images: [],
       };
 
       await saveSightingPhoto(
         sightingWithoutImage,
-        mockUploadImage,
         "new-sighting",
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).not.toHaveBeenCalled();
+      expect(mockUploadMultiplePetImages).not.toHaveBeenCalled();
       expect(mockCreateSighting).toHaveBeenCalled();
       expect(mockUpdateSighting).not.toHaveBeenCalled();
     });
@@ -202,16 +230,16 @@ describe("Sighting Submit Handler", () => {
 
       const sightingWithoutImage = {
         ...mockSightingReport,
-        image: { ...mockSightingReport.image!, uri: "" },
+        images: [],
       };
 
       await saveSightingPhoto(
         sightingWithoutImage,
-        mockUploadImage,
         "edit-sighting",
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).not.toHaveBeenCalled();
+      expect(mockUploadMultiplePetImages).not.toHaveBeenCalled();
       expect(mockUpdateSighting).toHaveBeenCalled();
       expect(mockCreateSighting).not.toHaveBeenCalled();
     });
@@ -221,7 +249,7 @@ describe("Sighting Submit Handler", () => {
     it("should create sighting with correct payload", async () => {
       mockCreateSighting.mockResolvedValue(mockSightingId);
 
-      const result = await saveNewSighting(mockPhotoUrl, mockSightingReport);
+      const result = await saveNewSighting(mockSightingReport, [mockPhotoUrl]);
 
       const expectedPayload = {
         age: 3,
@@ -233,7 +261,7 @@ describe("Sighting Submit Handler", () => {
         gender: "male",
         features: "fluffy tail",
         collarDescription: "red collar",
-        photo: mockPhotoUrl,
+        photos: [mockPhotoUrl],
         note: "Friendly dog\nPet behavior: playful",
         lastSeenLocation: "Formatted Location",
         lastSeenLong: -74.006,
@@ -261,14 +289,14 @@ describe("Sighting Submit Handler", () => {
 
       const sightingWithPhoto = {
         ...mockSightingReport,
-        photo: "existing-photo.jpg",
+        photos: ["existing-photo.jpg"],
       };
 
-      await saveNewSighting("", sightingWithPhoto);
+      await saveNewSighting(sightingWithPhoto, []);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.objectContaining({
-          photo: "existing-photo.jpg",
+          photos: ["existing-photo.jpg"],
         }),
       );
     });
@@ -281,7 +309,7 @@ describe("Sighting Submit Handler", () => {
         age: 0,
       };
 
-      await saveNewSighting(mockPhotoUrl, sightingWithoutAge);
+      await saveNewSighting(sightingWithoutAge, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -293,7 +321,7 @@ describe("Sighting Submit Handler", () => {
     it("should build notes correctly with note and pet behavior", async () => {
       mockCreateSighting.mockResolvedValue(mockSightingId);
 
-      await saveNewSighting(mockPhotoUrl, mockSightingReport);
+      await saveNewSighting(mockSightingReport, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -311,7 +339,7 @@ describe("Sighting Submit Handler", () => {
         petBehavior: "energetic",
       };
 
-      await saveNewSighting(mockPhotoUrl, sightingWithoutNote);
+      await saveNewSighting(sightingWithoutNote, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -328,7 +356,7 @@ describe("Sighting Submit Handler", () => {
         petBehavior: "",
       };
 
-      await saveNewSighting(mockPhotoUrl, sightingWithoutBehavior);
+      await saveNewSighting(sightingWithoutBehavior, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -341,7 +369,7 @@ describe("Sighting Submit Handler", () => {
       mockCreateSighting.mockResolvedValue(mockSightingId);
       mockIsValidUuid.mockImplementation((id) => id !== mockPetId);
 
-      await saveNewSighting(mockPhotoUrl, mockSightingReport);
+      await saveNewSighting(mockSightingReport, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.not.objectContaining({ petId: expect.anything() }),
@@ -352,7 +380,7 @@ describe("Sighting Submit Handler", () => {
       mockCreateSighting.mockResolvedValue(mockSightingId);
       mockIsValidUuid.mockImplementation((id) => id !== "linked-456");
 
-      await saveNewSighting(mockPhotoUrl, mockSightingReport);
+      await saveNewSighting(mockSightingReport, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.not.objectContaining({ linkedSightingId: expect.anything() }),
@@ -363,7 +391,7 @@ describe("Sighting Submit Handler", () => {
       mockCreateSighting.mockResolvedValue(mockSightingId);
       mockIsValidUuid.mockImplementation((id) => id !== "reporter-123");
 
-      await saveNewSighting(mockPhotoUrl, mockSightingReport);
+      await saveNewSighting(mockSightingReport, [mockPhotoUrl]);
 
       expect(mockCreateSighting).toHaveBeenCalledWith(
         expect.not.objectContaining({ reporterId: expect.anything() }),
@@ -376,7 +404,7 @@ describe("Sighting Submit Handler", () => {
       const sightingWithoutId = { ...mockSightingReport, sightingId: "" };
 
       await expect(
-        updateSighting(mockPhotoUrl, sightingWithoutId),
+        updateSighting(sightingWithoutId, [mockPhotoUrl]),
       ).rejects.toThrow("Missing or invalid sighting id");
     });
 
@@ -384,14 +412,14 @@ describe("Sighting Submit Handler", () => {
       mockIsValidUuid.mockReturnValue(false);
 
       await expect(
-        updateSighting(mockPhotoUrl, mockSightingReport),
+        updateSighting(mockSightingReport, [mockPhotoUrl]),
       ).rejects.toThrow("Missing or invalid sighting id");
     });
 
     it("should update sighting with correct payload", async () => {
       mockUpdateSighting.mockResolvedValue(undefined);
 
-      await updateSighting(mockPhotoUrl, mockSightingReport);
+      await updateSighting(mockSightingReport, [mockPhotoUrl]);
 
       const expectedPayload = {
         age: 3,
@@ -403,7 +431,7 @@ describe("Sighting Submit Handler", () => {
         gender: "male",
         features: "fluffy tail",
         collarDescription: "red collar",
-        photo: mockPhotoUrl,
+        photos: [mockPhotoUrl],
         note: "Friendly dog\nPet behavior: playful",
         lastSeenLocation: "Formatted Location",
         lastSeenLong: -74.006,
@@ -429,7 +457,7 @@ describe("Sighting Submit Handler", () => {
       mockCreateSighting.mockRejectedValue(new Error("Database error"));
 
       await expect(
-        saveNewSighting(mockPhotoUrl, mockSightingReport),
+        saveNewSighting(mockSightingReport, [mockPhotoUrl]),
       ).rejects.toThrow("Database error");
     });
 
@@ -437,7 +465,7 @@ describe("Sighting Submit Handler", () => {
       mockUpdateSighting.mockRejectedValue(new Error("Update failed"));
 
       await expect(
-        updateSighting(mockPhotoUrl, mockSightingReport),
+        updateSighting(mockSightingReport, [mockPhotoUrl]),
       ).rejects.toThrow("Update failed");
     });
 
@@ -448,7 +476,7 @@ describe("Sighting Submit Handler", () => {
       );
 
       await expect(
-        saveNewSighting(mockPhotoUrl, mockSightingReport),
+        saveNewSighting(mockSightingReport, [mockPhotoUrl]),
       ).rejects.toThrow("Location formatting failed");
     });
   });
