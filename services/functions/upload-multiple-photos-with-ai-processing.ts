@@ -94,6 +94,7 @@ Deno.serve(async (req: Request) => {
 
   const photoPayloads = [];
   let petDescriptionResultId = "";
+    const petDescriptionIds = new Set<string>();
 
   if (!images || images.length === 0) {
     const error = "No photos provided";
@@ -165,14 +166,7 @@ Deno.serve(async (req: Request) => {
 
       if (data) {
         photoPublicUrl = data.public_url;
-        // if pet description ID is different for each photo,
-        // or one or more photos don't have a pet description ID,
-        // then we should create a new pet description ID for this set of photos
-        if (!petDescriptionResultId || petDescriptionResultId !== data?.pet_description_id) {
-          petDescriptionResultId = "";
-        } else {
-          petDescriptionResultId = data?.pet_description_id;
-        }
+        petDescriptionIds.add(data.pet_description_id);
       } else {
         const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
@@ -215,14 +209,14 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(errorMessage, 500);
   }
 
-  // If all photos have the same pet description ID and it's not empty, 
+  // If all photos have the same pet description ID and it's not empty,
   // we can return early with the existing description and photo URLs
-  if (petDescriptionResultId) {
+  if (petDescriptionIds.size === 1 && !petDescriptionIds.has("")) {
     return new Response(
       JSON.stringify({
         success: true,
         publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
-        petDescriptionId: petDescriptionResultId,
+        petDescriptionId: petDescriptionIds.values().next().value,
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -230,7 +224,6 @@ Deno.serve(async (req: Request) => {
       },
     );
   }
-    
 
   if (photoPayloads.length === 0) {
     const error = "No valid photos to process";
