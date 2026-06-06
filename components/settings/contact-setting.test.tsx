@@ -2,7 +2,6 @@ import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 import { Text } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
-import PrivacySetting from "./privacy-setting";
 import ContactSetting from "./contact-setting";
 
 jest.mock("react-i18next", () => ({
@@ -16,12 +15,12 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
 );
 
-const mockOnOpenPrivacyPolicy = jest.fn();
+const mockOnOpenContact = jest.fn();
 
 describe("ContactSetting Component", () => {
   const defaultProps = {
     iconColorContact: "#007AFF",
-    onOpenContact: () => mockOnOpenPrivacyPolicy(),
+    onOpenContact: () => mockOnOpenContact(),
   };
 
   beforeEach(() => {
