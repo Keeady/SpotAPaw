@@ -36,6 +36,8 @@ import { useTranslation } from "react-i18next";
 import ProSettings from "./pro-features-setting";
 import { useNotificationPermission } from "../Provider/notification-permission-provider";
 import { updateNotificationSubscriptionEnabled } from "../notification-util";
+import ContactSetting from "./contact-setting";
+import { Linking } from "react-native";
 
 // Define color scheme for icons
 const iconColors = {
@@ -418,6 +420,12 @@ const SettingsContainer = () => {
           iconColorPro={iconColors.pro}
           iconColorAIOn={iconColors.location}
           iconColorAIOff={iconColors.star}
+        />
+      }
+      contactSetting={
+        <ContactSetting
+          iconColorContact={iconColors.information}
+          onOpenContact={() => Linking.openURL("mailto:spotapaw@spotapaw.com")}
         />
       }
     />
