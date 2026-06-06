@@ -1,10 +1,7 @@
 import "react-native-get-random-values";
 import { useCallback } from "react";
 import { supabase } from "./supabase-client";
-import {
-  MAX_FILE_SIZE_ERROR,
-  UNSUPPORTED_MIME_TYPE,
-} from "./constants";
+import { MAX_FILE_SIZE_ERROR, UNSUPPORTED_MIME_TYPE } from "./constants";
 import { log } from "./logs";
 import { createErrorLogMessageAsync } from "./util";
 import * as Crypto from "expo-crypto";
@@ -70,12 +67,14 @@ export const uploadPhotoWithProcessing = async (
     );
 
     if (error) {
-      throw error;
+      const errorMessage = await createErrorLogMessageAsync(error);
+      throw new Error(`Error uploading photo: ${errorMessage}`);
     }
 
     return data;
   } catch (error) {
-    throw error;
+    const errorMessage = await createErrorLogMessageAsync(error);
+    throw new Error(`Error uploading photo: ${errorMessage}`);
   }
 };
 
@@ -107,15 +106,13 @@ export const uploadMultiplePhotosWithProcessing = async (
 
     if (error) {
       const errorMessage = await createErrorLogMessageAsync(error);
-      log(`Error invoking upload-multiple-photos-with-ai-processing function: ${errorMessage}`);
-      throw error;
+      throw new Error(`Error uploading multiple photos: ${errorMessage}`);
     }
 
     return data;
   } catch (error) {
     const errorMessage = await createErrorLogMessageAsync(error);
-    log(`Error uploading multiple photos: ${errorMessage}`);
-    throw error;
+    throw new Error(`Error uploading multiple photos: ${errorMessage}`);
   }
 };
 
@@ -150,8 +147,9 @@ export function useUploadMultiplePetImage() {
 
         if (error) {
           const errorMessage = await createErrorLogMessageAsync(error);
-          log(`Error invoking upload-multiple-photos function: ${errorMessage}`);
-          throw error;
+          throw new Error(
+            `Error invoking upload-multiple-photos function: ${errorMessage}`,
+          );
         }
 
         if (!data || !data.publicUrls) {
@@ -162,8 +160,7 @@ export function useUploadMultiplePetImage() {
         callback(data.publicUrls);
       } catch (error) {
         const errorMessage = await createErrorLogMessageAsync(error);
-        log(`Error uploading photos: ${errorMessage}`);
-        callback([], `Error uploading photos ${errorMessage}`);
+        throw new Error(`Error uploading photos: ${errorMessage}`);
       }
     },
     [],

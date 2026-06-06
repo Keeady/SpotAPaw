@@ -65,10 +65,14 @@ if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -131,23 +135,44 @@ Deno.serve(async (req: Request) => {
 
   try {
     // check if file with same hash already exists in storage
-    const { data: existingFile } = await supabaseClient
-      .from("pet_desc_results")
-      .select("*")
-      .eq("photo_hash", hash);
+    const { data: existingPhoto, error: existingPhotoError } =
+      await supabaseClient
+        .from("pet_photos")
+        .select("*")
+        .eq("photo_hash", hash)
+        .single();
 
-    if (existingFile && existingFile.length > 0) {
-      const existingPhotoPublicUrl = existingFile[0].public_url;
-      const existingPetDescription = existingFile[0].description;
-      const existingPetDescriptionId = existingFile[0].id;
+    if (existingPhotoError) {
+      console.error(existingPhotoError);
+    }
 
-      if (existingPhotoPublicUrl && existingPetDescription) {
+    if (existingPhoto) {
+      // Found existing file with same hash, return existing description if available
+      photoPublicUrl = existingPhoto.public_url;
+      petDescriptionResultId = existingPhoto.pet_description_id;
+
+      let existingPetDescription = null;
+      if (petDescriptionResultId) {
+        const { data: petDescData, error: petDescError } = await supabaseClient
+          .from("pet_desc_results")
+          .select("*")
+          .eq("id", petDescriptionResultId)
+          .single();
+
+        if (petDescError) {
+          console.error(petDescError);
+        }
+
+        existingPetDescription = petDescData ? petDescData.description : null;
+      }
+
+      if (photoPublicUrl && existingPetDescription) {
         return new Response(
           JSON.stringify({
             success: true,
             result: existingPetDescription,
-            publicUrl: existingPhotoPublicUrl,
-            petDescriptionId: existingPetDescriptionId,
+            publicUrl: photoPublicUrl,
+            petDescriptionId: petDescriptionResultId,
           }),
           {
             headers: { "Content-Type": "application/json" },
@@ -155,46 +180,64 @@ Deno.serve(async (req: Request) => {
           },
         );
       }
+    } else {
+      // No existing photo, proceed with uploading the new photo
+      const binaryString = atob(photoData);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      if (bytes.length > MAX_FILE_SIZE) {
+        const error = "File size exceeds max allowed";
+        return getErrorResponse(error, 400, "MAX_FILE_SIZE_ERROR");
+      }
+
+      const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
+      // Upload to Supabase Storage
+      const { error } = await supabaseClient.storage
+        .from("pet_photos")
+        .upload(filePath, bytes, {
+          contentType: mimeFromBase64,
+          upsert: false,
+        });
+
+      if (error) {
+        console.error(error);
+        if (error.name !== "StorageApiError" && error.status !== 409) {
+          let msg = `Failed to save photo: ${error.message}`;
+
+          return getErrorResponse(msg, 500);
+        }
+      }
+
+      // Get public URL
+      const {
+        data: { publicUrl },
+        error: publicUrlError,
+      } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
+
+      if (publicUrlError) {
+        console.error(publicUrlError);
+        let msg = `Failed to get photo public URL: ${publicUrlError.message}`;
+
+        return getErrorResponse(msg, 500);
+      }
+
+      photoPublicUrl = publicUrl;
     }
+  } catch (error) {
+    console.error(error);
+    const errorMessage = `Failed to save or get photo: ${error.message}`;
+    return getErrorResponse(errorMessage, 500);
+  }
 
-    // No existing file, proceed with upload and processing
-
-    const binaryString = atob(photoData);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-
-    if (bytes.length > MAX_FILE_SIZE) {
-      const error = "File size exceeds max allowed";
-      return getErrorResponse(error, 400, "MAX_FILE_SIZE_ERROR");
-    }
-
-    const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
-    // Upload to Supabase Storage
-    const { error } = await supabaseClient.storage
-      .from("pet_photos")
-      .upload(filePath, bytes, {
-        contentType: mimeFromBase64,
-        upsert: false,
-      });
-
-    if (error) {
-      let msg = "Failed to save photo.";
-
-      return getErrorResponse(msg, 500);
-    }
-
-    // Get public URL
-    const {
-      data: { publicUrl },
-    } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
-
-    photoPublicUrl = publicUrl;
-  } catch {
-    const error = "Failed to save or get photo.";
+  if (!photoPublicUrl) {
+    const error = "Failed to get or save photo";
     return getErrorResponse(error, 500);
   }
+
+  // Using photo url, proceed with processing
 
   try {
     const AiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
@@ -204,9 +247,9 @@ Deno.serve(async (req: Request) => {
         {
           parts: [
             {
-              inlineData: {
-                mimeType: mimeFromBase64,
-                data: photoData,
+              file_data: {
+                file_uri: photoPublicUrl,
+                mime_type: mimeFromBase64,
               },
             },
             { text: prompt },
@@ -226,6 +269,7 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(errorText);
       return new Response(errorText, {
         headers: { "Content-Type": "application/json" },
         status: 500,
@@ -251,7 +295,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save result to Supabase
-    const { data: insertedData } = await supabaseClient
+    const { data: insertedData, error: insertError } = await supabaseClient
       .from("pet_desc_results")
       .insert({
         photo_hash: hash,
@@ -260,8 +304,26 @@ Deno.serve(async (req: Request) => {
       })
       .select("id");
 
+    if (insertError) {
+      console.error(insertError);
+      let msg = `Failed to save pet description result: ${insertError.message}`;
+      return getErrorResponse(msg, 500);
+    }
+
     if (insertedData && insertedData.length > 0) {
       petDescriptionResultId = insertedData[0].id;
+    }
+
+    // Save pet_description_id to pet_photos table for easy lookup later
+    const { error: updatePhotoError } = await supabaseClient
+      .from("pet_photos")
+      .update({
+        pet_description_id: petDescriptionResultId,
+      })
+      .eq("photo_hash", hash);
+
+    if (updatePhotoError) {
+      console.error(updatePhotoError);
     }
 
     return new Response(
@@ -276,7 +338,8 @@ Deno.serve(async (req: Request) => {
         status: 200,
       },
     );
-  } catch {
-    return getErrorResponse("Failed to process photo", 500);
+  } catch (error) {
+    console.error(error);
+    return getErrorResponse(`Failed to process photo: ${error.message}`, 500);
   }
 });

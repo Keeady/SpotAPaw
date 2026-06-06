@@ -1,6 +1,6 @@
 /**
  * This function is responsible for retrieving pet matching results for a given sighting.
- * It accepts a sighting ID and pet description ID as input, 
+ * It accepts a sighting ID and pet description ID as input,
  * checks the sighting_matches table for existing matches,
  * and returns the matching sightings sorted by similarity score.
  * If no matches are found, it returns a success response with an empty data array.
@@ -14,10 +14,14 @@ interface reqPayload {
   petDescriptionId: string;
 }
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -71,6 +75,7 @@ Deno.serve(async (req: Request) => {
       .order("created_at", { ascending: false });
 
     if (error) {
+      console.error(error);
       return getErrorResponse(error.message, 500);
     }
 
@@ -80,7 +85,11 @@ Deno.serve(async (req: Request) => {
 
     matchResults = data[0].matches;
   } catch (error) {
-    return getErrorResponse("Error fetching pet matching results", 500);
+    console.error(error);
+    return getErrorResponse(
+      `Error fetching pet matching results: ${error.message}`,
+      500,
+    );
   }
 
   try {
@@ -102,7 +111,11 @@ Deno.serve(async (req: Request) => {
         .in("pet_description_id", matchIds);
 
     if (matchDetailsError) {
-      return getErrorResponse(matchDetailsError.message, 500);
+      console.error(matchDetailsError);
+      return getErrorResponse(
+        `Error fetching match details: ${matchDetailsError.message}`,
+        500,
+      );
     }
 
     if (!matchDetails) {
@@ -133,6 +146,10 @@ Deno.serve(async (req: Request) => {
       },
     );
   } catch (error) {
-    return getErrorResponse("Error fetching match details", 500);
+    console.error(error);
+    return getErrorResponse(
+      `Error fetching match details: ${error.message}`,
+      500,
+    );
   }
 });
