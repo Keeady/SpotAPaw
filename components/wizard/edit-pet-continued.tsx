@@ -189,31 +189,17 @@ export function EditPetContinued({
 
         {collar === "yes_collar" && (
           <View style={[styles.verticallySpaced, styles.mt10]}>
-            <HelperText
-              type="error"
-              visible={hasErrors && !collarDescription}
-              style={styles.helperText}
-              padding="none"
-            >
-              {t("aDescriptionIsRequired", "A description is required!")}
-            </HelperText>
             <AIFieldAnalysisBannerOrHelperText
               loading={loadingAnalyzer}
               aiGenerated={!!showAiGeneratedFlag && !!collarDescription}
               helperText={
                 <HelperText
                   type="error"
-                  visible={
-                    hasErrors &&
-                    !size &&
-                    (reportType === "lost_own" ||
-                      reportType === "new_pet" ||
-                      reportType === "edit_pet")
-                  }
+                  visible={hasErrors && !collarDescription}
                   style={styles.helperText}
                   padding="none"
                 >
-                  {t("pleaseSelectPetSize", "Please select pet size!")}
+                  {t("aDescriptionIsRequired", "A description is required!")}
                 </HelperText>
               }
             />
