@@ -139,31 +139,29 @@ Deno.serve(async (req: Request) => {
       await supabaseClient
         .from("pet_photos")
         .select("*")
-        .eq("photo_hash", hash)
-        .single();
+        .eq("photo_hash", hash);
 
     if (existingPhotoError) {
       console.error(existingPhotoError);
     }
 
-    if (existingPhoto) {
+    if (existingPhoto && existingPhoto.length > 0) {
       // Found existing file with same hash, return existing description if available
-      photoPublicUrl = existingPhoto.public_url;
-      petDescriptionResultId = existingPhoto.pet_description_id;
+      photoPublicUrl = existingPhoto[0].public_url;
+      petDescriptionResultId = existingPhoto[0].pet_description_id;
 
       let existingPetDescription = null;
       if (petDescriptionResultId) {
         const { data: petDescData, error: petDescError } = await supabaseClient
           .from("pet_desc_results")
           .select("*")
-          .eq("id", petDescriptionResultId)
-          .single();
+          .eq("id", petDescriptionResultId);
 
         if (petDescError) {
           console.error(petDescError);
         }
 
-        existingPetDescription = petDescData ? petDescData.description : null;
+        existingPetDescription = petDescData && petDescData.length > 0 ? petDescData[0].description : null;
       }
 
       if (photoPublicUrl && existingPetDescription) {

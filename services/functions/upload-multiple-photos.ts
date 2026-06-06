@@ -121,12 +121,11 @@ Deno.serve(async (req: Request) => {
       const { data } = await supabaseClient
         .from("pet_photos")
         .select("*")
-        .eq("photo_hash", hash)
-        .single();
+        .eq("photo_hash", hash);
 
-      if (data) {
-        photoPublicUrl = data.public_url;
-        petDescriptionResultId = data.pet_description_id;
+      if (data && data.length > 0) {
+        photoPublicUrl = data[0].public_url;
+        petDescriptionResultId = data[0].pet_description_id;
       } else {
         const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
