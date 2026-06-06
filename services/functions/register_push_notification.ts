@@ -11,10 +11,14 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -60,11 +64,13 @@ Deno.serve(async (req: Request) => {
       .eq("notification_push_token", notificationToken);
 
     if (error) {
+      console.error(error);
       return getErrorResponse(error.message, 500);
     }
 
     existingSubscription = data;
   } catch (error) {
+    console.error(error);
     return getErrorResponse(error.message, 500);
   }
 
@@ -86,12 +92,13 @@ Deno.serve(async (req: Request) => {
       );
 
     if (error) {
+      console.error(error);
       return getErrorResponse(error.message, 500);
     }
-
   } catch (error) {
+    console.error(error);
     return getErrorResponse(error.message, 500);
   }
 
-  return getSuccessResponse("Subscription registered successfully.")
+  return getSuccessResponse("Subscription registered successfully.");
 });

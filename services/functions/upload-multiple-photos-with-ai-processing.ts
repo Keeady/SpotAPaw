@@ -69,10 +69,14 @@ if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -158,15 +162,18 @@ Deno.serve(async (req: Request) => {
       }
 
       let photoPublicUrl = "";
-      const { data } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from("pet_photos")
         .select("*")
-        .eq("photo_hash", hash)
-        .single();
+        .eq("photo_hash", hash);
 
-      if (data) {
-        photoPublicUrl = data.public_url;
-        petDescriptionIds.add(data.pet_description_id || "");
+      if (error) {
+        console.error(error);
+      }
+
+      if (data && data.length > 0) {
+        photoPublicUrl = data[0].public_url;
+        petDescriptionIds.add(data[0].pet_description_id || "");
       } else {
         const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
@@ -178,15 +185,25 @@ Deno.serve(async (req: Request) => {
           });
 
         if (error) {
-          let msg = "Failed to save photo.";
-
-          return getErrorResponse(msg, 500);
+          console.error(error);
+          if (error.status !== 409) {
+            let msg = `Failed to save photo: ${error.message}`;
+            return getErrorResponse(msg, 500);
+          }
         }
 
         // Get public URL
         const {
           data: { publicUrl },
+          error: publicUrlError,
         } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
+
+        if (publicUrlError) {
+          console.error(publicUrlError);
+          let msg = `Failed to get photo public URL: ${publicUrlError.message}`;
+          return getErrorResponse(msg, 500);
+        }
+
         photoPublicUrl = publicUrl;
         petDescriptionIds.add("");
 
