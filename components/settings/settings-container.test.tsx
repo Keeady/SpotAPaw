@@ -276,6 +276,9 @@ describe("SettingsContainer Component", () => {
     expect(getByText("deleteAccount")).toBeTruthy();
     expect(getByText("permanentlyDeleteYourAccountAndData")).toBeTruthy();
 
+    expect(getByText("contactUs")).toBeTruthy();
+    expect(getByText("getInTouchWithUs")).toBeTruthy();
+
     expect(getByText("Version 1.0.0")).toBeTruthy();
 
     expect(await findByText("noLocationSet")).toBeTruthy();

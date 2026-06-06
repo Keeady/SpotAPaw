@@ -43,6 +43,7 @@ describe("SettingsRenderer Component", () => {
     termsSetting: <MockComponent testId="terms-setting" />,
     accountSetting: <MockComponent testId="account-setting" />,
     proFeatureSetting: <MockComponent testId="pro-settings" />,
+    contactSetting: <MockComponent testId="contact-setting" />,
   };
 
   const defaultProps = {
@@ -79,7 +80,7 @@ describe("SettingsRenderer Component", () => {
     expect(getByTestId("privacy-setting")).toBeTruthy();
     expect(getByTestId("terms-setting")).toBeTruthy();
     expect(getByTestId("account-setting")).toBeTruthy();
-
+    expect(getByTestId("contact-setting")).toBeTruthy();
     // Check footer
     expect(getByText("Version 1.0.0")).toBeTruthy();
     expect(getByText(`SpotAPaw © ${new Date().getFullYear()}`)).toBeTruthy();
@@ -290,6 +291,7 @@ describe("SettingsRenderer Component", () => {
       accountSetting: <Text>Account</Text>,
       versionText: "test-version",
       proFeatureSetting: <Text>Pro Settings</Text>,
+      contactSetting: <Text>Contact Setting</Text>,
     };
 
     const { getByText } = render(
@@ -302,5 +304,6 @@ describe("SettingsRenderer Component", () => {
     expect(getByText("Location Permission")).toBeTruthy();
     expect(getByText("Language")).toBeTruthy();
     expect(getByText("Version test-version")).toBeTruthy();
+    expect(getByText("Contact Setting")).toBeTruthy();
   });
 });

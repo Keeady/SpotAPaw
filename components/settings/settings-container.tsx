@@ -36,6 +36,8 @@ import { useTranslation } from "react-i18next";
 import ProSettings from "./pro-features-setting";
 import { useNotificationPermission } from "../Provider/notification-permission-provider";
 import { updateNotificationSubscriptionEnabled } from "../notification-util";
+import ContactSetting from "./contact-setting";
+import { Linking } from "react-native";
 
 // Define color scheme for icons
 const iconColors = {
@@ -73,7 +75,9 @@ const SettingsContainer = () => {
   const [locationLoading, setLocationLoading] = useState(true);
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [selectedDistance, setSelectedDistance] = useState(SIGHTING_RADIUSKM_NOTIFICATION.toString());
+  const [selectedDistance, setSelectedDistance] = useState(
+    SIGHTING_RADIUSKM_NOTIFICATION.toString(),
+  );
 
   // languages
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -110,7 +114,8 @@ const SettingsContainer = () => {
 
   const { isAiFeatureEnabled, saveAIFeatureContext } = useAIFeatureContext();
   const { preferredLanguage, saveLanguageContext } = useLocaleContext();
-  const { enabledNotificationPermission, saveNotificationPermission } = useNotificationPermission();
+  const { enabledNotificationPermission, saveNotificationPermission } =
+    useNotificationPermission();
 
   const loadSavedLocation = useCallback(async () => {
     try {
@@ -151,7 +156,9 @@ const SettingsContainer = () => {
       const { status } = await Location.getForegroundPermissionsAsync();
       setLocationPermission(status === "granted");
       const distance = await AsyncStorage.getItem(SIGHTING_DISTANCE_KEY);
-      setSelectedDistance(distance || SIGHTING_RADIUSKM_NOTIFICATION.toString());
+      setSelectedDistance(
+        distance || SIGHTING_RADIUSKM_NOTIFICATION.toString(),
+      );
     } catch {
       log("Error loading settings");
     }
@@ -418,6 +425,16 @@ const SettingsContainer = () => {
           iconColorPro={iconColors.pro}
           iconColorAIOn={iconColors.location}
           iconColorAIOff={iconColors.star}
+        />
+      }
+      contactSetting={
+        <ContactSetting
+          iconColorContact={iconColors.information}
+          onOpenContact={() =>
+            Linking.openURL("mailto:spotapaw@spotapaw.com").catch(() => {
+              log("Failed to open email client");
+            })
+          }
         />
       }
     />
