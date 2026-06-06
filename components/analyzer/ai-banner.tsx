@@ -4,14 +4,20 @@ import { Icon, Text } from "react-native-paper";
 type AIFieldAnalysisBannerProps = {
   loading: boolean;
   aiGenerated: boolean;
+  helperText?: React.ReactNode;
 };
 
-export function AIFieldAnalysisBanner({
+export function AIFieldAnalysisBannerOrHelperText({
   loading,
   aiGenerated,
+  helperText,
 }: AIFieldAnalysisBannerProps) {
-  if (loading || !aiGenerated) {
+  if (loading) {
     return null;
+  }
+
+  if (!aiGenerated) {
+    return helperText;
   }
 
   return (

@@ -7,7 +7,7 @@ import {
   Menu,
 } from "react-native-paper";
 import { useEffect, useState } from "react";
-import { AIFieldAnalysisBanner } from "../analyzer/ai-banner";
+import { AIFieldAnalysisBannerOrHelperText } from "../analyzer/ai-banner";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetThumbnail } from "../sightings/pet-selection";
@@ -157,18 +157,23 @@ export function EditPet({
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text variant="titleMedium">{t("colors", "Color(s):")}</Text>
-            <HelperText
-              type="error"
-              visible={hasErrors && !colors}
-              style={styles.helperText}
-              padding="none"
-            >
-              {t("pleaseDescribePetColors", "Please describe pet color(s)!")}
-            </HelperText>
 
-            <AIFieldAnalysisBanner
+            <AIFieldAnalysisBannerOrHelperText
               loading={loadingAnalyzer}
               aiGenerated={showAiGeneratedFlag && !!colors}
+              helperText={
+                <HelperText
+                  type="error"
+                  visible={hasErrors && !colors}
+                  style={styles.helperText}
+                  padding="none"
+                >
+                  {t(
+                    "pleaseDescribePetColors",
+                    "Please describe pet color(s)!",
+                  )}
+                </HelperText>
+              }
             />
           </View>
           <TextInput
@@ -182,17 +187,20 @@ export function EditPet({
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text variant="titleMedium">{t("species", "Species:")}</Text>
-            <HelperText
-              type="error"
-              visible={hasErrors && !species}
-              style={styles.helperText}
-              padding="none"
-            >
-              {t("speciesIsRequired", "Species is required!")}
-            </HelperText>
-            <AIFieldAnalysisBanner
+
+            <AIFieldAnalysisBannerOrHelperText
               loading={loadingAnalyzer}
               aiGenerated={!!showAiGeneratedFlag && !!species}
+              helperText={
+                <HelperText
+                  type="error"
+                  visible={hasErrors && !species}
+                  style={styles.helperText}
+                  padding="none"
+                >
+                  {t("speciesIsRequired", "Species is required!")}
+                </HelperText>
+              }
             />
           </View>
 
@@ -201,7 +209,10 @@ export function EditPet({
             onDismiss={closeMenu}
             anchor={
               <TextInput
-                placeholder={t("selectOrEnterSpecies", "Select or Enter species")}
+                placeholder={t(
+                  "selectOrEnterSpecies",
+                  "Select or Enter species",
+                )}
                 value={selectedSpecies}
                 onPress={openMenu}
                 mode="outlined"
@@ -235,21 +246,24 @@ export function EditPet({
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text variant="titleMedium">{t("breeds", "Breed(s):")}</Text>
-            <HelperText
-              type="error"
-              visible={
-                hasErrors &&
-                (reportType === "new_pet" || reportType === "edit_pet") &&
-                !breed
-              }
-              style={styles.helperText}
-              padding="none"
-            >
-              {t("breedIsRequired", "Breed is required")}
-            </HelperText>
-            <AIFieldAnalysisBanner
+
+            <AIFieldAnalysisBannerOrHelperText
               loading={loadingAnalyzer}
               aiGenerated={!!showAiGeneratedFlag && !!breed}
+              helperText={
+                <HelperText
+                  type="error"
+                  visible={
+                    hasErrors &&
+                    (reportType === "new_pet" || reportType === "edit_pet") &&
+                    !breed
+                  }
+                  style={styles.helperText}
+                  padding="none"
+                >
+                  {t("breedIsRequired", "Breed is required")}
+                </HelperText>
+              }
             />
           </View>
 
