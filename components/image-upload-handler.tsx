@@ -2,8 +2,6 @@ import "react-native-get-random-values";
 import { useCallback } from "react";
 import { supabase } from "./supabase-client";
 import { MAX_FILE_SIZE_ERROR, UNSUPPORTED_MIME_TYPE } from "./constants";
-import { log } from "./logs";
-import { createErrorLogMessageAsync } from "./util";
 import * as Crypto from "expo-crypto";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -67,14 +65,12 @@ export const uploadPhotoWithProcessing = async (
     );
 
     if (error) {
-      const errorMessage = await createErrorLogMessageAsync(error);
-      throw new Error(`Error uploading photo: ${errorMessage}`);
+      throw error;
     }
 
     return data;
   } catch (error) {
-    const errorMessage = await createErrorLogMessageAsync(error);
-    throw new Error(`Error uploading photo: ${errorMessage}`);
+    throw error;
   }
 };
 
@@ -105,14 +101,12 @@ export const uploadMultiplePhotosWithProcessing = async (
     );
 
     if (error) {
-      const errorMessage = await createErrorLogMessageAsync(error);
-      throw new Error(`Error uploading multiple photos: ${errorMessage}`);
+      throw error;
     }
 
     return data;
   } catch (error) {
-    const errorMessage = await createErrorLogMessageAsync(error);
-    throw new Error(`Error uploading multiple photos: ${errorMessage}`);
+    throw error;
   }
 };
 
@@ -146,10 +140,7 @@ export function useUploadMultiplePetImage() {
         );
 
         if (error) {
-          const errorMessage = await createErrorLogMessageAsync(error);
-          throw new Error(
-            `Error invoking upload-multiple-photos function: ${errorMessage}`,
-          );
+          throw error;
         }
 
         if (!data || !data.publicUrls) {
@@ -159,8 +150,7 @@ export function useUploadMultiplePetImage() {
 
         callback(data.publicUrls);
       } catch (error) {
-        const errorMessage = await createErrorLogMessageAsync(error);
-        throw new Error(`Error uploading photos: ${errorMessage}`);
+        throw error;
       }
     },
     [],
