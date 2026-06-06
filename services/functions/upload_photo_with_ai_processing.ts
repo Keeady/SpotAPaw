@@ -202,7 +202,7 @@ Deno.serve(async (req: Request) => {
 
       if (error) {
         console.error(error);
-        if (error.name !== "StorageApiError" && error.status !== 409) {
+        if (error.status !== 409) {
           let msg = `Failed to save photo: ${error.message}`;
 
           return getErrorResponse(msg, 500);
