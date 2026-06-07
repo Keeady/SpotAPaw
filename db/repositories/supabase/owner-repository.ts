@@ -74,11 +74,14 @@ export class SupabaseOwnerRepository extends BaseOwnerRepository {
 
     const { error } = await this.supabaseClient
       .from("owner")
-      .update({
-        marked_for_deletion: true,
-        deleted_at: new Date().toISOString(),
-      })
-      .eq("id", id);
+      .upsert(
+        {
+          owner_id: id,
+          marked_for_deletion: true,
+          deleted_at: new Date().toISOString(),
+        },
+        { onConflict: "owner_id" },
+      );
 
     if (error) {
       throw error;

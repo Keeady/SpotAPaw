@@ -2,6 +2,10 @@ import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-client";
 import { log } from "../logs";
+import {
+  checkOwnerMarkedForDeletion,
+  resetOwnerMarkedForDeletion,
+} from "./auth-provider-util";
 type ContextProps = {
   user: null | User;
   session: Session | null;
@@ -19,19 +23,35 @@ const AuthProvider = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    }).catch((e) => {
-      log(`AuthProvider ${e.message}`);
-      setLoading(false);
-    });
-    const {data: listener} = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setLoading(false);
+      })
+      .catch((e) => {
+        log(`AuthProvider ${e.message}`);
+        setLoading(false);
+      });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setLoading(false);
 
-    return () => listener.subscription.unsubscribe()
+        if (event === "SIGNED_IN" && session) {
+          const markedForDeletion = await checkOwnerMarkedForDeletion(
+            supabase,
+            session,
+          );
+          if (markedForDeletion) {
+            resetOwnerMarkedForDeletion(supabase, session.user.id);
+          }
+          return;
+        }
+      },
+    );
+
+    return () => listener.subscription?.unsubscribe();
   }, []);
 
   return (
@@ -39,7 +59,7 @@ const AuthProvider = (props: Props) => {
       value={{
         user: session?.user,
         session,
-        loading
+        loading,
       }}
     >
       {props.children}
