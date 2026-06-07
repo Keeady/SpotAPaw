@@ -1,5 +1,4 @@
 import { TFunction } from "i18next";
-import { getIconByAnimalSpecies } from "../util";
 
 export interface FilterTag {
   icon: string;

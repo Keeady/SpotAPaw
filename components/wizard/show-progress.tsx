@@ -233,8 +233,8 @@ export default function ShowProgress({
             ) : (
               <View
                 style={{
-                  width: 350,
-                  height: 350,
+                  width: 200,
+                  height: 200,
                   borderRadius: 12,
                   backgroundColor: "#eee",
                   justifyContent: "center",
