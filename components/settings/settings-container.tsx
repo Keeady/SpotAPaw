@@ -274,9 +274,9 @@ const SettingsContainer = () => {
       if (user?.id) {
         setDeleteConfirmDialogVisible(false);
         setDeletingAccount(false);
+        await onDeleteAccount(user.id, t);
         // Clear all local data
         await AsyncStorage.clear();
-        await onDeleteAccount(user.id, t);
       }
     } catch (error) {
       const errorMessage = createErrorLogMessage(error);
