@@ -42,6 +42,7 @@ export const defaultSightingFormData = {
   photos: [],
   images: [],
   deletedAt: "",
+  narrative: "",
 } as SightingReport;
 
 export const validate = (

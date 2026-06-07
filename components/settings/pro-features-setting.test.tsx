@@ -56,7 +56,7 @@ describe("ProFeatureSetting Component", () => {
     expect(getByText("expandedSearchDescription")).toBeTruthy();
 
     const icons = getAllByText("Icon");
-    expect(icons.length).toBe(4); // 2 features x 2 icons each (left and right)
+    expect(icons.length).toBe(6); // 3 features x 2 icons each (left and right)
   });
 
   it("shows lock icons when user is not a Pro user", () => {
@@ -74,6 +74,6 @@ describe("ProFeatureSetting Component", () => {
     expect(getByText("expandedSearchDescription")).toBeTruthy();
 
     const icons = getAllByText("Icon");
-    expect(icons.length).toBe(4); // 2 features x 2 icons each (left and right)
+    expect(icons.length).toBe(6); // 3 features x 2 icons each (left and right)
   });
 });

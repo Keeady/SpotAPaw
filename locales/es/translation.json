@@ -96,5 +96,6 @@
   "mySightings": "Avistamientos",
   "myPets": "Mis Mascotas",
   "myProfile": "Mi Perfil",
-  "mySettings": "Configuración"
+  "mySettings": "Configuración",
+  "aiDescription": "Descripción de IA"
 }

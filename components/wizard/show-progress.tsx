@@ -7,7 +7,14 @@ import React, {
   useState,
 } from "react";
 import { ScrollView, StyleSheet, View, Image } from "react-native";
-import { Button, Chip, Surface, Text } from "react-native-paper";
+import {
+  Button,
+  Chip,
+  Icon,
+  Surface,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { WizardHeader } from "./wizard-header";
 import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
@@ -15,7 +22,12 @@ import { buildFilterTags, FilterTag } from "./progress-util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { SIGHTING_RADIUSKM } from "../constants";
 import { showMessage } from "react-native-flash-message";
-import { createErrorLogMessage, getLastSeenLocation, kmToMiles } from "../util";
+import {
+  createErrorLogMessage,
+  getIconByAnimalSpecies,
+  getLastSeenLocation,
+  kmToMiles,
+} from "../util";
 import { log } from "../logs";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useTranslation } from "react-i18next";
@@ -24,6 +36,7 @@ export default function ShowProgress({
   sightingFormData,
 }: SightingWizardStepData) {
   const { t } = useTranslation(["wizard", "translation"]);
+  const theme = useTheme();
   const [loading, setLoading] = useState(false);
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
   const { user } = useContext(AuthContext);
@@ -39,10 +52,6 @@ export default function ShowProgress({
 
   useEffect(() => {
     const fetchFilterTags = async () => {
-      const species = sightingFormData.species
-        ? sightingFormData.species.charAt(0).toUpperCase() +
-          sightingFormData.species.slice(1)
-        : "Unknown species";
       const lastSeenLocation = await getLastSeenLocation(
         sightingFormData.lastSeenLocation,
         sightingFormData.lastSeenLat,
@@ -61,8 +70,7 @@ export default function ShowProgress({
         lastSeenLocation,
         lastSeenTime,
         radiusMiles,
-        species,
-        t
+        t,
       );
       setFilterTags(tags);
     };
@@ -138,7 +146,10 @@ export default function ShowProgress({
     <View style={{ flex: 1 }}>
       <WizardHeader
         title={t("sightingSubmitted", "Sighting Submitted!")}
-        subTitle={t("hangTightProcessingReport", "Hang tight — we are processing your report.")}
+        subTitle={t(
+          "hangTightProcessingReport",
+          "Hang tight — we are processing your report.",
+        )}
       />
       <ScrollView
         style={styles.screen}
@@ -167,6 +178,42 @@ export default function ShowProgress({
                 {tag.label}: {tag.value}
               </Chip>
             ))}
+            <View
+              style={[
+                styles.filterChip,
+                styles.aiDescriptionWrapper,
+                {
+                  backgroundColor: theme.colors.secondaryContainer,
+                  borderRadius: 20,
+                },
+              ]}
+            >
+              <Icon
+                source={getIconByAnimalSpecies(sightingFormData.species)}
+                size={18}
+                color={theme.colors.primary}
+              />
+              <Text
+                variant="labelLarge"
+                style={[
+                  styles.filterChipText,
+                  styles.aiDescriptionText,
+                  { color: theme.colors.onSecondaryContainer },
+                ]}
+              >
+                {t("aiDescription", "AI Description", { ns: "translation" })}:
+              </Text>
+              <Text
+                style={[
+                  styles.filterChipText,
+                  styles.aiDescriptionText,
+                  { color: theme.colors.onSecondaryContainer },
+                ]}
+                variant="labelSmall"
+              >
+                {sightingFormData.narrative}
+              </Text>
+            </View>
           </View>
         </Surface>
         <Surface style={styles.card} elevation={1}>
@@ -186,8 +233,8 @@ export default function ShowProgress({
             ) : (
               <View
                 style={{
-                  width: 200,
-                  height: 200,
+                  width: 350,
+                  height: 350,
                   borderRadius: 12,
                   backgroundColor: "#eee",
                   justifyContent: "center",
@@ -257,13 +304,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   filterChip: {
-    backgroundColor: "#FAE5D3",
     borderRadius: 20,
     maxWidth: "100%",
+    flexWrap: "wrap",
   },
   filterChipText: {
     fontSize: 12,
     color: "#2D1F0F",
+    flexWrap: "wrap",
   },
 
   // CTA
@@ -278,5 +326,18 @@ const styles = StyleSheet.create({
   animationWrapper: {
     alignContent: "center",
     alignItems: "center",
+  },
+  aiDescriptionWrapper: {
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    gap: 6,
+  },
+  aiDescriptionText: {
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 0.1,
+    lineHeight: 20,
   },
 });

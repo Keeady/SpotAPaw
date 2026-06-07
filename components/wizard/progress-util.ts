@@ -12,7 +12,6 @@ export function buildFilterTags(
   lastSeenLocation: string,
   lastSeenTime: string,
   radiusMiles: string,
-  species: string,
   t: TFunction,
 ): FilterTag[] {
   const FILTER_TAGS: FilterTag[] = [
@@ -39,12 +38,6 @@ export function buildFilterTags(
       label: t("radius", "Radius", { ns: "translation" }),
       value: radiusMiles,
       delayMs: 600,
-    },
-    {
-      icon: getIconByAnimalSpecies(species),
-      label: t("species", "Species", { ns: "translation" }),
-      value: t(`animal.${species}`, species, { ns: "translation" }),
-      delayMs: 800,
     },
   ];
 

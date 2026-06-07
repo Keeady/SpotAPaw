@@ -24,6 +24,7 @@ export type SightingReport = AggregatedSighting & {
   sightingId: string;
   images: PetImage[];
   deletedAt: string;
+  narrative: string;
 };
 
 export type PetImage = {
