@@ -99,6 +99,7 @@ describe("ShowProgress", () => {
         petDescriptionId: "petDesc123",
         lastSeenLat: 40.785091,
         lastSeenLong: -73.968285,
+        narrative: "A large dog was seen near Central Park.",
       },
       { user: { id: "user123" } },
     );
@@ -120,7 +121,10 @@ describe("ShowProgress", () => {
     expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
     expect(await findByText("Date range: Last 30 days")).toBeTruthy();
     expect(await findByText("Radius: 10 miles")).toBeTruthy();
-    expect(await findByText("Species: Dog")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(
+      await findByText("A large dog was seen near Central Park."),
+    ).toBeTruthy();
 
     expect(mockGetMatchingSightings).toHaveBeenCalledWith(
       "sighting123",
@@ -151,6 +155,7 @@ describe("ShowProgress", () => {
         lastSeenLat: 40.785091,
         lastSeenLong: -73.968285,
         photos: ["http://example.co/photo"],
+        narrative: "A large dog was seen near Central Park.",
       },
       { user: { id: "user123" } },
     );
@@ -171,7 +176,10 @@ describe("ShowProgress", () => {
     expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
     expect(await findByText("Date range: Last 30 days")).toBeTruthy();
     expect(await findByText("Radius: 10 miles")).toBeTruthy();
-    expect(await findByText("Species: Dog")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(
+      await findByText("A large dog was seen near Central Park."),
+    ).toBeTruthy();
 
     expect(mockGetMatchingSightings).not.toHaveBeenCalled();
     expect(await findByText("View Matches")).not.toBeDisabled();
@@ -185,7 +193,7 @@ describe("ShowProgress", () => {
   it("renders progress page with error", async () => {
     mockGetMatchingSightings.mockRejectedValue(new Error("Error"));
 
-    const { getByText, findByText, getByTestId } = renderWithAuthContext(
+    const { getByText, findByText, getByTestId, queryByText } = renderWithAuthContext(
       {
         species: "dog",
         lastSeenLocation: "Central Park",
@@ -215,7 +223,10 @@ describe("ShowProgress", () => {
     expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
     expect(await findByText("Date range: Last 30 days")).toBeTruthy();
     expect(await findByText("Radius: 10 miles")).toBeTruthy();
-    expect(await findByText("Species: Dog")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(
+      await queryByText("A large dog was seen near Central Park."),
+    ).toBeNull();
 
     expect(mockGetMatchingSightings).toHaveBeenCalledWith(
       "sighting123",

@@ -16,7 +16,7 @@ interface reqPayload {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/heic"];
 
-const prompt = `Analyze this image and extract detailed information about any pets visible.
+const prompt = `Analyze these images and extract detailed information about any pets visible to help with finding and identifying them.
 
 For EACH pet in the images, provide the following information in JSON format:
 {
@@ -50,10 +50,10 @@ Guidelines:
 - **Collar, Tag, or Harness**:
   - Describe Collar, tag, or harness found on the pet such as colors, patterns, and extract any visible writings or brandings
 
-If NO pets are visible in the image, return:
+If NO pets are visible in the images, return:
 {
   "pets": [],
-  "note": "No pets detected in image"
+  "note": "No pets detected in images"
 }
 
 Respond ONLY with valid JSON. Do not include any other text or markdown formatting.`;

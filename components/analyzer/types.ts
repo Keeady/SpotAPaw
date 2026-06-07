@@ -10,6 +10,7 @@ export interface PetInfo {
   distinctive_features: string[];
   collar_descriptions: string[];
   confidence: ConfidenceLevel;
+  narrative?: string;
 }
 
 export interface PetAnalysisResult {

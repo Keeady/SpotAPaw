@@ -573,6 +573,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         if (publicUrls) {
           updateSightingData("photos", publicUrls);
         }
+
+        if (petInfo.narrative) {
+          updateSightingData("narrative", petInfo.narrative);
+        }
       } else if (data && "note" in data && data.note) {
         throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
       }

@@ -12,7 +12,7 @@ interface reqPayload {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/heic"];
 
-const prompt = `Analyze this image and extract detailed information about any pets visible.
+const prompt = `Analyze this image and extract detailed information about any pets visible to help with finding and identifying them.
 
 For EACH pet in the image, provide the following information in JSON format:
 {
@@ -330,6 +330,7 @@ Deno.serve(async (req: Request) => {
         result: textResponse,
         publicUrl: photoPublicUrl,
         petDescriptionId: petDescriptionResultId,
+        publicUrls: [photoPublicUrl],
       }),
       {
         headers: { "Content-Type": "application/json" },
