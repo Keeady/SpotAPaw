@@ -54,6 +54,7 @@ import { PetRepository } from "@/db/repositories/pet-repository";
 import ShowProgress from "./show-progress";
 import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
+import { PhotoResult } from "./photo-result";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const { t } = useTranslation(["wizard", "translation"]);
@@ -356,6 +357,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       if (currentStep === "start") {
         return "upload_photo";
       } else if (currentStep === "upload_photo") {
+        return "photo_result";
+      } else if (currentStep === "photo_result") {
         return "edit_pet";
       } else if (currentStep === "edit_pet") {
         return "edit_pet_continued";
@@ -375,6 +378,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       if (currentStep === "start") {
         return "upload_photo";
       } else if (currentStep === "upload_photo") {
+        return "photo_result";
+      } else if (currentStep === "photo_result") {
         return "edit_pet";
       } else if (currentStep === "edit_pet") {
         return "edit_pet_continued";
@@ -394,6 +399,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     } else if (currentStep === "start" || currentStep === "choose_pet") {
       return "upload_photo";
     } else if (currentStep === "upload_photo") {
+      return "photo_result";
+    } else if (currentStep === "photo_result") {
       return "edit_pet";
     } else if (currentStep === "edit_pet") {
       return "edit_pet_continued";
@@ -577,8 +584,17 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         if (petInfo.narrative) {
           updateSightingData("narrative", petInfo.narrative);
         }
+
+        if (petInfo.confidence) {
+          updateSightingData("confidence", petInfo.confidence);
+        }
       } else if (data && "note" in data && data.note) {
-        throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
+        if (data.note.toLowerCase().includes("no pets detected")) {
+          throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
+        } else {
+          log(`Wizard: AI analysis returned note: ${data.note}`);
+          updateSightingData("note", data.note);
+        }
       }
     },
     [updateSightingData],
@@ -762,6 +778,20 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             aiGenerated={aiGenerated}
           />
         );
+      case "photo_result":
+        return (
+          <PhotoResult
+            sightingFormData={sightingFormData}
+            updateSightingData={updateSightingData}
+            loading={loading}
+            setReportType={setReportType}
+            isValidData={isValidData}
+            errorMessage={errorMessage}
+            onResetErrorMessage={onResetErrorMessage}
+            onResetAiGeneratedPhoto={onResetAiGeneratedPhoto}
+          />
+        );
+
       default:
         return null;
     }

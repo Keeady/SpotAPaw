@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
 import SightingGallery from "../sightings/gallery";
 
-export function UploadPhoto({
+export function PhotoResult({
   updateSightingData,
   sightingFormData,
   loading,
@@ -52,12 +52,12 @@ export function UploadPhoto({
     [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
   );
 
-  const { photos, images } = sightingFormData;
+  const { note, confidence, narrative } = sightingFormData;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <WizardHeader
-        title={t("uploadAPhoto", "Upload a photo")}
+        title={t("editPhoto", "AI Photo Analysis")}
         subTitle={t(
           "aPhotoWouldReallyHelpIdentifyThisPetFaster",
           "A photo would really help identify this pet faster.",
@@ -69,43 +69,6 @@ export function UploadPhoto({
         keyboardShouldPersistTaps="handled"
       >
         <View style={[styles.verticallySpaced, styles.mb10, styles.mt5]}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 8,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {isAiFeatureEnabled && aiPhotoAnalysisAllowed && loading && (
-                <>
-                  <ActivityIndicator size="small" color="#1976d2" />
-                  <Text variant="labelMedium">
-                    {t("analyzingPhotoWithAi", "Analyzing photo with AI...")}
-                  </Text>
-                </>
-              )}
-            </View>
-
-            <HelperText
-              type="error"
-              visible={
-                (hasErrors && !photos?.length && !images?.length) ||
-                !!errorMessage
-              }
-              style={styles.helperText}
-              padding="none"
-            >
-              {!!errorMessage
-                ? errorMessage
-                : hasErrors && !photos?.length && !images?.length
-                  ? t("pleaseAddAPhoto", "Please add a photo!")
-                  : ""}
-            </HelperText>
-          </View>
           {sightingFormData.images && sightingFormData.images.length === 1 ? (
             <Image
               key={0}
@@ -150,43 +113,27 @@ export function UploadPhoto({
             </View>
           )}
 
-          <Button
-            icon="camera"
-            mode="contained"
-            onPress={() =>
-              uploadOrTakePhoto(t, onAddMultiplePhotos, multiPhotoUploadAllowed)
-            }
-            style={{ marginVertical: 10 }}
-            testID="addPhotoBtn"
-          >
-            {sightingFormData.images?.length > 0 ||
-            sightingFormData.photos?.length > 0
-              ? t("changePhoto", "Change Photo", {
-                  count: multiPhotoUploadAllowed ? 2 : 1,
-                })
-              : t("uploadPhoto", "Upload Photo", {
-                  count: multiPhotoUploadAllowed ? 2 : 1,
-                })}
-          </Button>
-
           <View>
             <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
-              <Icon source={"creation-outline"} size={20} />
-              <Text variant="labelMedium" style={{ flex: 1 }}>
-                {t(
-                  "aiWillFillOut",
-                  "AI will fill out a detailed pet description from this photo. You can review and edit before submitting.",
-                )}
+              <Text variant="labelMedium">
+                {t("photoQuality", "Photo Quality:")}
+              </Text>
+              <Text variant="bodyMedium" >
+                {t(`photoConfidence.${confidence}`, confidence)}
               </Text>
             </View>
-
-            <Button mode="text" onPress={() => router.navigate(settingsRoute)}>
-              {isAiFeatureEnabled
-                ? aiPhotoAnalysisAllowed
-                  ? t("aiSettings", "AI Settings")
-                  : t("purchasePro", "Purchase PRO")
-                : t("turnAiOn", "Turn AI On")}
-            </Button>
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
+              <Text variant="labelMedium">{t("summary", "AI Summary:")}</Text>
+              <Text variant="bodyMedium" style={{ flex: 1 }}>
+                {narrative}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
+              <Text variant="labelMedium">{t("notes", "Notes:")}</Text>
+              <Text variant="bodyMedium" style={{ flex: 1 }}>
+                {note}
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -227,9 +174,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   content: {
-    flex: 1,
     paddingHorizontal: 12,
     alignItems: "center",
+    flex: 1,
   },
   helperText: {
     alignSelf: "flex-end",

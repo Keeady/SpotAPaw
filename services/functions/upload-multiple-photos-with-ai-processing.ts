@@ -16,7 +16,7 @@ interface reqPayload {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/heic"];
 
-const prompt = `Analyze these images and extract detailed information about any pets visible to help with finding and identifying them.
+const prompt = `Analyze these images and extract detailed information about any pets visible to help with finding and identifying lost pets.
 
 For EACH pet in the images, provide the following information in JSON format:
 {
@@ -28,7 +28,9 @@ For EACH pet in the images, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
-      "narrative": "a single fluent sentence describing the pet for embedding to include species, breed, colors, size, collar descriptions and distinctive features.",
+      "narrative": "a single fluent sentence describing the pet for semantic search to include, if available: species, breed, colors, size, collar descriptions and distinctive features.",
+      "confidence": "high | medium | low — your overall confidence given photo quality",
+      "note": "anything uncertain or notable across photos, or null"
     }
   ]
 }

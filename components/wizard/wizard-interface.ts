@@ -1,5 +1,6 @@
 import { Pet } from "@/db/models/pet";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { ConfidenceLevel } from "../analyzer/types";
 
 export type WizardFormAction =
   | "edit-sighting"
@@ -25,6 +26,9 @@ export type SightingReport = AggregatedSighting & {
   images: PetImage[];
   deletedAt: string;
   narrative: string;
+  confidence: ConfidenceLevel;
+  note: string;
+  aiGenerated: boolean;
 };
 
 export type PetImage = {
@@ -36,6 +40,7 @@ export type PetImage = {
 export type SightingWizardSteps =
   | "start"
   | "upload_photo"
+  | "photo_result"
   | "choose_pet"
   | "edit_pet"
   | "edit_pet_continued"
