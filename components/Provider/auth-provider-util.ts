@@ -8,15 +8,16 @@ export async function checkOwnerMarkedForDeletion(
   const { data: owner, error: selectError } = await supabase
     .from("owner")
     .select("marked_for_deletion")
-    .eq("owner_id", session.user.id)
-    .single();
+    .eq("owner_id", session.user.id);
 
   if (selectError) {
     log(`AuthProvider select owner error: ${selectError.message}`);
     return;
   }
 
-  return owner?.marked_for_deletion;
+  if (owner && owner.length > 0) {
+    return owner[0].marked_for_deletion;
+  }
 }
 
 export async function resetOwnerMarkedForDeletion(

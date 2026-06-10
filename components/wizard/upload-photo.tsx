@@ -196,7 +196,9 @@ export function UploadPhoto({
 
 const styles = StyleSheet.create({
   verticallySpaced: {
+    flex: 1,
     alignSelf: "stretch",
+    justifyContent: "center",
   },
   mt20: {
     marginTop: 20,
@@ -225,6 +227,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   content: {
+    flex: 1,
     paddingHorizontal: 12,
     alignItems: "center",
   },

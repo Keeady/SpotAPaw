@@ -12,7 +12,7 @@ interface reqPayload {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/heic"];
 
-const prompt = `Analyze this image and extract detailed information about any pets visible to help with finding and identifying them.
+const prompt = `Analyze this image and extract detailed information about any pets visible to help with finding and identifying lost pets.
 
 For EACH pet in the image, provide the following information in JSON format:
 {
@@ -24,7 +24,9 @@ For EACH pet in the image, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
-      "narrative": "a single fluent sentence describing the pet for embedding to include species, breed, colors, size, collar descriptions and distinctive features.",
+      "narrative": "one sentence description",
+      "confidence": "high/medium/low",
+      "note": "anything uncertain or notable across photos, or null"
     }
   ]
 }
@@ -45,6 +47,10 @@ Guidelines:
   - Notable characteristics and coat length/pattern/texture, like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
 - **Collar, Tag, or Harness**:
   - Describe Collar, tag, or harness found on the pet such as colors, patterns, and extract any visible writings or brandings
+- **Confidence**: Your confidence level in the accuracy of the analysis based on image quality, visibility of the pet, and clarity of features. 
+  - Use "high" if you are very confident, "medium" if somewhat confident but with some uncertainty, and "low" if there is significant uncertainty.
+- **Narrative**: A single fluent sentence describing the pet that includes the key details (species, breed, colors, size, collar descriptions, and distinctive features) to help with semantic search.
+- **Note**: Include any uncertainties, notable observations in the photo, or anything else that could be helpful for identifying the pet.
 
 If NO pets are visible in the image, return:
 {
@@ -161,7 +167,10 @@ Deno.serve(async (req: Request) => {
           console.error(petDescError);
         }
 
-        existingPetDescription = petDescData && petDescData.length > 0 ? petDescData[0].description : null;
+        existingPetDescription =
+          petDescData && petDescData.length > 0
+            ? petDescData[0].description
+            : null;
       }
 
       if (photoPublicUrl && existingPetDescription) {

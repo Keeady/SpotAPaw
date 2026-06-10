@@ -111,5 +111,13 @@
     "reviewAndEditYourContactInfo": "Review and edit your contact info.",
     "hangTightProcessingReport": "Hang tight — we are processing your report.",
     "selectOrEnterSpecies": "Select or Enter species",
-    "noPetsFound": "No pets found."
+    "noPetsFound": "No pets found.",
+    "notes": "Notes:",
+    "photoQuality": "Photo Quality:",
+    "photoConfidence": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "unknown": "Unknown"
+    }
 }

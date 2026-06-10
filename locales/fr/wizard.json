@@ -111,5 +111,13 @@
   "reviewAndEditYourContactInfo": "Vérifiez et modifiez vos informations de contact.",
   "hangTightProcessingReport": "Patientez — nous traitons votre rapport.",
   "selectOrEnterSpecies": "Sélectionner ou saisir une espèce",
-  "noPetsFound": "Aucun animal trouvé."
+  "noPetsFound": "Aucun animal trouvé.",
+  "notes": "Notes:",
+  "photoQuality": "Qualité de la photo:",
+  "photoConfidence": {
+    "low": "Faible",
+    "medium": "Moyenne",
+    "high": "Élevée",
+    "unknown": "Inconnue"
+  }
 }

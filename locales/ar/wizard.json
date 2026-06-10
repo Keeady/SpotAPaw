@@ -111,5 +111,13 @@
   "reviewAndEditYourContactInfo": "راجع وعدّل معلومات الاتصال الخاصة بك.",
   "hangTightProcessingReport": "انتظر قليلاً — نحن نعالج تقريرك.",
   "selectOrEnterSpecies": "تحديد أو إدخال النوع",
-  "noPetsFound": "لم يتم العثور على حيوانات أليفة."
+  "noPetsFound": "لم يتم العثور على حيوانات أليفة.",
+  "notes": "ملاحظات:",
+  "photoQuality": "جودة الصورة:",
+  "photoConfidence": {
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "عالية",
+    "unknown": "غير معروف"
+  }
 }
