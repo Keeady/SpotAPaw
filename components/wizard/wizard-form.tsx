@@ -12,9 +12,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
 import { AnalysisResponse } from "../analyzer/types";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
-import {
-  useUploadMultiplePetImage,
-} from "../image-upload-handler";
+import { useUploadMultiplePetImage } from "../image-upload-handler";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { AddContact } from "./add-contact";
@@ -293,12 +291,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               );
             }
 
-            return saveNewPet(
-              sightingFormData,
-              user?.id || "",
-              undefined,
-              [],
-            );
+            return saveNewPet(sightingFormData, user?.id || "", undefined, []);
           } else if (action === "edit-pet") {
             if (sightingFormData.isLost) {
               return updatePet(sightingFormData, createSightingFromPet, []);
@@ -593,7 +586,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           throw new Error(data.note, { cause: "NO_PETS_DETECTED" });
         } else {
           log(`Wizard: AI analysis returned note: ${data.note}`);
-          updateSightingData("note", data.note);
+          updateSightingData("aiNote", data.note);
         }
       }
     },

@@ -24,8 +24,8 @@ For EACH pet in the image, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
-      "narrative": "a single fluent sentence describing the pet for semantic search to include, if available: species, breed, colors, size, collar descriptions and distinctive features.",
-      "confidence": "high | medium | low — your overall confidence given photo quality",
+      "narrative": "one sentence description",
+      "confidence": "high/medium/low",
       "note": "anything uncertain or notable across photos, or null"
     }
   ]
@@ -47,6 +47,10 @@ Guidelines:
   - Notable characteristics and coat length/pattern/texture, like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
 - **Collar, Tag, or Harness**:
   - Describe Collar, tag, or harness found on the pet such as colors, patterns, and extract any visible writings or brandings
+- **Confidence**: Your confidence level in the accuracy of the analysis based on image quality, visibility of the pet, and clarity of features. 
+  - Use "high" if you are very confident, "medium" if somewhat confident but with some uncertainty, and "low" if there is significant uncertainty.
+- **Narrative**: A single fluent sentence describing the pet that includes the key details (species, breed, colors, size, collar descriptions, and distinctive features) to help with semantic search.
+- **Note**: Include any uncertainties, notable observations in the photo, or anything else that could be helpful for identifying the pet.
 
 If NO pets are visible in the image, return:
 {

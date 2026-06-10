@@ -45,6 +45,7 @@ export const defaultSightingFormData = {
   narrative: "",
   confidence: "unknown",
   aiGenerated: false,
+  aiNote: "",
 } as SightingReport;
 
 export const validate = (

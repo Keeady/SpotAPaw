@@ -27,7 +27,7 @@ export type SightingReport = AggregatedSighting & {
   deletedAt: string;
   narrative: string;
   confidence: ConfidenceLevel;
-  note: string;
+  aiNote: string;
   aiGenerated: boolean;
 };
 

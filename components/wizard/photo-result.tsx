@@ -1,58 +1,18 @@
-import {
-  StyleSheet,
-  View,
-  Image,
-  ActivityIndicator,
-  ScrollView,
-} from "react-native";
-import { Text, Button, Icon, HelperText } from "react-native-paper";
-import { uploadOrTakePhoto } from "../image-picker";
-import { useRouter } from "expo-router";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { AuthContext } from "../Provider/auth-provider";
-import { useAIFeatureContext } from "../Provider/ai-context-provider";
+import { StyleSheet, View, Image, ScrollView } from "react-native";
+import { Text } from "react-native-paper";
+import { useState } from "react";
 import { WizardHeader } from "./wizard-header";
-import { PetImage, SightingWizardStepData } from "./wizard-interface";
+import { SightingWizardStepData } from "./wizard-interface";
 import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
 import SightingGallery from "../sightings/gallery";
 
-export function PhotoResult({
-  updateSightingData,
-  sightingFormData,
-  loading,
-  isValidData,
-  errorMessage,
-  onResetErrorMessage,
-  onResetAiGeneratedPhoto,
-}: SightingWizardStepData) {
+export function PhotoResult({ sightingFormData }: SightingWizardStepData) {
   const { t } = useTranslation(["wizard", "translation"]);
-  const router = useRouter();
-  const { user } = useContext(AuthContext);
-  const settingsRoute = user ? "/(app)/my-settings" : "/settings";
-  const { isAiFeatureEnabled } = useAIFeatureContext();
-  const [hasErrors, setHasErrors] = useState(false);
-  const { aiPhotoAnalysisAllowed, multiPhotoUploadAllowed } = useProContext();
+  const { multiPhotoUploadAllowed } = useProContext();
   const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
-  useEffect(() => {
-    if (!isValidData) {
-      setHasErrors(true);
-    } else {
-      setHasErrors(false);
-    }
-  }, [isValidData]);
-
-  const onAddMultiplePhotos = useCallback(
-    (photos: PetImage[]) => {
-      updateSightingData("images", photos);
-      onResetErrorMessage?.();
-      onResetAiGeneratedPhoto?.();
-    },
-    [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
-  );
-
-  const { note, confidence, narrative } = sightingFormData;
+  const { aiNote, confidence, narrative } = sightingFormData;
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -118,7 +78,7 @@ export function PhotoResult({
               <Text variant="labelMedium">
                 {t("photoQuality", "Photo Quality:")}
               </Text>
-              <Text variant="bodyMedium" >
+              <Text variant="bodyMedium">
                 {t(`photoConfidence.${confidence}`, confidence)}
               </Text>
             </View>
@@ -131,7 +91,7 @@ export function PhotoResult({
             <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
               <Text variant="labelMedium">{t("notes", "Notes:")}</Text>
               <Text variant="bodyMedium" style={{ flex: 1 }}>
-                {note}
+                {aiNote}
               </Text>
             </View>
           </View>
