@@ -36,7 +36,6 @@ describe("Pet Submit Handler", () => {
   const mockUserId = "user-123";
   const mockPetId = "pet-456";
   const mockPhotoUrl = "https://example.com/photo.jpg";
-  const mockUploadImage = jest.fn();
   const mockOnPetCreated = jest.fn();
   const mockOnPetUpdated = jest.fn();
   const mockUploadMultiplePetImages = jest.fn();
