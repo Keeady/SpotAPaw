@@ -30,7 +30,8 @@ For EACH pet in the images, provide the following information in JSON format:
       "collar_descriptions": ["description 1", "description 2", "description 3"],
       "narrative": "one sentence description",
       "confidence": "high/medium/low",
-      "note": "anything uncertain or notable across photos, or null"
+      "note": "anything uncertain or notable across photos, or null",
+      "best_photo_url": "url of best photo of this pet based on visibility and quality"
     }
   ]
 }
@@ -55,6 +56,7 @@ Guidelines:
   - Use "high" if you are very confident, "medium" if somewhat confident but with some uncertainty, and "low" if there is significant uncertainty.
 - **Narrative**: A single fluent sentence describing the pet that includes the key details (species, breed, colors, size, collar descriptions, and distinctive features) to help with semantic search.
 - **Note**: Include any uncertainties, notable observations across multiple photos, or anything else that could be helpful for identifying the pet.
+- **Best Photo URL**: Provide the URL of the photo that best shows the pet's features based on visibility and quality.
 
 If NO pets are visible in the images, return:
 {

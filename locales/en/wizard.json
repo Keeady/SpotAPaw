@@ -119,5 +119,7 @@
         "medium": "Medium",
         "high": "High",
         "unknown": "Unknown"
-    }
+    },
+    "aiPhotoAnalysis": "AI Photo Analysis",
+    "photoAnalysisDescription":"View AI analysis of your photos and pet identification."
 }

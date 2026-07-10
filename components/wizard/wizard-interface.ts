@@ -29,6 +29,7 @@ export type SightingReport = AggregatedSighting & {
   confidence: ConfidenceLevel;
   aiNote: string;
   aiGenerated: boolean;
+  best_photo_url: string;
 };
 
 export type PetImage = {

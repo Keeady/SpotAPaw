@@ -17,13 +17,13 @@ export function buildFilterTags(
     {
       icon: "map-marker",
       label: t("lastSeenLocation", "Last seen location", { ns: "translation" }),
-      value: lastSeenLocation || "",
+      value: lastSeenLocation || "Unknown",
       delayMs: 0,
     },
     {
       icon: "paw",
       label: t("lastSeenDate", "Last seen date", { ns: "translation" }),
-      value: lastSeenTime,
+      value: lastSeenTime || "Unknown",
       delayMs: 200,
     },
     {
@@ -35,7 +35,7 @@ export function buildFilterTags(
     {
       icon: "radar",
       label: t("radius", "Radius", { ns: "translation" }),
-      value: radiusMiles,
+      value: radiusMiles || "Unknown",
       delayMs: 600,
     },
   ];

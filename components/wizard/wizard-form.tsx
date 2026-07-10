@@ -49,10 +49,10 @@ import {
   updatePet,
 } from "./pet-submit-handler";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import ShowProgress from "./show-progress";
 import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
 import { PhotoResult } from "./photo-result";
+import { findMatches } from "./sighting-match-handler";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const { t } = useTranslation(["wizard", "translation"]);
@@ -338,8 +338,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             );
           }
         }
-      case "find_match":
-        return router.push(`/${sightingsRoute}`);
       default:
         return Promise.resolve();
     }
@@ -380,11 +378,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         return "locate_pet";
       } else if (currentStep === "locate_pet") {
         return "add_time";
-      } else if (currentStep === "add_time") {
-        return "submit";
       }
 
-      return "find_match";
+      return "submit";
     }
 
     if (currentStep === "start" && reportType === "lost_own") {
@@ -401,11 +397,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       return "locate_pet";
     } else if (currentStep === "locate_pet") {
       return "add_time";
-    } else if (currentStep === "add_time") {
-      return "submit";
     }
 
-    return "find_match";
+    return "submit";
   }, [currentStep, reportType, sightingId, sightingFormData.isLost, action]);
 
   const handleNext = () => {
@@ -425,6 +419,15 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     }
 
     processResponse()
+      .then((response) => {
+        if (
+          currentStep === "submit" &&
+          (action === "new-sighting" || action === "edit-sighting" || sightingFormData.isLost)
+        ) {
+          const id = sightingFormData.sightingId || sightingId || (response as string);
+          return findMatches(id, sightingFormData);
+        }
+      })
       .then(() => {
         if (!isMountedRef.current) {
           return;
@@ -450,7 +453,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             statusBarHeight: 50,
           });
 
-          setCurrentStep("find_match");
+          router.replace(`/${sightingsRoute}`);
         } else if (currentStep === "submit" && action === "edit-sighting") {
           showMessage({
             message: t(
@@ -461,7 +464,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             icon: "success",
             statusBarHeight: 50,
           });
-          setCurrentStep("find_match");
+
+          router.replace(
+            `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${sightingFormData.petDescriptionId}`,
+          );
         } else if (currentStep === "submit" && action === "add-pet") {
           showMessage({
             message: t(
@@ -580,6 +586,14 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
         if (petInfo.confidence) {
           updateSightingData("confidence", petInfo.confidence);
+        }
+
+        if (petInfo.note) {
+          updateSightingData("aiNote", petInfo.note);
+        }
+
+        if (petInfo.best_photo_url) {
+          updateSightingData("best_photo_url", petInfo.best_photo_url);
         }
       } else if (data && "note" in data && data.note) {
         if (data.note.toLowerCase().includes("no pets detected")) {
@@ -759,18 +773,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             reportType={reportType}
           />
         );
-      case "find_match":
-        return (
-          <ShowProgress
-            sightingFormData={sightingFormData}
-            updateSightingData={updateSightingData}
-            loading={loading}
-            setReportType={setReportType}
-            isValidData={isValidData}
-            reportType={reportType}
-            aiGenerated={aiGenerated}
-          />
-        );
       case "photo_result":
         return (
           <PhotoResult
@@ -829,10 +831,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         : t("continue", "Continue");
     }
 
-    if (currentStep === "find_match") {
-      return t("done", "Done");
-    }
-
     return currentStep === "submit"
       ? t("submit", "Submit")
       : t("continue", "Continue");
@@ -845,25 +843,23 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       keyboardVerticalOffset={100}
     >
       <View style={styles.content}>{renderStep()}</View>
-      {currentStep !== "find_match" && (
-        <View style={styles.buttonContainer}>
-          <Button
-            mode="text"
-            onPress={handleBack}
-            disabled={loading || disabledBack || stepHistory.length === 0}
-          >
-            {t("back", "Back")}
-          </Button>
-          <Button
-            mode={currentStep === "submit" ? "contained" : "text"}
-            onPress={handleNext}
-            disabled={disabledNext || loading || !!errorMessage}
-            style={user ? {} : { marginBottom: 20 }}
-          >
-            {getSubmitButtonText(currentStep, action)}
-          </Button>
-        </View>
-      )}
+      <View style={styles.buttonContainer}>
+        <Button
+          mode="text"
+          onPress={handleBack}
+          disabled={loading || disabledBack || stepHistory.length === 0}
+        >
+          {t("back", "Back")}
+        </Button>
+        <Button
+          mode={currentStep === "submit" ? "contained" : "text"}
+          onPress={handleNext}
+          disabled={disabledNext || loading || !!errorMessage}
+          style={user ? {} : { marginBottom: 20 }}
+        >
+          {getSubmitButtonText(currentStep, action)}
+        </Button>
+      </View>
     </KeyboardAvoidingView>
   );
 };

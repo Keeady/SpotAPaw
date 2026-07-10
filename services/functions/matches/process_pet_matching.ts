@@ -212,10 +212,7 @@ Deno.serve(async (req: Request) => {
     const matchResultsData = matchResults.data;
     let i = 0;
     const matchResultsToSave = [];
-    const matchesStringified = JSON.stringify([
-      ...matchResults.data,
-      { match_id: petEmbeddingId, similarity_score: 1 },
-    ]);
+    const matchesStringified = JSON.stringify([...matchResults.data]);
 
     matchResultsToSave.push({
       sighting_id: sightingId,

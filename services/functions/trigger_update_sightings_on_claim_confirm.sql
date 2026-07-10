@@ -8,13 +8,13 @@ BEGIN
     -- Fetch pet info
     SELECT name into pet_name FROM pets WHERE id = NEW.pet_id;
     
-    -- Update aggregated_sightings where linked_sighting_id matches this claim's sighting_id
+    -- Update aggregated_sightings where id matches this claim's sighting_id
     UPDATE aggregated_sightings
     SET 
       pet_id = NEW.pet_id,
       owner_id = NEW.owner_id,
       name = pet_name
-    WHERE linked_sighting_id = NEW.sighting_id;
+    WHERE id = NEW.sighting_id;
   END IF;
 
   RETURN NEW;

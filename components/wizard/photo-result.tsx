@@ -12,15 +12,15 @@ export function PhotoResult({ sightingFormData }: SightingWizardStepData) {
   const { multiPhotoUploadAllowed } = useProContext();
   const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
-  const { aiNote, confidence, narrative } = sightingFormData;
+  const { aiNote, confidence, narrative, best_photo_url } = sightingFormData;
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <WizardHeader
-        title={t("editPhoto", "AI Photo Analysis")}
+        title={t("aiPhotoAnalysis", "AI Photo Analysis")}
         subTitle={t(
-          "aPhotoWouldReallyHelpIdentifyThisPetFaster",
-          "A photo would really help identify this pet faster.",
+          "photoAnalysisDescription",
+          "View AI analysis of your photos and pet identification.",
         )}
       />
       <ScrollView
@@ -29,7 +29,16 @@ export function PhotoResult({ sightingFormData }: SightingWizardStepData) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={[styles.verticallySpaced, styles.mb10, styles.mt5]}>
-          {sightingFormData.images && sightingFormData.images.length === 1 ? (
+          {best_photo_url ? (
+            <Image
+              key={0}
+              source={{ uri: best_photo_url }}
+              style={[styles.preview]}
+              resizeMode="contain"
+              testID={`imageUri-0`}
+            />
+          ) : sightingFormData.images &&
+            sightingFormData.images.length === 1 ? (
             <Image
               key={0}
               source={{ uri: sightingFormData.images[0].uri }}
@@ -47,7 +56,8 @@ export function PhotoResult({ sightingFormData }: SightingWizardStepData) {
                     styles.preview,
                     {
                       position: "absolute",
-                      top: index * 10, // vertical offset per layer
+                      top: index * 20, // vertical offset per layer
+                      left: index * 20, // horizontal offset per layer
                       zIndex: sightingFormData.images.length - index, // ensure the first image is on top
                     },
                   ]}

@@ -26,7 +26,8 @@ For EACH pet in the image, provide the following information in JSON format:
       "collar_descriptions": ["description 1", "description 2", "description 3"],
       "narrative": "one sentence description",
       "confidence": "high/medium/low",
-      "note": "anything uncertain or notable across photos, or null"
+      "note": "anything uncertain or notable across photos, or null",
+      "poster_description": "2-3 sentence description suitable for a lost pet poster"
     }
   ]
 }
@@ -51,6 +52,8 @@ Guidelines:
   - Use "high" if you are very confident, "medium" if somewhat confident but with some uncertainty, and "low" if there is significant uncertainty.
 - **Narrative**: A single fluent sentence describing the pet that includes the key details (species, breed, colors, size, collar descriptions, and distinctive features) to help with semantic search.
 - **Note**: Include any uncertainties, notable observations in the photo, or anything else that could be helpful for identifying the pet.
+- **Poster Description**: 2 - 3 sentences describing the pet in a narrative format, including species, breed, colors, size, distinctive features, and collar descriptions.
+  - Use a warm, human tone suitable for use in a lost pet poster.
 
 If NO pets are visible in the image, return:
 {
