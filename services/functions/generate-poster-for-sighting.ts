@@ -208,6 +208,8 @@ async function savePosterToDatabase(poster: any) {
 }
 
 Deno.serve(async (req: Request) => {
+  const { sightingId, isAiFeatureEnabled } = (await req.json()) as reqPayload;
+  
   let posterType = "lost"; // Default to "lost"
 
   if (!sightingId) {

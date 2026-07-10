@@ -4,7 +4,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabasePosterRepository implements IPosterRepository {
   supabaseClient: SupabaseClient;
-  constructor(private supabase: SupabaseClient) {
+  constructor(supabase: SupabaseClient) {
     this.supabaseClient = supabase;
   }
 
@@ -25,6 +25,10 @@ export class SupabasePosterRepository implements IPosterRepository {
 
     if (error) {
       throw error;
+    }
+
+    if (!data) {
+      return null;
     }
 
     return data as Poster;

@@ -73,11 +73,15 @@ async function generatePosterPNG(posterId: string): Promise<Uint8Array> {
   return new Uint8Array(buffer);
 }
 
-async function uploadPosterBytes(pdfData: Uint8Array, filename: string) {
+async function uploadPosterBytes(
+  pdfData: Uint8Array,
+  filename: string,
+  contentType: string = "application/pdf",
+) {
   const { error } = await supabaseClient.storage
     .from("pet_posters")
     .upload(filename, pdfData, {
-      contentType: "application/pdf",
+      contentType: contentType,
       upsert: true,
     });
 
@@ -137,7 +141,7 @@ Deno.serve(async (req: Request) => {
   try {
     const pngData = await generatePosterPNG(record.id);
     const pngFilePath = `${record.sighting_id}.png`;
-    await uploadPosterBytes(pngData, pngFilePath);
+    await uploadPosterBytes(pngData, pngFilePath, "image/png");
 
     const {
       data: { publicUrl: pngPublicUrlResult },

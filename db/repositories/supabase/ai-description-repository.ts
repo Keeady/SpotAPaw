@@ -23,7 +23,7 @@ export class SupabaseAiDescriptionRepository implements IAiDescriptionRepository
     }
 
     if (!data || data.length === 0) {
-        throw new Error(`No AI description found for id: ${id}`);
+        return null;
     }
 
     return data[0];
