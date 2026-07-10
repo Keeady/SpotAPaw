@@ -23,7 +23,7 @@ export async function saveSightingPhoto(
   ) => Promise<void>,
 ) {
   if (sightingFormData.images && sightingFormData.images.length > 0) {
-    await uploadMultiplePetImages?.(
+    return uploadMultiplePetImages?.(
       sightingFormData.images,
       (photoUrls: string[]) => {
         if (action === "new-sighting") {
@@ -35,9 +35,9 @@ export async function saveSightingPhoto(
     );
   } else {
     if (action === "new-sighting") {
-      await saveNewSighting(sightingFormData, []);
+      return saveNewSighting(sightingFormData, []);
     } else {
-      await updateSighting(sightingFormData, []);
+      return updateSighting(sightingFormData, []);
     }
   }
 }
@@ -49,7 +49,7 @@ export async function saveNewSighting(
   const payload = await buildSightingPayload(sightingFormData, photos);
 
   const repository = new SightingRepository();
-  return await repository.createSighting(payload);
+  return repository.createSighting(payload);
 }
 
 export async function updateSighting(
@@ -65,7 +65,7 @@ export async function updateSighting(
 
   const payload = await buildSightingPayload(sightingFormData, photos);
   const sightingRepository = new SightingRepository();
-  return await sightingRepository.updateSighting(
+  return sightingRepository.updateSighting(
     sightingFormData.sightingId,
     payload,
   );

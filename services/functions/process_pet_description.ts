@@ -110,6 +110,7 @@ Deno.serve(async (req: Request) => {
   let embeddings;
   let description;
   let petText;
+  let bestPhotoUrl;
 
   try {
     const { data, error } = await findDescription(id);
@@ -155,6 +156,7 @@ Deno.serve(async (req: Request) => {
 
     const pet = parsedDescription.pets[0];
     petText = pet.narrative ?? petToText(pet);
+    bestPhotoUrl = pet.best_photo_url ?? null;
 
     const response = await getEmbedding(geminiApiKey, petText);
     if (!response.ok) {
@@ -185,6 +187,7 @@ Deno.serve(async (req: Request) => {
       .update({
         embeddings,
         narrative: petText,
+        best_photo_url: bestPhotoUrl ?? null,
       })
       .eq("id", id);
 

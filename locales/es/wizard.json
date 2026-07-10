@@ -119,5 +119,7 @@
     "medium": "Media",
     "high": "Alta",
     "unknown": "Desconocida"
-  }
+  },
+  "aiPhotoAnalysis": "Análisis de foto con IA",
+  "photoAnalysisDescription": "Ver análisis de IA de tus fotos e identificación de mascotas."
 }

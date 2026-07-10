@@ -12,6 +12,7 @@ export interface PetInfo {
   confidence: ConfidenceLevel;
   narrative?: string;
   note?: string;
+  best_photo_url?: string;
 }
 
 export interface PetAnalysisResult {

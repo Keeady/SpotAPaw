@@ -98,10 +98,21 @@ Deno.serve(async (req: Request) => {
       return getSuccessResponse("No parsed matches");
     }
 
+    let filteredMatches = [];
+
     const matchIds = [];
     let i = 0;
     for (i = 0; i < parsedMatches.length; i++) {
+      // filter out matches that have the same petDescriptionId as the input
+      if (parsedMatches[i].match_id === Number(petDescriptionId)) {
+        continue;
+      }
       matchIds.push(parsedMatches[i].match_id);
+      filteredMatches.push(parsedMatches[i]);
+    }
+
+    if (!filteredMatches || filteredMatches.length === 0) {
+      return getSuccessResponse("No filtered matches");
     }
 
     const { data: matchDetails, error: matchDetailsError } =
@@ -125,7 +136,7 @@ Deno.serve(async (req: Request) => {
     const data = matchDetails
       .map((item) => {
         const score =
-          parsedMatches.find((m) => m.match_id === item.pet_description_id)
+          filteredMatches.find((m) => m.match_id === item.pet_description_id)
             ?.similarity_score ?? 0;
 
         return {

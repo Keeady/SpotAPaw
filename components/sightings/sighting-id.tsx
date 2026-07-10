@@ -113,7 +113,7 @@ export default function SightingProfile() {
     }
     
     router.push(
-      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
+      `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
     );
   }, [sightingId, summary?.petDescriptionId, router, sightingsRoute]);
 

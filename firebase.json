@@ -22,6 +22,10 @@
         "function": "sightingPreview"
       },
       {
+        "source": "og/posters/**",
+        "function": "posterPreview"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

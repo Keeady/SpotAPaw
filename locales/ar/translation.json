@@ -97,5 +97,14 @@
   "myPets": "حيواناتي الأليفة",
   "myProfile": "ملفي الشخصي",
   "mySettings": "الإعدادات",
-  "aiDescription": "وصف الذكاء الاصطناعي"
+  "aiDescription": "وصف الذكاء الاصطناعي",
+  "generatePosterTitle": "ملصق مشاهدة الحيوانات الأليفة",
+  "generatePosterSubTitle": "عرض الملصق المولد لهذه المشاهدة.",
+  "generatingPoster": "جارٍ توليد الملصق...",
+  "viewPoster": "عرض في المتصفح",
+  "downloadPDF": "تحميل PDF.",
+  "downloadPNG": "تحميل PNG.",
+  "noPoster": "لا توجد ملصقات لهذه المشاهدة.",
+  "noDescriptionAvailable": "لا يوجد وصف متاح.",
+  "generatePoster": "توليد الملصق"
 }

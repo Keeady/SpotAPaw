@@ -15,13 +15,13 @@ export async function saveNewPetPhoto(
   ) => Promise<void>,
 ) {
   if (sightingFormData.images && sightingFormData.images.length > 0) {
-    await uploadMultiplePetImages?.(
+    return uploadMultiplePetImages?.(
       sightingFormData.images,
       (photoUrls: string[]) =>
         saveNewPet(sightingFormData, userId, onPetCreated, photoUrls),
     );
   } else {
-    await saveNewPet(sightingFormData, userId, onPetCreated, []);
+    return saveNewPet(sightingFormData, userId, onPetCreated, []);
   }
 }
 
@@ -41,13 +41,13 @@ export async function updateNewPetPhoto(
   }
 
   if (sightingFormData.images && sightingFormData.images.length > 0) {
-    await uploadMultiplePetImages?.(
+    return uploadMultiplePetImages?.(
       sightingFormData.images,
       (photoUrls: string[]) =>
         updatePet(sightingFormData, onPetUpdated, photoUrls),
     );
   } else {
-    await updatePet(sightingFormData, onPetUpdated, []);
+    return updatePet(sightingFormData, onPetUpdated, []);
   }
 }
 
@@ -67,9 +67,9 @@ export async function saveNewPet(
   );
 
   const petRepository = new PetRepository();
-  return await petRepository.createPet(payload).then(async (newPetId) => {
+  return petRepository.createPet(payload).then(async (newPetId) => {
     if (onPetCreated) {
-      return await onPetCreated(
+      return onPetCreated(
         newPetId,
         buildSightingPayload(newPetId, sightingFormData, userId),
       );
@@ -98,11 +98,11 @@ export async function updatePet(
   );
 
   const petRepository = new PetRepository();
-  return await petRepository
+  return petRepository
     .updatePet(sightingFormData.id, payload)
-    .then(async () => {
+    .then(() => {
       if (onPetUpdated) {
-        return await onPetUpdated(
+        return onPetUpdated(
           sightingFormData.id,
           buildSightingPayload(sightingFormData.id, sightingFormData, ""),
         );

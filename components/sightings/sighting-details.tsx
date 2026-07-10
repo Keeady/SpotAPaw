@@ -184,6 +184,9 @@ export default function SightingDetail({
                 <Button onPress={() => onFindMatches()}>
                   {t("viewMatches")}
                 </Button>
+                <Button onPress={() => onFindMatches()}>
+                  {t("viewPoster")}
+                </Button>
                 {!hasOwner && claimPet && (
                   <Button mode="contained" onPress={() => claimPet()}>
                     {t("thisIsMyPet")}

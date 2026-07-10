@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, Chip, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import SightingGallery from "../sightings/gallery";

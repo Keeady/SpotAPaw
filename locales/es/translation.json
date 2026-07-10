@@ -97,5 +97,14 @@
   "myPets": "Mis Mascotas",
   "myProfile": "Mi Perfil",
   "mySettings": "Configuración",
-  "aiDescription": "Descripción de IA"
+  "aiDescription": "Descripción de IA",
+  "generatePosterTitle": "Póster de avistamiento de mascotas",
+  "generatePosterSubTitle": "Ver póster generado para este avistamiento.",
+  "generatingPoster": "Generando póster...",
+  "viewPoster": "Ver en el navegador",
+  "downloadPDF": "Descargar PDF.",
+  "downloadPNG": "Descargar PNG.",
+  "noPoster": "No se encontraron pósters para este avistamiento.",
+  "noDescriptionAvailable": "No hay descripción disponible.",
+  "generatePoster": "Generar póster"
 }

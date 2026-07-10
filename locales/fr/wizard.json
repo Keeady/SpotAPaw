@@ -119,5 +119,7 @@
     "medium": "Moyenne",
     "high": "Élevée",
     "unknown": "Inconnue"
-  }
+  },
+  "aiPhotoAnalysis": "Analyse de la photo avec l'IA",
+  "photoAnalysisDescription": "Voir l'analyse IA de vos photos et l'identification des animaux."
 }

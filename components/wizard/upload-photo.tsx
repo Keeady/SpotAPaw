@@ -124,7 +124,8 @@ export function UploadPhoto({
                     styles.preview,
                     {
                       position: "absolute",
-                      top: index * 10, // vertical offset per layer
+                      top: index * 20, // vertical offset per layer
+                      left: index * 20, // horizontal offset per layer
                       zIndex: sightingFormData.images.length - index, // ensure the first image is on top
                     },
                   ]}
