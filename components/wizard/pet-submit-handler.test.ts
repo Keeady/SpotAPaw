@@ -36,9 +36,9 @@ describe("Pet Submit Handler", () => {
   const mockUserId = "user-123";
   const mockPetId = "pet-456";
   const mockPhotoUrl = "https://example.com/photo.jpg";
-  const mockUploadImage = jest.fn();
   const mockOnPetCreated = jest.fn();
   const mockOnPetUpdated = jest.fn();
+  const mockUploadMultiplePetImages = jest.fn();
 
   const mockSightingPet: SightingPet = {
     id: mockPetId,
@@ -64,6 +64,15 @@ describe("Pet Submit Handler", () => {
       filename: "photo.jpg",
       filetype: "image/jpeg",
     },
+    images: [
+      {
+        uri: "file://photo.jpg",
+        filename: "photo.jpg",
+        filetype: "image/jpeg",
+      },
+    ],
+    photos: [],
+    deletedAt: "",
   };
 
   // Get references to the mocked methods
@@ -97,19 +106,27 @@ describe("Pet Submit Handler", () => {
       mockCreatePet.mockResolvedValue(mockPetId);
       mockOnPetCreated.mockResolvedValue(undefined);
 
-      mockUploadImage.mockImplementation(async (uri, callback) => {
-        await callback(mockPhotoUrl);
-      });
+      mockUploadMultiplePetImages.mockImplementation(
+        async (images: any[], callback) => {
+          await callback(images.map((img) => img.uri));
+        },
+      );
 
       await saveNewPetPhoto(
         mockSightingPet,
-        mockUploadImage,
         mockUserId,
         mockOnPetCreated,
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).toHaveBeenCalledWith(
-        "file://photo.jpg",
+      expect(mockUploadMultiplePetImages).toHaveBeenCalledWith(
+        [
+          {
+            uri: "file://photo.jpg",
+            filename: "photo.jpg",
+            filetype: "image/jpeg",
+          },
+        ],
         expect.any(Function),
       );
       expect(mockCreatePet).toHaveBeenCalled();
@@ -124,16 +141,17 @@ describe("Pet Submit Handler", () => {
 
       const sightingPetWithoutImage = {
         ...mockSightingPet,
-        image: undefined,
+        images: [],
       };
 
       await saveNewPetPhoto(
         sightingPetWithoutImage,
-        mockUploadImage,
         mockUserId,
+        undefined,
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).not.toHaveBeenCalled();
+      expect(mockUploadMultiplePetImages).not.toHaveBeenCalled();
       expect(mockCreatePet).toHaveBeenCalled();
     });
 
@@ -142,12 +160,17 @@ describe("Pet Submit Handler", () => {
 
       const sightingPetWithNoUri = {
         ...mockSightingPet,
-        image: { ...mockSightingPet.image!, uri: "" },
+        images: [],
       };
 
-      await saveNewPetPhoto(sightingPetWithNoUri, mockUploadImage, mockUserId);
+      await saveNewPetPhoto(
+        sightingPetWithNoUri,
+        mockUserId,
+        undefined,
+        mockUploadMultiplePetImages,
+      );
 
-      expect(mockUploadImage).not.toHaveBeenCalled();
+      expect(mockUploadMultiplePetImages).not.toHaveBeenCalled();
       expect(mockCreatePet).toHaveBeenCalled();
     });
   });
@@ -157,7 +180,11 @@ describe("Pet Submit Handler", () => {
       const sightingPetWithoutId = { ...mockSightingPet, id: "" };
 
       await expect(
-        updateNewPetPhoto(sightingPetWithoutId, mockUploadImage),
+        updateNewPetPhoto(
+          sightingPetWithoutId,
+          undefined,
+          mockUploadMultiplePetImages,
+        ),
       ).rejects.toThrow("Missing or invalid pet id");
     });
 
@@ -165,25 +192,37 @@ describe("Pet Submit Handler", () => {
       mockIsValidUuid.mockReturnValue(false);
 
       await expect(
-        updateNewPetPhoto(mockSightingPet, mockUploadImage),
+        updateNewPetPhoto(
+          mockSightingPet,
+          undefined,
+          mockUploadMultiplePetImages,
+        ),
       ).rejects.toThrow("Missing or invalid pet id");
     });
 
     it("should upload image and update pet when image is provided", async () => {
       mockUpdatePet.mockResolvedValue(undefined);
 
-      mockUploadImage.mockImplementation(async (uri, callback) => {
-        await callback(mockPhotoUrl);
-      });
+      mockUploadMultiplePetImages.mockImplementation(
+        async (images: any[], callback) => {
+          await callback(images.map((img) => img.uri));
+        },
+      );
 
       await updateNewPetPhoto(
         mockSightingPet,
-        mockUploadImage,
         mockOnPetUpdated,
+        mockUploadMultiplePetImages,
       );
 
-      expect(mockUploadImage).toHaveBeenCalledWith(
-        "file://photo.jpg",
+      expect(mockUploadMultiplePetImages).toHaveBeenCalledWith(
+        [
+          {
+            uri: "file://photo.jpg",
+            filename: "photo.jpg",
+            filetype: "image/jpeg",
+          },
+        ],
         expect.any(Function),
       );
       expect(mockUpdatePet).toHaveBeenCalledWith(mockPetId, expect.any(Object));
@@ -198,12 +237,16 @@ describe("Pet Submit Handler", () => {
 
       const sightingPetWithoutImage = {
         ...mockSightingPet,
-        image: undefined,
+        images: undefined,
       };
 
-      await updateNewPetPhoto(sightingPetWithoutImage, mockUploadImage);
+      await updateNewPetPhoto(
+        sightingPetWithoutImage,
+        undefined,
+        mockUploadMultiplePetImages,
+      );
 
-      expect(mockUploadImage).not.toHaveBeenCalled();
+      expect(mockUploadMultiplePetImages).not.toHaveBeenCalled();
       expect(mockUpdatePet).toHaveBeenCalled();
     });
   });
@@ -212,19 +255,16 @@ describe("Pet Submit Handler", () => {
     it("should create pet with correct payload and call onPetCreated", async () => {
       mockCreatePet.mockResolvedValue(mockPetId);
 
-      await saveNewPet(
+      await saveNewPet(mockSightingPet, mockUserId, mockOnPetCreated, [
         mockPhotoUrl,
-        mockSightingPet,
-        mockUserId,
-        mockOnPetCreated,
-      );
+      ]);
 
       const expectedPayload = {
         name: "Buddy",
         species: "dog",
         breed: "Golden Retriever",
         colors: "golden",
-        photo: mockPhotoUrl,
+        photos: [mockPhotoUrl],
         gender: "male",
         age: 3,
         features: "fluffy tail",
@@ -258,11 +298,9 @@ describe("Pet Submit Handler", () => {
     it("should create pet without onPetCreated callback", async () => {
       mockCreatePet.mockResolvedValue(mockPetId);
 
-      const result = await saveNewPet(
+      const result = await saveNewPet(mockSightingPet, mockUserId, undefined, [
         mockPhotoUrl,
-        mockSightingPet,
-        mockUserId,
-      );
+      ]);
 
       expect(result).toBe(mockPetId);
       expect(mockCreatePet).toHaveBeenCalled();
@@ -274,14 +312,14 @@ describe("Pet Submit Handler", () => {
 
       const sightingPetWithPhoto = {
         ...mockSightingPet,
-        photo: "existing-photo.jpg",
+        photos: ["existing-photo.jpg"],
       };
 
-      await saveNewPet("", sightingPetWithPhoto, mockUserId);
+      await saveNewPet(sightingPetWithPhoto, mockUserId, undefined, []);
 
       expect(mockCreatePet).toHaveBeenCalledWith(
         expect.objectContaining({
-          photo: "existing-photo.jpg",
+          photos: ["existing-photo.jpg"],
         }),
       );
     });
@@ -290,7 +328,9 @@ describe("Pet Submit Handler", () => {
       mockCreatePet.mockResolvedValue(mockPetId);
       mockIsValidUuid.mockReturnValue(false);
 
-      await saveNewPet(mockPhotoUrl, mockSightingPet, "invalid-user-id");
+      await saveNewPet(mockSightingPet, "invalid-user-id", undefined, [
+        mockPhotoUrl,
+      ]);
 
       expect(mockCreatePet).toHaveBeenCalledWith(
         expect.not.objectContaining({ ownerId: expect.anything() }),
@@ -309,7 +349,9 @@ describe("Pet Submit Handler", () => {
       const mockDate = new Date("2026-04-08T10:00:00Z");
       jest.spyOn(global, "Date").mockImplementation(() => mockDate as any);
 
-      await saveNewPet(mockPhotoUrl, sightingPetWithoutTime, mockUserId);
+      await saveNewPet(sightingPetWithoutTime, mockUserId, undefined, [
+        mockPhotoUrl,
+      ]);
 
       expect(mockCreatePet).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -326,29 +368,29 @@ describe("Pet Submit Handler", () => {
       const sightingPetWithoutId = { ...mockSightingPet, id: "" };
 
       await expect(
-        updatePet(mockPhotoUrl, sightingPetWithoutId),
+        updatePet(sightingPetWithoutId, undefined, [mockPhotoUrl]),
       ).rejects.toThrow("Missing or invalid pet id");
     });
 
     it("should throw error when pet id is invalid", async () => {
       mockIsValidUuid.mockReturnValue(false);
 
-      await expect(updatePet(mockPhotoUrl, mockSightingPet)).rejects.toThrow(
-        "Missing or invalid pet id",
-      );
+      await expect(
+        updatePet(mockSightingPet, undefined, [mockPhotoUrl]),
+      ).rejects.toThrow("Missing or invalid pet id");
     });
 
     it("should update pet with correct payload and call onPetUpdated", async () => {
       mockUpdatePet.mockResolvedValue(undefined);
 
-      await updatePet(mockPhotoUrl, mockSightingPet, mockOnPetUpdated);
+      await updatePet(mockSightingPet, mockOnPetUpdated, [mockPhotoUrl]);
 
       const expectedPayload = {
         name: "Buddy",
         species: "dog",
         breed: "Golden Retriever",
         colors: "golden",
-        photo: mockPhotoUrl,
+        photos: [mockPhotoUrl],
         gender: "male",
         age: 3,
         features: "fluffy tail",
@@ -375,7 +417,7 @@ describe("Pet Submit Handler", () => {
     it("should update pet without onPetUpdated callback", async () => {
       mockUpdatePet.mockResolvedValue(undefined);
 
-      await updatePet(mockPhotoUrl, mockSightingPet);
+      await updatePet(mockSightingPet, undefined, [mockPhotoUrl]);
 
       expect(mockUpdatePet).toHaveBeenCalledWith(mockPetId, expect.any(Object));
       expect(mockOnPetUpdated).not.toHaveBeenCalled();
@@ -387,16 +429,16 @@ describe("Pet Submit Handler", () => {
       mockCreatePet.mockRejectedValue(new Error("Database error"));
 
       await expect(
-        saveNewPet(mockPhotoUrl, mockSightingPet, mockUserId),
+        saveNewPet(mockSightingPet, mockUserId, undefined, [mockPhotoUrl]),
       ).rejects.toThrow("Database error");
     });
 
     it("should propagate repository errors in updatePet", async () => {
       mockUpdatePet.mockRejectedValue(new Error("Update failed"));
 
-      await expect(updatePet(mockPhotoUrl, mockSightingPet)).rejects.toThrow(
-        "Update failed",
-      );
+      await expect(
+        updatePet(mockSightingPet, undefined, [mockPhotoUrl]),
+      ).rejects.toThrow("Update failed");
     });
 
     it("should handle getLastSeenLocation errors", async () => {
@@ -406,7 +448,7 @@ describe("Pet Submit Handler", () => {
       );
 
       await expect(
-        saveNewPet(mockPhotoUrl, mockSightingPet, mockUserId),
+        saveNewPet(mockSightingPet, mockUserId, undefined, [mockPhotoUrl]),
       ).rejects.toThrow("Location formatting failed");
     });
   });

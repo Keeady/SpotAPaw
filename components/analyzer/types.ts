@@ -1,5 +1,5 @@
 export type PetSize = "small" | "medium" | "large";
-export type ConfidenceLevel = "high" | "medium" | "low";
+export type ConfidenceLevel = "high" | "medium" | "low" | "unknown";
 export type ImageQuality = "good" | "fair" | "poor";
 
 export interface PetInfo {
@@ -10,6 +10,9 @@ export interface PetInfo {
   distinctive_features: string[];
   collar_descriptions: string[];
   confidence: ConfidenceLevel;
+  narrative?: string;
+  note?: string;
+  best_photo_url?: string;
 }
 
 export interface PetAnalysisResult {

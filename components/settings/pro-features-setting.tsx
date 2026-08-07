@@ -52,6 +52,23 @@ const ProSettings = ({
             />
           )}
         />
+        <List.Item
+          title={t("multiplePhotos", "Upload Multiple Photos")}
+          description={t(
+            "multiplePhotosDescription",
+            "Upload and analyze multiple photos for better pet identification.",
+          )}
+          descriptionNumberOfLines={5}
+          left={(props) => (
+            <List.Icon {...props} icon="image-multiple" color={iconColorPro} />
+          )}
+          right={() => (
+            <List.Icon
+              icon={isProUser ? "check" : "lock"}
+              color={isProUser ? iconColorAIOn : iconColorAIOff}
+            />
+          )}
+        />
       </List.Section>
     </>
   );

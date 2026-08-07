@@ -1,4 +1,3 @@
-import { SightingWizardStepData } from "./wizard-interface";
 import React, {
   useCallback,
   useContext,
@@ -7,7 +6,14 @@ import React, {
   useState,
 } from "react";
 import { ScrollView, StyleSheet, View, Image } from "react-native";
-import { Button, Chip, Surface, Text } from "react-native-paper";
+import {
+  Button,
+  Chip,
+  Icon,
+  Surface,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { WizardHeader } from "./wizard-header";
 import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
@@ -15,21 +21,39 @@ import { buildFilterTags, FilterTag } from "./progress-util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { SIGHTING_RADIUSKM } from "../constants";
 import { showMessage } from "react-native-flash-message";
-import { createErrorLogMessage, getLastSeenLocation, kmToMiles } from "../util";
+import {
+  createErrorLogMessage,
+  getIconByAnimalSpecies,
+  getLastSeenLocation,
+  isValidUuid,
+  kmToMiles,
+} from "../util";
 import { log } from "../logs";
-import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useTranslation } from "react-i18next";
+import { AggregatedSighting } from "@/db/models/sighting";
+import { AiDescriptionRepository } from "@/db/repositories/ai-description-repository";
 
-export default function ShowProgress({
-  sightingFormData,
-}: SightingWizardStepData) {
+type ShowProgressProps = {
+  sightingId: string;
+};
+
+export default function ShowProgress({ sightingId }: ShowProgressProps) {
   const { t } = useTranslation(["wizard", "translation"]);
-  const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const [loading, setLoading] = useState(true);
   const [filterTags, setFilterTags] = useState<FilterTag[]>([]);
+  const [sightingFormData, setSightingFormData] =
+    useState<AggregatedSighting | null>(null);
+  const [petDescription, setPetDescription] = useState<{
+    id: string;
+    narrative: string;
+    best_photo_url: string;
+  } | null>(null);
   const { user } = useContext(AuthContext);
   const router = useRouter();
-  const { sightingId, petDescriptionId, photo } = sightingFormData;
+
   const isMountedRef = useRef(true);
+  const sightingsRoute = user ? "my-sightings" : "sightings";
 
   useEffect(() => {
     return () => {
@@ -38,11 +62,45 @@ export default function ShowProgress({
   }, []);
 
   useEffect(() => {
+    const fetchSightingData = async () => {
+      if (!sightingId || !isValidUuid(sightingId)) {
+        return;
+      }
+      setLoading(true);
+      const sightingRepository = new SightingRepository();
+      sightingRepository
+        .getSighting(sightingId)
+        .then((data) => {
+          if (!isMountedRef.current) {
+            return;
+          }
+          setSightingFormData(data);
+        })
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to fetch sighting data: ${errorMessage}`);
+        })
+        .finally(() => {
+          if (!isMountedRef.current) {
+            return;
+          }
+          setLoading(false);
+        });
+    };
+
+    fetchSightingData();
+  }, [sightingId]);
+
+  useEffect(() => {
     const fetchFilterTags = async () => {
-      const species = sightingFormData.species
-        ? sightingFormData.species.charAt(0).toUpperCase() +
-          sightingFormData.species.slice(1)
-        : "Unknown species";
+      const radiusMiles = kmToMiles(SIGHTING_RADIUSKM)
+        ? t("valMiles", "{{val}} miles", { val: kmToMiles(SIGHTING_RADIUSKM) })
+        : "";
+
+      if (!sightingFormData) {
+        return setFilterTags(buildFilterTags("", "", radiusMiles, t));
+      }
+
       const lastSeenLocation = await getLastSeenLocation(
         sightingFormData.lastSeenLocation,
         sightingFormData.lastSeenLat,
@@ -53,24 +111,45 @@ export default function ShowProgress({
       const lastSeenTime = sightingFormData?.lastSeenTime
         ? new Date(sightingFormData.lastSeenTime).toLocaleDateString()
         : "";
-      const radiusMiles = kmToMiles(SIGHTING_RADIUSKM)
-        ? t("valMiles", "{{val}} miles", { val: kmToMiles(SIGHTING_RADIUSKM) })
-        : "";
 
       const tags = buildFilterTags(
         lastSeenLocation,
         lastSeenTime,
         radiusMiles,
-        species,
-        t
+        t,
       );
       setFilterTags(tags);
     };
     fetchFilterTags();
   }, [sightingFormData]);
 
+  useEffect(() => {
+    const fetchPetDescription = async () => {
+      if (sightingFormData?.petDescriptionId) {
+        const repository = new AiDescriptionRepository();
+        repository
+          .getAiDescription(sightingFormData.petDescriptionId)
+          .then((data) => {
+            if (!isMountedRef.current) {
+              return;
+            }
+
+            if (data) {
+              setPetDescription(data);
+            }
+          })
+          .catch((error) => {
+            const errorMessage = createErrorLogMessage(error);
+            log(`Failed to fetch pet description: ${errorMessage}`);
+          });
+      }
+    };
+
+    fetchPetDescription();
+  }, [sightingFormData?.petDescriptionId]);
+
   const onViewMatches = useCallback(() => {
-    if (!sightingId || !petDescriptionId) {
+    if (!sightingId || !sightingFormData?.petDescriptionId) {
       showMessage({
         message: t(
           "petMatchingIsStillProcessingPleaseTryAgainInAMoment",
@@ -83,62 +162,27 @@ export default function ShowProgress({
       return;
     }
 
-    const sightingsRoute = user ? "my-sightings" : "sightings";
-
-    router.replace(
-      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${petDescriptionId}`,
+    router.push(
+      `/${sightingsRoute}/match/?sightingId=${sightingId}&petDescriptionId=${sightingFormData?.petDescriptionId}`,
     );
-  }, [sightingId, petDescriptionId, router, user]);
+  }, [sightingId, sightingFormData?.petDescriptionId, router, sightingsRoute]);
 
-  const onFindMatches = useCallback(() => {
+  const onGeneratePoster = useCallback(() => {
     if (!sightingId) {
       return;
     }
-    setLoading(true);
 
-    const repository = new SightingRepository();
-
-    const userLocationLat = sightingFormData.lastSeenLat;
-    const userLocationLong = sightingFormData.lastSeenLong;
-    const sightingRadiusKm = SIGHTING_RADIUSKM;
-
-    repository
-      .findMatchingSightings(
-        sightingId,
-        userLocationLat,
-        userLocationLong,
-        sightingRadiusKm,
-      )
-      .catch(async (error) => {
-        if (!isMountedRef.current) {
-          return;
-        }
-
-        if (error instanceof FunctionsHttpError) {
-          const errorContext = await error.context.json().catch(() => null);
-          log(`Error processing matching sightings: ${errorContext?.message}`);
-        } else {
-          const errorMessage = createErrorLogMessage(error);
-          log(`Error processing matching sightings: ${errorMessage}`);
-        }
-      })
-      .finally(() => {
-        if (!isMountedRef.current) {
-          return;
-        }
-        setLoading(false);
-      });
-  }, [sightingFormData.lastSeenLat, sightingFormData.lastSeenLong, sightingId]);
-
-  useEffect(() => {
-    onFindMatches();
-  }, [onFindMatches]);
+    router.push(`/posters/?sightingId=${sightingId}`);
+  }, [sightingId, router]);
 
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader
         title={t("sightingSubmitted", "Sighting Submitted!")}
-        subTitle={t("hangTightProcessingReport", "Hang tight — we are processing your report.")}
+        subTitle={t(
+          "hangTightProcessingReport",
+          "Hang tight — we are processing your report.",
+        )}
       />
       <ScrollView
         style={styles.screen}
@@ -167,13 +211,65 @@ export default function ShowProgress({
                 {tag.label}: {tag.value}
               </Chip>
             ))}
+            <View
+              style={[
+                styles.filterChip,
+                styles.aiDescriptionWrapper,
+                {
+                  backgroundColor: theme.colors.secondaryContainer,
+                  borderRadius: 20,
+                },
+              ]}
+            >
+              <Icon
+                source={getIconByAnimalSpecies(sightingFormData?.species || "")}
+                size={18}
+                color={theme.colors.primary}
+              />
+              <Text
+                variant="labelLarge"
+                style={[
+                  styles.filterChipText,
+                  styles.aiDescriptionText,
+                  { color: theme.colors.onSecondaryContainer },
+                ]}
+              >
+                {t("aiDescription", "AI Description", { ns: "translation" })}:
+              </Text>
+              <Text
+                style={[
+                  styles.filterChipText,
+                  styles.aiDescriptionText,
+                  { color: theme.colors.onSecondaryContainer },
+                ]}
+                variant="labelSmall"
+              >
+                {petDescription?.narrative ||
+                  t("noDescriptionAvailable", "No description available.", {
+                    ns: "translation",
+                  })}
+              </Text>
+            </View>
           </View>
         </Surface>
         <Surface style={styles.card} elevation={1}>
           <View style={styles.animationWrapper}>
-            {photo ? (
+            {petDescription?.best_photo_url ? (
               <Image
-                source={{ uri: photo }}
+                source={{ uri: petDescription.best_photo_url }}
+                resizeMode={"contain"}
+                style={{
+                  width: 350,
+                  height: "auto",
+                  borderRadius: 12,
+                  aspectRatio: 1,
+                }}
+                testID="best-photo"
+              />
+            ) : sightingFormData?.photos &&
+              sightingFormData.photos.length > 0 ? (
+              <Image
+                source={{ uri: sightingFormData.photos[0] }}
                 resizeMode={"contain"}
                 style={{
                   width: 350,
@@ -201,13 +297,24 @@ export default function ShowProgress({
         </Surface>
         <View style={styles.ctaWrapper}>
           <Button
-            mode="contained"
+            mode="outlined"
             icon={loading ? "lock-outline" : "paw"}
             disabled={loading}
             onPress={onViewMatches}
             contentStyle={styles.btnContent}
           >
             {t("viewMatches", "View Matches")}
+          </Button>
+        </View>
+        <View style={styles.ctaWrapper}>
+          <Button
+            mode="outlined"
+            icon={loading ? "lock-outline" : "paw"}
+            disabled={loading}
+            onPress={onGeneratePoster}
+            contentStyle={styles.btnContent}
+          >
+            {t("generatePoster", "Generate Poster", { ns: "translation" })}
           </Button>
         </View>
       </ScrollView>
@@ -257,13 +364,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   filterChip: {
-    backgroundColor: "#FAE5D3",
     borderRadius: 20,
     maxWidth: "100%",
+    flexWrap: "wrap",
   },
   filterChipText: {
     fontSize: 12,
     color: "#2D1F0F",
+    flexWrap: "wrap",
   },
 
   // CTA
@@ -278,5 +386,18 @@ const styles = StyleSheet.create({
   animationWrapper: {
     alignContent: "center",
     alignItems: "center",
+  },
+  aiDescriptionWrapper: {
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    gap: 6,
+  },
+  aiDescriptionText: {
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 0.1,
+    lineHeight: 20,
   },
 });

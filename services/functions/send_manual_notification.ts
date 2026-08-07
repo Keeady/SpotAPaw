@@ -16,16 +16,27 @@ Deno.serve(async (req: Request) => {
   let subscribers;
 
   try {
-    const { data } = await supabaseClient
+    const { data, error } = await supabaseClient
       .from("sighting_subscriptions")
       .select("*")
       .eq("enabled", true);
+
+    if (error) {
+      console.error(error);
+      return new Response(`Error fetching subscribers: ${error.message}`, {
+        status: 500,
+      });
+    }
+
     subscribers = data;
     if (!subscribers || subscribers.length === 0) {
       return new Response("No subscribers found", { status: 200 });
     }
   } catch (error) {
-    return new Response("Error fetching subscribers", { status: 500 });
+    console.error(error);
+    return new Response(`Error fetching subscribers: ${error.message}`, {
+      status: 500,
+    });
   }
 
   const messageTitle = `Have you seen this pet?`;
@@ -61,7 +72,10 @@ Deno.serve(async (req: Request) => {
       return new Response("Failed to send notifications", { status: 500 });
     }
   } catch (error) {
-    return new Response("Error sending notifications", { status: 500 });
+    console.error(error);
+    return new Response(`Error sending notifications: ${error.message}`, {
+      status: 500,
+    });
   }
 
   return new Response("Notifications sent", { status: 200 });

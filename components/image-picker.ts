@@ -131,13 +131,8 @@ export const requestMediaLibraryPermission = async (t: TFunction) => {
 };
 
 export const uploadOrTakePhoto = async (
-  callback: (
-    uri: string | null,
-    fileName: string | null,
-    mimeType: string | null,
-  ) => void,
   t: TFunction,
-  callbackForMultiplePhotos?: (photos: PetImage[]) => void,
+  callbackForMultiplePhotos: (photos: PetImage[]) => void,
   allowsMultipleSelection = false,
 ): Promise<void> => {
   Alert.alert(
@@ -165,11 +160,13 @@ export const uploadOrTakePhoto = async (
                 })),
               );
             } else {
-              callback(
-                result[0].uri,
-                result[0].fileName || "",
-                result[0].mimeType || "",
-              );
+              callbackForMultiplePhotos?.([
+                {
+                  uri: result[0].uri,
+                  filename: result[0].fileName || "",
+                  filetype: result[0].mimeType || "",
+                },
+              ]);
             }
           }
         },
@@ -190,11 +187,13 @@ export const uploadOrTakePhoto = async (
                 })),
               );
             } else {
-              callback(
-                result[0].uri,
-                result[0].fileName || "",
-                result[0].mimeType || "",
-              );
+              callbackForMultiplePhotos?.([
+                {
+                  uri: result[0].uri,
+                  filename: result[0].fileName || "",
+                  filetype: result[0].mimeType || "",
+                },
+              ]);
             }
           }
         },

@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text, TextInput, RadioButton, HelperText } from "react-native-paper";
 import { useEffect, useState } from "react";
-import { AIFieldAnalysisBanner } from "../analyzer/ai-banner";
+import { AIFieldAnalysisBannerOrHelperText } from "../analyzer/ai-banner";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { WizardHeader } from "./wizard-header";
 import { PetThumbnail } from "../sightings/pet-selection";
@@ -22,7 +22,6 @@ export function EditPetContinued({
   const [hasErrors, setHasErrors] = useState(false);
 
   const {
-    photo,
     gender,
     size,
     features,
@@ -32,7 +31,6 @@ export function EditPetContinued({
     petBehavior,
     collar,
     collarDescription,
-    image,
     images,
     photos,
   } = sightingFormData;
@@ -56,7 +54,10 @@ export function EditPetContinued({
           "whatDidThePetLookLikeCont",
           "What did the pet look like? (Cont.)",
         )}
-        subTitle={t("reviewAndEditPetDescription", "Review and edit pet description")}
+        subTitle={t(
+          "reviewAndEditPetDescription",
+          "Review and edit pet description",
+        )}
       />
       <ScrollView
         contentContainerStyle={styles.content}
@@ -70,7 +71,7 @@ export function EditPetContinued({
           petName={name}
           petGender={gender}
           petAge={age}
-          petPhoto={images?.[0]?.uri || image?.uri || photos?.[0] || photo}
+          petPhoto={images?.[0]?.uri || photos?.[0]}
           showDetails={false}
         />
 
@@ -81,17 +82,20 @@ export function EditPetContinued({
             <Text variant="titleMedium">
               {t("distinctiveFeatures", "Distinctive Features:")}
             </Text>
-            <HelperText
-              type="error"
-              visible={false}
-              style={styles.helperText}
-              padding="none"
-            >
-              {t("featureIsRequired", "Feature is required")}
-            </HelperText>
-            <AIFieldAnalysisBanner
+
+            <AIFieldAnalysisBannerOrHelperText
               loading={loadingAnalyzer}
               aiGenerated={!!showAiGeneratedFlag && !!features}
+              helperText={
+                <HelperText
+                  type="error"
+                  visible={false}
+                  style={styles.helperText}
+                  padding="none"
+                >
+                  {t("featureIsRequired", "Feature is required")}
+                </HelperText>
+              }
             />
           </View>
 
@@ -109,23 +113,25 @@ export function EditPetContinued({
         </View>
 
         <View style={[styles.verticallySpaced]}>
-          <HelperText
-            type="error"
-            visible={
-              hasErrors &&
-              !size &&
-              (reportType === "lost_own" ||
-                reportType === "new_pet" ||
-                reportType === "edit_pet")
-            }
-            style={styles.helperText}
-            padding="none"
-          >
-            {t("pleaseSelectPetSize", "Please select pet size!")}
-          </HelperText>
-          <AIFieldAnalysisBanner
+          <AIFieldAnalysisBannerOrHelperText
             loading={loadingAnalyzer}
             aiGenerated={!!showAiGeneratedFlag && !!size}
+            helperText={
+              <HelperText
+                type="error"
+                visible={
+                  hasErrors &&
+                  !size &&
+                  (reportType === "lost_own" ||
+                    reportType === "new_pet" ||
+                    reportType === "edit_pet")
+                }
+                style={styles.helperText}
+                padding="none"
+              >
+                {t("pleaseSelectPetSize", "Please select pet size!")}
+              </HelperText>
+            }
           />
           <Text variant="titleMedium">
             {t(
@@ -183,17 +189,19 @@ export function EditPetContinued({
 
         {collar === "yes_collar" && (
           <View style={[styles.verticallySpaced, styles.mt10]}>
-            <HelperText
-              type="error"
-              visible={hasErrors && !collarDescription}
-              style={styles.helperText}
-              padding="none"
-            >
-              {t("aDescriptionIsRequired", "A description is required!")}
-            </HelperText>
-            <AIFieldAnalysisBanner
+            <AIFieldAnalysisBannerOrHelperText
               loading={loadingAnalyzer}
               aiGenerated={!!showAiGeneratedFlag && !!collarDescription}
+              helperText={
+                <HelperText
+                  type="error"
+                  visible={hasErrors && !collarDescription}
+                  style={styles.helperText}
+                  padding="none"
+                >
+                  {t("aDescriptionIsRequired", "A description is required!")}
+                </HelperText>
+              }
             />
             <Text variant="labelLarge">
               {t(

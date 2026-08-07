@@ -17,6 +17,7 @@ type SettingsRendererProps = {
   accountSetting: React.ReactNode;
   versionText: string;
   proFeatureSetting: React.ReactNode;
+  contactSetting: React.ReactNode;
 };
 
 const SettingsRenderer = ({
@@ -33,6 +34,7 @@ const SettingsRenderer = ({
   accountSetting,
   versionText,
   proFeatureSetting,
+  contactSetting,
 }: SettingsRendererProps) => {
   const { t } = useTranslation(["settings", "translation"]);
   return (
@@ -76,6 +78,10 @@ const SettingsRenderer = ({
         {!!accountSetting && <Divider />}
 
         {accountSetting}
+
+        <Divider />
+
+        {contactSetting}
 
         <Divider />
 

@@ -96,5 +96,15 @@
   "mySightings": "Sightings",
   "myPets": "My Pets",
   "myProfile": "My Profile",
-  "mySettings": "Settings"
+  "mySettings": "Settings",
+  "aiDescription": "AI Description",
+  "generatePosterTitle": "Pet Sighting Poster",
+  "generatePosterSubTitle": "View generated poster for this sighting.",
+  "generatingPoster": "Generating poster...",
+  "viewPoster": "View in browser",
+  "downloadPDF": "Download PDF.",
+  "downloadPNG": "Download PNG.",
+  "noPoster": "No posters found for this sighting.",
+  "noDescriptionAvailable": "No description available.",
+  "generatePoster": "Generate Poster"
 }

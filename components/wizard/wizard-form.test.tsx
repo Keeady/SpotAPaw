@@ -32,13 +32,11 @@ jest.mock("../analyzer/use-pet-image-analyzer", () => ({
   usePetAnalyzer: jest.fn(),
 }));
 
-const mockUploadImage = jest.fn();
 const mockUploadMultiplePetImages = jest.fn();
 jest.mock("../image-upload-handler", () => ({
   useUploadMultiplePetImage: jest
     .fn()
     .mockReturnValue({ uploadMultiplePetImages: mockUploadMultiplePetImages }),
-  useUploadPetImageUrl: jest.fn().mockReturnValue(mockUploadImage),
 }));
 
 jest.mock("../Provider/ai-context-provider", () => ({
@@ -100,6 +98,16 @@ jest.mock("./upload-photo", () => {
   return {
     UploadPhoto: ({ loading }: any) => (
       <Text>{loading ? "Loading..." : "Upload Photo Step"}</Text>
+    ),
+  };
+});
+
+jest.mock("./photo-result", () => {
+  const React = jest.requireActual("react");
+  const { Text } = jest.requireActual("react-native");
+  return {
+    PhotoResult: ({ loading }: any) => (
+      <Text>{loading ? "Loading..." : "Photo Result Step"}</Text>
     ),
   };
 });
@@ -390,13 +398,63 @@ describe("WizardForm", () => {
         expect(getByText("Upload Photo Step")).toBeTruthy();
       });
 
-      // Upload Photo -> Edit Pet
+      // Upload Photo -> Photo Result
       await act(async () => {
         fireEvent.press(getByText("Continue"));
       });
 
       await waitFor(() => {
+        expect(getByText("Photo Result Step")).toBeTruthy();
+      });
+
+      // Photo Result -> Edit Pet
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
         expect(getByText("Edit Pet Step")).toBeTruthy();
+      });
+
+      // Edit Pet -> Edit Pet Continued
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
+        expect(getByText("Edit Pet Continued Step")).toBeTruthy();
+      });
+
+      // Edit Pet Continued -> Locate Pet
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
+        expect(getByText("Locate Pet Step")).toBeTruthy();
+      });
+      
+      // Locate Pet -> Add Time
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
+        expect(getByText("Add Time Step")).toBeTruthy();
+      });
+
+      // Add Time -> Add Contact
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+      
+      await waitFor(() => {
+        expect(getByText("Add Contact Step")).toBeTruthy();
+      });
+
+      // Add Contact -> Submit
+      await act(async () => {
+        fireEvent.press(getByText("Submit"));
       });
     });
 
@@ -405,6 +463,15 @@ describe("WizardForm", () => {
 
       // Should start at upload_photo step
       expect(getByText("Upload Photo Step")).toBeTruthy();
+
+      // Navigate to photo_result step
+      await act(async () => {
+        fireEvent.press(getByText("Continue"));
+      });
+
+      await waitFor(() => {
+        expect(getByText("Photo Result Step")).toBeTruthy();
+      });
 
       // Navigate to edit_pet step
       await act(async () => {

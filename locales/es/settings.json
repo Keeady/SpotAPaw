@@ -38,5 +38,9 @@
   "aiPhotoAnalysis": "Análisis de fotos con IA ilimitado",
   "aiPhotoAnalysisDescription": "Desbloquea el análisis de fotos con IA ilimitado para la identificación de mascotas. Gratis para 1 perfil de mascota.",
   "expandedSearchDescription": "Nuestro radio de búsqueda predeterminado es de 5 millas para todos, hasta 25 millas para usuarios Pro.",
-  "expandedSearch": "Radio de búsqueda ampliado"
+  "expandedSearch": "Radio de búsqueda ampliado",
+  "multiplePhotos": "Subir varias fotos",
+  "multiplePhotosDescription": "Sube y analiza varias fotos para una mejor identificación de mascotas.",
+  "contactUs": "Contáctanos",
+  "getInTouchWithUs": "¡Ponte en contacto o envíanos tus comentarios!"
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
 import { getIconByAnimalSpecies } from "./util";
 import {
@@ -10,12 +10,15 @@ import { usePermission } from "./Provider/permission-provider";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { useTranslation } from "react-i18next";
 import { useLocaleContext } from "./Provider/locale-provider";
+import SightingGallery from "./sightings/gallery";
 
 export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
   const { t } = useTranslation(["petprofile", "translation"]);
   const theme = useTheme();
   const { location: userCurrentLocation } = usePermission();
   const { preferredLanguage } = useLocaleContext();
+  const [isVisibleGallery, setIsVisibleGallery] = React.useState(false);
+
   const species = pet.species.charAt(0).toUpperCase() + pet.species.slice(1);
   return (
     <Card
@@ -26,18 +29,12 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
         backgroundColor: "#fff",
       }}
     >
-      {pet.photo ? (
-        <Image
-          source={{ uri: pet.photo }}
-          resizeMode={"contain"}
-          style={{
-            width: "100%",
-            height: "auto",
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-            aspectRatio: 1.5,
-            maxWidth: 800,
-          }}
+      {pet.photos && pet.photos.length > 0 ? (
+        <SightingGallery
+          images={pet.photos.map((photo) => ({ uri: photo }))}
+          isVisible={isVisibleGallery}
+          setIsVisible={setIsVisibleGallery}
+          mainPhoto={pet.photos[0]}
         />
       ) : (
         <View

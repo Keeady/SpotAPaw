@@ -14,9 +14,9 @@ interface reqPayload {
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/heic"];
 
-const prompt = `Analyze this image and extract detailed information about any pets visible.
+const prompt = `Analyze these images and extract detailed information about any pets visible to help with finding and identifying lost pets.
 
 For EACH pet in the images, provide the following information in JSON format:
 {
@@ -28,7 +28,10 @@ For EACH pet in the images, provide the following information in JSON format:
       "size": "small/medium/large",
       "distinctive_features": ["feature 1", "feature 2", "feature 3"],
       "collar_descriptions": ["description 1", "description 2", "description 3"],
-      "narrative": "a single fluent sentence describing the pet for embedding to include species, breed, colors, size, collar descriptions and distinctive features.",
+      "narrative": "one sentence description",
+      "confidence": "high/medium/low",
+      "note": "anything uncertain or notable across photos, or null",
+      "best_photo_url": "url of best photo of this pet based on visibility and quality"
     }
   ]
 }
@@ -49,11 +52,16 @@ Guidelines:
   - Notable characteristics and coat length/pattern/texture, like "floppy ears", "short tail", "blue eyes", "white chest patch", "wrinkled face", "long fur", "pointed ears", etc.
 - **Collar, Tag, or Harness**:
   - Describe Collar, tag, or harness found on the pet such as colors, patterns, and extract any visible writings or brandings
+- **Confidence**: Your confidence level in the accuracy of the analysis based on images' quality, visibility of the pet, and clarity of features. 
+  - Use "high" if you are very confident, "medium" if somewhat confident but with some uncertainty, and "low" if there is significant uncertainty.
+- **Narrative**: A single fluent sentence describing the pet that includes the key details (species, breed, colors, size, collar descriptions, and distinctive features) to help with semantic search.
+- **Note**: Include any uncertainties, notable observations across multiple photos, or anything else that could be helpful for identifying the pet.
+- **Best Photo URL**: Provide the URL of the photo that best shows the pet's features based on visibility and quality.
 
-If NO pets are visible in the image, return:
+If NO pets are visible in the images, return:
 {
   "pets": [],
-  "note": "No pets detected in image"
+  "note": "No pets detected in images"
 }
 
 Respond ONLY with valid JSON. Do not include any other text or markdown formatting.`;
@@ -69,10 +77,14 @@ if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -93,6 +105,8 @@ Deno.serve(async (req: Request) => {
   const { images }: reqPayload = await req.json();
 
   const photoPayloads = [];
+  let petDescriptionResultId = "";
+  const petDescriptionIds = new Set<string>();
 
   if (!images || images.length === 0) {
     const error = "No photos provided";
@@ -134,7 +148,12 @@ Deno.serve(async (req: Request) => {
       const mimeFromBase64 = match[1];
       const photoData = match[2];
 
-      if (mimeFromBase64 !== filetype) {
+      if (!ALLOWED_TYPES.includes(mimeFromBase64)) {
+        const error = "Invalid file type";
+        return getErrorResponse(error);
+      }
+
+      if (filetype && mimeFromBase64 !== filetype) {
         const error = "MIME type mismatch";
         return getErrorResponse(error);
       }
@@ -151,14 +170,18 @@ Deno.serve(async (req: Request) => {
       }
 
       let photoPublicUrl = "";
-      const { data } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from("pet_photos")
         .select("*")
-        .eq("photo_hash", hash)
-        .single();
+        .eq("photo_hash", hash);
 
-      if (data) {
-        photoPublicUrl = data.public_url;
+      if (error) {
+        console.error(error);
+      }
+
+      if (data && data.length > 0) {
+        photoPublicUrl = data[0].public_url;
+        petDescriptionIds.add(data[0].pet_description_id || "");
       } else {
         const filePath = `ai_sightings/${hash}.${mimeFromBase64.split("/")[1]}`;
         // Upload to Supabase Storage
@@ -170,16 +193,27 @@ Deno.serve(async (req: Request) => {
           });
 
         if (error) {
-          let msg = "Failed to save photo.";
-
-          return getErrorResponse(msg, 500);
+          console.error(error);
+          if (error.status !== 409) {
+            let msg = `Failed to save photo: ${error.message}`;
+            return getErrorResponse(msg, 500);
+          }
         }
 
         // Get public URL
         const {
           data: { publicUrl },
+          error: publicUrlError,
         } = supabaseClient.storage.from("pet_photos").getPublicUrl(filePath);
+
+        if (publicUrlError) {
+          console.error(publicUrlError);
+          let msg = `Failed to get photo public URL: ${publicUrlError.message}`;
+          return getErrorResponse(msg, 500);
+        }
+
         photoPublicUrl = publicUrl;
+        petDescriptionIds.add("");
 
         // Save photo record to pet_photos table
         await supabaseClient.from("pet_photos").insert({
@@ -199,6 +233,22 @@ Deno.serve(async (req: Request) => {
     console.error(error);
     const errorMessage = "Failed to save or get photos.";
     return getErrorResponse(errorMessage, 500);
+  }
+
+  // If all photos have the same pet description ID and it's not empty,
+  // we can return early with the existing description and photo URLs
+  if (petDescriptionIds.size === 1 && !petDescriptionIds.has("")) {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
+        petDescriptionId: petDescriptionIds.values().next().value,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 200,
+      },
+    );
   }
 
   if (photoPayloads.length === 0) {
@@ -257,7 +307,6 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse("Failed to process photos", 500);
   }
 
-  let petDescriptionResultId = "";
   try {
     // Save result to Supabase
     const { data: insertedData, error: insertError } = await supabaseClient

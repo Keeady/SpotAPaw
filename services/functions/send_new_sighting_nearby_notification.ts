@@ -40,7 +40,10 @@ Deno.serve(async (req: Request) => {
     );
 
     if (error) {
-      return new Response("Error fetching subscribers", { status: 500 });
+      console.error(error);
+      return new Response(`Error fetching subscribers: ${error.message}`, {
+        status: 500,
+      });
     }
 
     subscribers = data;
@@ -48,11 +51,14 @@ Deno.serve(async (req: Request) => {
       return new Response("No subscribers found", { status: 200 });
     }
   } catch (error) {
-    return new Response("Error fetching subscribers", { status: 500 });
+    console.error(error);
+    return new Response(`Error fetching subscribers: ${error.message}`, {
+      status: 500,
+    });
   }
 
   const messageTitle = `Have you seen ${petName}?`;
-  const messageBody = `Looking for a ${colors} ${breed} ${species} nearby with ${collar} ${features}.`;
+  const messageBody = `Looking for a lost ${colors} ${breed} ${species} nearby.`;
 
   // handle first 100 subscribers
   // TODO: implement batching for more subscribers if needed
@@ -88,7 +94,10 @@ Deno.serve(async (req: Request) => {
       return new Response("No notifications were sent", { status: 200 });
     }
   } catch (error) {
-    return new Response("Error sending notifications", { status: 500 });
+    console.error(error);
+    return new Response(`Error sending notifications: ${error.message}`, {
+      status: 500,
+    });
   }
 
   return new Response("Notifications sent", { status: 200 });

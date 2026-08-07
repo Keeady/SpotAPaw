@@ -35,9 +35,13 @@ function dedupPhotos(sightings: AggregatedSighting[]) {
   const photos: string[] = [];
 
   sightings.forEach((s) => {
-    if (s.photo && !seen.has(s.photo)) {
-      seen.add(s.photo);
-      photos.push(s.photo);
+    if (s.photos && s.photos.length > 0) {
+      s.photos.forEach((url) => {
+        if (url && !seen.has(url)) {
+          seen.add(url);
+          photos.push(url);
+        }
+      });
     }
   });
 
@@ -108,7 +112,7 @@ export default function SightingDetail({
                 images={images}
                 isVisible={isVisible}
                 setIsVisible={setIsVisible}
-                mainPhoto={petSummary?.photo}
+                mainPhoto={petSummary?.photos && petSummary.photos.length > 0 ? petSummary.photos[0] : undefined}
               />
 
               <Divider />
@@ -179,6 +183,9 @@ export default function SightingDetail({
                 )}
                 <Button onPress={() => onFindMatches()}>
                   {t("viewMatches")}
+                </Button>
+                <Button onPress={() => onFindMatches()}>
+                  {t("viewPoster")}
                 </Button>
                 {!hasOwner && claimPet && (
                   <Button mode="contained" onPress={() => claimPet()}>
@@ -264,11 +271,11 @@ export default function SightingDetail({
                         </View>
                       }
                       left={(props) =>
-                        sighting.photo ? (
+                        sighting.photos && sighting.photos.length > 0 ? (
                           <TouchableOpacity onPress={() => setIsVisible(true)}>
                             <Avatar.Image
                               size={40}
-                              source={{ uri: sighting.photo }}
+                              source={{ uri: sighting.photos[0] }}
                             />
                           </TouchableOpacity>
                         ) : (

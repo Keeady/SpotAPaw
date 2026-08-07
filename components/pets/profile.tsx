@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, Chip, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import SightingGallery from "../sightings/gallery";
@@ -44,7 +44,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     gender,
     age,
     colors,
-    photo,
     status,
     features,
     species,
@@ -73,13 +72,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             isVisible={isVisibleGallery}
             setIsVisible={setIsVisibleGallery}
             mainPhoto={photos[0]}
-          />
-        ) : photo ? (
-          <Image
-            source={{ uri: photo }}
-            style={styles.image}
-            resizeMode="contain"
-            testID={"pet-photo"}
           />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
@@ -221,8 +213,8 @@ const styles = StyleSheet.create({
   card: {
     margin: 12,
     borderRadius: 16,
-    overflow: "hidden",
     elevation: 3,
+    flexWrap: "wrap",
   },
   image: {
     width: "100%",

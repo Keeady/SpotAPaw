@@ -96,5 +96,15 @@
   "mySightings": "Signalements",
   "myPets": "Mes animaux",
   "myProfile": "Mon profil",
-  "mySettings": "Paramètres"
+  "mySettings": "Paramètres",
+  "aiDescription": "Description IA",
+  "generatePosterTitle": "Affiche de signalement d'animal",
+  "generatePosterSubTitle": "Voir l'affiche générée pour ce signalement.",
+  "generatingPoster": "Génération de l'affiche...",
+  "viewPoster": "Voir dans le navigateur",
+  "downloadPDF": "Télécharger PDF.",
+  "downloadPNG": "Télécharger PNG.",
+  "noPoster": "Aucune affiche trouvée pour ce signalement.",
+  "noDescriptionAvailable": "Aucune description disponible.",
+  "generatePoster": "Générer l'affiche"
 }

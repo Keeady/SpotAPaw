@@ -43,19 +43,6 @@ export function UploadPhoto({
     }
   }, [isValidData]);
 
-  const onAddPhoto = useCallback(
-    (uri: string | null, fileName: string | null, mimeType: string | null) => {
-      updateSightingData("image", {
-        uri,
-        filename: fileName,
-        filetype: mimeType,
-      } as PetImage);
-      onResetErrorMessage?.();
-      onResetAiGeneratedPhoto?.();
-    },
-    [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
-  );
-
   const onAddMultiplePhotos = useCallback(
     (photos: PetImage[]) => {
       updateSightingData("images", photos);
@@ -65,7 +52,7 @@ export function UploadPhoto({
     [updateSightingData, onResetErrorMessage, onResetAiGeneratedPhoto],
   );
 
-  const { photo, image, photos, images } = sightingFormData;
+  const { photos, images } = sightingFormData;
 
   return (
     <View style={{ flex: 1 }}>
@@ -105,18 +92,29 @@ export function UploadPhoto({
 
             <HelperText
               type="error"
-              visible={(hasErrors && !photo && !image?.uri) || !!errorMessage}
+              visible={
+                (hasErrors && !photos?.length && !images?.length) ||
+                !!errorMessage
+              }
               style={styles.helperText}
               padding="none"
             >
               {!!errorMessage
                 ? errorMessage
-                : hasErrors && !photo && !image?.uri && !photos?.length && !images?.length
+                : hasErrors && !photos?.length && !images?.length
                   ? t("pleaseAddAPhoto", "Please add a photo!")
                   : ""}
             </HelperText>
           </View>
-          {sightingFormData.images && sightingFormData.images.length > 0 ? (
+          {sightingFormData.images && sightingFormData.images.length === 1 ? (
+            <Image
+              key={0}
+              source={{ uri: sightingFormData.images[0].uri }}
+              style={[styles.preview]}
+              resizeMode="contain"
+              testID={`imageUri-0`}
+            />
+          ) : sightingFormData.images && sightingFormData.images.length > 1 ? (
             <View style={styles.emptyPreview}>
               {sightingFormData.images.map((img, index) => (
                 <Image
@@ -126,7 +124,8 @@ export function UploadPhoto({
                     styles.preview,
                     {
                       position: "absolute",
-                      top: index * 10, // vertical offset per layer
+                      top: index * 20, // vertical offset per layer
+                      left: index * 20, // horizontal offset per layer
                       zIndex: sightingFormData.images.length - index, // ensure the first image is on top
                     },
                   ]}
@@ -135,26 +134,12 @@ export function UploadPhoto({
                 />
               ))}
             </View>
-          ) : sightingFormData.image?.uri ? (
-            <Image
-              source={{ uri: sightingFormData.image.uri }}
-              style={styles.preview}
-              resizeMode="contain"
-              testID="imageUri"
-            />
           ) : sightingFormData.photos && sightingFormData.photos.length > 0 ? (
             <SightingGallery
               images={sightingFormData.photos.map((photo) => ({ uri: photo }))}
               isVisible={isVisibleGallery}
               setIsVisible={setIsVisibleGallery}
               mainPhoto={sightingFormData.photos[0]}
-            />
-          ) : sightingFormData.photo ? (
-            <Image
-              source={{ uri: sightingFormData.photo }}
-              style={styles.preview}
-              resizeMode="contain"
-              testID="photoUri"
             />
           ) : (
             <View style={[styles.emptyPreview, { backgroundColor: "#ddd" }]}>
@@ -170,17 +155,13 @@ export function UploadPhoto({
             icon="camera"
             mode="contained"
             onPress={() =>
-              uploadOrTakePhoto(
-                onAddPhoto,
-                t,
-                onAddMultiplePhotos,
-                multiPhotoUploadAllowed,
-              )
+              uploadOrTakePhoto(t, onAddMultiplePhotos, multiPhotoUploadAllowed)
             }
             style={{ marginVertical: 10 }}
             testID="addPhotoBtn"
           >
-            {sightingFormData.image?.uri || sightingFormData.photo
+            {sightingFormData.images?.length > 0 ||
+            sightingFormData.photos?.length > 0
               ? t("changePhoto", "Change Photo", {
                   count: multiPhotoUploadAllowed ? 2 : 1,
                 })
@@ -216,7 +197,9 @@ export function UploadPhoto({
 
 const styles = StyleSheet.create({
   verticallySpaced: {
+    flex: 1,
     alignSelf: "stretch",
+    justifyContent: "center",
   },
   mt20: {
     marginTop: 20,
@@ -245,6 +228,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   content: {
+    flex: 1,
     paddingHorizontal: 12,
     alignItems: "center",
   },

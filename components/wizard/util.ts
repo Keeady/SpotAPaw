@@ -42,6 +42,11 @@ export const defaultSightingFormData = {
   photos: [],
   images: [],
   deletedAt: "",
+  narrative: "",
+  confidence: "unknown",
+  aiGenerated: false,
+  aiNote: "",
+  best_photo_url: "",
 } as SightingReport;
 
 export const validate = (
@@ -163,7 +168,7 @@ export function validateEditPetContinued(
 
 export function validateEditPhoto(sightingFormData: SightingReport) {
   let isValid = false;
-  if (sightingFormData.image.uri || sightingFormData.photo || sightingFormData.photos?.length || sightingFormData.images?.length) {
+  if (sightingFormData.photos?.length || sightingFormData.images?.length) {
     isValid = true;
   } else if (sightingFormData.linkedSightingId) {
     isValid = true;

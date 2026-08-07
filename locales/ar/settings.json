@@ -38,5 +38,9 @@
   "aiPhotoAnalysis": "تحليل صور بالذكاء الاصطناعي غير محدود",
   "aiPhotoAnalysisDescription": "افتح تحليل الصور غير المحدود بالذكاء الاصطناعي للتعرف على الحيوانات الأليفة. مجاني لملف حيوان أليف واحد.",
   "expandedSearchDescription": "نطاق البحث الافتراضي لدينا هو 5 أميال للجميع، وحتى 25 ميلاً لمستخدمي Pro.",
-  "expandedSearch": "نطاق بحث موسّع"
+  "expandedSearch": "نطاق بحث موسّع",
+  "multiplePhotos": "تحميل صور متعددة",
+  "multiplePhotosDescription": "قم بتحميل وتحليل عدة صور لتحسين التعرف على الحيوانات.",
+  "contactUs": "اتصل بنا",
+  "getInTouchWithUs": "تواصل معنا أو أرسل لنا ملاحظاتك!"
 }

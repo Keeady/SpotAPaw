@@ -1,7 +1,7 @@
 /**
- * Find the nearest sightings with pet descriptions within the specified radius, 
- * then calculate similarity scores between the sighting's pet description 
- * and nearby descriptions using the match_pet_sightings Postgres function, 
+ * Find the nearest sightings with pet descriptions within the specified radius,
+ * then calculate similarity scores between the sighting's pet description
+ * and nearby descriptions using the match_pet_sightings Postgres function,
  * and save the matching results in the sighting_matches table.
  */
 
@@ -27,10 +27,14 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -141,6 +145,7 @@ Deno.serve(async (req: Request) => {
   try {
     const { data, error } = await findSighting(sightingId);
     if (error) {
+      console.error(error);
       return getErrorResponse(error.message, 500);
     }
 
@@ -151,10 +156,8 @@ Deno.serve(async (req: Request) => {
     petEmbeddings = data[0].pet_desc_results.embeddings;
     petEmbeddingId = data[0].pet_desc_results.id;
   } catch (error) {
-    return getErrorResponse(
-      error instanceof Error ? error.message : String(error),
-      500,
-    );
+    console.error(error);
+    return getErrorResponse(`Error fetching sighting: ${error.message}`, 500);
   }
 
   try {
@@ -164,6 +167,7 @@ Deno.serve(async (req: Request) => {
       userLocationLong,
     );
     if (nearestSightings.error) {
+      console.error(nearestSightings.error);
       return getErrorResponse(nearestSightings.error.message, 500);
     }
 
@@ -181,10 +185,8 @@ Deno.serve(async (req: Request) => {
       );
     }
   } catch (error) {
-    return getErrorResponse(
-      error instanceof Error ? error.message : String(error),
-      500,
-    );
+    console.error(error);
+    return getErrorResponse(error.message, 500);
   }
 
   try {
@@ -194,6 +196,7 @@ Deno.serve(async (req: Request) => {
     );
 
     if (matchResults.error) {
+      console.error(matchResults.error);
       return getErrorResponse(matchResults.error.message, 500);
     }
 
@@ -201,20 +204,15 @@ Deno.serve(async (req: Request) => {
       return getSuccessResponse("No matches found");
     }
   } catch (error) {
-    return getErrorResponse(
-      error instanceof Error ? error.message : String(error),
-      500,
-    );
+    console.error(error);
+    return getErrorResponse(error.message, 500);
   }
 
   try {
     const matchResultsData = matchResults.data;
     let i = 0;
     const matchResultsToSave = [];
-    const matchesStringified = JSON.stringify([
-      ...matchResults.data,
-      { match_id: petEmbeddingId, similarity_score: 1 },
-    ]);
+    const matchesStringified = JSON.stringify([...matchResults.data]);
 
     matchResultsToSave.push({
       sighting_id: sightingId,
@@ -233,13 +231,12 @@ Deno.serve(async (req: Request) => {
     // save matching description IDs
     const { error } = await saveMatches(matchResultsToSave);
     if (error) {
+      console.error(error);
       return getErrorResponse(error.message, 500);
     }
   } catch (error) {
-    return getErrorResponse(
-      error instanceof Error ? error.message : String(error),
-      500,
-    );
+    console.error(error);
+    return getErrorResponse(error.message, 500);
   }
 
   return new Response(

@@ -18,7 +18,7 @@ jest.mock("react-i18next", () => ({
 const mockRouterPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({
-    replace: mockRouterPush,
+    push: mockRouterPush,
   }),
 }));
 
@@ -43,6 +43,7 @@ jest.mock("../util", () => ({
   getLastSeenLocation: jest.fn().mockResolvedValue("Central Park"),
   kmToMiles: jest.fn().mockReturnValue(10),
   createErrorLogMessage: jest.fn().mockReturnValue("Error message"),
+  isValidUuid: jest.fn().mockReturnValue(true),
 }));
 
 jest.mock("../logs", () => ({
@@ -50,9 +51,10 @@ jest.mock("../logs", () => ({
 }));
 
 const mockGetMatchingSightings = jest.fn();
+const mockGetSighting = jest.fn();
 jest.mock("@/db/repositories/sighting-repository", () => ({
   SightingRepository: jest.fn().mockImplementation(() => ({
-    getSighting: jest.fn(),
+    getSighting: (sightingId: string) => mockGetSighting(sightingId),
     createSighting: jest.fn(),
     updateSighting: jest.fn(),
     getMatchingSightings: jest.fn(),
@@ -65,43 +67,44 @@ jest.mock("@/db/repositories/sighting-repository", () => ({
   })),
 }));
 
+const mockGetAiDescription = jest.fn();
+jest.mock("@/db/repositories/ai-description-repository", () => ({
+  AiDescriptionRepository: jest.fn().mockImplementation(() => ({
+    getAiDescription: (id: string) => mockGetAiDescription(id),
+  })),
+}));
+
 describe("ShowProgress", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  const renderWithAuthContext = (
-    data: any,
-    authValue: any,
-    props: any = {},
-  ) => {
-    const defaultProps = {
-      sightingFormData: data,
-      ...props,
-    };
-
+  const renderWithAuthContext = (authValue: any) => {
     return render(
       <AuthContext.Provider value={authValue}>
-        <ShowProgress {...defaultProps} />
+        <ShowProgress sightingId="sighting123" />
       </AuthContext.Provider>,
     );
   };
 
   it("renders progress page", async () => {
-    mockGetMatchingSightings.mockResolvedValue([]);
+    mockGetSighting.mockResolvedValue({
+      species: "dog",
+      lastSeenLocation: "Central Park",
+      lastSeenTime: new Date("10/01/2025").toISOString(),
+      sightingId: "sighting123",
+      petDescriptionId: "petDesc123",
+      lastSeenLat: 40.785091,
+      lastSeenLong: -73.968285,
+    });
+    mockGetAiDescription.mockResolvedValue({
+      id: "petDesc123",
+      narrative: "A large dog was seen near Central Park.",
+      best_photo_url: "http://example.com/photo.jpg",
+    });
 
-    const { getByText, findByText } = renderWithAuthContext(
-      {
-        species: "dog",
-        lastSeenLocation: "Central Park",
-        lastSeenTime: new Date("10/01/2025").toISOString(),
-        sightingId: "sighting123",
-        petDescriptionId: "petDesc123",
-        lastSeenLat: 40.785091,
-        lastSeenLong: -73.968285,
-      },
-      { user: { id: "user123" } },
-    );
+    const { getByText, findByText, queryByTestId, findByTestId } =
+      renderWithAuthContext({ user: { id: "user123" } });
     expect(getByText("Sighting Submitted!")).toBeTruthy();
     expect(
       getByText("Hang tight — we are processing your report."),
@@ -115,19 +118,22 @@ describe("ShowProgress", () => {
     expect(getByText("No photo")).toBeTruthy();
     expect(getByText("View Matches")).toBeTruthy();
     expect(getByText("View Matches")).toBeDisabled();
+    expect(getByText("Generate Poster")).toBeTruthy();
+    expect(getByText("Generate Poster")).toBeDisabled();
 
+    expect(await findByTestId("best-photo")).toBeTruthy();
+    expect(await queryByTestId("sighting-photo")).toBeNull();
     expect(await findByText("Last seen location: Central Park")).toBeTruthy();
     expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
     expect(await findByText("Date range: Last 30 days")).toBeTruthy();
     expect(await findByText("Radius: 10 miles")).toBeTruthy();
-    expect(await findByText("Species: Dog")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(
+      await findByText("A large dog was seen near Central Park."),
+    ).toBeTruthy();
 
-    expect(mockGetMatchingSightings).toHaveBeenCalledWith(
-      "sighting123",
-      40.785091,
-      -73.968285,
-      8.05,
-    );
+    expect(mockGetSighting).toHaveBeenCalledWith("sighting123");
+    expect(mockGetAiDescription).toHaveBeenCalledWith("petDesc123");
 
     expect(await findByText("View Matches")).not.toBeDisabled();
     const viewMatchesButton = getByText("View Matches");
@@ -136,24 +142,23 @@ describe("ShowProgress", () => {
     expect(mockRouterPush).toHaveBeenCalledWith(
       "/my-sightings/match/?sightingId=sighting123&petDescriptionId=petDesc123",
     );
+
+    expect(await findByText("Generate Poster")).not.toBeDisabled();
+    const generatePosterButton = getByText("Generate Poster");
+    fireEvent.press(generatePosterButton);
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/posters/?sightingId=sighting123",
+    );
   });
 
-  it("renders progress page with no matching sightings", async () => {
-    mockGetMatchingSightings.mockResolvedValue([]);
+  it("renders correctly when sighting is not found", async () => {
+    mockGetSighting.mockResolvedValue(null);
 
-    const { getByText, findByText, getByTestId } = renderWithAuthContext(
-      {
-        species: "dog",
-        lastSeenLocation: "Central Park",
-        lastSeenTime: new Date("10/01/2025").toISOString(),
-        sightingId: "",
-        petDescriptionId: "petDesc123",
-        lastSeenLat: 40.785091,
-        lastSeenLong: -73.968285,
-        photo: "http://example.co/photo"
-      },
-      { user: { id: "user123" } },
-    );
+    const { getByText, findByText } = renderWithAuthContext({
+      user: { id: "user123" },
+    });
+
     expect(getByText("Sighting Submitted!")).toBeTruthy();
     expect(
       getByText("Hang tight — we are processing your report."),
@@ -163,74 +168,140 @@ describe("ShowProgress", () => {
     expect(
       getByText("We are searching for similar pets using these parameters"),
     ).toBeTruthy();
-    expect(getByTestId("sighting-photo")).toBeTruthy();
-    expect(getByText("View Matches")).toBeTruthy();
-    expect(getByText("View Matches")).not.toBeDisabled();
 
-    expect(await findByText("Last seen location: Central Park")).toBeTruthy();
-    expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
-    expect(await findByText("Date range: Last 30 days")).toBeTruthy();
-    expect(await findByText("Radius: 10 miles")).toBeTruthy();
-    expect(await findByText("Species: Dog")).toBeTruthy();
-
-    expect(mockGetMatchingSightings).not.toHaveBeenCalled();
-    expect(await findByText("View Matches")).not.toBeDisabled();
-
-    const viewMatchesButton = getByText("View Matches");
-    fireEvent.press(viewMatchesButton);
-
-    expect(mockRouterPush).not.toHaveBeenCalled();
-  });
-
-  it("renders progress page with error", async () => {
-    mockGetMatchingSightings.mockRejectedValue(new Error("Error"));
-
-    const { getByText, findByText, getByTestId } = renderWithAuthContext(
-      {
-        species: "dog",
-        lastSeenLocation: "Central Park",
-        lastSeenTime: new Date("10/01/2025").toISOString(),
-        sightingId: "sighting123",
-        petDescriptionId: "petDesc123",
-        lastSeenLat: 40.785091,
-        lastSeenLong: -73.968285,
-        photo: "http://example.co/photo"
-      },
-      { user: null },
-    );
-    expect(getByText("Sighting Submitted!")).toBeTruthy();
-    expect(
-      getByText("Hang tight — we are processing your report."),
-    ).toBeTruthy();
-
-    expect(getByText("Matching Filters")).toBeTruthy();
-    expect(
-      getByText("We are searching for similar pets using these parameters"),
-    ).toBeTruthy();
-    expect(getByTestId("sighting-photo")).toBeTruthy();
+    expect(getByText("No photo")).toBeTruthy();
     expect(getByText("View Matches")).toBeTruthy();
     expect(getByText("View Matches")).toBeDisabled();
+    expect(getByText("Generate Poster")).toBeTruthy();
+    expect(getByText("Generate Poster")).toBeDisabled();
+
+    expect(await findByText("Last seen location: Unknown")).toBeTruthy();
+    expect(await findByText("Last seen date: Unknown")).toBeTruthy();
+    expect(await findByText("Date range: Last 30 days")).toBeTruthy();
+    expect(await findByText("Radius: 10 miles")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(await findByText("No description available.")).toBeTruthy();
+
+    expect(mockGetSighting).toHaveBeenCalledWith("sighting123");
+    expect(mockGetAiDescription).not.toHaveBeenCalled();
+
+    expect(await findByText("View Matches")).not.toBeDisabled();
+    expect(await findByText("Generate Poster")).not.toBeDisabled();
+  });
+
+  it("renders correctly when AI description is not found", async () => {
+    mockGetSighting.mockResolvedValue({
+      species: "dog",
+      lastSeenLocation: "Central Park",
+      lastSeenTime: new Date("10/01/2025").toISOString(),
+      sightingId: "sighting123",
+      petDescriptionId: "petDesc123",
+      lastSeenLat: 40.785091,
+      lastSeenLong: -73.968285,
+      photos: ["http://example.com/photo.jpg"],
+    });
+    mockGetAiDescription.mockResolvedValue(null);
+
+    const { getByText, findByText, findByTestId, queryByTestId } =
+      renderWithAuthContext({ user: { id: "user123" } });
+
+    expect(getByText("Sighting Submitted!")).toBeTruthy();
+    expect(
+      getByText("Hang tight — we are processing your report."),
+    ).toBeTruthy();
+
+    expect(getByText("Matching Filters")).toBeTruthy();
+    expect(
+      getByText("We are searching for similar pets using these parameters"),
+    ).toBeTruthy();
+
+    expect(getByText("No photo")).toBeTruthy();
+    expect(getByText("View Matches")).toBeTruthy();
+    expect(getByText("View Matches")).toBeDisabled();
+    expect(getByText("Generate Poster")).toBeTruthy();
+    expect(getByText("Generate Poster")).toBeDisabled();
+
+    expect(await findByTestId("sighting-photo")).toBeTruthy();
+    expect(await queryByTestId("best-photo")).toBeNull();
+    expect(await findByText("Last seen location: Central Park")).toBeTruthy();
+    expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
+    expect(await findByText("Date range: Last 30 days")).toBeTruthy();
+    expect(await findByText("Radius: 10 miles")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(await findByText("No description available.")).toBeTruthy();
+
+    expect(mockGetSighting).toHaveBeenCalledWith("sighting123");
+    expect(mockGetAiDescription).toHaveBeenCalledWith("petDesc123");
+
+    expect(await findByText("View Matches")).not.toBeDisabled();
+    expect(await findByText("Generate Poster")).not.toBeDisabled();
+  });
+
+  it("renders correctly when user is not logged in", async () => {
+    mockGetSighting.mockResolvedValue({
+      species: "dog",
+      lastSeenLocation: "Central Park",
+      lastSeenTime: new Date("10/01/2025").toISOString(),
+      sightingId: "sighting123",
+      petDescriptionId: "petDesc123",
+      lastSeenLat: 40.785091,
+      lastSeenLong: -73.968285,
+      photos: ["http://example.com/photo1.jpg"],
+    });
+    mockGetAiDescription.mockResolvedValue({
+      id: "petDesc123",
+      narrative: "A large dog was seen near Central Park.",
+      best_photo_url: "http://example.com/photo2.jpg",
+    });
+
+    const { getByText, findByText, findByTestId, queryByTestId } =
+      renderWithAuthContext({ user: null });
+
+    expect(getByText("Sighting Submitted!")).toBeTruthy();
+    expect(
+      getByText("Hang tight — we are processing your report."),
+    ).toBeTruthy();
+
+    expect(getByText("Matching Filters")).toBeTruthy();
+    expect(
+      getByText("We are searching for similar pets using these parameters"),
+    ).toBeTruthy();
+
+    expect(getByText("No photo")).toBeTruthy();
+    expect(getByText("View Matches")).toBeTruthy();
+    expect(getByText("View Matches")).toBeDisabled();
+    expect(getByText("Generate Poster")).toBeTruthy();
+    expect(getByText("Generate Poster")).toBeDisabled();
+
+    expect(await findByTestId("best-photo")).toBeTruthy();
+    expect(await queryByTestId("sighting-photo")).toBeNull();
 
     expect(await findByText("Last seen location: Central Park")).toBeTruthy();
     expect(await findByText("Last seen date: 10/1/2025")).toBeTruthy();
     expect(await findByText("Date range: Last 30 days")).toBeTruthy();
     expect(await findByText("Radius: 10 miles")).toBeTruthy();
-    expect(await findByText("Species: Dog")).toBeTruthy();
+    expect(await findByText("AI Description:")).toBeTruthy();
+    expect(
+      await findByText("A large dog was seen near Central Park."),
+    ).toBeTruthy();
 
-    expect(mockGetMatchingSightings).toHaveBeenCalledWith(
-      "sighting123",
-      40.785091,
-      -73.968285,
-      8.05,
-    );
+    expect(mockGetSighting).toHaveBeenCalledWith("sighting123");
+    expect(mockGetAiDescription).toHaveBeenCalledWith("petDesc123");
 
     expect(await findByText("View Matches")).not.toBeDisabled();
-
     const viewMatchesButton = getByText("View Matches");
     fireEvent.press(viewMatchesButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
       "/sightings/match/?sightingId=sighting123&petDescriptionId=petDesc123",
+    );
+
+    expect(await findByText("Generate Poster")).not.toBeDisabled();
+    const generatePosterButton = getByText("Generate Poster");
+    fireEvent.press(generatePosterButton);
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/posters/?sightingId=sighting123",
     );
   });
 });

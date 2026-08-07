@@ -29,7 +29,7 @@ describe("Short Profile", () => {
     expect(getByText("ageWithCount")).toBeTruthy();
   });
 
-  it("renders pet profile with single photo", () => {
+  it("renders pet profile with no photos if photos array is empty", () => {
     const pet = {
       photos: [],
       name: "Buddy",
@@ -42,13 +42,13 @@ describe("Short Profile", () => {
       <RenderShortProfile pet={pet} />,
     );
     expect(queryByTestId("pet-photos")).toBeNull();
-    expect(queryByTestId("pet-photo")).toBeTruthy();
+    expect(queryByTestId("pet-photo")).toBeNull();
     expect(getByText("Buddy")).toBeTruthy();
     expect(getByText("Golden Retriever")).toBeTruthy();
     expect(getByText("ageWithCount")).toBeTruthy();
   });
 
-  it("renders pet profile with no photos", () => {
+  it("renders pet profile with no photos if photos array is undefined", () => {
     const pet = {
       name: "Buddy",
       breed: "Golden Retriever",

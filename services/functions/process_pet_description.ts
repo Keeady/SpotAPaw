@@ -1,7 +1,7 @@
 /**
  * This function processes pet descriptions by generating embeddings using the Gemini API and storing them in the database.
  * It is triggered when a new sighting is created with a pet description ID.
- * The function receives the sighting record then retrieves the associated pet description from the database. 
+ * The function receives the sighting record then retrieves the associated pet description from the database.
  * If embeddings already exist for that description, it returns early.
  */
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -18,10 +18,14 @@ if (!supabaseUrl || !supabaseKey || !geminiApiKey) {
 
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-function getErrorResponse(error: string, status: number = 400, code?: string) {
+function getErrorResponse(
+  message: string,
+  status: number = 400,
+  code?: string,
+) {
   return new Response(
     JSON.stringify({
-      error,
+      message,
       success: false,
       code,
     }),
@@ -80,23 +84,19 @@ async function getEmbedding(apiKey: string, text: string) {
 
 function petToText(pet: Record<string, any>): string {
   const intro = `${pet.species} is a ${pet.size} size ${pet.breed}.`;
-  const colors = pet.colors ? `Colors: ${pet.colors}.` : '';
-  const collar = pet.collar_descriptions ? `Collar Description: ${pet.collar_descriptions.join(', ')}.` : '';
-  const features = pet.distinctive_features ? `Distinctive Features: ${pet.distinctive_features.join(', ')}.` : '';
-  
-  return [
-    intro,
-    colors,
-    collar,
-    features,
-  ].filter(Boolean).join(' ')
-};
+  const colors = pet.colors ? `Colors: ${pet.colors}.` : "";
+  const collar = pet.collar_descriptions
+    ? `Collar Description: ${pet.collar_descriptions.join(", ")}.`
+    : "";
+  const features = pet.distinctive_features
+    ? `Distinctive Features: ${pet.distinctive_features.join(", ")}.`
+    : "";
+
+  return [intro, colors, collar, features].filter(Boolean).join(" ");
+}
 
 function findDescription(id: string) {
-  return supabaseClient
-    .from("pet_desc_results")
-    .select("*")
-    .eq("id", id);
+  return supabaseClient.from("pet_desc_results").select("*").eq("id", id);
 }
 
 Deno.serve(async (req: Request) => {
@@ -110,11 +110,16 @@ Deno.serve(async (req: Request) => {
   let embeddings;
   let description;
   let petText;
-  
+  let bestPhotoUrl;
+
   try {
     const { data, error } = await findDescription(id);
     if (error) {
-      return getErrorResponse("Error fetching description from db", 500);
+      console.error(error);
+      return getErrorResponse(
+        `Error fetching description from db: ${error.message}`,
+        500,
+      );
     }
 
     if (!data || data.length === 0) {
@@ -125,10 +130,16 @@ Deno.serve(async (req: Request) => {
     embeddings = data[0].embeddings;
 
     if (embeddings) {
-      return getSuccessResponse("Embeddings already exist for this description");
+      return getSuccessResponse(
+        "Embeddings already exist for this description",
+      );
     }
   } catch (error) {
-    return getErrorResponse("Error while fetching description from db", 500);
+    console.error(error);
+    return getErrorResponse(
+      `Error while fetching description from db: ${error.message}`,
+      500,
+    );
   }
 
   try {
@@ -145,6 +156,7 @@ Deno.serve(async (req: Request) => {
 
     const pet = parsedDescription.pets[0];
     petText = pet.narrative ?? petToText(pet);
+    bestPhotoUrl = pet.best_photo_url ?? null;
 
     const response = await getEmbedding(geminiApiKey, petText);
     if (!response.ok) {
@@ -162,8 +174,9 @@ Deno.serve(async (req: Request) => {
       return getErrorResponse("Failed to get embedding from Gemini API", 500);
     }
   } catch (error) {
+    console.error(error);
     return getErrorResponse(
-      "Error while processing embedding from Gemini API",
+      `Error while processing embedding from Gemini API: ${error.message}`,
       500,
     );
   }
@@ -174,14 +187,23 @@ Deno.serve(async (req: Request) => {
       .update({
         embeddings,
         narrative: petText,
+        best_photo_url: bestPhotoUrl ?? null,
       })
       .eq("id", id);
 
     if (error) {
-      return getErrorResponse("Failed to update db with new embeddings", 500);
+      console.error(error);
+      return getErrorResponse(
+        `Failed to update db with new embeddings: ${error.message}`,
+        500,
+      );
     }
   } catch (error) {
-    return getErrorResponse("Error while updating pet description", 500);
+    console.error(error);
+    return getErrorResponse(
+      `Error while updating pet description: ${error.message}`,
+      500,
+    );
   }
 
   return new Response(
