@@ -10,7 +10,7 @@
 
 ## Phase 1 — Baseline observability on the current system
 
-**Status:** 🔲 Not started
+**Status:** 🟡 In progress
 
 ### Plan
 Instrument the *existing* trigger-based pipeline before changing any architecture, so later decisions are backed by real numbers and there's a genuine before/after comparison once the migration lands.
