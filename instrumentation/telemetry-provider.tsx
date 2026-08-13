@@ -7,6 +7,7 @@ import React, {
 import { sendTelemetryEvent, TelemetryEventData } from "./telemetry-event";
 import type { InstrumentProps } from "./telemetry-event";
 import { log } from "@/components/logs";
+import { v4 as uuidv4 } from "uuid";
 
 type ContextProps = {
   instrument: (props: InstrumentProps) => void;
@@ -21,15 +22,12 @@ interface Props {
 }
 
 const TelemetryProvider = (props: Props) => {
-  // const [correlationId, setCorrelationId] = React.useState<string>(""); // Generate a unique correlation ID for the session
-  // const [instruments, setInstruments] = React.useState<TelemetryEvent[]>([]);
-
   const instruments = React.useRef<TelemetryEventData[]>([]);
   const correlationId = React.useRef<string>("");
 
   const generateCorrelationId = useCallback(() => {
     const timestamp = new Date().getTime();
-    const newCorrelationId = `correlation-${timestamp}`;
+    const newCorrelationId = uuidv4() + "-" + timestamp; // Generate a unique correlation ID using UUID and timestamp
     return newCorrelationId;
   }, []);
 
