@@ -8,6 +8,7 @@ export type TelemetryEventAddData = {
   is_ai_enabled?: boolean;
   count?: number;
   total_count?: number;
+  error_message?: string;
 };
 
 export type TelemetryEventStep =
@@ -20,6 +21,13 @@ export type TelemetryEventStep =
   | "request_response_sent"
   | "request_response_received"
   | "request_completed";
+
+export type TelemetryErrorType =
+  | "fetch_error"
+  | "network_error"
+  | "server_error"
+  | "validation_error"
+  | "unknown_error";
 
 export type TelemetryEventStepData = {
     step: TelemetryEventStep,

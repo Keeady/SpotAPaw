@@ -12,6 +12,7 @@ interface TelemetryEvent {
   }[];
   duration_ms: number;
   data?: Record<string, any>;
+  error_type?: string;
 }
 
 interface ReqPayload {
@@ -90,6 +91,7 @@ Deno.serve(async (req: Request) => {
         steps: event.steps,
         duration_ms: event.duration_ms,
         data: event.data || {},
+        error_type: event.error_type || null,
       };
     });
 

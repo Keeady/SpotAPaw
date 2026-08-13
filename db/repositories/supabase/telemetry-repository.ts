@@ -24,7 +24,6 @@ export class SupabaseTelemetryRepository extends BaseTelemetryRepository {
     );
 
     if (error) {
-      console.error("Failed to send telemetry event:", error);
       throw error;
     }
   }

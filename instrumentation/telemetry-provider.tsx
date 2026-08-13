@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import { sendTelemetryEvent, TelemetryEventData } from "./telemetry-event";
 import type { InstrumentProps } from "./telemetry-event";
+import { log } from "@/components/logs";
 
 type ContextProps = {
   instrument: (props: InstrumentProps) => void;
@@ -33,14 +34,14 @@ const TelemetryProvider = (props: Props) => {
   }, []);
 
   const startInstrument = useCallback(
-    ({ eventName, step, eventData }: InstrumentProps) => {
+    ({ eventName, step, eventData, errorType }: InstrumentProps) => {
       if (!eventName) {
-        console.error("Telemetry event name is required.");
+        log("Telemetry event name is required.");
         return;
       }
 
       if (!step) {
-        console.error("Telemetry event step is required.");
+        log("Telemetry event step is required.");
         return;
       }
 
@@ -55,6 +56,7 @@ const TelemetryProvider = (props: Props) => {
           step: step,
           timestamp: timestamp,
           data: eventData,
+          error_type: errorType,
         },
       ];
     },
@@ -62,14 +64,14 @@ const TelemetryProvider = (props: Props) => {
   );
 
   const completeInstrument = useCallback(
-    ({ eventName, step, eventData }: InstrumentProps) => {
+    ({ eventName, step, eventData, errorType }: InstrumentProps) => {
       if (!eventName) {
-        console.error("Telemetry event name is required.");
+        log("Telemetry event name is required.");
         return;
       }
 
       if (!step) {
-        console.error("Telemetry event step is required.");
+        log("Telemetry event step is required.");
         return;
       }
 
@@ -83,6 +85,7 @@ const TelemetryProvider = (props: Props) => {
           step: step,
           timestamp: timestamp,
           data: eventData,
+          error_type: errorType,
         },
       ];
 
@@ -92,14 +95,14 @@ const TelemetryProvider = (props: Props) => {
   );
 
   const instrument = useCallback(
-    ({ eventName, step, eventData }: InstrumentProps) => {
+    ({ eventName, step, eventData, errorType }: InstrumentProps) => {
       if (!eventName) {
-        console.error("Telemetry event name is required.");
+        log("Telemetry event name is required.");
         return;
       }
 
       if (!step) {
-        console.error("Telemetry event step is required.");
+        log("Telemetry event step is required.");
         return;
       }
 
@@ -113,29 +116,14 @@ const TelemetryProvider = (props: Props) => {
           step: step,
           timestamp: timestamp,
           data: eventData,
+          error_type: errorType,
         },
       ];
-
-      console.log(
-        `Telemetry Event: ${correlationId.current} ${eventName} ${step} ${timestamp}`,
-        eventData,
-      );
     },
     [instruments, correlationId],
   );
 
   const onComplete = useCallback(() => {
-    instruments.current.forEach((instrument) => {
-      console.log(
-        "Sending telemetry event: ",
-        instrument.correlation_id,
-        instrument.event,
-        instrument.step,
-        instrument.timestamp,
-        instrument.data,
-      );
-    });
-
     sendTelemetryEvent(instruments.current);
 
     instruments.current = [];
@@ -144,9 +132,6 @@ const TelemetryProvider = (props: Props) => {
   useEffect(() => {
     return () => {
       if (instruments.current.length > 0) {
-        console.log(
-          "Component unmounted. Sending remaining telemetry events: ",
-        );
         onComplete();
       }
     };

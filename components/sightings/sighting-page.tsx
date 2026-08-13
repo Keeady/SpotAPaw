@@ -60,7 +60,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       totalCount: number,
     ) => {
       if (error) {
-        setError(error);
+        setError("An error occurred while fetching sightings.");
       } else if (pagination.start === 0) {
         setSightings(newSightings);
       } else if (newSightings.length > 0) {
@@ -75,7 +75,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         eventData: {
           count: newSightings.length,
           total_count: totalCount,
+          error_message: error || "",
         },
+        errorType: error ? "fetch_error" : undefined,
       });
 
       if (totalCount === 0) {
@@ -241,7 +243,7 @@ const fetchSightingsWithLocation = async (
       log(`fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`);
       onFetchComplete(
         [],
-        "An error occurred while fetching sightings.",
+        errorMessage,
         pagination,
         0,
       );

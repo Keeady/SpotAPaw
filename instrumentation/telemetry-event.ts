@@ -1,3 +1,4 @@
+import { log } from "@/components/logs";
 import { createErrorLogMessageAsync } from "@/components/util";
 import type {
   TelemetryEventName,
@@ -5,6 +6,7 @@ import type {
   TelemetryEventAddData,
   TelemetryEvent,
   TelemetryEventStepData,
+  TelemetryErrorType,
 } from "@/db/models/telemetry";
 import { TelemetryRepository } from "@/db/repositories/telemetry-repository";
 
@@ -12,6 +14,7 @@ export type InstrumentProps = {
   eventName: TelemetryEventName;
   step: TelemetryEventStep;
   eventData?: TelemetryEventAddData;
+  errorType?: TelemetryErrorType;
 };
 
 export type TelemetryEventData = {
@@ -20,6 +23,7 @@ export type TelemetryEventData = {
   step: TelemetryEventStep;
   timestamp: number;
   data?: TelemetryEventAddData;
+  error_type?: TelemetryErrorType;
 };
 
 export const sendTelemetryEvent = async (events: TelemetryEventData[]) => {
@@ -57,24 +61,12 @@ export const sendTelemetryEvent = async (events: TelemetryEventData[]) => {
       });
     }
 
-    aggregatedEvents.forEach((event) => {
-      console.log(
-        "Aggregated Telemetry Event: ",
-        event.correlation_id,
-        event.event,
-        event.steps,
-        event.duration_ms,
-        event.data,
-      );
-    });
-
     const repository = new TelemetryRepository();
     await repository.sendTelemetryEvent(aggregatedEvents);
   } catch (error) {
     createErrorLogMessageAsync(error).then((message) => {
-      console.log("Failed to send telemetry event:", message);
+      log(`Failed to send telemetry event: ${message}`);
     });
-    console.error("Failed to send telemetry event:", error);
   }
 };
 

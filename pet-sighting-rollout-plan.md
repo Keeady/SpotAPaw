@@ -98,6 +98,7 @@ requests × steps.
 - When did failures start trending?
 - What type of users are affected?
 - How many users are affected?
+- What errors are occurring and how often?
 
 #### Telemetry Steps
 

@@ -45,7 +45,6 @@ export class SupabasePosterRepository implements IPosterRepository {
       .eq("id", posterId);
 
     if (error) {
-      console.error("Failed to fetch poster:", error);
       throw error;
     }
 
