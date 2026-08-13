@@ -71,41 +71,45 @@ export const sendTelemetryEvent = async (events: TelemetryEventData[]) => {
 };
 
 function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
-  // calculate duration from request_start to request_sent
-  // calculate duration from request_sent to request_completed
-
   const requestStart = {
     duration_ms: 0,
-    step: "request_start" as TelemetryEventStep,
+    step: "request_start",
     start: 0,
     end: 0,
-  };
+    status: "success",
+  } as TelemetryEventStepData;
 
   const requestSent = {
     duration_ms: 0,
-    step: "request_sent" as TelemetryEventStep,
+    step: "request_sent",
     start: 0,
     end: 0,
-  };
+    status: "success",
+  } as TelemetryEventStepData;
 
   const requestCompleted = {
     duration_ms: 0,
-    step: "request_completed" as TelemetryEventStep,
+    step: "request_completed",
     start: 0,
     end: 0,
-  };
+    status: "success",
+  } as TelemetryEventStepData;
 
   for (const event of events) {
+    const status = event.error_type ? "failed" : "success";
     if (event.step === "request_start") {
       requestStart.start = event.timestamp;
+      requestStart.status = status;
     } else if (event.step === "request_sent") {
       requestSent.start = event.timestamp;
       requestStart.end = event.timestamp;
       requestStart.duration_ms = requestStart.end - requestStart.start;
+      requestSent.status = status;
     } else if (event.step === "request_completed") {
       requestCompleted.start = event.timestamp;
       requestSent.end = event.timestamp;
       requestSent.duration_ms = requestSent.end - requestSent.start;
+      requestCompleted.status = status;
     }
   }
 

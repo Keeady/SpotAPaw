@@ -34,6 +34,7 @@ export type TelemetryEventStepData = {
     duration_ms: number,
     start: number,
     end: number,
+    status: "success" | "failed",
 }
 
 export interface TelemetryEvent {
