@@ -91,7 +91,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setPagination(pagination);
       }
     },
-    [],
+    [completeInstrument],
   );
 
   const fetch = useCallback(
@@ -100,10 +100,9 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination: SightingPagination,
     ) => {
       setLoading(true);
-
       fetchSightingsWithLocation(location, pagination, onFetchComplete, instrument);
     },
-    [onFetchComplete],
+    [onFetchComplete, instrument],
   );
 
   // Refetch when filter changes
