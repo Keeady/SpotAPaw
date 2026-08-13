@@ -28,6 +28,7 @@ Instrument the *existing* trigger-based pipeline before changing any architectur
 | DB-side cost of the trigger chain on insert latency | Is the write path itself already being slowed down today? |
 
 **Concrete implementation plan:**
+
 - Add an `events_log` table: `(sighting_id, action, status, started_at, completed_at, error_message)`. Wrap each existing trigger action with a lightweight insert into this table.
 - Log fan-out size per sighting (`COUNT(*)` from the `ST_DWithin` match) into `events_log`.
 - Use `pg_stat_statements` and Supabase's Postgres logs for trigger execution time without app-level instrumentation.
@@ -35,9 +36,57 @@ Instrument the *existing* trigger-based pipeline before changing any architectur
 - Run for a defined window (1–2 weeks, or N sightings) spanning at least one peak period.
 
 ### Implementation
-_(To be filled in as work begins — schema used, dashboard link, actual instrumentation approach, deviations from plan.)_
+
+Before sending request to backend to get feed, we start a timer. 
+Option 1: Update existing request to the backend with object containing telemetry data: started_at, correlation_id. This is a simple change in the frontend without creating a new endpoint and two separate backend calls (at the start and at completion). However, when the request completes or fail in the frontend, we have to send an update to the backend.
+Option 2: Send a separate request to backend to record this telemetry. This requires new endpoints in the backend and separate calls from the frontend. However, we get accurate request completion time from the client side.
+
+I think separating the business logic from instrumentation logic is the right approach here because, these two logic do not necessarily evolve at the same rate. Instrumentation logic runs in both frontend and backend.
+
+Aggregate telemetry steps into a single event by event name and correlationID to avoid creating too many events.
+
+**Questions that we want the telemetry to answer:**
+
+- How long does the request take?
+- Which part of the request is slow?
+- Why did it fail?
+- Where did it fail?
+- When did it start failing?
+- What type of users are affected?
+- How many users are affected?
+
+**Telemetry Steps:**
+
+request_start, request_sent, request_received, request_queued, request_task_start, request_task_completed, request_response_sent, request_response_received, request_completed
+
+**Telemetry payload:**
+
+correlation_id, event, step, started_at, completed_at, count, duration_ms, error_message, status, data
+
+**Telemetry Data:**
+
+data contains additional business data to be tracked to avoid creating new columns for each new data point: user_type, is_ai_enabled, count
+
+**Events:**
+
+1- `sighting_list_event`:
+
+    tracking request to populate nearby sighting feed when app first opens or by clicking on navigation
+
+2- `sighting_detail_event`:
+
+    when user clicks on a sighting from the feed to open the sighting details page
+
+3- `sighting_photo_upload_event`:
+
+    when user clicks on upload photo button when AI is enabled to track request related to external AI dependency and photo processing
+
+4- `sighting_create_event`:
+
+    when user submits a new sighting to track all related downstream depencies
 
 ### Follow-up / Learnings
+
 _(To be filled in once the baseline window completes — actual numbers observed, any surprises, anything that changes the plan for later phases.)_
 
 ---

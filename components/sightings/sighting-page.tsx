@@ -16,6 +16,8 @@ import { handleAddingSighting } from "./sighting-handler";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { useTranslation } from "react-i18next";
+import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
+import { InstrumentProps } from "@/instrumentation/telemetry-event";
 
 type SightingPageProps = {
   renderer: (
@@ -46,6 +48,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { location, isLoadingLocation } = useContext(PermissionContext);
+  const { instrument, completeInstrument } = useTelemetryProvider(); // Initialize telemetry provider to capture performance metrics
+
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
   const onFetchComplete = useCallback(
@@ -64,6 +68,15 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       }
       setLoading(false);
       setRefreshing(false);
+      
+      completeInstrument({
+        eventName: "sighting_list_event",
+        step: "request_completed",
+        eventData: {
+          count: newSightings.length,
+          total_count: totalCount,
+        },
+      });
 
       if (totalCount === 0) {
         setHasMore(false);
@@ -85,7 +98,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination: SightingPagination,
     ) => {
       setLoading(true);
-      fetchSightingsWithLocation(location, pagination, onFetchComplete);
+
+      fetchSightingsWithLocation(location, pagination, onFetchComplete, instrument);
     },
     [onFetchComplete],
   );
@@ -189,6 +203,7 @@ const fetchSightingsWithLocation = async (
     pagination: SightingPagination,
     totalCount: number,
   ) => void,
+  instrument: (props: InstrumentProps) => void,
 ) => {
   if (!location) {
     return onFetchComplete([], null, pagination, 0);
@@ -204,6 +219,8 @@ const fetchSightingsWithLocation = async (
   const maxLat = lat + latDegree;
   const minLng = lng - lngDegree;
   const maxLng = lng + lngDegree;
+
+  instrument({ eventName: "sighting_list_event", step: "request_sent" });
 
   // Default: fetch all sightings
   const repository = new SightingRepository();

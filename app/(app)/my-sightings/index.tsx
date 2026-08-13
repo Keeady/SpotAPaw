@@ -1,6 +1,7 @@
 import { RenderSightingProfile } from "@/components/pet-profile";
 import SightingPage from "@/components/sightings/sighting-page";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback } from "react";
 import {
@@ -14,6 +15,15 @@ import { Text } from "react-native-paper";
 
 export default function SightingList() {
   const router = useRouter();
+  const { startInstrument } = useTelemetryProvider(); // Initialize telemetry provider to capture performance metrics
+
+  startInstrument({
+    eventName: "sighting_list_event",
+    step: "request_start",
+    eventData: {
+      user_type: "authenticated",
+    },
+  });
 
   const rendererItem = useCallback(
     ({ item }: { item: AggregatedSighting }) => (
