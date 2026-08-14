@@ -17,8 +17,8 @@ import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { useTranslation } from "react-i18next";
 import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
-import { InstrumentProps } from "@/instrumentation/telemetry-event";
-import { TelemetryEventStepStatus } from "@/db/models/telemetry";
+import type { InstrumentProps } from "@/instrumentation/telemetry-event";
+import type { TelemetryEventStepStatus } from "@/db/models/telemetry";
 
 type SightingPageProps = {
   renderer: (

@@ -173,4 +173,4 @@ const useTelemetryProvider = () => {
   return context as ContextProps;
 };
 
-export { TelemetryProvider, useTelemetryProvider };
+export { TelemetryProvider, useTelemetryProvider, TelemetryProviderContext };
