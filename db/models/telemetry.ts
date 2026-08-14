@@ -23,18 +23,21 @@ export type TelemetryEventStep =
   | "request_completed";
 
 export type TelemetryErrorType =
+  | "missing_location"
   | "fetch_error"
   | "network_error"
   | "server_error"
   | "validation_error"
   | "unknown_error";
 
+export type TelemetryEventStepStatus = "success" | "failed" | "incomplete";
+
 export type TelemetryEventStepData = {
     step: TelemetryEventStep,
     duration_ms: number,
     start: number,
     end: number,
-    status: "success" | "failed",
+    status: TelemetryEventStepStatus,
 }
 
 export interface TelemetryEvent {

@@ -7,6 +7,7 @@ import type {
   TelemetryEvent,
   TelemetryEventStepData,
   TelemetryErrorType,
+  TelemetryEventStepStatus,
 } from "@/db/models/telemetry";
 import { TelemetryRepository } from "@/db/repositories/telemetry-repository";
 
@@ -15,6 +16,7 @@ export type InstrumentProps = {
   step: TelemetryEventStep;
   eventData?: TelemetryEventAddData;
   errorType?: TelemetryErrorType;
+  status: TelemetryEventStepStatus;
 };
 
 export type TelemetryEventData = {
@@ -24,6 +26,7 @@ export type TelemetryEventData = {
   timestamp: number;
   data?: TelemetryEventAddData;
   error_type?: TelemetryErrorType;
+  status: TelemetryEventStepStatus;
 };
 
 export const sendTelemetryEvent = async (events: TelemetryEventData[]) => {
@@ -76,7 +79,6 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_start",
     start: 0,
     end: 0,
-    status: "success",
   } as TelemetryEventStepData;
 
   const requestSent = {
@@ -84,7 +86,6 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_sent",
     start: 0,
     end: 0,
-    status: "success",
   } as TelemetryEventStepData;
 
   const requestCompleted = {
@@ -92,20 +93,18 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_completed",
     start: 0,
     end: 0,
-    status: "success",
   } as TelemetryEventStepData;
 
   for (const event of events) {
-    const status = event.error_type ? "failed" : "success";
     if (event.step === "request_start") {
       requestStart.start = event.timestamp;
-      requestStart.status = status;
+      requestStart.status = event.status || "incomplete";
     } else if (event.step === "request_sent") {
       requestSent.start = event.timestamp;
-      requestSent.status = status;
+      requestSent.status = event.status || "incomplete";
     } else if (event.step === "request_completed") {
       requestCompleted.start = event.timestamp;
-      requestCompleted.status = status;
+      requestCompleted.status = event.status || "incomplete";
     }
   }
 

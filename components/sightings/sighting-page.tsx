@@ -18,6 +18,7 @@ import { createErrorLogMessage } from "../util";
 import { useTranslation } from "react-i18next";
 import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
 import { InstrumentProps } from "@/instrumentation/telemetry-event";
+import { TelemetryEventStepStatus } from "@/db/models/telemetry";
 
 type SightingPageProps = {
   renderer: (
@@ -68,17 +69,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       }
       setLoading(false);
       setRefreshing(false);
-      
-      completeInstrument({
-        eventName: "sighting_list_event",
-        step: "request_completed",
-        eventData: {
-          count: newSightings.length,
-          total_count: totalCount,
-          error_message: error || "",
-        },
-        errorType: error ? "fetch_error" : undefined,
-      });
 
       if (totalCount === 0) {
         setHasMore(false);
@@ -100,9 +90,15 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination: SightingPagination,
     ) => {
       setLoading(true);
-      fetchSightingsWithLocation(location, pagination, onFetchComplete, instrument);
+      fetchSightingsWithLocation(
+        location,
+        pagination,
+        onFetchComplete,
+        instrument,
+        completeInstrument,
+      );
     },
-    [onFetchComplete, instrument],
+    [onFetchComplete, instrument, completeInstrument],
   );
 
   // Refetch when filter changes
@@ -205,8 +201,23 @@ const fetchSightingsWithLocation = async (
     totalCount: number,
   ) => void,
   instrument: (props: InstrumentProps) => void,
+  completeInstrument: (
+    props: InstrumentProps & { status: TelemetryEventStepStatus },
+  ) => void,
 ) => {
   if (!location) {
+    completeInstrument({
+      eventName: "sighting_list_event",
+      step: "request_sent",
+      eventData: {
+        count: 0,
+        total_count: 0,
+        error_message: "",
+      },
+      errorType: "missing_location",
+      status: "incomplete",
+    });
+
     return onFetchComplete([], null, pagination, 0);
   }
 
@@ -221,7 +232,7 @@ const fetchSightingsWithLocation = async (
   const minLng = lng - lngDegree;
   const maxLng = lng + lngDegree;
 
-  instrument({ eventName: "sighting_list_event", step: "request_sent" });
+  instrument({ eventName: "sighting_list_event", step: "request_sent", status: "success" });
 
   // Default: fetch all sightings
   const repository = new SightingRepository();
@@ -236,15 +247,34 @@ const fetchSightingsWithLocation = async (
     })
     .then(({ data, count }) => {
       onFetchComplete(data || [], null, pagination, count || 0);
+      completeInstrument({
+        eventName: "sighting_list_event",
+        step: "request_completed",
+        eventData: {
+          count: data.length,
+          total_count: count || 0,
+          error_message: "",
+        },
+        errorType: undefined,
+        status: "success",
+      });
     })
     .catch((error) => {
       const errorMessage = createErrorLogMessage(error);
-      log(`fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`);
-      onFetchComplete(
-        [],
-        errorMessage,
-        pagination,
-        0,
+      log(
+        `fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`,
       );
+      onFetchComplete([], errorMessage, pagination, 0);
+      completeInstrument({
+        eventName: "sighting_list_event",
+        step: "request_completed",
+        eventData: {
+          count: 0,
+          total_count: 0,
+          error_message: "",
+        },
+        errorType: "fetch_error",
+        status: "failed",
+      });
     });
 };

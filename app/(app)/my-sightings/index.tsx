@@ -23,6 +23,7 @@ export default function SightingList() {
     eventData: {
       user_type: "authenticated",
     },
+    status: "success",
   });
 
   const rendererItem = useCallback(

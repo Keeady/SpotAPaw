@@ -23,6 +23,7 @@ export default function SightingAnonList() {
     eventData: {
       user_type: "unauthenticated",
     },
+    status: "success",
   });
 
   const rendererItem = useCallback(
