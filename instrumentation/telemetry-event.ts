@@ -102,16 +102,17 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
       requestStart.status = status;
     } else if (event.step === "request_sent") {
       requestSent.start = event.timestamp;
-      requestStart.end = event.timestamp;
-      requestStart.duration_ms = requestStart.end - requestStart.start;
       requestSent.status = status;
     } else if (event.step === "request_completed") {
       requestCompleted.start = event.timestamp;
-      requestSent.end = event.timestamp;
-      requestSent.duration_ms = requestSent.end - requestSent.start;
       requestCompleted.status = status;
     }
   }
+
+  requestStart.end = requestSent.start;
+  requestSent.end = requestCompleted.start;
+  requestStart.duration_ms = requestStart.end - requestStart.start;
+  requestSent.duration_ms = requestSent.end - requestSent.start;
 
   return [requestStart, requestSent, requestCompleted];
 }

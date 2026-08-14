@@ -131,7 +131,7 @@ client → server → client round trip:
 | `error_message` | Error detail, if the step failed |
 | `status` | Outcome of the step (e.g. success, failure) |
 | `data` | Free-form object for additional business context (see below) |
-| `error_type` | Error category to help categorizing and tracking errors overtime |
+| `error_type` | Error category to help categorizing and tracking errors over time |
 
 #### `data` Field
 

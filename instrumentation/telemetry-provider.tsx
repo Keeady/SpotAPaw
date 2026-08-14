@@ -73,6 +73,11 @@ const TelemetryProvider = (props: Props) => {
         return;
       }
 
+      if (!correlationId.current) {
+        log("No correlation ID found. Please call startInstrument first.");
+        return;
+      }
+
       const timestamp = new Date().getTime();
 
       instruments.current = [
@@ -101,6 +106,11 @@ const TelemetryProvider = (props: Props) => {
 
       if (!step) {
         log("Telemetry event step is required.");
+        return;
+      }
+
+      if (!correlationId.current) {
+        log("No correlation ID found. Please call startInstrument first.");
         return;
       }
 
