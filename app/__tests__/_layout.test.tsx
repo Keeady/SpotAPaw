@@ -43,7 +43,7 @@ jest.mock("expo-notifications", () => ({
 
 jest.mock("expo-router", () => {
   const actual = jest.requireActual("expo-router");
-  const Screen = (_props: any) => null; 
+  const Screen = (_props: any) => null;
 
   const Stack = ({ children }: any) => {
     return <>{children}</>;
@@ -141,6 +141,10 @@ jest.mock("@/components/layout.style", () => ({
   content: {},
 }));
 
+jest.mock("@/instrumentation/telemetry-provider", () => ({
+  TelemetryProvider: ({ children }: any) => <>{children}</>,
+}));
+
 const renderWithAuthContext = (user: any = null) => {
   return render(
     <AuthContext.Provider value={{ user, session: null, loading: false }}>
@@ -157,7 +161,6 @@ describe("Layout", () => {
   });
 
   it("renders correctly and calls all initialisation hooks", async () => {
-
     renderWithAuthContext(null);
 
     await waitFor(() => {
@@ -169,7 +172,7 @@ describe("Layout", () => {
       expect(mockAddNotificationReceivedListener).toHaveBeenCalled();
     });
   });
-  
+
   it("navigates to sighting when last notification response has a sightingId (logged-in user)", async () => {
     mockGetLastNotificationResponse.mockReturnValue({
       notification: {
@@ -186,7 +189,7 @@ describe("Layout", () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        "/(app)/my-sightings/s-1?linkedSightingId=ls-1&petId=p-1"
+        "/(app)/my-sightings/s-1?linkedSightingId=ls-1&petId=p-1",
       );
     });
   });
@@ -207,7 +210,7 @@ describe("Layout", () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        "/sightings/s-2?linkedSightingId=ls-2&petId=p-2"
+        "/sightings/s-2?linkedSightingId=ls-2&petId=p-2",
       );
     });
   });
@@ -215,8 +218,12 @@ describe("Layout", () => {
   it("cleans up notification listeners on unmount", async () => {
     const removeResponse = jest.fn();
     const removeReceived = jest.fn();
-    mockAddNotificationResponseReceivedListener.mockReturnValue({ remove: removeResponse });
-    mockAddNotificationReceivedListener.mockReturnValue({ remove: removeReceived });
+    mockAddNotificationResponseReceivedListener.mockReturnValue({
+      remove: removeResponse,
+    });
+    mockAddNotificationReceivedListener.mockReturnValue({
+      remove: removeReceived,
+    });
 
     const { unmount } = renderWithAuthContext(null);
 
