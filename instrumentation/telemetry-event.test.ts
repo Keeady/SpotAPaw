@@ -193,4 +193,108 @@ describe("TelemetryEvent", () => {
       },
     ]);
   });
+
+  it("should handle request with sub-requests correctly as one", async () => {
+    const mockEvents = [
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        step: "request_start",
+        timestamp: 100,
+        status: "success",
+        data: {
+          user_type: "test",
+        },
+      },
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        step: "request_sent",
+        timestamp: 200,
+        status: "success",
+        data: {
+          sub_request: "fetch_sighting_summary",
+        },
+      },
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        step: "request_sent",
+        timestamp: 200,
+        status: "success",
+        data: {
+          sub_request: "fetch_sighting_timeline",
+        },
+      },
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        step: "request_completed",
+        timestamp: 350,
+        status: "success",
+        data: {
+          count: 10,
+          sub_request: "fetch_sighting_summary",
+        },
+      },
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        step: "request_completed",
+        timestamp: 400,
+        status: "success",
+        data: {
+          count: 10,
+          sub_request: "fetch_sighting_timeline",
+        },
+      },
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        step: "request_completed",
+        timestamp: 500,
+        status: "success",
+        data: {
+          count: 10,
+        },
+      },
+    ] as TelemetryEventData[];
+
+    await sendTelemetryEvent(mockEvents);
+    expect(mockSendTelemetryEvent).toHaveBeenCalledWith([
+      {
+        correlation_id: "123",
+        event: "sighting_list_event",
+        duration_ms: 400,
+        data: {
+          user_type: "test",
+          count: 10,
+          sub_request: "fetch_sighting_timeline"
+        },
+        steps: [
+          {
+            duration_ms: 100,
+            step: "request_start",
+            start: 100,
+            end: 200,
+            status: "success",
+          },
+          {
+            duration_ms: 300,
+            step: "request_sent",
+            start: 200,
+            end: 500,
+            status: "success",
+          },
+          {
+            duration_ms: 0,
+            step: "request_completed",
+            start: 500,
+            end: 0,
+            status: "success",
+          },
+        ],
+      },
+    ]);
+  });
 });

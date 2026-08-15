@@ -9,6 +9,7 @@ export type TelemetryEventAddData = {
   count?: number;
   total_count?: number;
   error_message?: string;
+  sub_request?: string;
 };
 
 export type TelemetryEventStep =

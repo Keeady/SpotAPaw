@@ -14,6 +14,7 @@ import {
   handleSharingSighting,
 } from "./sighting-handler";
 import { useTranslation } from "react-i18next";
+import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function SightingProfile() {
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
+
+  const { completeInstrument } = useTelemetryProvider();
 
   const { loading, error, timeline, summary } = usePetSightings(
     sightingId,
@@ -134,6 +137,14 @@ export default function SightingProfile() {
 
   const cleanedPetId = petId === "null" ? null : petId;
   const isOwner = user && user?.id === petOwner;
+
+  if (sightingId && summary && timeline && timeline.length > 0) {
+    completeInstrument({
+      eventName: "sighting_detail_event",
+      step: "request_completed",
+      status: "success"
+    })
+  }
 
   return (
     <SightingDetail
