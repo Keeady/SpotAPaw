@@ -25,21 +25,22 @@ import { ProContextProvider } from "@/components/Provider/pro-context-provider";
 import { registerForNotifications } from "@/components/notification-util";
 import { NotificationPermissionProvider } from "@/components/Provider/notification-permission-provider";
 import * as Notifications from "expo-notifications";
+import { TelemetryProvider } from "@/instrumentation/telemetry-provider";
 
 export default function Layout() {
   const router = useRouter();
   const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
 
   useEffect(() => {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldShowList: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-    }),
-  });
-}, []);
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+  }, []);
 
   useEffect(() => {
     initI18next()
@@ -153,25 +154,27 @@ export default function Layout() {
   }
 
   return (
-    <I18nextProvider i18n={i18nInstance}>
-      <PaperProvider theme={MD3LightTheme}>
-        <NotificationPermissionProvider>
-          <LocaleContextProvider>
-            <AuthProvider>
-              <PermissionProvider>
-                <ProContextProvider>
-                  <AIFeatureContextProvider>
-                    <AppLifecycleProvider>
-                      <App />
-                    </AppLifecycleProvider>
-                  </AIFeatureContextProvider>
-                </ProContextProvider>
-              </PermissionProvider>
-            </AuthProvider>
-          </LocaleContextProvider>
-        </NotificationPermissionProvider>
-      </PaperProvider>
-    </I18nextProvider>
+    <TelemetryProvider>
+      <I18nextProvider i18n={i18nInstance}>
+        <PaperProvider theme={MD3LightTheme}>
+          <NotificationPermissionProvider>
+            <LocaleContextProvider>
+              <AuthProvider>
+                <PermissionProvider>
+                  <ProContextProvider>
+                    <AIFeatureContextProvider>
+                      <AppLifecycleProvider>
+                        <App />
+                      </AppLifecycleProvider>
+                    </AIFeatureContextProvider>
+                  </ProContextProvider>
+                </PermissionProvider>
+              </AuthProvider>
+            </LocaleContextProvider>
+          </NotificationPermissionProvider>
+        </PaperProvider>
+      </I18nextProvider>
+    </TelemetryProvider>
   );
 }
 
@@ -186,7 +189,9 @@ function App() {
     if (response) {
       const data = response.notification.request.content.data;
       if (data?.sightingId) {
-        router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
+        router.push(
+          `${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`,
+        );
 
         Notifications.dismissNotificationAsync(
           response.notification.request.identifier,
@@ -198,7 +203,9 @@ function App() {
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         if (data && data.sightingId) {
-          router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
+          router.push(
+            `${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`,
+          );
         }
       });
 
@@ -206,7 +213,9 @@ function App() {
       Notifications.addNotificationReceivedListener((notification) => {
         const data = notification.request.content.data;
         if (data && data.sightingId) {
-          router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
+          router.push(
+            `${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`,
+          );
         }
       });
 
@@ -215,7 +224,6 @@ function App() {
       notificationReceivedListener.remove();
     };
   }, [router, user]);
-
 
   return (
     <View style={styles.root}>

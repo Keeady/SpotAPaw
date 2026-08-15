@@ -28,6 +28,7 @@ Instrument the *existing* trigger-based pipeline before changing any architectur
 | DB-side cost of the trigger chain on insert latency | Is the write path itself already being slowed down today? |
 
 **Concrete implementation plan:**
+
 - Add an `events_log` table: `(sighting_id, action, status, started_at, completed_at, error_message)`. Wrap each existing trigger action with a lightweight insert into this table.
 - Log fan-out size per sighting (`COUNT(*)` from the `ST_DWithin` match) into `events_log`.
 - Use `pg_stat_statements` and Supabase's Postgres logs for trigger execution time without app-level instrumentation.
@@ -35,9 +36,125 @@ Instrument the *existing* trigger-based pipeline before changing any architectur
 - Run for a defined window (1–2 weeks, or N sightings) spanning at least one peak period.
 
 ### Implementation
-_(To be filled in as work begins — schema used, dashboard link, actual instrumentation approach, deviations from plan.)_
+
+#### Overview
+
+This document describes the instrumentation strategy for tracking feed-related
+requests end-to-end, from the moment a client initiates a request to backend
+completion. The goal is to capture enough signal to diagnose latency, failures,
+and user impact without coupling telemetry logic to business logic.
+
+#### Design Decision: Reporting Mechanism
+
+Two approaches were considered for how the client reports timing data to the
+backend.
+
+##### Option 1 — Piggyback on the existing request
+
+Attach telemetry metadata (`started_at`, `correlation_id`) to the existing feed
+request payload, then send a follow-up update once the request completes or
+fails on the client.
+
+- **Pros:** No new endpoint required; minimal frontend surface area change.
+- **Cons:** Requires a second call from the client to report completion,
+  meaning telemetry state is split across two request/response cycles tied to
+  the same business call.
+
+##### Option 2 — Dedicated telemetry endpoint
+
+Send telemetry data to the backend via a separate, purpose-built endpoint,
+decoupled from the business request entirely.
+
+- **Pros:** Client-measured completion time is accurate and independent of the
+  business response payload; telemetry can evolve without touching business
+  endpoints.
+- **Cons:** Requires new backend endpoints and additional network calls from
+  the client.
+
+#### Recommendation
+
+**Option 2** is the preferred approach. Instrumentation and business logic
+should be decoupled because they evolve on different cadences and are owned by
+different concerns — a change to how a sighting is fetched should not require
+touching how that fetch is measured, and vice versa. This also keeps the
+instrumentation contract consistent across both the frontend and backend,
+since the backend independently emits its own telemetry steps for the same
+`correlation_id` regardless of how the client reports its side.
+
+#### Event Aggregation Strategy
+
+Rather than emitting a new telemetry event per step, all steps for a given
+request are aggregated into a **single event**, keyed by `event` name and
+`correlation_id`. Each step updates the same event record rather than creating
+a new row, which keeps event volume proportional to requests rather than to
+requests × steps.
+
+#### Questions This Telemetry Answers
+
+- How long does the request take, end-to-end?
+- Which stage of the request lifecycle is slow?
+- Why did the request fail?
+- Where in the pipeline did it fail?
+- When did failures start trending?
+- What type of users are affected?
+- How many users are affected?
+- What errors are occurring and how often?
+
+#### Telemetry Steps
+
+Each event progresses through the following steps, representing the full
+client → server → client round trip:
+
+| Step | Description |
+|---|---|
+| `request_start` | Client begins preparing the request |
+| `request_sent` | Client dispatches the request over the network |
+| `request_received` | Backend receives the request |
+| `request_queued` | Backend queues the request for processing |
+| `request_task_start` | Backend begins processing the task |
+| `request_task_completed` | Backend finishes processing the task |
+| `request_response_sent` | Backend sends the response |
+| `request_response_received` | Client receives the response |
+| `request_completed` | Client finishes handling the response (success or failure) |
+
+#### Telemetry Payload Schema
+
+| Field | Description |
+|---|---|
+| `correlation_id` | Unique ID tying all steps of a single request together |
+| `event` | Event name (see Events below) |
+| `step` | Current step in the request lifecycle (see Telemetry Steps) |
+| `started_at` | Timestamp when this step began |
+| `completed_at` | Timestamp when this step completed |
+| `count` | Number of occurrences, for batched/aggregated steps |
+| `duration_ms` | Duration of this step, in milliseconds |
+| `error_message` | Error detail, if the step failed |
+| `status` | Outcome of the step (e.g. success, failure) |
+| `data` | Free-form object for additional business context (see below) |
+| `error_type` | Error category to help categorizing and tracking errors over time |
+
+#### `data` Field
+
+To avoid schema growth from adding a new column for every new dimension we
+want to track, supplementary business context is stored in a flexible `data`
+object rather than as first-class fields:
+
+- `user_type`
+- `is_ai_enabled`
+- `count`
+- `error_message`
+
+#### Events
+
+| Event | Trigger |
+|---|---|
+| `sighting_list_event` | Populating the nearby sighting feed on app open or navigation |
+| `sighting_detail_event` | User opens a sighting's detail page from the feed |
+| `sighting_photo_upload_event` | User uploads a photo with AI enabled; tracks the external AI dependency and photo processing pipeline |
+| `sighting_create_event` | User submits a new sighting; tracks all downstream dependencies |
 
 ### Follow-up / Learnings
+
 _(To be filled in once the baseline window completes — actual numbers observed, any surprises, anything that changes the plan for later phases.)_
 
 ---

@@ -16,6 +16,9 @@ import { handleAddingSighting } from "./sighting-handler";
 import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { useTranslation } from "react-i18next";
+import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
+import type { InstrumentProps } from "@/instrumentation/telemetry-event";
+import type { TelemetryEventStepStatus } from "@/db/models/telemetry";
 
 type SightingPageProps = {
   renderer: (
@@ -46,6 +49,8 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { location, isLoadingLocation } = useContext(PermissionContext);
+  const { instrument, completeInstrument } = useTelemetryProvider(); // Initialize telemetry provider to capture performance metrics
+
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
   const onFetchComplete = useCallback(
@@ -56,7 +61,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       totalCount: number,
     ) => {
       if (error) {
-        setError(error);
+        setError("An error occurred while fetching sightings.");
       } else if (pagination.start === 0) {
         setSightings(newSightings);
       } else if (newSightings.length > 0) {
@@ -76,7 +81,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setPagination(pagination);
       }
     },
-    [],
+    [completeInstrument],
   );
 
   const fetch = useCallback(
@@ -85,9 +90,15 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination: SightingPagination,
     ) => {
       setLoading(true);
-      fetchSightingsWithLocation(location, pagination, onFetchComplete);
+      fetchSightingsWithLocation(
+        location,
+        pagination,
+        onFetchComplete,
+        instrument,
+        completeInstrument,
+      );
     },
-    [onFetchComplete],
+    [onFetchComplete, instrument, completeInstrument],
   );
 
   // Refetch when filter changes
@@ -189,8 +200,24 @@ const fetchSightingsWithLocation = async (
     pagination: SightingPagination,
     totalCount: number,
   ) => void,
+  instrument: (props: InstrumentProps) => void,
+  completeInstrument: (
+    props: InstrumentProps & { status: TelemetryEventStepStatus },
+  ) => void,
 ) => {
   if (!location) {
+    completeInstrument({
+      eventName: "sighting_list_event",
+      step: "request_sent",
+      eventData: {
+        count: 0,
+        total_count: 0,
+        error_message: "",
+      },
+      errorType: "missing_location",
+      status: "incomplete",
+    });
+
     return onFetchComplete([], null, pagination, 0);
   }
 
@@ -205,6 +232,8 @@ const fetchSightingsWithLocation = async (
   const minLng = lng - lngDegree;
   const maxLng = lng + lngDegree;
 
+  instrument({ eventName: "sighting_list_event", step: "request_sent", status: "success" });
+
   // Default: fetch all sightings
   const repository = new SightingRepository();
   repository
@@ -218,15 +247,34 @@ const fetchSightingsWithLocation = async (
     })
     .then(({ data, count }) => {
       onFetchComplete(data || [], null, pagination, count || 0);
+      completeInstrument({
+        eventName: "sighting_list_event",
+        step: "request_completed",
+        eventData: {
+          count: data.length,
+          total_count: count || 0,
+          error_message: "",
+        },
+        errorType: undefined,
+        status: "success",
+      });
     })
     .catch((error) => {
       const errorMessage = createErrorLogMessage(error);
-      log(`fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`);
-      onFetchComplete(
-        [],
-        "An error occurred while fetching sightings.",
-        pagination,
-        0,
+      log(
+        `fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`,
       );
+      onFetchComplete([], errorMessage, pagination, 0);
+      completeInstrument({
+        eventName: "sighting_list_event",
+        step: "request_completed",
+        eventData: {
+          count: 0,
+          total_count: 0,
+          error_message: "",
+        },
+        errorType: "fetch_error",
+        status: "failed",
+      });
     });
 };
