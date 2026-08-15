@@ -79,6 +79,7 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_start",
     start: 0,
     end: 0,
+    status: "incomplete",
   } as TelemetryEventStepData;
 
   const requestSent = {
@@ -86,6 +87,7 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_sent",
     start: 0,
     end: 0,
+    status: "incomplete",
   } as TelemetryEventStepData;
 
   const requestCompleted = {
@@ -93,6 +95,7 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_completed",
     start: 0,
     end: 0,
+    status: "incomplete",
   } as TelemetryEventStepData;
 
   for (const event of events) {
