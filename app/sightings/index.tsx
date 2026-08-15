@@ -26,20 +26,34 @@ export default function SightingAnonList() {
     status: "success",
   });
 
+  const onSightingPress = useCallback(
+    (sighting: AggregatedSighting) => {
+      startInstrument({
+        eventName: "sighting_detail_event",
+        step: "request_start",
+        eventData: {
+          user_type: "unauthenticated",
+        },
+        status: "success",
+      });
+
+      router.push(
+        `/sightings/${sighting.id}/?petId=${sighting.petId}&linkedSightingId=${sighting.linkedSightingId}`,
+      );
+    },
+    [router, startInstrument],
+  );
+
   const rendererItem = useCallback(
     ({ item }: { item: AggregatedSighting }) => (
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() =>
-          router.push(
-            `/sightings/${item.id}/?petId=${item.petId}&linkedSightingId=${item.linkedSightingId}`,
-          )
-        }
+        onPress={() => onSightingPress(item)}
       >
         <RenderSightingProfile pet={item} />
       </TouchableOpacity>
     ),
-    [router],
+    [onSightingPress],
   );
 
   const renderer = useCallback(

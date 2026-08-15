@@ -74,6 +74,9 @@ export const sendTelemetryEvent = async (events: TelemetryEventData[]) => {
 };
 
 function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
+  let maxStartEnd = 0;
+  let maxSendEnd = 0;
+
   const requestStart = {
     duration_ms: 0,
     step: "request_start",
@@ -103,16 +106,32 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
       requestStart.start = event.timestamp;
       requestStart.status = event.status || "incomplete";
     } else if (event.step === "request_sent") {
-      requestSent.start = event.timestamp;
-      requestSent.status = event.status || "incomplete";
+      if (event.data?.sub_request) {
+        if (maxStartEnd < event.timestamp) {
+          maxStartEnd = event.timestamp;
+          requestSent.start = event.timestamp;
+          requestSent.status = event.status || "incomplete";
+        }
+      } else {
+        requestSent.start = event.timestamp;
+        requestSent.status = event.status || "incomplete";
+      }
     } else if (event.step === "request_completed") {
-      requestCompleted.start = event.timestamp;
-      requestCompleted.status = event.status || "incomplete";
+      if (event.data?.sub_request) {
+        if (maxSendEnd < event.timestamp) {
+          maxSendEnd = event.timestamp;
+          requestCompleted.start = event.timestamp;
+          requestCompleted.status = event.status || "incomplete";
+        }
+      } else {
+        requestCompleted.start = event.timestamp;
+        requestCompleted.status = event.status || "incomplete";
+      }
     }
   }
 
-  requestStart.end = requestSent.start;
-  requestSent.end = requestCompleted.start;
+  requestStart.end = maxStartEnd ? maxStartEnd : requestSent.start;
+  requestSent.end = maxSendEnd ? maxSendEnd : requestCompleted.start;
   requestStart.duration_ms = requestStart.end - requestStart.start;
   requestSent.duration_ms = requestSent.end - requestSent.start;
 

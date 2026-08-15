@@ -14,6 +14,7 @@ import {
   handleSharingSighting,
 } from "./sighting-handler";
 import { useTranslation } from "react-i18next";
+import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function SightingProfile() {
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
+
+  const { completeInstrument } = useTelemetryProvider();
 
   const { loading, error, timeline, summary } = usePetSightings(
     sightingId,
