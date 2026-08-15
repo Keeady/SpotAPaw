@@ -157,7 +157,7 @@ object rather than as first-class fields:
 
 _(To be filled in once the baseline window completes — actual numbers observed, any surprises, anything that changes the plan for later phases.)_
 
-After adding these events, I noticed that we are doing a lot of different queries for a single screen that could benefit from combining these queries and moving processing to the backend. For instance, sighting_detail_event needs pet info, claim info, sighting list info, summary info. Maybe a single request that can query and combine these info only once would be better.
+After adding these events, I noticed that we are doing a lot of different queries for a single screen that could benefit from combining these queries and moving processing to the backend. For instance, `sighting_detail_event` needs pet info, claim info, sighting list info, and summary info. Maybe a single request that can query and combine this information only once would be better.
 
 ---
 

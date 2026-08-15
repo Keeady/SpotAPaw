@@ -138,14 +138,6 @@ export default function SightingProfile() {
   const cleanedPetId = petId === "null" ? null : petId;
   const isOwner = user && user?.id === petOwner;
 
-  if (sightingId && summary && timeline && timeline.length > 0) {
-    completeInstrument({
-      eventName: "sighting_detail_event",
-      step: "request_completed",
-      status: "success"
-    })
-  }
-
   return (
     <SightingDetail
       petName={petName}
