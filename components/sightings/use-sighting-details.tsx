@@ -12,61 +12,64 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
   const [summary, setSummary] = useState<AggregatedSighting>();
   const { instrument } = useTelemetryProvider();
 
-  const fetchSummary = useCallback(async (sightingId: string) => {
-    setLoading(true);
-    setError("");
+  const fetchSummary = useCallback(
+    async (sightingId: string) => {
+      setLoading(true);
+      setError("");
 
-    if (!sightingId || !isValidUuid(sightingId)) {
-      log(`Sighting Details: Invalid sightingId: ${sightingId}`);
-      setError("Error fetching sighting info.");
-      setLoading(false);
-
-      instrument({
-        eventName: "sighting_detail_event",
-        step: "request_sent",
-        status: "incomplete",
-        eventData: {
-          sub_request: "fetch_sighting_summary",
-        },
-      });
-      return;
-    }
-
-    const repository = new SightingRepository();
-    repository
-      .getSighting(sightingId)
-      .then((data) => {
-        if (data) {
-          setSummary(data);
-        }
-
-        instrument({
-          eventName: "sighting_detail_event",
-          step: "request_completed",
-          status: "success",
-          eventData: {
-            sub_request: "fetch_sighting_summary",
-          },
-        });
-      })
-      .catch((error) => {
-        const errorMessage = createErrorLogMessage(error);
-        log(`Failed to fetch sighting summary for sighting: ${errorMessage}`);
-        setError("Error fetching sighting info. Please try again.");
-
-        instrument({
-          eventName: "sighting_detail_event",
-          step: "request_completed",
-          status: "failed",
-          eventData: {
-            sub_request: "fetch_sighting_summary",
-          },
-        });
-      })
-      .finally(() => {
+      if (!sightingId || !isValidUuid(sightingId)) {
+        log(`Sighting Details: Invalid sightingId: ${sightingId}`);
+        setError("Error fetching sighting info.");
         setLoading(false);
-      });
-  }, []);
+
+        instrument({
+          eventName: "sighting_detail_event",
+          step: "request_sent",
+          status: "incomplete",
+          eventData: {
+            sub_request: "fetch_sighting_summary",
+          },
+        });
+        return;
+      }
+
+      const repository = new SightingRepository();
+      repository
+        .getSighting(sightingId)
+        .then((data) => {
+          if (data) {
+            setSummary(data);
+          }
+
+          instrument({
+            eventName: "sighting_detail_event",
+            step: "request_completed",
+            status: "success",
+            eventData: {
+              sub_request: "fetch_sighting_summary",
+            },
+          });
+        })
+        .catch((error) => {
+          const errorMessage = createErrorLogMessage(error);
+          log(`Failed to fetch sighting summary for sighting: ${errorMessage}`);
+          setError("Error fetching sighting info. Please try again.");
+
+          instrument({
+            eventName: "sighting_detail_event",
+            step: "request_completed",
+            status: "failed",
+            eventData: {
+              sub_request: "fetch_sighting_summary",
+            },
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [instrument],
+  );
 
   const fetchSummaryByLinkedSightingId = useCallback(
     async (linkedSightingId: string) => {
@@ -161,7 +164,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
           setLoading(false);
         });
     },
-    [],
+    [instrument],
   );
 
   useEffect(() => {
@@ -197,6 +200,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
     fetchSummary,
     fetchSightingsByLinkedSightingId,
     fetchSummaryByLinkedSightingId,
+    instrument,
   ]);
 
   return { loading, error, timeline, summary };

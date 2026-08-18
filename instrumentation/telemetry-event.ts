@@ -17,6 +17,7 @@ export type InstrumentProps = {
   eventData?: TelemetryEventAddData;
   errorType?: TelemetryErrorType;
   status: TelemetryEventStepStatus;
+  error_message?: string;
 };
 
 export type TelemetryEventData = {
@@ -27,6 +28,7 @@ export type TelemetryEventData = {
   data?: TelemetryEventAddData;
   error_type?: TelemetryErrorType;
   status: TelemetryEventStepStatus;
+  error_message?: string;
 };
 
 export const sendTelemetryEvent = async (events: TelemetryEventData[]) => {
@@ -82,7 +84,6 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_start",
     start: 0,
     end: 0,
-    status: "incomplete",
   } as TelemetryEventStepData;
 
   const requestSent = {
@@ -90,7 +91,6 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_sent",
     start: 0,
     end: 0,
-    status: "incomplete",
   } as TelemetryEventStepData;
 
   const requestCompleted = {
@@ -98,13 +98,17 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
     step: "request_completed",
     start: 0,
     end: 0,
-    status: "incomplete",
   } as TelemetryEventStepData;
 
   for (const event of events) {
     if (event.step === "request_start") {
       requestStart.start = event.timestamp;
       requestStart.status = event.status || "incomplete";
+
+      if (requestStart.status !== "success") {
+        requestStart.error_type = event.error_type;
+        requestStart.error_message = event.error_message || "";
+      }
     } else if (event.step === "request_sent") {
       if (event.data?.sub_request) {
         if (maxStartEnd < event.timestamp) {
@@ -116,6 +120,11 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
         requestSent.start = event.timestamp;
         requestSent.status = event.status || "incomplete";
       }
+
+      if (requestSent.status !== "success") {
+        requestSent.error_type = event.error_type;
+        requestSent.error_message = event.error_message || "";
+      }
     } else if (event.step === "request_completed") {
       if (event.data?.sub_request) {
         if (maxSendEnd < event.timestamp) {
@@ -126,6 +135,11 @@ function generateSteps(events: TelemetryEventData[]): TelemetryEventStepData[] {
       } else {
         requestCompleted.start = event.timestamp;
         requestCompleted.status = event.status || "incomplete";
+      }
+
+      if (requestCompleted.status !== "success") {
+        requestCompleted.error_type = event.error_type;
+        requestCompleted.error_message = event.error_message || "";
       }
     }
   }

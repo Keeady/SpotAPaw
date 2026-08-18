@@ -123,6 +123,8 @@ describe("TelemetryEvent", () => {
         step: "request_sent",
         timestamp: 300,
         status: "failed",
+        error_message: "test failed",
+        error_type: "network_error",
       },
     ] as TelemetryEventData[];
 
@@ -149,6 +151,8 @@ describe("TelemetryEvent", () => {
             start: 300,
             end: 1000,
             status: "failed",
+            error_message: "test failed",
+            error_type: "network_error",
           },
           {
             duration_ms: 0,
@@ -247,7 +251,7 @@ describe("TelemetryEvent", () => {
           count: 10,
           sub_request: "fetch_sighting_timeline",
         },
-      }
+      },
     ] as TelemetryEventData[];
 
     await sendTelemetryEvent(mockEvents);
@@ -259,7 +263,7 @@ describe("TelemetryEvent", () => {
         data: {
           user_type: "test",
           count: 10,
-          sub_request: "fetch_sighting_timeline"
+          sub_request: "fetch_sighting_timeline",
         },
         steps: [
           {

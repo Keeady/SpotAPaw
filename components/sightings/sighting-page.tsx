@@ -81,7 +81,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         setPagination(pagination);
       }
     },
-    [completeInstrument],
+    [],
   );
 
   const fetch = useCallback(
@@ -212,9 +212,9 @@ const fetchSightingsWithLocation = async (
       eventData: {
         count: 0,
         total_count: 0,
-        error_message: "",
       },
       errorType: "missing_location",
+      error_message: "location data is empty",
       status: "incomplete",
     });
 
@@ -232,7 +232,11 @@ const fetchSightingsWithLocation = async (
   const minLng = lng - lngDegree;
   const maxLng = lng + lngDegree;
 
-  instrument({ eventName: "sighting_list_event", step: "request_sent", status: "success" });
+  instrument({
+    eventName: "sighting_list_event",
+    step: "request_sent",
+    status: "success",
+  });
 
   // Default: fetch all sightings
   const repository = new SightingRepository();
@@ -253,9 +257,7 @@ const fetchSightingsWithLocation = async (
         eventData: {
           count: data.length,
           total_count: count || 0,
-          error_message: "",
         },
-        errorType: undefined,
         status: "success",
       });
     })
@@ -271,9 +273,9 @@ const fetchSightingsWithLocation = async (
         eventData: {
           count: 0,
           total_count: 0,
-          error_message: "",
         },
         errorType: "fetch_error",
+        error_message: errorMessage,
         status: "failed",
       });
     });

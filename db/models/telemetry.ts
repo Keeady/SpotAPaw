@@ -8,7 +8,6 @@ export type TelemetryEventAddData = {
   is_ai_enabled?: boolean;
   count?: number;
   total_count?: number;
-  error_message?: string;
   sub_request?: string;
 };
 
@@ -39,6 +38,8 @@ export type TelemetryEventStepData = {
     start: number,
     end: number,
     status: TelemetryEventStepStatus,
+    error_type?: TelemetryErrorType;
+    error_message?: string;
 }
 
 export interface TelemetryEvent {
