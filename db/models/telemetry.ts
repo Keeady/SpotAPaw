@@ -9,6 +9,7 @@ export type TelemetryEventAddData = {
   count?: number;
   total_count?: number;
   sub_request?: string;
+  source?: string;
 };
 
 export type TelemetryEventStep =
@@ -23,6 +24,8 @@ export type TelemetryEventStep =
   | "request_completed";
 
 export type TelemetryErrorType =
+  | "pet_submit_error"
+  | "sighting_submit_error"
   | "missing_location"
   | "fetch_error"
   | "network_error"
@@ -33,14 +36,14 @@ export type TelemetryErrorType =
 export type TelemetryEventStepStatus = "success" | "failed" | "incomplete";
 
 export type TelemetryEventStepData = {
-    step: TelemetryEventStep,
-    duration_ms: number,
-    start: number,
-    end: number,
-    status: TelemetryEventStepStatus,
-    error_type?: TelemetryErrorType;
-    error_message?: string;
-}
+  step: TelemetryEventStep;
+  duration_ms: number;
+  start: number;
+  end: number;
+  status: TelemetryEventStepStatus;
+  error_type?: TelemetryErrorType;
+  error_message?: string;
+};
 
 export interface TelemetryEvent {
   correlation_id: string;
