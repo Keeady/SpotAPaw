@@ -32,7 +32,7 @@ const TelemetryProvider = (props: Props) => {
   }, []);
 
   const startInstrument = useCallback(
-    ({ eventName, step, eventData, errorType, status }: InstrumentProps) => {
+    ({ eventName, step, eventData, errorType, status, error_message }: InstrumentProps) => {
       if (!eventName) {
         log("Telemetry event name is required.");
         return;
@@ -56,6 +56,7 @@ const TelemetryProvider = (props: Props) => {
           data: eventData,
           error_type: errorType,
           status: status,
+          error_message: error_message
         },
       ];
     },
@@ -69,6 +70,7 @@ const TelemetryProvider = (props: Props) => {
       eventData,
       errorType,
       status,
+      error_message
     }: InstrumentProps) => {
       if (!eventName) {
         log("Telemetry event name is required.");
@@ -97,6 +99,7 @@ const TelemetryProvider = (props: Props) => {
           data: eventData,
           error_type: errorType,
           status: status,
+          error_message
         },
       ];
 
@@ -106,7 +109,7 @@ const TelemetryProvider = (props: Props) => {
   );
 
   const instrument = useCallback(
-    ({ eventName, step, eventData, errorType, status }: InstrumentProps) => {
+    ({ eventName, step, eventData, errorType, status, error_message }: InstrumentProps) => {
       if (!eventName) {
         log("Telemetry event name is required.");
         return;
@@ -134,6 +137,7 @@ const TelemetryProvider = (props: Props) => {
           data: eventData,
           error_type: errorType,
           status: status,
+          error_message
         },
       ];
     },
