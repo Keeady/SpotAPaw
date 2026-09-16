@@ -143,6 +143,7 @@ object rather than as first-class fields:
 - `is_ai_enabled`
 - `count`
 - `error_message`
+- `source`
 
 #### Events
 

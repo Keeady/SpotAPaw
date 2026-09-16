@@ -9,6 +9,7 @@ const mockEvents = [
     status: "success",
     data: {
       user_type: "test",
+      count: 10,
     },
   },
   {
@@ -24,9 +25,6 @@ const mockEvents = [
     step: "request_completed",
     timestamp: 350,
     status: "success",
-    data: {
-      count: 10,
-    },
   },
 ] as TelemetryEventData[];
 

@@ -235,6 +235,20 @@ Deno.serve(async (req: Request) => {
       }
 
       photoPublicUrl = publicUrl;
+
+      const { error: petPhotoInsertError } = await supabaseClient
+        .from("pet_photos")
+        .insert({
+          photo_hash: hash,
+          public_url: photoPublicUrl,
+        });
+
+      if (petPhotoInsertError) {
+        console.error(petPhotoInsertError);
+        let msg = `Failed to insert photo public URL: ${petPhotoInsertError.message}`;
+
+        return getErrorResponse(msg, 500);
+      }
     }
   } catch (error) {
     console.error(error);

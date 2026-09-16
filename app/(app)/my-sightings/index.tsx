@@ -3,7 +3,7 @@ import SightingPage from "@/components/sightings/sighting-page";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { useTelemetryProvider } from "@/instrumentation/telemetry-provider";
 import { useRouter } from "expo-router";
-import React, { JSX, useCallback } from "react";
+import React, { JSX, useCallback, useEffect } from "react";
 import {
   FlatList,
   RefreshControl,
@@ -17,14 +17,16 @@ export default function SightingList() {
   const router = useRouter();
   const { startInstrument } = useTelemetryProvider(); // Initialize telemetry provider to capture performance metrics
 
-  startInstrument({
-    eventName: "sighting_list_event",
-    step: "request_start",
-    eventData: {
-      user_type: "authenticated",
-    },
-    status: "success",
-  });
+  useEffect(() => {
+    startInstrument({
+      eventName: "sighting_list_event",
+      step: "request_start",
+      eventData: {
+        user_type: "authenticated",
+      },
+      status: "success",
+    });
+  }, []);
 
   const onSightingPress = useCallback(
     (sighting: AggregatedSighting) => {
