@@ -299,7 +299,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               .catch(async (error) => {
                 const errorMessage = await createErrorLogMessageAsync(error);
                 handleCompleteInstrument("sighting_submit_error", errorMessage);
-                onSubmitFailure(errorMessage, action);
+                throw error;
               });
           } else if (action === "edit-sighting") {
             return updateSighting(sightingFormData, []);
@@ -322,7 +322,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 .catch(async (error) => {
                 const errorMessage = await createErrorLogMessageAsync(error);
                 handleCompleteInstrument("sighting_submit_error", errorMessage);
-                onSubmitFailure(errorMessage, action);
+                throw error;
               });
             }
 
@@ -341,7 +341,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 .catch(async (error) => {
                 const errorMessage = await createErrorLogMessageAsync(error);
                 handleCompleteInstrument("sighting_submit_error", errorMessage);
-                onSubmitFailure(errorMessage, action);
+                throw error;
               });
             }
 
@@ -366,7 +366,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               .catch(async (error) => {
                 const errorMessage = await createErrorLogMessageAsync(error);
                 handleCompleteInstrument("sighting_submit_error", errorMessage);
-                onSubmitFailure(errorMessage, action);
+                throw error;
               });
           } else if (action === "add-pet") {
             if (sightingFormData.isLost) {
@@ -388,7 +388,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 .catch(async (error) => {
                 const errorMessage = await createErrorLogMessageAsync(error);
                 handleCompleteInstrument("sighting_submit_error", errorMessage);
-                onSubmitFailure(errorMessage, action);
+                throw error;
               });
             }
 
@@ -417,7 +417,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
                 .catch(async (error) => {
                 const errorMessage = await createErrorLogMessageAsync(error);
                 handleCompleteInstrument("sighting_submit_error", errorMessage);
-                onSubmitFailure(errorMessage, action);
+                throw error;
               });
             }
 
@@ -975,8 +975,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   );
 
   const handleNextButtonPress = () => {
-    handleNext();
     handleStartInstrument();
+    handleNext();
   };
 
   return (
