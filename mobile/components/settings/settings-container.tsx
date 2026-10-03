@@ -107,6 +107,7 @@ const SettingsContainer = () => {
     useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [contactVisible, setContactVisible] = useState(false);
 
   const { user } = useContext(AuthContext);
 
@@ -430,11 +431,8 @@ const SettingsContainer = () => {
       contactSetting={
         <ContactSetting
           iconColorContact={iconColors.information}
-          onOpenContact={() =>
-            Linking.openURL("mailto:spotapaw@spotapaw.com").catch(() => {
-              log("Failed to open email client");
-            })
-          }
+          onOpenContact={setContactVisible}
+          contactVisible={contactVisible}
         />
       }
     />

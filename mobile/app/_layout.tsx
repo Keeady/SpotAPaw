@@ -45,6 +45,9 @@ Sentry.init({
   integrations: [
     Sentry.mobileReplayIntegration(),
     Sentry.feedbackIntegration(),
+    Sentry.hermesProfilingIntegration({
+      platformProfilers: false
+    })
   ],
 });
 
