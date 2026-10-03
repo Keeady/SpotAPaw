@@ -29,6 +29,7 @@ export default ({ config }) => {
       EXPO_GOOGLE_GEOCODE_API_KEY: process.env.EXPO_GOOGLE_GEOCODE_API_KEY,
       EXPO_GOOGLE_MAP_API_KEY_IOS: process.env.EXPO_GOOGLE_MAP_API_KEY_IOS,
       EXPO_GOOGLE_MAP_API_KEY_WEB: process.env.EXPO_GOOGLE_MAP_API_KEY_WEB,
+      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN
     },
   };
 };
