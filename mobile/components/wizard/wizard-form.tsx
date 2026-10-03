@@ -53,6 +53,7 @@ import { useTranslation } from "react-i18next";
 import { useProContext } from "../Provider/pro-context-provider";
 import { PhotoResult } from "./photo-result";
 import { findMatches } from "./sighting-match-handler";
+import * as Sentry from "@sentry/react-native";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const { t } = useTranslation(["wizard", "translation"]);
@@ -164,13 +165,13 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(
+          const log =
             t(
               "wizardFailedToFetchSightingInfoForSightingErrormessage",
               "Wizard: Failed to fetch sighting info for sighting: {{errorMessage}}",
               { errorMessage },
-            ),
-          );
+            )
+          ;
           showMessage({
             message: t(
               "errorFetchingPetSighting",
@@ -180,6 +181,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             icon: "warning",
             statusBarHeight: 50,
           });
+
+          Sentry.captureException(log);
         });
     }
   }, [sightingId, updateSightingData, action]);
@@ -229,7 +232,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Wizard: Failed to fetch pet info for pet: ${errorMessage}`);
+          const log = `Wizard: Failed to fetch pet info for pet: ${errorMessage}`;
           showMessage({
             message: t(
               "errorFetchingPetInformation",
@@ -239,6 +242,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             icon: "warning",
             statusBarHeight: 50,
           });
+          Sentry.captureException(log);
         });
     }
   }, [petId, updateSightingData, isPetLost]);
@@ -608,6 +612,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   );
 
   const onImageAnalyzeFailure = async (error: any) => {
+    let log;
     if (error instanceof FunctionsHttpError) {
       const errorContext = await error.context.json();
       if (errorContext.code === MAX_FILE_SIZE_ERROR) {
@@ -616,7 +621,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         setErrorMessage("Failed to process image. Please try again.");
       }
 
-      log(errorContext.message);
+      log = errorContext.message;
     } else if (error instanceof Error) {
       if (error.cause === NO_PETS_DETECTED) {
         setErrorMessage("No pets detected in image.");
@@ -626,23 +631,26 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         setErrorMessage("Failed to process image. Please try again.");
       }
 
-      log(error.message);
+      log = error.message;
     } else {
       const errorMessage = createErrorLogMessage(error);
       setErrorMessage("Failed to process image. Please try again.");
-      log(`Wizard: Failed to process image: ${errorMessage}`);
+      log = `Wizard: Failed to process image: ${errorMessage}`;
     }
+
+    Sentry.captureException(log);
 
     setAiGenerated(false);
     setLoading(false);
   };
 
   const onSubmitFailure = (error: any, action: WizardFormAction) => {
+    let log;
     if (error instanceof PostgrestError) {
-      log(error.message);
+      log = error.message;
     } else {
       const errorMessage = createErrorLogMessage(error);
-      log(`Wizard: Failed to submit sighting: ${errorMessage}`);
+      log = `Wizard: Failed to submit sighting: ${errorMessage}`;
     }
 
     if (action === "add-pet" || action === "edit-pet") {
@@ -666,6 +674,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         statusBarHeight: 50,
       });
     }
+
+    Sentry.captureException(log);
   };
 
   const { analyze, analyzeMultiple } = usePetAnalyzer({

@@ -2,9 +2,9 @@ import { Href, Router } from "expo-router";
 import { Platform, Share } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { showMessage } from "react-native-flash-message";
-import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { TFunction } from "i18next";
+import * as Sentry from "@sentry/react-native";
 
 export function handleAddingSighting(
   router: Router,
@@ -69,8 +69,10 @@ export async function handleSharingSighting(
           text: shareMessage,
           url: sightingUrl,
         });
-      } catch {
+      } catch (error) {
         // User cancelled
+        const msg = createErrorLogMessage(error)
+        Sentry.captureMessage(msg);
       }
     } else {
       await Clipboard.setStringAsync(sightingUrl)
@@ -86,7 +88,7 @@ export async function handleSharingSighting(
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Failed to copy link to clipboard on web: ${errorMessage}`);
+          const log = `Failed to copy link to clipboard on web: ${errorMessage}`;
           showMessage({
             message: t(
               "failedToCopyLinkToClipboard",
@@ -97,6 +99,7 @@ export async function handleSharingSighting(
             icon: "warning",
             statusBarHeight: 50,
           });
+          Sentry.captureException(log);
         });
     }
     return;
@@ -118,6 +121,7 @@ export async function handleSharingSighting(
     await Share.share(shareObj);
   } catch (error) {
     const errorMessage = createErrorLogMessage(error);
-    log(`Failed to share sighting: ${errorMessage}`);
+    const log = `Failed to share sighting: ${errorMessage}`;
+    Sentry.captureException(log);
   }
 }

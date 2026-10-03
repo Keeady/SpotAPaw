@@ -13,9 +13,9 @@ import { SightingLocationManager } from "./sighting-location-manager";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { handleAddingSighting } from "./sighting-handler";
-import { log } from "../logs";
 import { createErrorLogMessage } from "../util";
 import { useTranslation } from "react-i18next";
+import * as Sentry from "@sentry/react-native";
 
 type SightingPageProps = {
   renderer: (
@@ -221,12 +221,13 @@ const fetchSightingsWithLocation = async (
     })
     .catch((error) => {
       const errorMessage = createErrorLogMessage(error);
-      log(`fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`);
+      const log = `fetchSightingsWithLocation: Failed to fetch sightings: ${errorMessage}`;
       onFetchComplete(
         [],
         "An error occurred while fetching sightings.",
         pagination,
         0,
       );
+      Sentry.captureException(log);
     });
 };

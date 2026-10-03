@@ -14,6 +14,7 @@ import {
   handleSharingSighting,
 } from "./sighting-handler";
 import { useTranslation } from "react-i18next";
+import * as Sentry from "@sentry/react-native";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -53,7 +54,8 @@ export default function SightingProfile() {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Failed to fetch claim info for sighting: ${errorMessage}`);
+          const log = `Failed to fetch claim info for sighting: ${errorMessage}`;
+          Sentry.captureException(log);
         });
     }
   }, [user?.id, sightingId]);
@@ -71,7 +73,8 @@ export default function SightingProfile() {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Failed to fetch pet info for pet: ${errorMessage}`);
+          const log = `Failed to fetch pet info for pet: ${errorMessage}`;
+          Sentry.captureException(log);
         });
     }
   }, [petId, summary?.name, summary?.ownerId]);
