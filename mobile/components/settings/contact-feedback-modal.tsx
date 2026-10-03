@@ -66,9 +66,7 @@ const ContactFeedbackModal = ({
           <View style={styles.success}>
             <Text variant="headlineSmall">Thank you!</Text>
 
-            <Text variant="bodyMedium">
-              Your feedback has been sent.
-            </Text>
+            <Text variant="bodyMedium">Your feedback has been sent.</Text>
 
             <Button mode="contained" onPress={handleDismiss}>
               Done
@@ -79,8 +77,8 @@ const ContactFeedbackModal = ({
             <Text variant="headlineSmall">Contact Us</Text>
 
             <Text variant="bodyMedium" style={styles.description}>
-              Have a question, suggestion, or found a problem? We'd love to
-              hear from you.
+              Have a question, suggestion, or found a problem? We'd love to hear
+              from you.
             </Text>
 
             <TextInput
@@ -102,7 +100,7 @@ const ContactFeedbackModal = ({
             />
 
             <TextInput
-              label="Message"
+              label="Message (Required)"
               value={message}
               onChangeText={setMessage}
               mode="outlined"
@@ -110,10 +108,6 @@ const ContactFeedbackModal = ({
               numberOfLines={5}
               style={styles.messageInput}
             />
-
-            <HelperText type="error" visible={!message.trim()}>
-              Please enter a message.
-            </HelperText>
 
             <View style={styles.actions}>
               <Button onPress={handleDismiss} disabled={submitting}>

@@ -43,11 +43,15 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
   integrations: [
-    Sentry.mobileReplayIntegration(),
+    Sentry.mobileReplayIntegration({
+      maskAllText: true,
+      maskAllImages: true,
+      maskAllVectors: true,
+    }),
     Sentry.feedbackIntegration(),
     Sentry.hermesProfilingIntegration({
-      platformProfilers: false
-    })
+      platformProfilers: false,
+    }),
   ],
 });
 
