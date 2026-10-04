@@ -15,6 +15,8 @@ import {
   handleSharingSighting,
 } from "./sighting-handler";
 import { captureError } from "@/instrumentation/instrument-util";
+import { InstrumentCallbacks } from "@/instrumentation/telemetry";
+import { startInstrument } from "@/instrumentation/instrument";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -32,13 +34,26 @@ export default function SightingProfile() {
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
+  const [instrument, setInstrument] = useState<InstrumentCallbacks>();
+
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const instrument = startInstrument({
+      eventName: "sighting_detail_event",
+      eventData: {
+        user_type: user?.id ? "authenticated" : "anonymous",
+      },
+    });
+    setInstrument(instrument);
+  }, [user?.id]);
 
   const { loading, error, timeline, summary } = usePetSightings(
     sightingId,
     linkedSightingId,
+    instrument
   );
 
-  const { user } = useContext(AuthContext);
   const onPetFound = useConfirmPetFound();
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -157,6 +172,7 @@ export default function SightingProfile() {
       onPetFound={isOwner ? handlePetFound : undefined}
       onShareSighting={onShareSighting}
       onFindMatches={onFindMatches}
+      instrument={instrument}
     />
   );
 }

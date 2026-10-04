@@ -4,8 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import { log } from "../logs";
 import { createErrorLogMessage, isValidUuid } from "../util";
 import { captureError } from "@/instrumentation/instrument-util";
+import { InstrumentCallbacks } from "@/instrumentation/telemetry";
 
-export function usePetSightings(sightingId: string, linkedSightingId: string) {
+export function usePetSightings(
+  sightingId: string,
+  linkedSightingId: string,
+  instrument?: InstrumentCallbacks,
+) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [timeline, setTimeline] = useState<AggregatedSighting[]>([]);
@@ -34,7 +39,11 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
         const errorMessage = createErrorLogMessage(error);
         const log = `Failed to fetch sighting summary for sighting: ${errorMessage}`;
         setError("Error fetching sighting info. Please try again.");
-        captureError(log, {});
+        instrument?.failure({
+          error_message: log,
+          error_type: "fetch_error",
+          source: "getSighting",
+        });
       })
       .finally(() => {
         setLoading(false);
@@ -65,7 +74,11 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
           const errorMessage = createErrorLogMessage(error);
           const log = `Failed to fetch sighting summary for linked sighting: ${errorMessage}`;
           setError("Error fetching sighting info. Please try again.");
-          captureError(log, {});
+          instrument?.failure({
+            error_message: log,
+            error_type: "fetch_error",
+            source: "getSightingByLinkedSightingId",
+          });
         })
         .finally(() => {
           setLoading(false);
@@ -99,7 +112,11 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
           const errorMessage = createErrorLogMessage(error);
           const log = `Failed to fetch linked sightings for sighting: ${errorMessage}`;
           setError("Error fetching sighting info. Please try again.");
-          captureError(log, {});
+          instrument?.failure({
+            error_message: log,
+            error_type: "fetch_error",
+            source: "getLinkedSightings"
+          });
         })
         .finally(() => {
           setLoading(false);
