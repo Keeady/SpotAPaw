@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { AggregatedSighting } from "@/db/models/sighting";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
+import { useCallback, useEffect, useState } from "react";
 import { log } from "../logs";
 import { createErrorLogMessage, isValidUuid } from "../util";
-import * as Sentry from "@sentry/react-native";
+import { captureError } from "@/instrumentation/instrument-util";
 
 export function usePetSightings(sightingId: string, linkedSightingId: string) {
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
         const errorMessage = createErrorLogMessage(error);
         const log = `Failed to fetch sighting summary for sighting: ${errorMessage}`;
         setError("Error fetching sighting info. Please try again.");
-        Sentry.captureException(log);
+        captureError(log, {});
       })
       .finally(() => {
         setLoading(false);
@@ -65,7 +65,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
           const errorMessage = createErrorLogMessage(error);
           const log = `Failed to fetch sighting summary for linked sighting: ${errorMessage}`;
           setError("Error fetching sighting info. Please try again.");
-          Sentry.captureException(log);
+          captureError(log, {});
         })
         .finally(() => {
           setLoading(false);
@@ -83,7 +83,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
         const log = `Sighting Details: Invalid linkedSightingId for timeline fetch: ${linkedSightingId}`;
         setError("Error fetching sighting info. Please try again.");
         setLoading(false);
-        Sentry.captureException(log);
+        captureError(log, {});
         return;
       }
 
@@ -99,7 +99,7 @@ export function usePetSightings(sightingId: string, linkedSightingId: string) {
           const errorMessage = createErrorLogMessage(error);
           const log = `Failed to fetch linked sightings for sighting: ${errorMessage}`;
           setError("Error fetching sighting info. Please try again.");
-          Sentry.captureException(log);
+          captureError(log, {});
         })
         .finally(() => {
           setLoading(false);

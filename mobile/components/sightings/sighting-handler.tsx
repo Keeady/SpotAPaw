@@ -1,10 +1,11 @@
-import { Href, Router } from "expo-router";
-import { Platform, Share } from "react-native";
+import * as Sentry from "@sentry/react-native";
 import * as Clipboard from "expo-clipboard";
+import { Href, Router } from "expo-router";
+import { TFunction } from "i18next";
+import { Platform, Share } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { createErrorLogMessage } from "../util";
-import { TFunction } from "i18next";
-import * as Sentry from "@sentry/react-native";
+import { captureError } from "@/instrumentation/instrument-util";
 
 export function handleAddingSighting(
   router: Router,
@@ -71,7 +72,7 @@ export async function handleSharingSighting(
         });
       } catch (error) {
         // User cancelled
-        const msg = createErrorLogMessage(error)
+        const msg = createErrorLogMessage(error);
         Sentry.captureMessage(msg);
       }
     } else {
@@ -99,7 +100,7 @@ export async function handleSharingSighting(
             icon: "warning",
             statusBarHeight: 50,
           });
-          Sentry.captureException(log);
+          captureError(log, {});
         });
     }
     return;
@@ -122,6 +123,6 @@ export async function handleSharingSighting(
   } catch (error) {
     const errorMessage = createErrorLogMessage(error);
     const log = `Failed to share sighting: ${errorMessage}`;
-    Sentry.captureException(log);
+    captureError(log, {});
   }
 }

@@ -1,3 +1,5 @@
+import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { FunctionsHttpError, PostgrestError } from "@supabase/supabase-js";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, {
@@ -7,26 +9,40 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { Button } from "react-native-paper";
 import { AnalysisResponse } from "../analyzer/types";
 import { usePetAnalyzer } from "../analyzer/use-pet-image-analyzer";
+import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
 import { useUploadMultiplePetImage } from "../image-upload-handler";
+import { log } from "../logs";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
+import { useProContext } from "../Provider/pro-context-provider";
+import { createErrorLogMessage, isValidUuid } from "../util";
 import { AddContact } from "./add-contact";
 import { AddTime } from "./add-time";
 import { ChoosePet } from "./choose-pet";
 import { EditPet } from "./edit-pet";
+import { EditPetContinued } from "./edit-pet-continued";
 import { LocatePet } from "./locate-pet";
-import { Step1 } from "./start";
+import {
+  saveNewPet,
+  saveNewPetPhoto,
+  updateNewPetPhoto,
+  updatePet,
+} from "./pet-submit-handler";
+import { PhotoResult } from "./photo-result";
+import { findMatches } from "./sighting-match-handler";
 import {
   createSightingFromPet,
   saveNewSighting,
   saveSightingPhoto,
   updateSighting,
 } from "./sighting-submit-handler";
+import { Step1 } from "./start";
 import { UploadPhoto } from "./upload-photo";
 import { defaultSightingFormData, validate } from "./util";
 import {
@@ -37,23 +53,8 @@ import {
   WizardFormAction,
   WizardFormProps,
 } from "./wizard-interface";
-import { MAX_FILE_SIZE_ERROR, NO_PETS_DETECTED } from "../constants";
-import { log } from "../logs";
-import { createErrorLogMessage, isValidUuid } from "../util";
-import { EditPetContinued } from "./edit-pet-continued";
-import { SightingRepository } from "@/db/repositories/sighting-repository";
-import {
-  saveNewPet,
-  saveNewPetPhoto,
-  updateNewPetPhoto,
-  updatePet,
-} from "./pet-submit-handler";
-import { PetRepository } from "@/db/repositories/pet-repository";
-import { useTranslation } from "react-i18next";
-import { useProContext } from "../Provider/pro-context-provider";
-import { PhotoResult } from "./photo-result";
-import { findMatches } from "./sighting-match-handler";
-import * as Sentry from "@sentry/react-native";
+import { InstrumentCallbacks } from "@/instrumentation/telemetry";
+import { startInstrument } from "@/instrumentation/instrument";
 
 export const WizardForm = ({ action }: WizardFormProps) => {
   const { t } = useTranslation(["wizard", "translation"]);
@@ -69,6 +70,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [aiGenerated, setAiGenerated] = useState(false);
   const [isValidData, setIsValidData] = useState(true);
+  const [instrument, setInstrument] = useState<InstrumentCallbacks>();
+
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
   const [stepHistory, setStepHistory] = useState<SightingWizardSteps[]>([]);
@@ -121,6 +124,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       setCurrentStep("upload_photo");
       updateSightingData("sightingId", sightingId);
 
+      const instrument = startInstrument({
+        eventName: "sighting_detail_event",
+        eventData: {
+          is_ai_enabled: isAiFeatureEnabled && aiPhotoAnalysisAllowed,
+          source: action,
+          status: "success",
+          user_type: user ? "authenticated" : "anonymous",
+        },
+      });
+
       const repository = new SightingRepository();
       repository
         .getSighting(sightingId)
@@ -162,16 +175,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           if (sighting.petDescriptionId) {
             updateSightingData("petDescriptionId", sighting.petDescriptionId);
           }
+
+          instrument.success({ status: "success" });
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          const log =
-            t(
-              "wizardFailedToFetchSightingInfoForSightingErrormessage",
-              "Wizard: Failed to fetch sighting info for sighting: {{errorMessage}}",
-              { errorMessage },
-            )
-          ;
+          const log = t(
+            "wizardFailedToFetchSightingInfoForSightingErrormessage",
+            "Wizard: Failed to fetch sighting info for sighting: {{errorMessage}}",
+            { errorMessage },
+          );
           showMessage({
             message: t(
               "errorFetchingPetSighting",
@@ -182,7 +195,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             statusBarHeight: 50,
           });
 
-          Sentry.captureException(log);
+          instrument?.failure({
+            error_message: log,
+            error_type: "fetch_error",
+            source: "wizard",
+          });
         });
     }
   }, [sightingId, updateSightingData, action]);
@@ -200,6 +217,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   useEffect(() => {
     if (petId && isValidUuid(petId)) {
       updateSightingData("id", petId);
+
+      const instrument = startInstrument({
+        eventName: "pet_detail_event",
+        eventData: {
+          is_ai_enabled: isAiFeatureEnabled && aiPhotoAnalysisAllowed,
+          source: action,
+          status: "success",
+          user_type: user ? "authenticated" : "anonymous",
+        },
+      });
 
       const repository = new PetRepository();
       repository
@@ -229,6 +256,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           if (pet.petDescriptionId) {
             updateSightingData("petDescriptionId", pet.petDescriptionId);
           }
+
+          instrument.success({ status: "success" });
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
@@ -242,7 +271,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             icon: "warning",
             statusBarHeight: 50,
           });
-          Sentry.captureException(log);
+          instrument?.failure({
+            error_message: log,
+            error_type: "sighting_submit_error",
+          });
         });
     }
   }, [petId, updateSightingData, isPetLost]);
@@ -422,13 +454,18 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       return;
     }
 
+    handleStartInstrument();
+
     processResponse()
       .then((response) => {
         if (
           currentStep === "submit" &&
-          (action === "new-sighting" || action === "edit-sighting" || sightingFormData.isLost)
+          (action === "new-sighting" ||
+            action === "edit-sighting" ||
+            sightingFormData.isLost)
         ) {
-          const id = sightingFormData.sightingId || sightingId || (response as string);
+          const id =
+            sightingFormData.sightingId || sightingId || (response as string);
           return findMatches(id, sightingFormData);
         }
       })
@@ -638,7 +675,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       log = `Wizard: Failed to process image: ${errorMessage}`;
     }
 
-    Sentry.captureException(log);
+    instrument?.failure({
+      error_message: log,
+      error_type: "image_analysis_error",
+      status: "failed",
+    });
 
     setAiGenerated(false);
     setLoading(false);
@@ -675,7 +716,12 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       });
     }
 
-    Sentry.captureException(log);
+    instrument?.failure({
+      error_message: log,
+      error_type: "sighting_submit_error",
+      status: "failed",
+      source: action,
+    });
   };
 
   const { analyze, analyzeMultiple } = usePetAnalyzer({
@@ -845,6 +891,34 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       ? t("submit", "Submit")
       : t("continue", "Continue");
   };
+
+  const handleStartInstrument = useCallback(() => {
+    if (
+      currentStep === "submit" &&
+      (action === "new-sighting" ||
+        ((action === "add-pet" || action === "edit-pet") &&
+          sightingFormData.isLost))
+    ) {
+      const instrument = startInstrument({
+        eventName: "sighting_create_event",
+        eventData: {
+          is_ai_enabled: isAiFeatureEnabled && aiPhotoAnalysisAllowed,
+          source: action,
+          status: "success",
+          user_type: user ? "authenticated" : "anonymous",
+        },
+      });
+      setInstrument(instrument);
+    }
+  }, [
+    action,
+    aiPhotoAnalysisAllowed,
+    currentStep,
+    isAiFeatureEnabled,
+    sightingFormData.isLost,
+    startInstrument,
+    user,
+  ]);
 
   return (
     <KeyboardAvoidingView

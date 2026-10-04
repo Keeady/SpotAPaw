@@ -1,11 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
+import { TFunction } from "i18next";
 import { Alert, Linking } from "react-native";
-import { log } from "./logs";
-import { createErrorLogMessage } from "./util";
-import { t, TFunction } from "i18next";
-import { PetImage } from "./wizard/wizard-interface";
 import { MAX_SELECTED_IMAGES } from "./constants";
-import * as Sentry from "@sentry/react-native";
+import { createErrorLogMessage } from "./util";
+import { PetImage } from "./wizard/wizard-interface";
+import { captureError } from "@/instrumentation/instrument-util";
 
 export const pickImage = async (
   t: TFunction,
@@ -22,7 +21,7 @@ export const pickImage = async (
   }).catch((err) => {
     const errorMessage = createErrorLogMessage(err);
     const log = `pickImage: ${errorMessage}`;
-    Sentry.captureException(log);
+    captureError(log, {});
   });
 
   if (!result || !result.assets || result.canceled) {
@@ -48,7 +47,7 @@ export const takePhoto = async (
   }).catch((err) => {
     const errorMessage = createErrorLogMessage(err);
     const log = `takePhoto: ${errorMessage}`;
-    Sentry.captureException(log);
+    captureError(log, {});
   });
 
   if (!result || !result.assets || result.canceled) {

@@ -15,7 +15,8 @@ import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { handleAddingSighting } from "./sighting-handler";
 import { createErrorLogMessage } from "../util";
 import { useTranslation } from "react-i18next";
-import * as Sentry from "@sentry/react-native";
+import { InstrumentCallbacks } from "@/instrumentation/telemetry";
+import { startInstrument } from "@/instrumentation/instrument";
 
 type SightingPageProps = {
   renderer: (
@@ -47,6 +48,18 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const [refreshing, setRefreshing] = useState(false);
   const { location, isLoadingLocation } = useContext(PermissionContext);
   const sightingsRoute = user ? "my-sightings" : "sightings";
+  const [instrument, setInstrument] = useState<InstrumentCallbacks>();
+
+  useEffect(() => {
+    const instrument = startInstrument({
+      eventName: "sighting_list_event",
+      eventData: {
+        status: "success",
+        user_type: user ? "authenticated" : "anonymous",
+      },
+    });
+    setInstrument(instrument);
+  }, [user]);
 
   const onFetchComplete = useCallback(
     (
@@ -85,7 +98,12 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       pagination: SightingPagination,
     ) => {
       setLoading(true);
-      fetchSightingsWithLocation(location, pagination, onFetchComplete);
+      fetchSightingsWithLocation(
+        location,
+        pagination,
+        onFetchComplete,
+        instrument,
+      );
     },
     [onFetchComplete],
   );
@@ -189,6 +207,7 @@ const fetchSightingsWithLocation = async (
     pagination: SightingPagination,
     totalCount: number,
   ) => void,
+  instrument?: InstrumentCallbacks,
 ) => {
   if (!location) {
     return onFetchComplete([], null, pagination, 0);
@@ -217,7 +236,10 @@ const fetchSightingsWithLocation = async (
       paginationStart: pagination.start,
     })
     .then(({ data, count }) => {
-      onFetchComplete(data || [], null, pagination, count || 0);
+      console.log(data, count)
+      const total = count || 0;
+      onFetchComplete(data || [], null, pagination, total);
+      instrument?.success({ total_count: total, status: "success" });
     })
     .catch((error) => {
       const errorMessage = createErrorLogMessage(error);
@@ -228,6 +250,10 @@ const fetchSightingsWithLocation = async (
         pagination,
         0,
       );
-      Sentry.captureException(log);
+      instrument?.failure({
+        error_message: log,
+        status: "failed",
+        error_type: "fetch_error",
+      });
     });
 };
