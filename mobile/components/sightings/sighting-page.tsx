@@ -48,18 +48,6 @@ export default function SightingPage({ renderer }: SightingPageProps) {
   const [refreshing, setRefreshing] = useState(false);
   const { location, isLoadingLocation } = useContext(PermissionContext);
   const sightingsRoute = user ? "my-sightings" : "sightings";
-  const [instrument, setInstrument] = useState<InstrumentCallbacks>();
-
-  useEffect(() => {
-    const instrument = startInstrument({
-      eventName: "sighting_list_event",
-      eventData: {
-        status: "success",
-        user_type: user ? "authenticated" : "anonymous",
-      },
-    });
-    setInstrument(instrument);
-  }, [user]);
 
   const onFetchComplete = useCallback(
     (
@@ -97,6 +85,13 @@ export default function SightingPage({ renderer }: SightingPageProps) {
       location: SightingLocation | undefined,
       pagination: SightingPagination,
     ) => {
+      const instrument = startInstrument({
+        eventName: "sighting_list_event",
+        eventData: {
+          status: "success",
+          user_type: user?.id ? "authenticated" : "anonymous",
+        },
+      });
       setLoading(true);
       fetchSightingsWithLocation(
         location,
@@ -105,7 +100,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         instrument,
       );
     },
-    [onFetchComplete, instrument],
+    [onFetchComplete, user?.id],
   );
 
   // Refetch when filter changes

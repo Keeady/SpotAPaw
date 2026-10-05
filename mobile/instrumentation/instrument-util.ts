@@ -6,6 +6,7 @@ export function captureSuccess(
   eventData: InstrumentEventData,
 ) {
   span.setAttributes(eventData);
+  span.setAttribute("status", "success");
   span.end();
 }
 
@@ -14,6 +15,7 @@ export function captureFailure(
   eventData: InstrumentEventData,
 ) {
   span.setAttributes(eventData);
+  span.setAttribute("status", "failed");
   span.end();
 }
 

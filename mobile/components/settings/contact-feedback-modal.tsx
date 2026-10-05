@@ -23,8 +23,6 @@ const ContactFeedbackModal = ({
   const theme = useTheme();
   const { t } = useTranslation(["settings", "translation"]);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -36,8 +34,6 @@ const ContactFeedbackModal = ({
       setSubmitting(true);
 
       captureFeedback({
-        name: name.trim() || undefined,
-        email: email.trim() || undefined,
         message: message.trim(),
       });
 
@@ -65,56 +61,42 @@ const ContactFeedbackModal = ({
       >
         {submitted ? (
           <View style={styles.success}>
-            <Text variant="headlineSmall">{t("thankyou", { ns: "translation"})}</Text>
+            <Text variant="headlineSmall">
+              {t("thankyou", { ns: "translation" })}
+            </Text>
 
-            <Text variant="bodyMedium">{t("yourFeedback", { ns: "translation"})}</Text>
+            <Text variant="bodyMedium">
+              {t("yourFeedback", { ns: "translation" })}
+            </Text>
 
             <Button mode="contained" onPress={handleDismiss}>
-              {t("done", { ns: "translation"})}
+              {t("done", { ns: "translation" })}
             </Button>
           </View>
         ) : (
           <>
-            <Text variant="headlineSmall" testID="feedbackContactUs">{t("contactUs")}</Text>
+            <Text variant="headlineSmall" testID="feedbackContactUs">
+              {t("contactUs")}
+            </Text>
 
             <Text variant="bodyMedium" style={styles.description}>
               {t("getInTouchWithUsDesc")}
             </Text>
 
             <TextInput
-              label={t("name", { ns: "translation"})}
-              value={name}
-              onChangeText={(text) => setName(text)}
-              mode="outlined"
-              style={styles.input}
-              testID="feedbackName"
-            />
-
-            <TextInput
-              label={t("email", { ns: "translation"})}
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              mode="outlined"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              style={styles.input}
-              testID="feebackEmail"
-            />
-
-            <TextInput
-              label={t("messageRequired", { ns: "translation"})}
+              label={t("messageRequired", { ns: "translation" })}
               value={message}
               onChangeText={(text) => setMessage(text)}
               mode="outlined"
               multiline
-              numberOfLines={5}
+              numberOfLines={7}
               style={styles.messageInput}
               testID="feedbackMessageRequired"
             />
 
             <View style={styles.actions}>
               <Button onPress={handleDismiss} disabled={submitting}>
-                {t("cancel", { ns: "translation"})}
+                {t("cancel", { ns: "translation" })}
               </Button>
 
               <Button
@@ -124,7 +106,7 @@ const ContactFeedbackModal = ({
                 loading={submitting}
                 disabled={submitting || !message.trim()}
               >
-                {t("send", { ns: "translation"})}
+                {t("send", { ns: "translation" })}
               </Button>
             </View>
           </>

@@ -74,7 +74,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [aiGenerated, setAiGenerated] = useState(false);
   const [isValidData, setIsValidData] = useState(true);
-  const [instrument, setInstrument] = useState<InstrumentCallbacks>();
 
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -198,7 +197,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             statusBarHeight: 50,
           });
 
-          instrument?.failure({
+          instrument.failure({
             error_message: log,
             error_type: "fetch_error",
             source: "wizard",
@@ -289,9 +288,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             icon: "warning",
             statusBarHeight: 50,
           });
-          instrument?.failure({
+          instrument.failure({
             error_message: log,
-            error_type: "sighting_submit_error",
+            error_type: "fetch_error",
+            source: "wizard",
           });
         });
     },
@@ -329,15 +329,16 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     switch (currentStep) {
       case "upload_photo":
         if (isAiFeatureEnabled && !aiGenerated && aiPhotoAnalysisAllowed) {
+          const instrument = startInstrument({
+            eventName: "analyze_photos_event",
+            eventData: {
+              is_ai_enabled: true,
+              total_count: sightingFormData.images.length,
+              user_type: user?.id ? "authenticated" : "anonymous",
+            },
+          });
+
           if (sightingFormData.images && sightingFormData.images.length > 1) {
-            const instrument = startInstrument({
-              eventName: "analyze_photos_event",
-              eventData: {
-                is_ai_enabled: true,
-                total_count: sightingFormData.images.length,
-                user_type: user?.id ? "authenticated" : "anonymous",
-              },
-            });
             return analyzeMultiple(sightingFormData.images)
               .then(() => {
                 instrument.success({
@@ -362,7 +363,22 @@ export const WizardForm = ({ action }: WizardFormProps) => {
               sightingFormData.images[0].uri,
               sightingFormData.images[0].filename,
               sightingFormData.images[0].filetype,
-            );
+            )
+              .then(() => {
+                instrument.success({
+                  status: "success",
+                });
+              })
+              .catch(async (error) => {
+                const errorMessage = await createErrorLogMessageAsync(error);
+                instrument.failure({
+                  error_message: errorMessage,
+                  error_type: "image_analysis_error",
+                  status: "failed",
+                });
+
+                return Promise.reject(error);
+              });
           }
         }
 
@@ -510,7 +526,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       return;
     }
 
-    handleStartInstrument();
+    const instrument = handleStartInstrument();
 
     processResponse()
       .then((response) => {
@@ -540,6 +556,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             setCurrentStep(nextStep);
           }
         } else if (currentStep === "submit" && action === "new-sighting") {
+          instrument?.success({
+            source: action,
+          });
           showMessage({
             message: t(
               "successfullyAddedPetSighting",
@@ -552,6 +571,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
           router.replace(`/${sightingsRoute}`);
         } else if (currentStep === "submit" && action === "edit-sighting") {
+          instrument?.success({
+            source: action,
+          });
           showMessage({
             message: t(
               "successfullyUpdatedPetSighting",
@@ -566,6 +588,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${sightingFormData.petDescriptionId}`,
           );
         } else if (currentStep === "submit" && action === "add-pet") {
+          instrument?.success({
+            source: action,
+          });
+
           showMessage({
             message: t(
               "successfullyAddedPetProfile",
@@ -578,6 +604,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
 
           router.replace(`/(app)/pets`);
         } else if (currentStep === "submit" && action === "edit-pet") {
+          instrument?.success({
+            source: action,
+          });
+
           showMessage({
             message: t(
               "successfullyUpdatedPetProfile",
@@ -597,9 +627,9 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         }
 
         if (currentStep === "upload_photo") {
-          await onImageAnalyzeFailure(err);
+          await onImageAnalyzeFailure(err, instrument);
         } else if (currentStep === "submit") {
-          onSubmitFailure(err, action);
+          onSubmitFailure(err, action, instrument);
         }
       })
       .finally(() => {
@@ -704,7 +734,10 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     [updateSightingData],
   );
 
-  const onImageAnalyzeFailure = async (error: any) => {
+  const onImageAnalyzeFailure = async (
+    error: any,
+    instrument?: InstrumentCallbacks,
+  ) => {
     let log;
     if (error instanceof FunctionsHttpError) {
       const errorContext = await error.context.json();
@@ -741,7 +774,11 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     setLoading(false);
   };
 
-  const onSubmitFailure = (error: any, action: WizardFormAction) => {
+  const onSubmitFailure = (
+    error: any,
+    action: WizardFormAction,
+    instrument?: InstrumentCallbacks,
+  ) => {
     let log;
     if (error instanceof PostgrestError) {
       log = error.message;
@@ -955,7 +992,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
         ((action === "add-pet" || action === "edit-pet") &&
           sightingFormData.isLost))
     ) {
-      const instrument = startInstrument({
+      return startInstrument({
         eventName: "sighting_create_event",
         eventData: {
           is_ai_enabled: isAiFeatureEnabled && aiPhotoAnalysisAllowed,
@@ -964,7 +1001,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           user_type: user ? "authenticated" : "anonymous",
         },
       });
-      setInstrument(instrument);
     }
   }, [
     action,

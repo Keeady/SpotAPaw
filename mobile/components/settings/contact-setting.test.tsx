@@ -163,8 +163,6 @@ describe("ContactSetting Component", () => {
 
     expect(getByTestId("feedbackContactUs")).toBeTruthy();
     expect(getByText("getInTouchWithUsDesc")).toBeTruthy();
-    expect(getByTestId("feebackEmail")).toBeTruthy();
-    expect(getByTestId("feedbackName")).toBeTruthy();
     expect(getByTestId("feedbackMessageRequired")).toBeTruthy();
   });
 });

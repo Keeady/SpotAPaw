@@ -18,10 +18,10 @@ export function startInstrument({
       const duration = performance.now() - startTime;
 
       captureSuccess(span, {
-        status: "success",
         duration_ms: duration,
         ...eventData,
         ...data,
+        status: "success",
       });
     },
 
@@ -29,10 +29,10 @@ export function startInstrument({
       const duration = performance.now() - startTime;
 
       captureFailure(span, {
-        status: "failed",
         duration_ms: duration,
         ...eventData,
         ...data,
+        status: "failed",
       });
     },
   };
