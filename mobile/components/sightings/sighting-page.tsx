@@ -236,7 +236,6 @@ const fetchSightingsWithLocation = async (
       paginationStart: pagination.start,
     })
     .then(({ data, count }) => {
-      console.log(data, count)
       const total = count || 0;
       onFetchComplete(data || [], null, pagination, total);
       instrument?.success({ total_count: total, status: "success" });

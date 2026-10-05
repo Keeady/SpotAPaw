@@ -21,7 +21,11 @@ import { log } from "../logs";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { AuthContext } from "../Provider/auth-provider";
 import { useProContext } from "../Provider/pro-context-provider";
-import { createErrorLogMessage, isValidUuid } from "../util";
+import {
+  createErrorLogMessage,
+  createErrorLogMessageAsync,
+  isValidUuid,
+} from "../util";
 import { AddContact } from "./add-contact";
 import { AddTime } from "./add-time";
 import { ChoosePet } from "./choose-pet";
@@ -297,7 +301,30 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       case "upload_photo":
         if (isAiFeatureEnabled && !aiGenerated && aiPhotoAnalysisAllowed) {
           if (sightingFormData.images && sightingFormData.images.length > 1) {
-            return analyzeMultiple(sightingFormData.images);
+            const instrument = startInstrument({
+              eventName: "analyze_photos_event",
+              eventData: {
+                is_ai_enabled: true,
+                total_count: sightingFormData.images.length,
+                user_type: user?.id ? "authenticated" : "anonymous",
+              },
+            });
+            return analyzeMultiple(sightingFormData.images)
+              .then(() => {
+                instrument.success({
+                  status: "success",
+                });
+              })
+              .catch(async (error) => {
+                const errorMessage = await createErrorLogMessageAsync(error);
+                instrument.failure({
+                  error_message: errorMessage,
+                  error_type: "image_analysis_error",
+                  status: "failed",
+                });
+
+                return Promise.reject(error);
+              });
           } else if (
             sightingFormData.images &&
             sightingFormData.images.length === 1

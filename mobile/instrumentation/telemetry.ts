@@ -1,4 +1,5 @@
 export type TelemetryEventName =
+  | "analyze_photos_event"
   | "sighting_list_event"
   | "sighting_detail_event"
   | "sighting_create_event"
@@ -36,5 +37,5 @@ export type InstrumentEventData = {
   error_type?: TelemetryErrorType;
   error_message?: string;
   status?: TelemetryEventStepStatus;
-  duration_ms?: number
+  duration_ms?: number;
 };
