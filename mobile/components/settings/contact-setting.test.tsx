@@ -10,6 +10,10 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
+jest.mock("@/instrumentation/instrument-util", () => ({
+  captureFeedback: jest.fn()
+}))
+
 const MockIcon = () => <Text testID="icon">Icon</Text>;
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <PaperProvider settings={{ icon: MockIcon }}>{children}</PaperProvider>
@@ -21,6 +25,7 @@ describe("ContactSetting Component", () => {
   const defaultProps = {
     iconColorContact: "#007AFF",
     onOpenContact: () => mockOnOpenContact(),
+    contactVisible: false
   };
 
   beforeEach(() => {
@@ -145,23 +150,21 @@ describe("ContactSetting Component", () => {
     expect(mockOnOpenContact).not.toHaveBeenCalled();
   });
 
-  it("handles undefined onOpenContact prop gracefully", () => {
-    const props = {
-      iconColorContact: "#007AFF",
-      onOpenContact: undefined,
-    };
-
-    const { getByText } = render(
+    it("renders feedback component", async () => {
+      const props = {
+        ...defaultProps,
+        contactVisible: true
+      }
+    const { getByText, getByTestId } = render(
       <TestWrapper>
         <ContactSetting {...props} />
       </TestWrapper>,
     );
 
-    expect(getByText("contactUs")).toBeTruthy();
-    expect(getByText("getInTouchWithUs")).toBeTruthy();
-
-    // Should not throw error when pressed
-    const listItem = getByText("contactUs");
-    expect(() => fireEvent.press(listItem)).not.toThrow();
+    expect(getByTestId("feedbackContactUs")).toBeTruthy();
+    expect(getByText("getInTouchWithUsDesc")).toBeTruthy();
+    expect(getByTestId("feebackEmail")).toBeTruthy();
+    expect(getByTestId("feedbackName")).toBeTruthy();
+    expect(getByTestId("feedbackMessageRequired")).toBeTruthy();
   });
 });

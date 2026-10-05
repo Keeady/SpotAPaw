@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react-native";
 import * as Clipboard from "expo-clipboard";
 import { Href, Router } from "expo-router";
 import { TFunction } from "i18next";
@@ -73,7 +72,7 @@ export async function handleSharingSighting(
       } catch (error) {
         // User cancelled
         const msg = createErrorLogMessage(error);
-        Sentry.captureMessage(msg);
+        captureError(msg, {});
       }
     } else {
       await Clipboard.setStringAsync(sightingUrl)

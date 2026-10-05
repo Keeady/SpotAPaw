@@ -32,3 +32,7 @@ export function startMetric(
     attributes: eventData,
   });
 }
+
+export function captureFeedback(feedback: Sentry.SendFeedbackParams) {
+  Sentry.captureFeedback(feedback)
+}

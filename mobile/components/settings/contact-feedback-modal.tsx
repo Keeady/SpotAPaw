@@ -8,8 +8,8 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import * as Sentry from "@sentry/react-native";
 import { useTranslation } from "react-i18next";
+import { captureFeedback } from "@/instrumentation/instrument-util";
 
 interface ContactFeedbackModalProps {
   visible: boolean;
@@ -35,7 +35,7 @@ const ContactFeedbackModal = ({
     try {
       setSubmitting(true);
 
-      Sentry.captureFeedback({
+      captureFeedback({
         name: name.trim() || undefined,
         email: email.trim() || undefined,
         message: message.trim(),
@@ -75,7 +75,7 @@ const ContactFeedbackModal = ({
           </View>
         ) : (
           <>
-            <Text variant="headlineSmall">{t("contactUs")}</Text>
+            <Text variant="headlineSmall" testID="feedbackContactUs">{t("contactUs")}</Text>
 
             <Text variant="bodyMedium" style={styles.description}>
               {t("getInTouchWithUsDesc")}
@@ -87,6 +87,7 @@ const ContactFeedbackModal = ({
               onChangeText={(text) => setName(text)}
               mode="outlined"
               style={styles.input}
+              testID="feedbackName"
             />
 
             <TextInput
@@ -97,6 +98,7 @@ const ContactFeedbackModal = ({
               keyboardType="email-address"
               autoCapitalize="none"
               style={styles.input}
+              testID="feebackEmail"
             />
 
             <TextInput
@@ -107,6 +109,7 @@ const ContactFeedbackModal = ({
               multiline
               numberOfLines={5}
               style={styles.messageInput}
+              testID="feedbackMessageRequired"
             />
 
             <View style={styles.actions}>
