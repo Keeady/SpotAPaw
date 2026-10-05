@@ -111,11 +111,11 @@ export default function SightingProfile() {
 
   const handlePetFound = useCallback(() => {
     onPetFound(petName, petId, t);
-  }, [petId, petName, onPetFound]);
+  }, [petId, petName, onPetFound, t]);
 
   const onShareSighting = useCallback(async () => {
     handleSharingSighting(sightingId, petName || summary?.name || "", t);
-  }, [sightingId, petName, summary?.name]);
+  }, [sightingId, petName, summary?.name, t]);
 
   const onFindMatches = useCallback(() => {
     if (!sightingId || !summary?.petDescriptionId) {
@@ -135,7 +135,7 @@ export default function SightingProfile() {
     router.push(
       `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
     );
-  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute]);
+  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute, t]);
 
   if (error) {
     log(error);

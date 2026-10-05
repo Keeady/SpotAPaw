@@ -106,5 +106,11 @@
   "downloadPNG": "Télécharger PNG.",
   "noPoster": "Aucune affiche trouvée pour ce signalement.",
   "noDescriptionAvailable": "Aucune description disponible.",
-  "generatePoster": "Générer l'affiche"
+  "generatePoster": "Générer l'affiche",
+  "name": "Nom",
+  "messageRequired": "Message (obligatoire)",
+  "done": "Terminé",
+  "thankyou": "Merci !",
+  "yourFeedback": "Vos commentaires ont été envoyés.",
+  "send": "Envoyer"
 }

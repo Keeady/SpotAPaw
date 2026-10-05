@@ -123,9 +123,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     setErrorMessage("");
   }, [reportType]);
 
-  useEffect(() => {
-    if (sightingId && isValidUuid(sightingId)) {
-      setCurrentStep("upload_photo");
+  const fetchSighting = useCallback(
+    (sightingId: string) => {
       updateSightingData("sightingId", sightingId);
 
       const instrument = startInstrument({
@@ -134,7 +133,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           is_ai_enabled: isAiFeatureEnabled && aiPhotoAnalysisAllowed,
           source: action,
           status: "success",
-          user_type: user ? "authenticated" : "anonymous",
+          user_type: user?.id ? "authenticated" : "anonymous",
         },
       });
 
@@ -205,8 +204,23 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             source: "wizard",
           });
         });
+    },
+    [
+      updateSightingData,
+      action,
+      isAiFeatureEnabled,
+      aiPhotoAnalysisAllowed,
+      user?.id,
+      t,
+    ],
+  );
+
+  useEffect(() => {
+    if (sightingId && isValidUuid(sightingId)) {
+      setCurrentStep("upload_photo");
+      fetchSighting(sightingId);
     }
-  }, [sightingId, updateSightingData, action]);
+  }, [sightingId, fetchSighting]);
 
   useEffect(() => {
     if (action === "add-pet") {
@@ -218,8 +232,8 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     }
   }, [action]);
 
-  useEffect(() => {
-    if (petId && isValidUuid(petId)) {
+  const fetchPet = useCallback(
+    (petId: string) => {
       updateSightingData("id", petId);
 
       const instrument = startInstrument({
@@ -228,7 +242,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
           is_ai_enabled: isAiFeatureEnabled && aiPhotoAnalysisAllowed,
           source: action,
           status: "success",
-          user_type: user ? "authenticated" : "anonymous",
+          user_type: user?.id ? "authenticated" : "anonymous",
         },
       });
 
@@ -280,8 +294,23 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             error_type: "sighting_submit_error",
           });
         });
+    },
+    [
+      updateSightingData,
+      isPetLost,
+      action,
+      aiPhotoAnalysisAllowed,
+      isAiFeatureEnabled,
+      t,
+      user?.id,
+    ],
+  );
+
+  useEffect(() => {
+    if (petId && isValidUuid(petId)) {
+      fetchPet(petId);
     }
-  }, [petId, updateSightingData, isPetLost]);
+  }, [petId, fetchPet]);
 
   const handleBack = useCallback(() => {
     const newHistory = stepHistory.slice(0, stepHistory.length - 1);
@@ -943,7 +972,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     currentStep,
     isAiFeatureEnabled,
     sightingFormData.isLost,
-    startInstrument,
     user,
   ]);
 

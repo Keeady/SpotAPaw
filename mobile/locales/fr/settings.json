@@ -42,5 +42,6 @@
   "multiplePhotos": "Télécharger plusieurs photos",
   "multiplePhotosDescription": "Téléchargez et analysez plusieurs photos pour une meilleure identification des animaux.",
   "contactUs": "Contactez-nous",
-  "getInTouchWithUs": "Contactez-nous ou envoyez-nous vos commentaires !"
+  "getInTouchWithUs": "Contactez-nous ou envoyez-nous vos commentaires !",
+  "getInTouchWithUsDesc": "Vous avez une question, une suggestion ou rencontré un problème ? Nous serions ravis de vos nouvelles."
 }

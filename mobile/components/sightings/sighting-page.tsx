@@ -105,7 +105,7 @@ export default function SightingPage({ renderer }: SightingPageProps) {
         instrument,
       );
     },
-    [onFetchComplete],
+    [onFetchComplete, instrument],
   );
 
   // Refetch when filter changes

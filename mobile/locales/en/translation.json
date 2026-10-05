@@ -106,5 +106,11 @@
   "downloadPNG": "Download PNG.",
   "noPoster": "No posters found for this sighting.",
   "noDescriptionAvailable": "No description available.",
-  "generatePoster": "Generate Poster"
+  "generatePoster": "Generate Poster",
+  "name": "Name",
+  "messageRequired": "Message (Required)",
+  "done": "Done",
+  "thankyou": "Thank you!",
+  "yourFeedback": "Your feedback has been sent.",
+  "send": "Send"
 }

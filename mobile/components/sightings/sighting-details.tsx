@@ -98,7 +98,7 @@ export default function SightingDetail({
     instrument?.success({
       status: "success",
     });
-  }, []);
+  }, [instrument]);
 
   return (
     <Portal.Host>

@@ -37,7 +37,6 @@ import ProSettings from "./pro-features-setting";
 import { useNotificationPermission } from "../Provider/notification-permission-provider";
 import { updateNotificationSubscriptionEnabled } from "../notification-util";
 import ContactSetting from "./contact-setting";
-import { Linking } from "react-native";
 
 // Define color scheme for icons
 const iconColors = {

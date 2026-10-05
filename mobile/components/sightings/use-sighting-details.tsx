@@ -48,7 +48,7 @@ export function usePetSightings(
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [instrument]);
 
   const fetchSummaryByLinkedSightingId = useCallback(
     async (linkedSightingId: string) => {
@@ -84,7 +84,7 @@ export function usePetSightings(
           setLoading(false);
         });
     },
-    [],
+    [instrument],
   );
 
   const fetchSightingsByLinkedSightingId = useCallback(
@@ -122,7 +122,7 @@ export function usePetSightings(
           setLoading(false);
         });
     },
-    [],
+    [instrument],
   );
 
   useEffect(() => {

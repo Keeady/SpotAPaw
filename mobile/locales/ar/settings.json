@@ -42,5 +42,6 @@
   "multiplePhotos": "تحميل صور متعددة",
   "multiplePhotosDescription": "قم بتحميل وتحليل عدة صور لتحسين التعرف على الحيوانات.",
   "contactUs": "اتصل بنا",
-  "getInTouchWithUs": "تواصل معنا أو أرسل لنا ملاحظاتك!"
+  "getInTouchWithUs": "تواصل معنا أو أرسل لنا ملاحظاتك!",
+  "getInTouchWithUsDesc": "هل لديك سؤال أو اقتراح، أو واجهت مشكلة؟ يسعدنا أن نسمع منك."
 }
