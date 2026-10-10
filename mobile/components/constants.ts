@@ -31,3 +31,5 @@ export const UNSUPPORTED_MIME_TYPE = "UNSUPPORTED_MIME_TYPE";
 export const NO_PETS_DETECTED = "NO_PETS_DETECTED";
 
 export const SUPPORT_EMAIL = "spotapaw@spotapaw.com";
+
+export const SENTRY_DSN= "https://5e8229b6033ab197a3425d52cac19073@o4512193431076864.ingest.us.sentry.io/4512193438416896";

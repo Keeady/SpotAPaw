@@ -25,21 +25,50 @@ import { ProContextProvider } from "@/components/Provider/pro-context-provider";
 import { registerForNotifications } from "@/components/notification-util";
 import { NotificationPermissionProvider } from "@/components/Provider/notification-permission-provider";
 import * as Notifications from "expo-notifications";
+import * as Sentry from "@sentry/react-native";
+import { SENTRY_DSN } from "@/components/constants";
 
-export default function Layout() {
+Sentry.init({
+  dsn: SENTRY_DSN,
+  // do not collect PII
+  sendDefaultPii: false,
+  // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+  tracesSampleRate: 1.0,
+  // Enable Logs
+  enableLogs: true,
+  // profilesSampleRate is relative to tracesSampleRate.
+  // Here, we'll capture profiles for 100% of transactions.
+  profilesSampleRate: 1.0,
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [
+    Sentry.mobileReplayIntegration({
+      maskAllText: true,
+      maskAllImages: true,
+      maskAllVectors: true,
+    }),
+    Sentry.feedbackIntegration(),
+    Sentry.hermesProfilingIntegration({
+      platformProfilers: false,
+    }),
+  ],
+});
+
+export default Sentry.wrap(function Layout() {
   const router = useRouter();
   const [i18nInstance, setI18nInstance] = useState<i18n | null>(null);
 
   useEffect(() => {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldShowList: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-    }),
-  });
-}, []);
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+  }, []);
 
   useEffect(() => {
     initI18next()
@@ -173,7 +202,7 @@ export default function Layout() {
       </PaperProvider>
     </I18nextProvider>
   );
-}
+});
 
 function App() {
   const router = useRouter();
@@ -186,7 +215,9 @@ function App() {
     if (response) {
       const data = response.notification.request.content.data;
       if (data?.sightingId) {
-        router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
+        router.push(
+          `${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`,
+        );
 
         Notifications.dismissNotificationAsync(
           response.notification.request.identifier,
@@ -198,7 +229,9 @@ function App() {
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         if (data && data.sightingId) {
-          router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
+          router.push(
+            `${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`,
+          );
         }
       });
 
@@ -206,7 +239,9 @@ function App() {
       Notifications.addNotificationReceivedListener((notification) => {
         const data = notification.request.content.data;
         if (data && data.sightingId) {
-          router.push(`${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`);
+          router.push(
+            `${sightingRoute}/${data.sightingId}?linkedSightingId=${data.linkedSightingId}&petId=${data.petId}`,
+          );
         }
       });
 
@@ -215,7 +250,6 @@ function App() {
       notificationReceivedListener.remove();
     };
   }, [router, user]);
-
 
   return (
     <View style={styles.root}>

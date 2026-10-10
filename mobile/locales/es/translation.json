@@ -106,5 +106,11 @@
   "downloadPNG": "Descargar PNG.",
   "noPoster": "No se encontraron pósters para este avistamiento.",
   "noDescriptionAvailable": "No hay descripción disponible.",
-  "generatePoster": "Generar póster"
+  "generatePoster": "Generar póster",
+  "name": "Nombre",
+  "messageRequired": "Mensaje (obligatorio)",
+  "done": "Listo",
+  "thankyou": "¡Gracias!",
+  "yourFeedback": "Tus comentarios han sido enviados.",
+  "send": "Enviar"
 }

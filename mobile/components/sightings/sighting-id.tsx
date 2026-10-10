@@ -1,19 +1,22 @@
 import { AuthContext } from "@/components/Provider/auth-provider";
 import SightingDetail from "@/components/sightings/sighting-details";
 import { usePetSightings } from "@/components/sightings/use-sighting-details";
+import { ClaimRepository } from "@/db/repositories/claim-repository";
+import { PetRepository } from "@/db/repositories/pet-repository";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { showMessage } from "react-native-flash-message";
 import { log } from "../logs";
 import { useConfirmPetFound } from "../pets/pet-crud";
 import { createErrorLogMessage, isValidUuid } from "../util";
-import { PetRepository } from "@/db/repositories/pet-repository";
-import { ClaimRepository } from "@/db/repositories/claim-repository";
 import {
   handleAddingSighting,
   handleSharingSighting,
 } from "./sighting-handler";
-import { useTranslation } from "react-i18next";
+import { captureError } from "@/instrumentation/instrument-util";
+import { InstrumentCallbacks } from "@/instrumentation/telemetry";
+import { startInstrument } from "@/instrumentation/instrument";
 
 export default function SightingProfile() {
   const router = useRouter();
@@ -31,13 +34,26 @@ export default function SightingProfile() {
   const [claimed, setClaimed] = useState(false);
   const [petOwner, setPetOwner] = useState<string | undefined>();
   const [petName, setPetName] = useState("");
+  const [instrument, setInstrument] = useState<InstrumentCallbacks>();
+
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const instrument = startInstrument({
+      eventName: "sighting_detail_event",
+      eventData: {
+        user_type: user?.id ? "authenticated" : "anonymous",
+      },
+    });
+    setInstrument(instrument);
+  }, [user?.id]);
 
   const { loading, error, timeline, summary } = usePetSightings(
     sightingId,
     linkedSightingId,
+    instrument
   );
 
-  const { user } = useContext(AuthContext);
   const onPetFound = useConfirmPetFound();
   const sightingsRoute = user ? "my-sightings" : "sightings";
 
@@ -53,7 +69,8 @@ export default function SightingProfile() {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Failed to fetch claim info for sighting: ${errorMessage}`);
+          const log = `Failed to fetch claim info for sighting: ${errorMessage}`;
+          captureError(log, {});
         });
     }
   }, [user?.id, sightingId]);
@@ -71,7 +88,8 @@ export default function SightingProfile() {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Failed to fetch pet info for pet: ${errorMessage}`);
+          const log = `Failed to fetch pet info for pet: ${errorMessage}`;
+          captureError(log, {});
         });
     }
   }, [petId, summary?.name, summary?.ownerId]);
@@ -93,34 +111,39 @@ export default function SightingProfile() {
 
   const handlePetFound = useCallback(() => {
     onPetFound(petName, petId, t);
-  }, [petId, petName, onPetFound]);
+  }, [petId, petName, onPetFound, t]);
 
   const onShareSighting = useCallback(async () => {
     handleSharingSighting(sightingId, petName || summary?.name || "", t);
-  }, [sightingId, petName, summary?.name]);
+  }, [sightingId, petName, summary?.name, t]);
 
   const onFindMatches = useCallback(() => {
     if (!sightingId || !summary?.petDescriptionId) {
       showMessage({
-        message:
-          t("matchingProcessing", "Pet matching is still processing. Please try again in a moment."),
+        message: t(
+          "matchingProcessing",
+          "Pet matching is still processing. Please try again in a moment.",
+        ),
         type: "warning",
         icon: "warning",
         statusBarHeight: 50,
       });
-      
+
       return;
     }
-    
+
     router.push(
       `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
     );
-  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute]);
+  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute, t]);
 
   if (error) {
     log(error);
     showMessage({
-      message: t("errorFetchingSightingInfo", "Error fetching sighting info. Please try again."),
+      message: t(
+        "errorFetchingSightingInfo",
+        "Error fetching sighting info. Please try again.",
+      ),
       type: "warning",
       icon: "warning",
       statusBarHeight: 50,
@@ -149,6 +172,7 @@ export default function SightingProfile() {
       onPetFound={isOwner ? handlePetFound : undefined}
       onShareSighting={onShareSighting}
       onFindMatches={onFindMatches}
+      instrument={instrument}
     />
   );
 }

@@ -106,5 +106,11 @@
   "downloadPNG": "تحميل PNG.",
   "noPoster": "لا توجد ملصقات لهذه المشاهدة.",
   "noDescriptionAvailable": "لا يوجد وصف متاح.",
-  "generatePoster": "توليد الملصق"
+  "generatePoster": "توليد الملصق",
+  "name": "الاسم",
+  "messageRequired": "الرسالة (مطلوبة)",
+  "done": "تم",
+  "thankyou": "شكرًا لك!",
+  "yourFeedback": "تم إرسال ملاحظاتك.",
+  "send": "إرسال"
 }

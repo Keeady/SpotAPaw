@@ -37,7 +37,6 @@ import ProSettings from "./pro-features-setting";
 import { useNotificationPermission } from "../Provider/notification-permission-provider";
 import { updateNotificationSubscriptionEnabled } from "../notification-util";
 import ContactSetting from "./contact-setting";
-import { Linking } from "react-native";
 
 // Define color scheme for icons
 const iconColors = {
@@ -107,6 +106,7 @@ const SettingsContainer = () => {
     useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [contactVisible, setContactVisible] = useState(false);
 
   const { user } = useContext(AuthContext);
 
@@ -299,7 +299,7 @@ const SettingsContainer = () => {
     router.push("/about");
   };
 
-  const versionText = Application.nativeApplicationVersion ?? "1.7.0";
+  const versionText = Application.nativeApplicationVersion ?? "1.8.0";
   const locationPermissionStatusDisplayText = locationPermission
     ? t("granted", "Granted")
     : t("request", "Request");
@@ -430,11 +430,8 @@ const SettingsContainer = () => {
       contactSetting={
         <ContactSetting
           iconColorContact={iconColors.information}
-          onOpenContact={() =>
-            Linking.openURL("mailto:spotapaw@spotapaw.com").catch(() => {
-              log("Failed to open email client");
-            })
-          }
+          onOpenContact={setContactVisible}
+          contactVisible={contactVisible}
         />
       }
     />

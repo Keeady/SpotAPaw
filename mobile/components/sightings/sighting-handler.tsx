@@ -1,10 +1,10 @@
-import { Href, Router } from "expo-router";
-import { Platform, Share } from "react-native";
 import * as Clipboard from "expo-clipboard";
-import { showMessage } from "react-native-flash-message";
-import { log } from "../logs";
-import { createErrorLogMessage } from "../util";
+import { Href, Router } from "expo-router";
 import { TFunction } from "i18next";
+import { Platform, Share } from "react-native";
+import { showMessage } from "react-native-flash-message";
+import { createErrorLogMessage } from "../util";
+import { captureError } from "@/instrumentation/instrument-util";
 
 export function handleAddingSighting(
   router: Router,
@@ -69,8 +69,10 @@ export async function handleSharingSighting(
           text: shareMessage,
           url: sightingUrl,
         });
-      } catch {
+      } catch (error) {
         // User cancelled
+        const msg = createErrorLogMessage(error);
+        captureError(msg, {});
       }
     } else {
       await Clipboard.setStringAsync(sightingUrl)
@@ -86,7 +88,7 @@ export async function handleSharingSighting(
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`Failed to copy link to clipboard on web: ${errorMessage}`);
+          const log = `Failed to copy link to clipboard on web: ${errorMessage}`;
           showMessage({
             message: t(
               "failedToCopyLinkToClipboard",
@@ -97,6 +99,7 @@ export async function handleSharingSighting(
             icon: "warning",
             statusBarHeight: 50,
           });
+          captureError(log, {});
         });
     }
     return;
@@ -118,6 +121,7 @@ export async function handleSharingSighting(
     await Share.share(shareObj);
   } catch (error) {
     const errorMessage = createErrorLogMessage(error);
-    log(`Failed to share sighting: ${errorMessage}`);
+    const log = `Failed to share sighting: ${errorMessage}`;
+    captureError(log, {});
   }
 }

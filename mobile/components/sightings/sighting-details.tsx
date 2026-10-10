@@ -29,6 +29,7 @@ import SightingGallery from "./gallery";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { useTranslation } from "react-i18next";
 import { useLocaleContext } from "../Provider/locale-provider";
+import { InstrumentCallbacks } from "@/instrumentation/telemetry";
 
 function dedupPhotos(sightings: AggregatedSighting[]) {
   const seen = new Set();
@@ -61,6 +62,7 @@ export default function SightingDetail({
   petName,
   onShareSighting,
   onFindMatches,
+  instrument,
 }: {
   sightings: AggregatedSighting[];
   petSummary: AggregatedSighting;
@@ -74,6 +76,7 @@ export default function SightingDetail({
   petName: string;
   onShareSighting: () => void;
   onFindMatches: () => void;
+  instrument?: InstrumentCallbacks;
 }) {
   const { t } = useTranslation(["sightingdetails", "translation"]);
   const theme = useTheme();
@@ -90,6 +93,12 @@ export default function SightingDetail({
   const handleText = (phone: string) => {
     if (phone) Linking.openURL(`sms:${phone}`);
   };
+
+  React.useEffect(() => {
+    instrument?.success({
+      status: "success",
+    });
+  }, [instrument]);
 
   return (
     <Portal.Host>
@@ -112,7 +121,11 @@ export default function SightingDetail({
                 images={images}
                 isVisible={isVisible}
                 setIsVisible={setIsVisible}
-                mainPhoto={petSummary?.photos && petSummary.photos.length > 0 ? petSummary.photos[0] : undefined}
+                mainPhoto={
+                  petSummary?.photos && petSummary.photos.length > 0
+                    ? petSummary.photos[0]
+                    : undefined
+                }
               />
 
               <Divider />

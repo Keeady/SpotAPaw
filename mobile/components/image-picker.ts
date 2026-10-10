@@ -1,10 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
+import { TFunction } from "i18next";
 import { Alert, Linking } from "react-native";
-import { log } from "./logs";
-import { createErrorLogMessage } from "./util";
-import { t, TFunction } from "i18next";
-import { PetImage } from "./wizard/wizard-interface";
 import { MAX_SELECTED_IMAGES } from "./constants";
+import { createErrorLogMessage } from "./util";
+import { PetImage } from "./wizard/wizard-interface";
+import { captureError } from "@/instrumentation/instrument-util";
 
 export const pickImage = async (
   t: TFunction,
@@ -20,7 +20,8 @@ export const pickImage = async (
     selectionLimit: MAX_SELECTED_IMAGES,
   }).catch((err) => {
     const errorMessage = createErrorLogMessage(err);
-    log(`pickImage: ${errorMessage}`);
+    const log = `pickImage: ${errorMessage}`;
+    captureError(log, {});
   });
 
   if (!result || !result.assets || result.canceled) {
@@ -45,7 +46,8 @@ export const takePhoto = async (
     selectionLimit: MAX_SELECTED_IMAGES,
   }).catch((err) => {
     const errorMessage = createErrorLogMessage(err);
-    log(`takePhoto: ${errorMessage}`);
+    const log = `takePhoto: ${errorMessage}`;
+    captureError(log, {});
   });
 
   if (!result || !result.assets || result.canceled) {
