@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "SpotAPaw backend in Nodejs",
-  "main": "index.js",
+  "main": "main.js",
   "type": "module",
   "scripts": {
     "test": "test"
