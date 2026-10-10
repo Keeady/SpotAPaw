@@ -9,6 +9,8 @@ export default ({ config }) => {
           googleMaps: {
             apiKey: process.env.EXPO_GOOGLE_MAP_API_KEY,
           },
+          googleServicesFile:
+            process.env.GOOGLE_SERVICES_JSON ?? "./google-services.json",
         },
       },
       ios: {
