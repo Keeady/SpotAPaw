@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
 import { DataSource } from 'typeorm';
+import * as pg from 'pg';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { DataSource } from 'typeorm';
       password: process.env.DB_PASSWORD,
       database: process.env.DB,
       entities: [AggregatedSighting],
-      autoLoadEntities: true
+      autoLoadEntities: true,
+      driver: pg
     }),
     SightingsModule,
     PetsModule,
