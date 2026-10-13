@@ -9,7 +9,6 @@ import { AuthHandler } from "@/lib/auth/auth";
 
 type HeaderProps = {
   isAuthenticated?: boolean;
-  onLogout?: () => void;
   showMenu: boolean;
 };
 
@@ -96,7 +95,6 @@ export default function Header({
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/95 font-sans backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        {/* Logo -> home. Placeholder: replace with <Image src="/logo.png" ... /> */}
         <Link
           href="/"
           aria-label="SpotAPaw home"
@@ -111,7 +109,7 @@ export default function Header({
           />
         </Link>
 
-        {/* Desktop nav */}
+        {/* Latge screens nav */}
         <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
           {showMenu &&
             links.map((l) => {
@@ -130,7 +128,7 @@ export default function Header({
           <div className="ml-3">{authButton()}</div>
         </nav>
 
-        {/* Mobile menu toggle */}
+        {/* Small screen menu toggle */}
         <button
           type="button"
           className="rounded-lg p-2 text-neutral-700 hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#65539e] lg:hidden"
@@ -143,7 +141,7 @@ export default function Header({
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Small screen menu */}
       {open && (
         <nav
           id="mobile-menu"

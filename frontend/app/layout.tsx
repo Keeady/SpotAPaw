@@ -60,8 +60,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col">
         {children}
-        {/*<ChatWidget url={apiHost} />
-        <Footer />*/}
       </body>
     </html>
   );
