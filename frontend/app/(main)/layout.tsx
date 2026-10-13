@@ -1,28 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Header from "../components/header";
-import { createClient } from "@/lib/auth/supabase/server";
+import AuthHeader from "@/lib/auth-header";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "SpotAPaw - Lost Pet Finder",
   description: "AI-powered app",
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const isAuthenticated = !!user && !user.is_anonymous;
+export default async function MainLayout({ children }: LayoutProps<"/">) {
   return (
     <>
-      <Header showMenu={true} isAuthenticated={isAuthenticated} />
-      <div className="pt-16">
-        
-        {children}
-      </div>
-      {/*<ChatWidget url={apiHost} />
-        <Footer />*/}
+      <Suspense fallback={<div className="fixed inset-x-0 top-0 h-16 border-b bg-white" />}>
+        <AuthHeader>
+          {({ isAuthenticated }: { isAuthenticated: boolean }) => (
+            <Header showMenu={true} isAuthenticated={isAuthenticated} />
+          )}
+        </AuthHeader>
+      </Suspense>
+      <div className="pt-16">{children}</div>
     </>
   );
 }
