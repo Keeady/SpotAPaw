@@ -6,7 +6,7 @@ export async function getSightings() {
   }
 
   try {
-    const res = await fetch(`${host}:${port}/sightings`);
+    const res = await fetch(`${host}:${port}/aggregated-sightings`);
     if (!res.ok) {
       throw new Error("Failed to fetch bio");
     }

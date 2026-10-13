@@ -22,7 +22,9 @@ import * as pg from 'pg';
       database: process.env.DB,
       entities: [AggregatedSighting],
       autoLoadEntities: true,
-      driver: pg
+      driver: pg,
+      retryAttempts: 2,
+      extra: { max: 1}
     }),
     SightingsModule,
     PetsModule,

@@ -4,7 +4,8 @@ import type { Sighting } from "./sighting-card";
 
 export default async function SightingList() {
   const sightings: Sighting[] | undefined = await getSightings();
-  if (!sightings) {
+  console.log(sightings)
+  if (!sightings || sightings.length === 0) {
     return <p>No Sightings</p>;
   }
 
