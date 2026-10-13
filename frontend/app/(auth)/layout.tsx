@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "AI-powered app",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <Header showMenu={false} />
