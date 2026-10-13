@@ -7,17 +7,23 @@ import { PetsModule } from './pets/pets.module.js';
 import { SightingContactsModule } from './sighting-contacts/sighting-contacts.module.js';
 import { AggregatedSightingsModule } from './aggregated-sightings/aggregated-sightings.module.js';
 import { UsersModule } from './users/users.module.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
+import { DataSource } from 'typeorm';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
   imports: [
-    // Distributed tracing, auto-correlated logs, request/job metrics, error
-    // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
-    ObserveModule.forRoot({
-      appKey: 'YOUR_APP_KEY',
-      appSecret: 'YOUR_APP_SECRET',
-      serviceId: 'backend',
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB,
+      entities: [AggregatedSighting],
+      autoLoadEntities: true
     }),
     SightingsModule,
     PetsModule,
@@ -28,4 +34,6 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
