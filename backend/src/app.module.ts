@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { SightingsModule } from './sightings/sightings.module.js';
@@ -10,8 +9,6 @@ import { UsersModule } from './users/users.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
 import { DataSource } from 'typeorm';
-
-export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
   imports: [
