@@ -16,6 +16,7 @@ export default function Home() {
             alt=""
             width={750}
             height={250}
+            loading="lazy"
           />
         </div>
 
@@ -38,6 +39,7 @@ export default function Home() {
               alt=""
               width={135}
               height={40}
+              loading="lazy"
             />
           </a>
           <a
@@ -51,6 +53,7 @@ export default function Home() {
               width={135}
               height={40}
               alt=""
+              loading="lazy"
             />
           </a>
         </div>

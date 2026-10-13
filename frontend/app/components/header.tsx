@@ -15,6 +15,7 @@ type HeaderProps = {
 
 const NAV_LINKS = [
   { href: "/sightings", label: "Nearby Sightings", authOnly: false },
+  { href: "/pets", label: "My Pets", authOnly: false },
   { href: "/profile", label: "My Profile", authOnly: false },
   { href: "/my-sightings", label: "My Sightings", authOnly: false },
   { href: "/settings", label: "My Settings", authOnly: false },
@@ -106,6 +107,7 @@ export default function Header({
             alt=""
             width={150}
             height={50}
+            loading="lazy"
           />
         </Link>
 
