@@ -1,8 +1,8 @@
 {
   "name": "backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "SpotAPaw API Backend with Nestjs",
+  "author": "Cammaria Bevavy",
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
