@@ -1,7 +1,6 @@
-import { UUID } from 'node:crypto';
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'aggregated_sightings' })
 export class AggregatedSighting {
   @PrimaryColumn()
   id: string;
@@ -78,7 +77,7 @@ export class AggregatedSighting {
   reporterName: string;
 
   @Column({
-    name: 'report_phone'
+    name: 'reporter_phone'
   })
   reporterPhone: string;
 
