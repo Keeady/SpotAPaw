@@ -97,7 +97,7 @@ export class AggregatedSighting {
   @Column()
   age: number;
 
-  @Column()
+  @Column('simple-array')
   photos: string[];
 
   @Column()

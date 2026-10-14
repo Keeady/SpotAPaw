@@ -4,6 +4,7 @@ import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dt
 import { InjectRepository } from '@nestjs/typeorm';
 import { AggregatedSighting } from './entities/aggregated-sighting.entity.js';
 import { Repository } from 'typeorm';
+import { toPublicSightings } from './util.js';
 
 @Injectable()
 export class AggregatedSightingsService {
@@ -16,8 +17,9 @@ export class AggregatedSightingsService {
     return 'This action adds a new aggregatedSighting';
   }
 
-  findAll() {
-    return this.aggregatedSightingsRepository.find()
+  async findAll() {
+    const data = await this.aggregatedSightingsRepository.find();
+    return toPublicSightings(data);
   }
 
   findOne(id: number) {

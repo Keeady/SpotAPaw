@@ -13,7 +13,7 @@ type HeaderProps = {
 };
 
 const NAV_LINKS = [
-  { href: "/sightings", label: "Nearby Sightings", authOnly: false },
+  { href: "/aggregated-sightings", label: "Nearby Sightings", authOnly: false },
   { href: "/pets", label: "My Pets", authOnly: false },
   { href: "/profile", label: "My Profile", authOnly: false },
   { href: "/my-sightings", label: "My Sightings", authOnly: false },

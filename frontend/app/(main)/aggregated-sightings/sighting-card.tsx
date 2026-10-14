@@ -3,26 +3,11 @@
 import Link from "next/link";
 import { Calendar1, MapPin, PawPrint } from "lucide-react";
 import PhotoGallery from "@/app/components/photo-gallery";
-
-export type Sighting = {
-  id: string;
-  is_active: boolean;
-  name: string;
-  type: string;
-  breed: string;
-  species: string;
-  lastSeenAt: string;
-  distanceMiles: number;
-  colors: string[];
-  gender: string;
-  age: string;
-  features: string;
-  photos: string[];
-};
+import { AggregatedSighting } from "@/lib/sightings/agregated-sighting";
+import { getLastSeenLocationDistance, getLastSeenTimeDistance } from "@/app/utils/sighting-distance";
 
 type SightingCardProps = {
-  sighting: Sighting;
-  /** If provided, the pet name links to the sighting detail page */
+  sighting: AggregatedSighting;
   href?: string;
 };
 
@@ -47,11 +32,12 @@ export default function SightingCard({ sighting, href }: SightingCardProps) {
   const {
     id,
     name,
-    type,
     breed,
     species,
-    lastSeenAt,
-    distanceMiles,
+    lastSeenLat,
+    lastSeenLocation,
+    lastSeenLong,
+    lastSeenTime,
     colors,
     gender,
     age,
@@ -59,17 +45,11 @@ export default function SightingCard({ sighting, href }: SightingCardProps) {
     photos,
   } = sighting;
 
-  const lastSeen = new Date(lastSeenAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-
   return (
     <article key={id} className="flex w-full flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-4 font-sans shadow-sm sm:p-5 md:flex-row md:gap-6">
       {/* Gallery (left on md+, top on small screens) */}
       <div className="w-full md:w-72 md:shrink-0 lg:w-80">
-        <PhotoGallery photos={photos} alt={`${name}, ${type}`} />
+        <PhotoGallery photos={photos} alt={`${name}, ${species}`} />
       </div>
 
       {/* Details (right on md+, below on small screens) */}
@@ -90,18 +70,18 @@ export default function SightingCard({ sighting, href }: SightingCardProps) {
             </h2>
             <span className="inline-flex items-center gap-1 rounded-full bg-[#65539e]/10 px-2.5 py-0.5 text-sm font-semibold text-[#65539e]">
               <PawPrint />
-              {type}
+              {species}
             </span>
           </div>
 
           <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-600">
             <span className="inline-flex items-center gap-1">
               <Calendar1 />
-              Last seen {lastSeen}
+              Last seen {getLastSeenTimeDistance(lastSeenTime)}
             </span>
             <span className="inline-flex items-center gap-1">
               <MapPin />
-              {distanceMiles.toFixed(1)} mi away
+              {getLastSeenLocationDistance(lastSeenLat, lastSeenLong, lastSeenLat, lastSeenLong)}
             </span>
           </p>
         </header>
@@ -121,7 +101,7 @@ export default function SightingCard({ sighting, href }: SightingCardProps) {
           </h3>
           {colors.length > 0 ? (
             <ul className="mt-1.5 flex flex-wrap gap-2">
-              {colors.map((c) => (
+              {colors.split(',').map((c: string) => (
                 <li
                   key={c}
                   className="rounded-full border border-neutral-300 bg-neutral-50 px-2.5 py-0.5 text-sm text-neutral-800"

@@ -1,0 +1,19 @@
+export async function getAggregatedSightings() {
+  const host = process.env.API_HOST;
+  const port = process.env.API_PORT;
+  if (!host || !port) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`${host}:${port}/aggregated-sightings`);
+    if (!res.ok) {
+      throw new Error("Failed to fetch bio");
+    }
+    return res.json();
+
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
