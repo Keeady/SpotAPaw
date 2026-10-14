@@ -60,7 +60,7 @@ export default function SignInForm({
       .signInWithPassword(email, password)
       .then((session) => {
         if (session) {
-          router.replace("/sightings");
+          router.replace("/aggregated-sightings");
           return;
         }
       })
