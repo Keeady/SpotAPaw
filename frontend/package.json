@@ -12,6 +12,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
+    "date-fns": "^4.4.0",
+    "geolib": "^4.0.0",
     "lucide-react": "^1.54.0",
     "next": "16.4.0",
     "react": "19.3.0",

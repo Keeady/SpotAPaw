@@ -1,0 +1,27 @@
+export type AggregatedSighting = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  petId: string | null;
+  lastSeenLat: number;
+  lastSeenLong: number;
+  lastSeenLocation: string;
+  lastSeenTime: string;
+  note: string | null;
+  gender: string | null;
+  colors: string;
+  breed: string;
+  species: string;
+  features: string;
+  name: string;
+  linkedSightingId: string;
+  isActive: boolean;
+  reporterName: string | null;
+  reporterPhone: string | null;
+  reporterId: string | null;
+  size: string;
+  collarDescription: string | null;
+  age: number | null;
+  photos: string[];
+  behavior: string | null;
+};
