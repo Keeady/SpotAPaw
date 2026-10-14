@@ -10,21 +10,28 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
 import { DataSource } from 'typeorm';
 import * as pg from 'pg';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB,
-      entities: [AggregatedSighting],
-      autoLoadEntities: true,
-      driver: pg,
-      retryAttempts: 2,
-      extra: { max: 1}
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.getOrThrow<string>('DB_HOST'),
+        port: Number(configService.getOrThrow<number>('DB_PORT')),
+        username: configService.getOrThrow<string>('DB_USERNAME'),
+        password: configService.getOrThrow<string>('DB_PASSWORD'),
+        database: configService.getOrThrow<string>('DB'),
+        entities: [AggregatedSighting],
+        autoLoadEntities: true,
+        driver: pg,
+        retryAttempts: 2,
+        extra: { max: 1 },
+      }),
     }),
     SightingsModule,
     PetsModule,
