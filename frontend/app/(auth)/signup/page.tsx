@@ -9,9 +9,9 @@ export default function Home() {
         subtitle="Join a community of pets and pet lovers"
       />
       <section className="flex flex-1 flex-col items-center justify-center gap-6">
-       <div className="mx-auto w-full max-w-md px-4 py-10">
-               <SignUpForm />
-             </div>
+        <div className="mx-auto w-full max-w-md px-4 py-10">
+          <SignUpForm />
+        </div>
       </section>
     </main>
   );

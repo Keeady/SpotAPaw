@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import Link from "next/link";
 import TextField from "../../components/text-field";
 import PasswordField from "../../components/password";
@@ -8,18 +8,28 @@ import Button from "../../components/button";
 import Divider from "../../components/divider";
 import SocialButtons from "../../components/social-buttons";
 import { Mail } from "lucide-react";
+import { isValidEmail } from "@/app/utils/email-validation";
+import { isValidPassword } from "@/app/utils/password-validation";
 
 type Errors = { email?: string; password?: string; confirm?: string };
 
 type SignUpFormProps = {
-  onSubmit?: (values: { email: string; password: string }) => Promise<void> | void;
+  onSubmit?: (values: {
+    email: string;
+    password: string;
+  }) => Promise<void> | void;
   onGoogle?: () => void;
   onApple?: () => void;
 };
 
-const PASSWORD_HELP = "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character.";
+const PASSWORD_HELP =
+  "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character.";
 
-export default function SignUpForm({ onSubmit, onGoogle, onApple }: SignUpFormProps) {
+export default function SignUpForm({
+  onSubmit,
+  onGoogle,
+  onApple,
+}: SignUpFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -28,9 +38,12 @@ export default function SignUpForm({ onSubmit, onGoogle, onApple }: SignUpFormPr
 
   const validate = (): Errors => {
     const e: Errors = {};
-    if (!/^\S+@\S+\.\S+$/.test(email)) e.email = "Enter a valid email address.";
-    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password))
+    if (!email || !isValidEmail(email)) {
+      e.email = "Enter a valid email address.";
+    }
+    if (!password || !isValidPassword(password)) {
       e.password = PASSWORD_HELP;
+    }
     if (confirm !== password) e.confirm = "Passwords do not match.";
     return e;
   };
@@ -92,7 +105,10 @@ export default function SignUpForm({ onSubmit, onGoogle, onApple }: SignUpFormPr
 
       <p className="text-center text-sm text-neutral-700">
         Already have an account?{" "}
-        <Link href="/signin" className="font-semibold text-[#65539e] underline-offset-4 hover:underline">
+        <Link
+          href="/signin"
+          className="font-semibold text-[#65539e] underline-offset-4 hover:underline"
+        >
           Sign in
         </Link>
       </p>

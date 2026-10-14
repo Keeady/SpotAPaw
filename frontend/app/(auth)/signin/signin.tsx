@@ -15,14 +15,16 @@ import { useRouter } from "next/navigation";
 type Errors = { email?: string; password?: string };
 
 type SignInFormProps = {
-  onSubmit?: (values: { email: string; password: string }) => Promise<void> | void;
   onGoogle?: () => void;
   onApple?: () => void;
 };
 
-export default function SignInForm({ onSubmit, onGoogle, onApple }: SignInFormProps) {
-    const router = useRouter();
-    
+export default function SignInForm({
+  onGoogle,
+  onApple,
+}: SignInFormProps) {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Errors>({});
@@ -51,7 +53,7 @@ export default function SignInForm({ onSubmit, onGoogle, onApple }: SignInFormPr
     }
   };
 
-   async function signInWithEmail() {
+  async function signInWithEmail() {
     setLoading(true);
     const authHandler = new AuthHandler();
     authHandler
@@ -71,7 +73,11 @@ export default function SignInForm({ onSubmit, onGoogle, onApple }: SignInFormPr
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="flex w-full flex-col gap-5"
+    >
       <TextField
         label="Email"
         type="email"
@@ -113,7 +119,10 @@ export default function SignInForm({ onSubmit, onGoogle, onApple }: SignInFormPr
 
       <p className="text-center text-sm text-neutral-700">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-semibold text-[#65539e] underline-offset-4 hover:underline">
+        <Link
+          href="/signup"
+          className="font-semibold text-[#65539e] underline-offset-4 hover:underline"
+        >
           Register
         </Link>
       </p>
