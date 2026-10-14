@@ -14,10 +14,12 @@
     "@supabase/supabase-js": "^2.117.3",
     "date-fns": "^4.4.0",
     "geolib": "^4.0.0",
-    "lucide-react": "^1.54.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.56.0",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-leaflet": "^5.0.0",
     "validator": "^13.15.35"
   },
   "devDependencies": {
@@ -29,7 +31,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/leaflet": "^1.9.22"
   },
   "packageManager": "yarn@1.22.22"
 }

@@ -29,7 +29,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         entities: [AggregatedSighting],
         autoLoadEntities: true,
         driver: pg,
-        retryAttempts: 2,
+        retryAttempts: 10,
         extra: { max: 1 },
       }),
     }),
