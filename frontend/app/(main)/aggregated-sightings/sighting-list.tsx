@@ -1,10 +1,14 @@
 import { getAggregatedSightings } from "@/lib/sightings/get-aggregated-sightings";
 import SightingCard from "./sighting-card";
 import { AggregatedSighting } from "@/lib/sightings/agregated-sighting";
+import { SightingLocationManager } from "@/app/components/location/manager";
+import { PermissionContext } from "@/app/components/location/providers/location-provider";
+import { useContext } from "react";
 
 export default async function SightingList() {
-  const sightings: AggregatedSighting[] | undefined = await getAggregatedSightings();
-  console.log(sightings)
+  const sightings: AggregatedSighting[] | undefined =
+    await getAggregatedSightings();
+  console.log(sightings);
   if (!sightings || sightings.length === 0) {
     return <p>No Sightings</p>;
   }

@@ -74,7 +74,7 @@ export default function Home() {
           Create an Account
         </Link>
         <Link
-          href="/sightings"
+          href="/aggregated-sightings"
           className="mx-auto py-2 text-base font-medium text-[#65539e] underline-offset-4 hover:underline focus-visible:underline"
         >
           Continue as Guest
