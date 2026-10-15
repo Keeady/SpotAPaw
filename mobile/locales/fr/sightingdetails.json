@@ -18,5 +18,9 @@
   "thisIsMyPet": "C'est mon animal.",
   "viewMatches": "Voir les correspondances",
   "unknown": "Inconnu",
-  "viewPoster": "Voir l'affiche"
+  "viewPoster": "Voir l'affiche",
+  "viewOnMap": "Ouvrir dans Google Maps",
+  "listView": "Liste",
+  "mapView": "Carte",
+  "noMapLocations": "Aucun emplacement à afficher sur la carte."
 }

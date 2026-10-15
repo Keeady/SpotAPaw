@@ -18,5 +18,9 @@
   "thisIsMyPet": "هذا حيواني الأليف.",
   "viewMatches": "عرض التطابقات",
   "unknown": "غير معروف",
-  "viewPoster": "عرض الملصق"
+  "viewPoster": "عرض الملصق",
+  "viewOnMap": "فتح في خرائط Google",
+  "listView": "قائمة",
+  "mapView": "خريطة",
+  "noMapLocations": "لا توجد مواقع لعرضها على الخريطة."
 }
