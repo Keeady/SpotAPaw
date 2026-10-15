@@ -1,18 +1,18 @@
 "use client";
 
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Check } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
-  MapContainer,
-  Marker,
-  Popup,
-  TileLayer,
-  useMap,
-  useMapEvents,
+    MapContainer,
+    Marker,
+    Popup,
+    TileLayer,
+    useMap,
+    useMapEvents,
 } from "react-leaflet";
-import L from "leaflet";
-import { Check } from "lucide-react";
-import "leaflet/dist/leaflet.css";
-import type { Pin, SightingLocation } from "./location";
+import type { Pin, SightingLocation } from "./location-types";
 
 type DropPinOnMapProps = {
   currentLocation?: SightingLocation;
@@ -127,7 +127,10 @@ export default function DropPinOnMap({
           disabled={!selected || confirmed}
           onClick={() => {
             if (!selected) return;
-            handleActionButton({ lat: selected.latitude, lng: selected.longitude });
+            handleActionButton({
+              lat: selected.latitude,
+              lng: selected.longitude,
+            });
             setConfirmed(true);
           }}
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[#6750A4] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#5a4491] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6750A4] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#1D1B20]/12 disabled:text-[#1D1B20]/38"

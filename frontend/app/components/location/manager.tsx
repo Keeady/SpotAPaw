@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useContext, useState } from "react";
-import dynamic from "next/dynamic";
 import { Crosshair, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useCallback, useContext, useState } from "react";
 import Divider from "../divider";
-import type { SightingLocation } from "./location";
+import type { SightingLocation } from "./location-types";
 import { PermissionContext } from "./providers/location-provider";
 
 // Leaflet touches `window`, so the map must only render on the client.
@@ -40,7 +40,7 @@ export function SightingLocationManager({
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col px-6 pb-12 pt-6">
+    <main className="mx-auto flex w-full max-w-5xl flex-col px-6 pb-12 pt-6">
       <h1 className="mb-3 text-center text-2xl font-medium text-[#1D1B20]">
         Set Your Location
       </h1>

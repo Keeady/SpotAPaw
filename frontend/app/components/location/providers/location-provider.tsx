@@ -5,8 +5,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { SightingLocation } from "../location";
-import { getStorageItem, saveStorageItem } from "@/app/utils/local-storage";
+import { SightingLocation } from "../location-types";
+import { getSavedLocation, saveLocation } from "../location-utils";
 
 type ContextProps = {
   enabledLocationPermission?: boolean;
@@ -18,8 +18,6 @@ type ContextProps = {
   isLoadingLocation: boolean;
   getExistingPermission: () => Promise<void>;
 };
-
-const SIGHTING_LOCATION_KEY = "sightingLocation";
 
 const PermissionContext = createContext<Partial<ContextProps>>({});
 
@@ -117,18 +115,3 @@ export function usePermission() {
 }
 
 export { PermissionContext, PermissionProvider };
-
-export const getSavedLocation = async () => {
-  try {
-    const location = await getStorageItem(SIGHTING_LOCATION_KEY);
-    if (location) {
-      return JSON.parse(location);
-    }
-  } catch {
-    return;
-  }
-};
-
-export const saveLocation = (location: SightingLocation) => {
-  saveStorageItem(SIGHTING_LOCATION_KEY, JSON.stringify(location));
-};
