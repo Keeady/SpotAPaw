@@ -65,8 +65,8 @@ function toColorList(colors: unknown): string[] {
 }
 
 function genderIcon(gender?: string) {
-  if (gender === "male") return "gender-male";
-  if (gender === "female") return "gender-female";
+  if (gender === "Male") return "gender-male";
+  if (gender === "Female") return "gender-female";
   return "help-circle-outline";
 }
 
