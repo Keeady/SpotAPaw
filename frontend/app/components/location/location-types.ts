@@ -7,4 +7,6 @@ export type Pin = {
   latitude: number;
   longitude: number;
   title: string;
+  color: string;
+  description:string;
 };

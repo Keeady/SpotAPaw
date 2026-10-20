@@ -5,12 +5,12 @@ import "leaflet/dist/leaflet.css";
 import { Check } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
-    MapContainer,
-    Marker,
-    Popup,
-    TileLayer,
-    useMap,
-    useMapEvents,
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
 } from "react-leaflet";
 import type { Pin, SightingLocation } from "./location-types";
 
@@ -18,6 +18,7 @@ type DropPinOnMapProps = {
   currentLocation?: SightingLocation;
   handleActionButton: (location?: SightingLocation) => void;
   pins?: Pin[];
+  readonly?: boolean;
 };
 
 function makePinIcon(color: string) {
@@ -59,6 +60,7 @@ export default function DropPinOnMap({
   currentLocation,
   handleActionButton,
   pins,
+  readonly,
 }: DropPinOnMapProps) {
   const [confirmed, setConfirmed] = useState(false);
   const [selected, setSelected] = useState<{
@@ -87,12 +89,14 @@ export default function DropPinOnMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Recenter location={currentLocation} />
-        <ClickHandler
-          onPick={(coords) => {
-            setSelected(coords);
-            setConfirmed(false);
-          }}
-        />
+        {!readonly && (
+          <ClickHandler
+            onPick={(coords) => {
+              setSelected(coords);
+              setConfirmed(false);
+            }}
+          />
+        )}
 
         {selected && (
           <Marker
@@ -109,36 +113,41 @@ export default function DropPinOnMap({
             <Marker
               key={i}
               position={[pin.latitude, pin.longitude]}
-              icon={pinIcon}
+              icon={makePinIcon(pin.color)}
+              title={pin.title}
             >
-              <Popup>{pin.title}</Popup>
+              <Popup>
+                {pin.title} {pin.description}
+              </Popup>
             </Marker>
           ))}
       </MapContainer>
 
-      <div className="flex flex-col gap-2 px-4 py-3">
-        <p className="text-xs text-[#666]" aria-live="polite">
-          {selected
-            ? "Pin placed! Click the button to confirm."
-            : "Click the map to place a pin, or double-click to zoom."}
-        </p>
-        <button
-          type="button"
-          disabled={!selected || confirmed}
-          onClick={() => {
-            if (!selected) return;
-            handleActionButton({
-              latitude: selected.latitude,
-              longitude: selected.longitude,
-            });
-            setConfirmed(true);
-          }}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#6750A4] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#5a4491] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6750A4] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#1D1B20]/12 disabled:text-[#1D1B20]/38"
-        >
-          {confirmed && <Check className="h-4 w-4" />}
-          {confirmed ? "Location Confirmed" : "Confirm Location"}
-        </button>
-      </div>
+      {!readonly && (
+        <div className="flex flex-col gap-2 px-4 py-3">
+          <p className="text-xs text-[#666]" aria-live="polite">
+            {selected
+              ? "Pin placed! Click the button to confirm."
+              : "Click the map to place a pin, or double-click to zoom."}
+          </p>
+          <button
+            type="button"
+            disabled={!selected || confirmed}
+            onClick={() => {
+              if (!selected) return;
+              handleActionButton({
+                latitude: selected.latitude,
+                longitude: selected.longitude,
+              });
+              setConfirmed(true);
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#6750A4] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#5a4491] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6750A4] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#1D1B20]/12 disabled:text-[#1D1B20]/38"
+          >
+            {confirmed && <Check className="h-4 w-4" />}
+            {confirmed ? "Location Confirmed" : "Confirm Location"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

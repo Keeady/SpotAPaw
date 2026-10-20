@@ -28,7 +28,7 @@ export default async function SightingList() {
             <SightingCard
               sighting={s}
               currentLocation={location}
-              href={`/aggregated_sightings/${s.id}`}
+              href={`/aggregated-sightings/${s.id}?linkedSightingId=${s.linkedSightingId}`}
             />
           </li>
         ))}
