@@ -131,6 +131,7 @@ export default function SightingDetail({
   petName,
   onShareSighting,
   onFindMatches,
+  onViewPoster,
   instrument,
 }: {
   sightings: AggregatedSighting[];
@@ -144,7 +145,8 @@ export default function SightingDetail({
   onPetFound?: () => void;
   petName: string;
   onShareSighting: () => void;
-  onFindMatches: () => void;
+  onFindMatches?: () => void;
+  onViewPoster?: () => void;
   instrument?: InstrumentCallbacks;
 }) {
   const { t } = useTranslation(["sightingdetails", "translation"]);
@@ -198,6 +200,13 @@ export default function SightingDetail({
     ? t(`animal.${speciesKey}`, { ns: "translation" })
     : "";
 
+  const hasActions = !!(
+    claimed ||
+    (!hasOwner && claimPet) ||
+    onFindMatches ||
+    onEdit ||
+    onPetFound
+  );
   return (
     <Portal.Host>
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -266,7 +275,9 @@ export default function SightingDetail({
                       <Chip
                         compact
                         icon={getIconByAnimalSpecies(petSummary.species)}
-                        style={{ backgroundColor: theme.colors.primaryContainer }}
+                        style={{
+                          backgroundColor: theme.colors.primaryContainer,
+                        }}
                         textStyle={{ color: theme.colors.onPrimaryContainer }}
                       >
                         {speciesLabel}
@@ -334,40 +345,46 @@ export default function SightingDetail({
               </View>
 
               {/* CTA row */}
-              <View
-                style={[
-                  styles.ctaRow,
-                  isWide ? styles.ctaRowWide : styles.ctaRowNarrow,
-                  { borderTopColor: theme.colors.outlineVariant },
-                ]}
-              >
-                {claimed && (
-                  <Chip mode="outlined" disabled={claimed}>
-                    {t("ownerPending")}
-                  </Chip>
-                )}
-                {!hasOwner && claimPet && (
-                  <Button mode="contained" onPress={() => claimPet()}>
-                    {t("thisIsMyPet")}
-                  </Button>
-                )}
-                <Button mode="outlined" onPress={() => onFindMatches()}>
-                  {t("viewMatches")}
-                </Button>
-                <Button mode="outlined" onPress={() => onFindMatches()}>
-                  {t("viewPoster")}
-                </Button>
-                {onPetFound && (
-                  <Button mode="text" onPress={() => onPetFound()}>
-                    {t("petFound")}
-                  </Button>
-                )}
-                {onEdit && (
-                  <Button mode="text" onPress={() => onEdit()}>
-                    {t("editSighting")}
-                  </Button>
-                )}
-              </View>
+              {hasActions && (
+                <View
+                  style={[
+                    styles.ctaRow,
+                    isWide ? styles.ctaRowWide : styles.ctaRowNarrow,
+                    { borderTopColor: theme.colors.outlineVariant },
+                  ]}
+                >
+                  {claimed && (
+                    <Chip mode="outlined" disabled={claimed}>
+                      {t("ownerPending")}
+                    </Chip>
+                  )}
+                  {!hasOwner && claimPet && (
+                    <Button mode="contained" onPress={() => claimPet()}>
+                      {t("thisIsMyPet")}
+                    </Button>
+                  )}
+                  {onFindMatches && (
+                    <Button mode="text" onPress={() => onFindMatches()}>
+                      {t("viewMatches")}
+                    </Button>
+                  )}
+                  {onViewPoster && (
+                    <Button mode="text" onPress={() => onViewPoster()}>
+                      {t("viewPoster")}
+                    </Button>
+                  )}
+                  {onPetFound && (
+                    <Button mode="text" onPress={() => onPetFound()}>
+                      {t("petFound")}
+                    </Button>
+                  )}
+                  {onEdit && (
+                    <Button mode="text" onPress={() => onEdit()}>
+                      {t("editSighting")}
+                    </Button>
+                  )}
+                </View>
+              )}
             </Card>
 
             {/* ---------- Sightings timeline ---------- */}
@@ -406,7 +423,10 @@ export default function SightingDetail({
                   ]}
                 >
                   <DropPinOnMap
-                    currentLocation={{lat: pins[0].latitude, lng: pins[0].longitude}}
+                    currentLocation={{
+                      lat: pins[0].latitude,
+                      lng: pins[0].longitude,
+                    }}
                     handleActionButton={() => void 0}
                     pins={pins}
                     readonly={true}
@@ -421,202 +441,206 @@ export default function SightingDetail({
                 </Text>
               )
             ) : (
-            sightings.map((sighting, index) => {
-              const reportName = sighting.reporterName;
-              const reporterPhone = sighting.reporterPhone;
-              const isLatest = index === 0; // assuming sightings sorted DESC by created_at
-              const colors = toColorList(sighting.colors);
-              const hasMapLocation = !!(
-                sighting.lastSeenLocation ||
-                (sighting.lastSeenLat && sighting.lastSeenLong)
-              );
+              sightings.map((sighting, index) => {
+                const reportName = sighting.reporterName;
+                const reporterPhone = sighting.reporterPhone;
+                const isLatest = index === 0; // assuming sightings sorted DESC by created_at
+                const colors = toColorList(sighting.colors);
+                const hasMapLocation = !!(
+                  sighting.lastSeenLocation ||
+                  (sighting.lastSeenLat && sighting.lastSeenLong)
+                );
 
-              return (
-                <View key={sighting.id} style={styles.timelineRow}>
-                  {/* Timeline rail */}
-                  <View style={styles.rail}>
-                    <View
-                      style={[
-                        styles.dot,
-                        {
-                          backgroundColor: isLatest
-                            ? theme.colors.primary
-                            : theme.colors.outlineVariant,
-                        },
-                      ]}
-                    />
-                    {index < sightings.length - 1 && (
+                return (
+                  <View key={sighting.id} style={styles.timelineRow}>
+                    {/* Timeline rail */}
+                    <View style={styles.rail}>
                       <View
                         style={[
-                          styles.railLine,
-                          { backgroundColor: theme.colors.outlineVariant },
+                          styles.dot,
+                          {
+                            backgroundColor: isLatest
+                              ? theme.colors.primary
+                              : theme.colors.outlineVariant,
+                          },
                         ]}
                       />
-                    )}
-                  </View>
-
-                  {/* Sighting card */}
-                  <View style={styles.timelineCardWrap}>
-                    <Card
-                      mode="outlined"
-                      style={[
-                        styles.sightingCard,
-                        { backgroundColor: theme.colors.surface },
-                        isLatest && {
-                          borderColor: theme.colors.primary,
-                          borderWidth: 1.5,
-                        },
-                      ]}
-                    >
-                      <View style={styles.sightingContent}>
-                        {/* Header: thumbnail + time + distance */}
-                        <View style={styles.sightingHeader}>
-                          {sighting.photos && sighting.photos.length > 0 ? (
-                            <TouchableOpacity
-                              onPress={() => setIsVisible(true)}
-                              accessibilityRole="imagebutton"
-                            >
-                              <Avatar.Image
-                                size={48}
-                                source={{ uri: sighting.photos[0] }}
-                              />
-                            </TouchableOpacity>
-                          ) : (
-                            <Avatar.Icon size={48} icon="paw" />
-                          )}
-                          <View style={styles.sightingHeaderText}>
-                            <Text variant="titleSmall" style={styles.bold}>
-                              {getLastSeenTimeDistance(
-                                sighting.lastSeenTime,
-                                preferredLanguage,
-                              )}
-                            </Text>
-                            <View style={styles.metaItem}>
-                              <Icon
-                                source="map-marker-path"
-                                size={16}
-                                color={theme.colors.onSurfaceVariant}
-                              />
-                              <Text
-                                variant="bodyMedium"
-                                style={{ color: theme.colors.onSurfaceVariant }}
-                              >
-                                {userCurrentLocation &&
-                                sighting.lastSeenLat &&
-                                sighting.lastSeenLong
-                                  ? getLastSeenLocationDistance(
-                                      userCurrentLocation,
-                                      sighting.lastSeenLat,
-                                      sighting.lastSeenLong,
-                                      t,
-                                    )
-                                  : t("noDistanceData")}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-
-                        {/* Breed / gender */}
-                        {(!!sighting.breed || !!sighting.gender) && (
-                          <View style={styles.grid}>
-                            {!!sighting.breed && (
-                              <Detail label={t("breed")} width="50%">
-                                <Text variant="bodyMedium">{sighting.breed}</Text>
-                              </Detail>
-                            )}
-                            {!!sighting.gender && (
-                              <Detail label={t("gender")} width="50%">
-                                <Icon
-                                  source={genderIcon(sighting.gender)}
-                                  size={16}
-                                  color={theme.colors.onSurface}
-                                />
-                                <Text variant="bodyMedium">
-                                  {" "}
-                                  {t(`gender.${sighting.gender}`, {
-                                    ns: "translation",
-                                  })}
-                                </Text>
-                              </Detail>
-                            )}
-                          </View>
-                        )}
-
-                        {colors.length > 0 && (
-                          <View style={styles.section}>
-                            <Label>{t("colors")}</Label>
-                            <ColorChips colors={colors} />
-                          </View>
-                        )}
-
-                        {!!sighting.features && (
-                          <Text variant="bodyMedium">
-                            {t("featuresFeatures", {
-                              features: sighting.features,
-                            })}
-                          </Text>
-                        )}
-                        {!!sighting.note && (
-                          <Text variant="bodyMedium">
-                            {t("notesNote", { note: sighting.note })}
-                          </Text>
-                        )}
-
-                        {/* Footer: reporter contact + Google Maps link */}
+                      {index < sightings.length - 1 && (
                         <View
                           style={[
-                            styles.sightingFooter,
-                            { borderTopColor: theme.colors.outlineVariant },
+                            styles.railLine,
+                            { backgroundColor: theme.colors.outlineVariant },
                           ]}
-                        >
-                          <Button
-                            mode="contained-tonal"
-                            icon="google-maps"
-                            compact
-                            disabled={!hasMapLocation}
-                            onPress={() =>
-                              Linking.openURL(
-                                getLastSeenLocationURLMap(
-                                  sighting.lastSeenLocation,
-                                  sighting.lastSeenLat,
-                                  sighting.lastSeenLong,
-                                ),
-                              )
-                            }
-                          >
-                            {t("viewOnMap", "Open in Google Maps")}
-                          </Button>
+                        />
+                      )}
+                    </View>
 
-                          {isOwner && reporterPhone && (
-                            <View style={styles.reporter}>
-                              <Text variant="labelLarge">
-                                {t("reportedBy")} {reportName}
+                    {/* Sighting card */}
+                    <View style={styles.timelineCardWrap}>
+                      <Card
+                        mode="outlined"
+                        style={[
+                          styles.sightingCard,
+                          { backgroundColor: theme.colors.surface },
+                          isLatest && {
+                            borderColor: theme.colors.primary,
+                            borderWidth: 1.5,
+                          },
+                        ]}
+                      >
+                        <View style={styles.sightingContent}>
+                          {/* Header: thumbnail + time + distance */}
+                          <View style={styles.sightingHeader}>
+                            {sighting.photos && sighting.photos.length > 0 ? (
+                              <TouchableOpacity
+                                onPress={() => setIsVisible(true)}
+                                accessibilityRole="imagebutton"
+                              >
+                                <Avatar.Image
+                                  size={48}
+                                  source={{ uri: sighting.photos[0] }}
+                                />
+                              </TouchableOpacity>
+                            ) : (
+                              <Avatar.Icon size={48} icon="paw" />
+                            )}
+                            <View style={styles.sightingHeaderText}>
+                              <Text variant="titleSmall" style={styles.bold}>
+                                {getLastSeenTimeDistance(
+                                  sighting.lastSeenTime,
+                                  preferredLanguage,
+                                )}
                               </Text>
-                              <Button
-                                mode="text"
-                                icon="phone"
-                                compact
-                                onPress={() => handleCall(reporterPhone)}
-                              >
-                                {t("call")}
-                              </Button>
-                              <Button
-                                mode="text"
-                                icon="message-text"
-                                compact
-                                onPress={() => handleText(reporterPhone)}
-                              >
-                                {t("text")}
-                              </Button>
+                              <View style={styles.metaItem}>
+                                <Icon
+                                  source="map-marker-path"
+                                  size={16}
+                                  color={theme.colors.onSurfaceVariant}
+                                />
+                                <Text
+                                  variant="bodyMedium"
+                                  style={{
+                                    color: theme.colors.onSurfaceVariant,
+                                  }}
+                                >
+                                  {userCurrentLocation &&
+                                  sighting.lastSeenLat &&
+                                  sighting.lastSeenLong
+                                    ? getLastSeenLocationDistance(
+                                        userCurrentLocation,
+                                        sighting.lastSeenLat,
+                                        sighting.lastSeenLong,
+                                        t,
+                                      )
+                                    : t("noDistanceData")}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+
+                          {/* Breed / gender */}
+                          {(!!sighting.breed || !!sighting.gender) && (
+                            <View style={styles.grid}>
+                              {!!sighting.breed && (
+                                <Detail label={t("breed")} width="50%">
+                                  <Text variant="bodyMedium">
+                                    {sighting.breed}
+                                  </Text>
+                                </Detail>
+                              )}
+                              {!!sighting.gender && (
+                                <Detail label={t("gender")} width="50%">
+                                  <Icon
+                                    source={genderIcon(sighting.gender)}
+                                    size={16}
+                                    color={theme.colors.onSurface}
+                                  />
+                                  <Text variant="bodyMedium">
+                                    {" "}
+                                    {t(`gender.${sighting.gender}`, {
+                                      ns: "translation",
+                                    })}
+                                  </Text>
+                                </Detail>
+                              )}
                             </View>
                           )}
+
+                          {colors.length > 0 && (
+                            <View style={styles.section}>
+                              <Label>{t("colors")}</Label>
+                              <ColorChips colors={colors} />
+                            </View>
+                          )}
+
+                          {!!sighting.features && (
+                            <Text variant="bodyMedium">
+                              {t("featuresFeatures", {
+                                features: sighting.features,
+                              })}
+                            </Text>
+                          )}
+                          {!!sighting.note && (
+                            <Text variant="bodyMedium">
+                              {t("notesNote", { note: sighting.note })}
+                            </Text>
+                          )}
+
+                          {/* Footer: reporter contact + Google Maps link */}
+                          <View
+                            style={[
+                              styles.sightingFooter,
+                              { borderTopColor: theme.colors.outlineVariant },
+                            ]}
+                          >
+                            <Button
+                              mode="contained-tonal"
+                              icon="google-maps"
+                              compact
+                              disabled={!hasMapLocation}
+                              onPress={() =>
+                                Linking.openURL(
+                                  getLastSeenLocationURLMap(
+                                    sighting.lastSeenLocation,
+                                    sighting.lastSeenLat,
+                                    sighting.lastSeenLong,
+                                  ),
+                                )
+                              }
+                            >
+                              {t("viewOnMap", "Open in Google Maps")}
+                            </Button>
+
+                            {isOwner && reporterPhone && (
+                              <View style={styles.reporter}>
+                                <Text variant="labelLarge">
+                                  {t("reportedBy")} {reportName}
+                                </Text>
+                                <Button
+                                  mode="text"
+                                  icon="phone"
+                                  compact
+                                  onPress={() => handleCall(reporterPhone)}
+                                >
+                                  {t("call")}
+                                </Button>
+                                <Button
+                                  mode="text"
+                                  icon="message-text"
+                                  compact
+                                  onPress={() => handleText(reporterPhone)}
+                                >
+                                  {t("text")}
+                                </Button>
+                              </View>
+                            )}
+                          </View>
                         </View>
-                      </View>
-                    </Card>
+                      </Card>
+                    </View>
                   </View>
-                </View>
-              );
-            })
+                );
+              })
             )}
           </View>
         </ScrollView>
@@ -714,11 +738,13 @@ const styles = StyleSheet.create({
   ctaRow: {
     borderTopWidth: StyleSheet.hairlineWidth,
     padding: 16,
-    gap: 8,
+    gap: 2,
   },
   ctaRowNarrow: {
-    flexDirection: "column",
-    alignItems: "stretch",
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    justifyContent: "center"
   },
   ctaRowWide: {
     flexDirection: "row",

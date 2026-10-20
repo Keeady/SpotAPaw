@@ -51,7 +51,7 @@ export default function SightingProfile() {
   const { loading, error, timeline, summary } = usePetSightings(
     sightingId,
     linkedSightingId,
-    instrument
+    instrument,
   );
 
   const onPetFound = useConfirmPetFound();
@@ -117,25 +117,13 @@ export default function SightingProfile() {
     handleSharingSighting(sightingId, petName || summary?.name || "", t);
   }, [sightingId, petName, summary?.name, t]);
 
-  const onFindMatches = useCallback(() => {
-    if (!sightingId || !summary?.petDescriptionId) {
-      showMessage({
-        message: t(
-          "matchingProcessing",
-          "Pet matching is still processing. Please try again in a moment.",
-        ),
-        type: "warning",
-        icon: "warning",
-        statusBarHeight: 50,
-      });
+  const onViewMatches = useCallback(() => {
+    router.push(`/matches?sightingId=${sightingId}`);
+  }, [sightingId, t]);
 
-      return;
-    }
-
-    router.push(
-      `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${summary?.petDescriptionId}`,
-    );
-  }, [sightingId, summary?.petDescriptionId, router, sightingsRoute, t]);
+  const onViewPoster = useCallback(() => {
+    router.push(`/posters?sightingId=${sightingId}`);
+  }, [sightingId, t]);
 
   if (error) {
     log(error);
@@ -171,8 +159,9 @@ export default function SightingProfile() {
       isOwner={!!isOwner}
       onPetFound={isOwner ? handlePetFound : undefined}
       onShareSighting={onShareSighting}
-      onFindMatches={onFindMatches}
+      onFindMatches={isOwner ? onViewMatches : undefined}
       instrument={instrument}
+      onViewPoster={onViewPoster}
     />
   );
 }

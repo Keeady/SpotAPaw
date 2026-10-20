@@ -584,9 +584,7 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             statusBarHeight: 50,
           });
 
-          router.replace(
-            `/${sightingsRoute}/progress/?sightingId=${sightingId}&petDescriptionId=${sightingFormData.petDescriptionId}`,
-          );
+          router.replace(`/${sightingsRoute}`);
         } else if (currentStep === "submit" && action === "add-pet") {
           instrument?.success({
             source: action,

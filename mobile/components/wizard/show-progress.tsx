@@ -172,6 +172,7 @@ export default function ShowProgress({ sightingId }: ShowProgressProps) {
       return;
     }
 
+    console.log(sightingId)
     router.push(`/posters/?sightingId=${sightingId}`);
   }, [sightingId, router]);
 

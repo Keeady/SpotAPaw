@@ -1,371 +1,333 @@
-import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import {
+  Image,
   Linking,
+  ScrollView,
+  StyleSheet,
   TouchableOpacity,
   View,
-  Image,
-  StyleSheet,
-  ScrollView,
+  useWindowDimensions,
 } from "react-native";
-import { Icon, Text } from "react-native-paper";
+import { ActivityIndicator, Icon, Text } from "react-native-paper";
+import { useTranslation } from "react-i18next";
+
 import { createErrorLogMessage } from "../util";
 import { PosterRepository } from "@/db/repositories/poster-repository";
 import { Poster } from "@/db/models/poster";
 import { log } from "../logs";
 
+type PosterFieldProps = {
+  label: string;
+  value?: string | number | null;
+  fullWidth: boolean;
+};
+
+function PosterField({ label, value, fullWidth }: PosterFieldProps) {
+  return (
+    <View style={[styles.field, fullWidth && styles.fieldFullWidth]}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text style={styles.fieldValue}>{value == null ? "" : String(value)}</Text>
+    </View>
+  );
+}
+
+type PosterActionProps = {
+  icon: string;
+  label: string;
+  url: string;
+};
+
+function PosterAction({ icon, label, url }: PosterActionProps) {
+  return (
+    <TouchableOpacity
+      accessibilityRole="button"
+      onPress={() => Linking.openURL(url)}
+      style={styles.action}
+    >
+      <Icon source={icon} size={18} color="#fff" />
+      <Text style={styles.actionText}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function SightingPoster({ id: posterId }: { id: string }) {
   const { t } = useTranslation("sightings");
-  const [loading, setLoading] = useState(false);
+  const { width } = useWindowDimensions();
+  const [loading, setLoading] = useState(true);
   const [poster, setPoster] = useState<Poster | null>(null);
-  const isMountedRef = useRef(true);
 
   useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
+    let active = true;
     if (!posterId) {
+      setPoster(null);
+      setLoading(false);
       return;
     }
 
+    setLoading(true);
+    setPoster(null);
     const repository = new PosterRepository();
+
     repository
       .getPoster(posterId)
-      .then((poster) => {
-        if (!isMountedRef.current) {
-          return;
-        }
-
-        setPoster(poster);
+      .then((result) => {
+        if (active) setPoster(result);
       })
-      .catch(async (error) => {
-        if (!isMountedRef.current) {
-          return;
+      .catch((error) => {
+        if (active) {
+          log(`Failed to load poster: ${createErrorLogMessage(error)}`);
         }
-
-        const errorMessage = createErrorLogMessage(error);
-        log(`Failed to generate poster: ${errorMessage}`);
       })
       .finally(() => {
-        if (!isMountedRef.current) {
-          return;
-        }
-        setLoading(false);
+        if (active) setLoading(false);
       });
+
+    return () => {
+      active = false;
+    };
   }, [posterId]);
 
-  if (!poster) {
-    return null;
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator />
+      </View>
+    );
   }
+
+  if (!poster) return null;
+
+  // A single column prevents long translated labels and addresses from clipping.
+  const singleColumn = width < 390;
+  const sightingUrl = `https://spotapaw.com/sightings/${poster.sighting_id}`;
 
   return (
     <ScrollView
       style={styles.screen}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
-      <View
-        style={{
-          flex: 1,
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 12,
-        }}
-      >
+      <View style={styles.posterCard}>
         <View style={styles.header}>
-          <Text variant="bodyMedium" style={styles.headline}>
-            {poster.headline}
-          </Text>
-          <Text variant="bodyMedium" style={styles.subheadline}>
-            {poster.subheadline}
-          </Text>
+          <Text style={styles.headline}>{poster.headline}</Text>
+          <Text style={styles.subheadline}>{poster.subheadline}</Text>
         </View>
-        <View style={styles.photo}>
-          {poster.photo_url && (
-            <Image
-              source={{ uri: poster.photo_url }}
-              resizeMode={"contain"}
-              style={{
-                width: "100%",
-                height: "auto",
-                borderTopLeftRadius: 12,
-                borderTopRightRadius: 12,
-                marginTop: 5,
-                aspectRatio: 1.5,
-              }}
-            />
-          )}
-        </View>
+
+        {!!poster.photo_url && (
+          <Image
+            source={{ uri: poster.photo_url }}
+            resizeMode="contain"
+            style={styles.photo}
+          />
+        )}
+
         <View style={styles.body}>
-          <Text variant="bodyMedium" style={styles.name}>
-            {poster.name}
-          </Text>
-          <Text variant="bodyMedium" style={styles.description}>
-            {poster.description}
-          </Text>
+          <Text style={styles.name}>{poster.name}</Text>
+          <Text style={styles.description}>{poster.description}</Text>
         </View>
+
         <View style={styles.fields}>
-          <View style={styles.field}>
-            <Text variant="bodyMedium" style={styles.fieldLabel}>
-              {t("breed", "Breed:")}
-            </Text>
-            <Text variant="bodyMedium" style={styles.fieldVal}>
-              {poster.breed}
-            </Text>
-          </View>
-          <View style={styles.field}>
-            <Text variant="bodyMedium" style={styles.fieldLabel}>
-              {t("colors", "Colors:")}
-            </Text>
-            <Text variant="bodyMedium" style={styles.fieldVal}>
-              {poster.colors}
-            </Text>
-          </View>
-          <View style={styles.field}>
-            <Text variant="bodyMedium" style={styles.fieldLabel}>
-              {t("lastSeenLocation", "Last seen location:")}
-            </Text>
-            <Text variant="bodyMedium" style={styles.fieldVal}>
-              {poster.last_seen_location}
-            </Text>
-          </View>
-          <View style={styles.field}>
-            <Text variant="bodyMedium" style={styles.fieldLabel}>
-              {t("lastSeenDate", "Last seen date:")}
-            </Text>
-            <Text variant="bodyMedium" style={styles.fieldVal}>
-              {poster.last_seen_time}
-            </Text>
-          </View>
+          <PosterField
+            label={t("breed", "Breed:")}
+            value={poster.breed}
+            fullWidth={singleColumn}
+          />
+          <PosterField
+            label={t("colors", "Colors:")}
+            value={poster.colors}
+            fullWidth={singleColumn}
+          />
+          <PosterField
+            label={t("lastSeenLocation", "Last seen location:")}
+            value={poster.last_seen_location}
+            fullWidth={singleColumn}
+          />
+          <PosterField
+            label={t("lastSeenDate", "Last seen date:")}
+            value={poster.last_seen_time}
+            fullWidth={singleColumn}
+          />
         </View>
-        <View style={styles.reward}>
-          <Text variant="bodyMedium">{poster.cta}</Text>
-        </View>
+
+        {!!poster.cta && (
+          <View style={styles.reward}>
+            <Text style={styles.rewardText}>{poster.cta}</Text>
+          </View>
+        )}
 
         <View style={styles.contact}>
-          <Text variant="bodyMedium" style={styles.contactRow}>
-            {poster.contact_name}
-          </Text>
-          <Icon source="phone" size={20} color="#555" />
-          <Text variant="bodyMedium" style={styles.contactRow}>
-            {poster.contact_phone}
-          </Text>
+          {!!poster.contact_name && (
+            <Text style={styles.contactText}>{poster.contact_name}</Text>
+          )}
+          {!!poster.contact_phone && (
+            <View style={styles.phoneRow}>
+              <Icon source="phone" size={18} color="#555" />
+              <Text style={styles.contactText}>{poster.contact_phone}</Text>
+            </View>
+          )}
         </View>
+
         <View style={styles.footer}>
-          <TouchableOpacity
-            onPress={() => {
-              const url = `https://spotapaw.com/sightings/${poster.sighting_id}`;
-              Linking.openURL(url);
-            }}
+          <Text
+            style={styles.url}
+            onPress={() => Linking.openURL(sightingUrl)}
+            accessibilityRole="link"
           >
-            <Text variant="bodyMedium">
-              https://spotapaw.com/sightings/{poster.sighting_id}
-            </Text>
-          </TouchableOpacity>
+            {sightingUrl}
+          </Text>
         </View>
+      </View>
 
-        <View style={styles.buttonContainer}>
-          {poster.html_url && (
-            <TouchableOpacity
-              onPress={() => {
-                const url = poster.html_url;
-                Linking.openURL(url);
-              }}
-              style={{
-                marginTop: 16,
-                padding: 12,
-                backgroundColor: "#0F6E56",
-                borderRadius: 6,
-              }}
-            >
-              <View style={styles.buttonContent}>
-                <Icon source="open-in-new" size={20} color="#fff" />
-                <Text
-                  variant="bodyMedium"
-                  style={{ color: "#fff", textAlign: "center" }}
-                >
-                  {t("viewPoster", "View in browser")}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-
-          {poster.pdf_url && (
-            <TouchableOpacity
-              onPress={() => {
-                const url = poster.pdf_url;
-                Linking.openURL(url);
-              }}
-              style={{
-                marginTop: 16,
-                padding: 12,
-                backgroundColor: "#0F6E56",
-                borderRadius: 6,
-              }}
-            >
-              <View style={styles.buttonContent}>
-                <Icon source="download" size={20} color="#fff" />
-                <Text
-                  variant="bodyMedium"
-                  style={{ color: "#fff", textAlign: "center" }}
-                >
-                  {t("downloadPDF", "Download PDF.")}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-
-          {poster.png_url && (
-            <TouchableOpacity
-              onPress={() => {
-                const url = poster.png_url;
-                Linking.openURL(url);
-              }}
-              style={{
-                marginTop: 16,
-                padding: 12,
-                backgroundColor: "#0F6E56",
-                borderRadius: 6,
-              }}
-            >
-              <View style={styles.buttonContent}>
-                <Icon source="file-image" size={20} color="#fff" />
-                <Text
-                  variant="bodyMedium"
-                  style={{ color: "#fff", textAlign: "center" }}
-                >
-                  {t("downloadPNG", "Download PNG.")}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        </View>
+      <View style={styles.buttonContainer}>
+        {!!poster.html_url && (
+          <PosterAction
+            icon="open-in-new"
+            label={t("viewPoster", "View in browser")}
+            url={poster.html_url}
+          />
+        )}
+        {!!poster.pdf_url && (
+          <PosterAction
+            icon="download"
+            label={t("downloadPDF", "Download PDF")}
+            url={poster.pdf_url}
+          />
+        )}
+        {!!poster.png_url && (
+          <PosterAction
+            icon="file-image"
+            label={t("downloadPNG", "Download PNG")}
+            url={poster.png_url}
+          />
+        )}
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  container: {
-    padding: 20,
-    paddingBottom: 48,
-    gap: 16,
+  screen: { flex: 1, backgroundColor: "#fff" },
+  scrollContent: { padding: 16, paddingBottom: 48 },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  posterCard: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 12,
+    overflow: "hidden",
   },
   header: {
     backgroundColor: "#0F6E56",
-    color: "#fff",
     alignItems: "center",
-    padding: 24,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   headline: {
-    fontSize: 30,
+    fontSize: 26,
+    lineHeight: 32,
     fontWeight: "bold",
-    letterSpacing: 3,
+    letterSpacing: 1,
     color: "#fff",
+    textAlign: "center",
+    width: "100%",
   },
   subheadline: {
     fontSize: 14,
+    lineHeight: 20,
     marginTop: 4,
-    opacity: 0.85,
     color: "#fff",
-  },
-  photo: {
+    textAlign: "center",
     width: "100%",
-    height: "auto",
-    objectFit: "cover",
   },
-  body: {
-    padding: 10,
-    gap: 8,
-  },
-  name: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    color: "#444",
-    marginBottom: 16,
-  },
+  photo: { width: "100%", aspectRatio: 1.5, backgroundColor: "#fafafa" },
+  body: { paddingHorizontal: 4, paddingTop: 4, paddingBottom: 4, gap: 4 },
+  name: { fontSize: 26, lineHeight: 32, fontWeight: "bold", textAlign: "center" },
+  description: { fontSize: 14, lineHeight: 21, color: "#444" },
   fields: {
-    padding: 10,
     flexDirection: "row",
-    gap: 10,
-    marginBottom: 16,
-    justifyContent: "space-between",
     flexWrap: "wrap",
+    gap: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   field: {
+    flexBasis: "47%",
+    flexGrow: 1,
+    minWidth: 0,
     backgroundColor: "#f5f5f5",
     borderRadius: 6,
-    padding: 5,
-    minWidth: "45%",
+    padding: 9,
   },
+  fieldFullWidth: { flexBasis: "100%" },
   fieldLabel: {
-    fontSize: 10,
+    fontSize: 11,
+    lineHeight: 16,
     textTransform: "uppercase",
-    color: "#888",
-    letterSpacing: 0.5,
+    color: "#666",
+    letterSpacing: 0.3,
   },
-  fieldVal: {
+  fieldValue: {
     fontSize: 14,
+    lineHeight: 20,
     fontWeight: "bold",
     color: "#222",
-    marginTop: 2,
+    marginTop: 3,
   },
   reward: {
+    marginHorizontal: 4,
+    marginVertical: 4,
     backgroundColor: "#FAEEDA",
     borderWidth: 1,
-    borderStyle: "solid",
     borderColor: "#EF9F27",
     borderRadius: 6,
     padding: 12,
-    textAlign: "center",
+  },
+  rewardText: {
+    fontSize: 15,
+    lineHeight: 22,
     fontWeight: "bold",
     color: "#854F0B",
-    marginBottom: 16,
-    fontSize: 15,
+    textAlign: "center",
   },
   contact: {
-    flexDirection: "row",
+    paddingHorizontal: 4,
+    paddingVertical: 4,
     borderTopWidth: 1,
     borderTopColor: "#eee",
-    borderStyle: "solid",
-    padding: 14,
     alignItems: "center",
-    alignContent: "center",
+    gap: 4,
+    flexDirection: "row",
     justifyContent: "center",
-    gap: 8,
   },
-  contactRow: {
-    fontSize: 13,
+  phoneRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    maxWidth: "100%",
+  },
+  contactText: { fontSize: 13, lineHeight: 19, color: "#555", textAlign: "center" },
+  footer: { backgroundColor: "#f5f5f5", padding: 4, alignItems: "center" },
+  url: {
     color: "#555",
-  },
-  footer: {
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
     fontSize: 11,
-    color: "#888",
-    padding: 10,
+    lineHeight: 17,
+    textAlign: "center",
+    width: "100%",
+    textDecorationLine: "underline",
   },
-  buttonContainer: {
+  buttonContainer: { gap: 10, marginTop: 16 },
+  action: {
+    width: "100%",
+    backgroundColor: "#0F6E56",
+    borderRadius: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     flexDirection: "row",
-    marginTop: 16,
-    gap: 8,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
     gap: 8,
   },
+  actionText: { flexShrink: 1, fontSize: 14, lineHeight: 20, color: "#fff", textAlign: "center" },
 });
