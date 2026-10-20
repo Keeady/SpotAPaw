@@ -50,7 +50,7 @@ function ClickHandler({
 function Recenter({ location }: { location?: SightingLocation }) {
   const map = useMap();
   useEffect(() => {
-    if (location) map.flyTo([location.lat, location.lng], 13);
+    if (location) map.flyTo([location.latitude, location.longitude], 13);
   }, [location, map]);
   return null;
 }
@@ -70,7 +70,7 @@ export default function DropPinOnMap({
   const pinIcon = useMemo(() => makePinIcon("#6750A4"), []);
 
   const center: [number, number] = currentLocation
-    ? [currentLocation.lat, currentLocation.lng]
+    ? [currentLocation.latitude, currentLocation.longitude]
     : [45, -100];
   const zoom = currentLocation ? 13 : 3;
 
@@ -128,8 +128,8 @@ export default function DropPinOnMap({
           onClick={() => {
             if (!selected) return;
             handleActionButton({
-              lat: selected.latitude,
-              lng: selected.longitude,
+              latitude: selected.latitude,
+              longitude: selected.longitude,
             });
             setConfirmed(true);
           }}

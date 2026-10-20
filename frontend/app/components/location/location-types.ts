@@ -1,6 +1,6 @@
 export type SightingLocation = {
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
 };
 
 export type Pin = {

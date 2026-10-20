@@ -27,17 +27,35 @@ export function SightingLocationManager({
 }: SightingLocationManagerProps) {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { saveLocation, setLocation, refreshPermission, location } =
-    useContext(PermissionContext);
+  const [location, setLocation] = useState<SightingLocation>();
 
   const onNewLocationSelected = useCallback(
     (loc?: SightingLocation) => {
       if (!loc) return;
-      saveLocation?.(loc);
       setLocation?.(loc);
+      onLocationSelected?.(loc);
     },
-    [saveLocation, setLocation],
+    [onLocationSelected],
   );
+
+  const refreshPermission = useCallback(async () => {
+    setLocating(true);
+    (navigator.geolocation.getCurrentPosition((pos) => {
+      setLocating(false);
+      if (pos) {
+        setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+        onNewLocationSelected({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+      } else {
+        setError("Failed to get location. Please try again.");
+      }
+    }),
+      () => {
+        setError("Failed to get location. Please try again.");
+      });
+  }, []);
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col px-6 pb-12 pt-6">
