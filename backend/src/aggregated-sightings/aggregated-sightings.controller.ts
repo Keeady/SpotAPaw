@@ -15,11 +15,13 @@ import {
 import { AggregatedSightingsService } from './aggregated-sightings.service.js';
 import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
+import { SightingsService } from '../sightings/sightings.service.js';
 
 @Controller('aggregated-sightings')
 export class AggregatedSightingsController {
   constructor(
     private readonly aggregatedSightingsService: AggregatedSightingsService,
+    private readonly sightingsService: SightingsService,
   ) {}
 
   @Post()
@@ -49,8 +51,19 @@ export class AggregatedSightingsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.aggregatedSightingsService.findOne(+id);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('linked_sighting_id', ParseUUIDPipe) linked_sighting_id: string,
+  ) {
+    const summary = await this.aggregatedSightingsService.findOne(id);
+    const sightings = await this.sightingsService.findAll(linked_sighting_id);
+
+    return {
+      summary: summary,
+      sightings: sightings,
+      hasOwner: false,
+      claimed: false,
+    };
   }
 
   @Patch(':id')

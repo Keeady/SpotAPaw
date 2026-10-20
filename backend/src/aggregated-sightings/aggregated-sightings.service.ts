@@ -43,10 +43,10 @@ export class AggregatedSightingsService {
     return toPublicSightings(data);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const data = await this.aggregatedSightingsRepository
       .createQueryBuilder('aggregated_sightings')
-      .where('aggregated_sightings.id = true', { id })
+      .where('aggregated_sightings.id = :id', { id })
       .getOneOrFail();
     return toPublicSighting(data);
   }
