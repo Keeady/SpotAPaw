@@ -456,8 +456,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       if (currentStep === "start") {
         return "upload_photo";
       } else if (currentStep === "upload_photo") {
-        return "photo_result";
-      } else if (currentStep === "photo_result") {
         return "edit_pet";
       } else if (currentStep === "edit_pet") {
         return "edit_pet_continued";
@@ -477,8 +475,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
       if (currentStep === "start") {
         return "upload_photo";
       } else if (currentStep === "upload_photo") {
-        return "photo_result";
-      } else if (currentStep === "photo_result") {
         return "edit_pet";
       } else if (currentStep === "edit_pet") {
         return "edit_pet_continued";
@@ -496,8 +492,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
     } else if (currentStep === "start" || currentStep === "choose_pet") {
       return "upload_photo";
     } else if (currentStep === "upload_photo") {
-      return "photo_result";
-    } else if (currentStep === "photo_result") {
       return "edit_pet";
     } else if (currentStep === "edit_pet") {
       return "edit_pet_continued";
@@ -918,19 +912,6 @@ export const WizardForm = ({ action }: WizardFormProps) => {
             setReportType={setReportType}
             isValidData={isValidData}
             reportType={reportType}
-          />
-        );
-      case "photo_result":
-        return (
-          <PhotoResult
-            sightingFormData={sightingFormData}
-            updateSightingData={updateSightingData}
-            loading={loading}
-            setReportType={setReportType}
-            isValidData={isValidData}
-            errorMessage={errorMessage}
-            onResetErrorMessage={onResetErrorMessage}
-            onResetAiGeneratedPhoto={onResetAiGeneratedPhoto}
           />
         );
 
