@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useCallback, useContext, useState } from "react";
 import Divider from "../divider";
 import type { SightingLocation } from "./location-types";
-import { PermissionContext } from "./providers/location-provider";
 
 // Leaflet touches `window`, so the map must only render on the client.
 const DropPinOnMap = dynamic(() => import("./drop-pin-map"), {
