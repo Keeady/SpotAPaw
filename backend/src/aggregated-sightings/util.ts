@@ -30,7 +30,7 @@ type PublicAggregatedSighting = Pick<
   (typeof publicSightingKeys)[number]
 >;
 
-function toPublicSighting(
+export function toPublicSighting(
   sighting: AggregatedSighting
 ): PublicAggregatedSighting {
   return Object.fromEntries(

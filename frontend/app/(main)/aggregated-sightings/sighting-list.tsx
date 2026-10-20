@@ -2,14 +2,8 @@ import { getAggregatedSightings } from "@/lib/sightings/get-aggregated-sightings
 import SightingCard from "./sighting-card";
 import { AggregatedSighting } from "@/lib/sightings/agregated-sighting";
 import { SightingLocationManager } from "@/app/components/location/manager";
-import {
-  getSavedLocation,
-  SIGHTING_LOCATION_KEY,
-} from "@/app/components/location/location-utils";
-import { useCallback } from "react";
-import useLocation from "@/app/utils/use-location";
-import { cookies } from "next/headers";
 import { getSavedSearchLocation, saveSearchLocation } from "./action";
+import EmptySighting from "@/app/components/sightings/empty-sightings";
 
 export default async function SightingList() {
   const location = await getSavedSearchLocation();
@@ -17,21 +11,25 @@ export default async function SightingList() {
     return <SightingLocationManager onLocationSelected={saveSearchLocation} />;
   }
 
-  const sightings: AggregatedSighting[] | undefined =
-    await getAggregatedSightings({
-      latitude: location.latitude,
-      longitude: location.longitude,
-    });
-  if (!sightings || sightings.length === 0) {
-    return <p>No Sightings</p>;
+  const { data, error } = await getAggregatedSightings({
+    latitude: location.latitude,
+    longitude: location.longitude,
+  });
+
+  if (!data || data.length === 0) {
+    return <EmptySighting error={error} />;
   }
 
   return (
     <div className="flex w-full flex-col gap-6">
       <ul>
-        {sightings.map((s: AggregatedSighting) => (
+        {data.map((s: AggregatedSighting) => (
           <li key={s.id} className="pt-4">
-            <SightingCard sighting={s} currentLocation={location} />
+            <SightingCard
+              sighting={s}
+              currentLocation={location}
+              href={`/aggregated_sightings/${s.id}`}
+            />
           </li>
         ))}
       </ul>
