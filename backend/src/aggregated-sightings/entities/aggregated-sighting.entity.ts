@@ -102,4 +102,25 @@ export class AggregatedSighting {
 
   @Column()
   behavior: string;
+
+  @Column({
+    name: "owner_id"
+  })
+  ownerId: string;
+
+  @Column({
+    name: "pet_description_id"
+  })
+  petDescriptionId: number;
+
+  @Column({
+    name: "poster_id"
+  })
+  posterId: number;
+
+  @Column({
+    name: "poster_url",
+    nullable: true
+  })
+  posterUrl: string | null;
 }

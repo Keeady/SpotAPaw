@@ -43,9 +43,9 @@ export class PosterConsumer extends BaseQueueConsumer {
         `sighting ${aggregated_sighting_id} not found`,
       );
 
-    // TODO: gather data for the poster from a_sightings table, AI gen
-    // save in poster table
-    // update a_sightings with poster_id
-    // TODO: update a_sightings.poster_url (idempotent UPDATE).
+    // TODO: render the poster (image/PDF) from the sighting. https://pdfkit.org/
+    // Upload to a deterministic path with upsert so retries overwrite, never duplicate:
+    //   storage.from('posters').upload(`${sighting_id}.png`, buffer, { upsert: true })
+    // TODO: update sightings.poster_url (idempotent UPDATE).
   }
 }
