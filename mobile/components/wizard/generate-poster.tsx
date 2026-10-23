@@ -63,7 +63,7 @@ export function GeneratePoster({ sightingId, posterId }: GeneratePosterProps) {
         setPosterLoading(false);
       });
   }, [posterId]);
-
+/*
   useEffect(() => {
     if (!sightingId || !isValidUuid(sightingId)) {
       setSightingLoading(false);
@@ -103,7 +103,7 @@ export function GeneratePoster({ sightingId, posterId }: GeneratePosterProps) {
         setSightingLoading(false);
       });
   }, [sightingId, isAiFeatureEnabled]);
-
+*/
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
@@ -112,14 +112,6 @@ export function GeneratePoster({ sightingId, posterId }: GeneratePosterProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <WizardHeader
-        title={t("generatePosterTitle", "Pet Sighting Poster", { ns: "translation" })}
-        subTitle={t(
-          "generatePosterSubTitle",
-          "View generated poster for this sighting.",
-          { ns: "translation" }
-        )}
-      />
       <ScrollView
         style={styles.screen}
         contentContainerStyle={styles.container}

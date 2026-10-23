@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ParseUUIDPipe, Query } from '@nestjs/common';
 import { SightingsService } from './sightings.service.js';
 import { CreateSightingDto } from './dto/create-sighting.dto.js';
 import { UpdateSightingDto } from './dto/update-sighting.dto.js';
@@ -13,8 +13,8 @@ export class SightingsController {
   }
 
   @Get()
-  async findAll() {
-    return this.sightingsService.findAll();
+  async findAll(@Query("linked_sighting_id", ParseUUIDPipe) linked_sighting_id: string) {
+    return this.sightingsService.findAll(linked_sighting_id);
   }
 
   @Get(':id')

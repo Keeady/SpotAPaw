@@ -5,5 +5,5 @@ export default function Poster() {
   const { sightingId } = useLocalSearchParams<{
     sightingId: string;
   }>();
-  return <GeneratePoster sightingId={sightingId} />;
+  return <>Let's find a poster for you</>;
 }

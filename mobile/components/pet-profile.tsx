@@ -1,6 +1,6 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Card, Chip, Divider, Icon, Text, useTheme } from "react-native-paper";
+import { View, StyleSheet, useWindowDimensions } from "react-native";
+import { Card, Chip, Icon, Text, useTheme } from "react-native-paper";
 import { getIconByAnimalSpecies } from "./util";
 import {
   getLastSeenLocationDistance,
@@ -12,140 +12,155 @@ import { useTranslation } from "react-i18next";
 import { useLocaleContext } from "./Provider/locale-provider";
 import SightingGallery from "./sightings/gallery";
 
+const TABLET_BREAKPOINT = 600; // dp: phones below, tablets/iPads at or above
+
+// pet.colors may be a comma-separated string or an array
+function toColorList(colors: unknown): string[] {
+  if (!colors) return [];
+  if (Array.isArray(colors)) return colors.map(String).filter(Boolean);
+  return String(colors)
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean);
+}
+
+function genderIcon(gender?: string) {
+  if (gender === "Male") return "gender-male";
+  if (gender === "Female") return "gender-female";
+  return "paw";
+}
+
+function Detail({
+  label,
+  width,
+  children,
+}: {
+  label: string;
+  width: `${number}%`;
+  children: React.ReactNode;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.detail, { width }]}>
+      <Text
+        variant="labelSmall"
+        style={{
+          color: theme.colors.onSurfaceVariant,
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </Text>
+      <View style={styles.detailValue}>{children}</View>
+    </View>
+  );
+}
+
 export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
   const { t } = useTranslation(["petprofile", "translation"]);
   const theme = useTheme();
+  const { width } = useWindowDimensions();
   const { location: userCurrentLocation } = usePermission();
   const { preferredLanguage } = useLocaleContext();
   const [isVisibleGallery, setIsVisibleGallery] = React.useState(false);
 
-  const species = pet.species.charAt(0).toUpperCase() + pet.species.slice(1);
+  const isWide = width >= TABLET_BREAKPOINT;
+  // 2 columns on phones, 4 on tablets/iPads
+  const detailWidth: `${number}%` = isWide ? "25%" : "50%";
+
+  const speciesKey = pet.species.charAt(0).toUpperCase() + pet.species.slice(1);
+  const speciesLabel = t(`animal.${speciesKey}`, { ns: "translation" });
+  const colorList = toColorList(pet.colors);
+  const hasPhotos = !!pet.photos && pet.photos.length > 0;
+
+  const labelStyle = {
+    color: theme.colors.onSurfaceVariant,
+    textTransform: "uppercase" as const,
+  };
+
   return (
     <Card
-      style={{
-        borderRadius: 20,
-        margin: 5,
-        marginBottom: 10,
-        backgroundColor: "#fff",
-      }}
+      mode="outlined"
+      style={[styles.card, { backgroundColor: theme.colors.surface }]}
     >
-      {pet.photos && pet.photos.length > 0 ? (
-        <SightingGallery
-          images={pet.photos.map((photo) => ({ uri: photo }))}
-          isVisible={isVisibleGallery}
-          setIsVisible={setIsVisibleGallery}
-          mainPhoto={pet.photos[0]}
-        />
-      ) : (
-        <View
-          style={{
-            width: "100%",
-            height: 300,
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#eee",
-          }}
-        >
-          <Text>{t("noPhoto", { ns: "translation" })}</Text>
-        </View>
-      )}
-      <Card.Content>
-        {pet?.name && (
-          <View style={styles.header}>
-            <Text variant="labelLarge" style={{ alignSelf: "center" }}>
-              {t("name")}
-            </Text>
-            <Chip
-              style={{
-                backgroundColor: pet?.name ? "#E6F7E6" : "#FFF4E5",
-                marginVertical: 10,
-                alignSelf: "flex-start",
-                paddingHorizontal: 10,
-                paddingVertical: 2,
-                borderRadius: 12,
-              }}
-              textStyle={{
-                color: pet?.name ? "#2E7D32" : "#D84315",
-                fontWeight: "600",
-              }}
-              mode="outlined"
-            >
-              {pet.name}
-            </Chip>
-          </View>
-        )}
-
-        <Divider />
-        <View style={styles.line}>
-          <View style={styles.header}>
-            <Icon
-              source={getIconByAnimalSpecies(pet.species)}
-              size={25}
-              color={theme.colors.primary}
+      <View style={[styles.content, isWide && styles.contentWide]}>
+        {/* Photos (left on tablets, top on phones) */}
+        <View style={[styles.photoWrap, isWide ? styles.photoWide : styles.photoNarrow]}>
+          {hasPhotos ? (
+            <SightingGallery
+              images={pet.photos!.map((photo) => ({ uri: photo }))}
+              isVisible={isVisibleGallery}
+              setIsVisible={setIsVisibleGallery}
+              mainPhoto={pet.photos![0]}
             />
-            <Text variant="labelLarge">{t("type")}</Text>
-          </View>
-          <Text variant="bodyLarge" style={styles.title}>
-            {pet.breed} {t(`animal.${species}`, { ns: "translation" })}
-          </Text>
+          ) : (
+            <View
+              style={[
+                styles.photoPlaceholder,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            >
+              <Icon
+                source="image-off-outline"
+                size={isWide ? 56 : 44}
+                color={theme.colors.onSurfaceVariant}
+              />
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant }}
+              >
+                {t("noPhoto", { ns: "translation" })}
+              </Text>
+            </View>
+          )}
         </View>
 
-        <Divider />
-
-        {pet.lastSeenTime && (
-          <View style={styles.line}>
-            <View style={styles.header}>
-              <Icon
-                source={"map-marker"}
-                size={25}
-                color={theme.colors.primary}
-              />
-              <Text variant="labelLarge">{t("lastSeen")}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                paddingHorizontal: 20,
-                paddingVertical: 5,
-                gap: 8,
-                justifyContent: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                  flexWrap: "wrap",
-                }}
+        {/* Details (right on tablets, below on phones) */}
+        <View style={styles.details}>
+          {/* Title row: name + species chip */}
+          <View style={styles.titleRow}>
+            <Text variant="titleLarge" style={styles.title} numberOfLines={2}>
+              {pet.name || speciesLabel}
+            </Text>
+            {!!pet.name && (
+              <Chip
+                compact
+                icon={getIconByAnimalSpecies(pet.species)}
+                style={{ backgroundColor: theme.colors.primaryContainer }}
+                textStyle={{ color: theme.colors.onPrimaryContainer }}
               >
+                {speciesLabel}
+              </Chip>
+            )}
+          </View>
+
+          {/* Last seen: time + distance */}
+          {!!pet.lastSeenTime && (
+            <View style={styles.metaRow}>
+              <View style={styles.metaItem}>
                 <Icon
-                  source={"calendar"}
-                  size={25}
-                  color={theme.colors.primary}
+                  source="calendar-clock-outline"
+                  size={16}
+                  color={theme.colors.onSurfaceVariant}
                 />
-                <Text variant="bodyLarge">
+                <Text
+                  variant="bodyMedium"
+                  style={{ color: theme.colors.onSurfaceVariant }}
+                >
+                  {t("lastSeen")}{" "}
                   {getLastSeenTimeDistance(pet.lastSeenTime, preferredLanguage)}
                 </Text>
               </View>
-
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                  flexWrap: "wrap",
-                }}
-              >
+              <View style={styles.metaItem}>
                 <Icon
-                  source={"map-marker-path"}
-                  size={25}
-                  color={theme.colors.primary}
+                  source="map-marker-path"
+                  size={16}
+                  color={theme.colors.onSurfaceVariant}
                 />
-                <Text variant="bodyLarge">
+                <Text
+                  variant="bodyMedium"
+                  style={{ color: theme.colors.onSurfaceVariant }}
+                >
                   {userCurrentLocation
                     ? getLastSeenLocationDistance(
                         userCurrentLocation,
@@ -157,51 +172,162 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
                 </Text>
               </View>
             </View>
-          </View>
-        )}
+          )}
 
-        <Divider />
-
-        {pet.features && (
-          <View style={styles.line}>
-            <View style={styles.header}>
+          {/* Breed / species / gender / age */}
+          <View style={styles.grid}>
+            {!!pet.breed && (
+              <Detail label={t("breed", "Breed")} width={detailWidth}>
+                <Text variant="bodyMedium">{pet.breed}</Text>
+              </Detail>
+            )}
+            <Detail label={t("type")} width={detailWidth}>
               <Icon
-                source={"note-multiple"}
-                size={25}
+                source={getIconByAnimalSpecies(pet.species)}
+                size={16}
                 color={theme.colors.primary}
               />
-              <Text variant="labelLarge">{t("features")}</Text>
-            </View>
-            <Text variant="bodyLarge" style={styles.title}>
-              {pet.colors && t("colors", "Colors:")} {pet.colors}
-              {pet.gender &&
-                `\n${t("genderLabel", { ns: "translation" })}: ${t(`gender.${pet.gender}`, { ns: "translation" })}`}
-              {pet.age &&
-                `\n${t("ageLabel", { ns: "translation" })}: ${t("ageWithCount", { count: pet.age, ns: "translation" })}`}
-            </Text>
-            <Divider />
-            <Text variant="bodyLarge" style={styles.title}>
-              {pet.features}
-            </Text>
+              <Text variant="bodyMedium"> {speciesLabel}</Text>
+            </Detail>
+            {!!pet.gender && (
+              <Detail
+                label={t("genderLabel", { ns: "translation" })}
+                width={detailWidth}
+              >
+                <Icon
+                  source={genderIcon(pet.gender)}
+                  size={16}
+                  color={theme.colors.onSurface}
+                />
+                <Text variant="bodyMedium">
+                  {" "}
+                  {t(`gender.${pet.gender}`, { ns: "translation" })}
+                </Text>
+              </Detail>
+            )}
+            {!!pet.age && (
+              <Detail
+                label={t("ageLabel", { ns: "translation" })}
+                width={detailWidth}
+              >
+                <Text variant="bodyMedium">
+                  {t("ageWithCount", { count: pet.age, ns: "translation" })}
+                </Text>
+              </Detail>
+            )}
           </View>
-        )}
-      </Card.Content>
+
+          {/* Colors */}
+          {colorList.length > 0 && (
+            <View style={styles.section}>
+              <Text variant="labelSmall" style={labelStyle}>
+                {t("colors", "Colors")}
+              </Text>
+              <View style={styles.chips}>
+                {colorList.map((c) => (
+                  <Chip key={c} compact mode="outlined">
+                    {c}
+                  </Chip>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Features */}
+          {!!pet.features && (
+            <View style={styles.section}>
+              <Text variant="labelSmall" style={labelStyle}>
+                {t("features")}
+              </Text>
+              <Text variant="bodyMedium">{pet.features}</Text>
+            </View>
+          )}
+        </View>
+      </View>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  line: {
-    paddingVertical: 5,
+  card: {
+    width: "100%",
+    maxWidth: 900, // keeps the card readable on large iPads
+    alignSelf: "center",
+    borderRadius: 16,
+    margin: 5,
+    marginBottom: 10,
   },
-  header: {
+  content: {
+    padding: 16,
+    gap: 16,
+  },
+  contentWide: {
     flexDirection: "row",
-    alignContent: "center",
-    gap: 5,
+    gap: 24,
+    padding: 20,
+  },
+  photoWrap: {
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  photoNarrow: {
+    width: "100%",
+  },
+  photoWide: {
+    width: 240,
+    alignSelf: "flex-start",
+  },
+  photoPlaceholder: {
+    width: "100%",
+    aspectRatio: 4 / 3,
     alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+  },
+  details: {
+    flex: 1,
+    gap: 14,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
   },
   title: {
-    paddingHorizontal: 25,
-    paddingVertical: 5,
+    fontWeight: "700",
+    flexShrink: 1,
+  },
+  metaRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    columnGap: 16,
+    rowGap: 4,
+  },
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    rowGap: 12,
+  },
+  detail: {
+    paddingRight: 8,
+  },
+  detailValue: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  section: {
+    gap: 6,
+  },
+  chips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
   },
 });

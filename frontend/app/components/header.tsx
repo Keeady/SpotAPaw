@@ -105,7 +105,7 @@ export default function Header({
             alt=""
             width={150}
             height={50}
-            loading="lazy"
+            loading="eager"
           />
         </Link>
 

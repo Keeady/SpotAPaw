@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useContext, useState } from "react";
-import dynamic from "next/dynamic";
 import { Crosshair, Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useCallback, useContext, useState } from "react";
 import Divider from "../divider";
-import type { SightingLocation } from "./location";
-import { PermissionContext } from "./providers/location-provider";
+import type { SightingLocation } from "./location-types";
 
 // Leaflet touches `window`, so the map must only render on the client.
 const DropPinOnMap = dynamic(() => import("./drop-pin-map"), {
@@ -27,20 +26,38 @@ export function SightingLocationManager({
 }: SightingLocationManagerProps) {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { saveLocation, setLocation, refreshPermission, location } =
-    useContext(PermissionContext);
+  const [location, setLocation] = useState<SightingLocation>();
 
   const onNewLocationSelected = useCallback(
     (loc?: SightingLocation) => {
       if (!loc) return;
-      saveLocation?.(loc);
       setLocation?.(loc);
+      onLocationSelected?.(loc);
     },
-    [saveLocation, setLocation],
+    [onLocationSelected],
   );
 
+  const refreshPermission = useCallback(async () => {
+    setLocating(true);
+    (navigator.geolocation.getCurrentPosition((pos) => {
+      setLocating(false);
+      if (pos) {
+        setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+        onNewLocationSelected({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+      } else {
+        setError("Failed to get location. Please try again.");
+      }
+    }),
+      () => {
+        setError("Failed to get location. Please try again.");
+      });
+  }, []);
+
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col px-6 pb-12 pt-6">
+    <main className="mx-auto flex w-full max-w-5xl flex-col px-6 pb-12 pt-6">
       <h1 className="mb-3 text-center text-2xl font-medium text-[#1D1B20]">
         Set Your Location
       </h1>

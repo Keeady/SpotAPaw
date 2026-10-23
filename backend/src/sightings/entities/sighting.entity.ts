@@ -1,27 +1,100 @@
+import { Entity, Column, PrimaryColumn } from 'typeorm';
+
+@Entity({ name: 'sightings' })
 export class Sighting {
+  @PrimaryColumn()
   id: string;
-  created_at: string;
-  pet_id: string;
-  last_seen_lat: number;
-  last_seen_long: number;
-  last_seen_location: string;
-  last_seen_time: string;
+
+  @Column({
+    name: 'created_at',
+  })
+  createdAt: string;
+
+  @Column({
+    name: 'pet_id',
+  })
+  petId: string;
+
+  @Column({
+    name: 'last_seen_lat',
+  })
+  lastSeenLat: number;
+
+  @Column({
+    name: 'last_seen_long',
+  })
+  lastSeenLong: number;
+
+  @Column({
+    name: 'last_seen_location'
+  })
+  lastSeenLocation: string;
+
+  @Column({
+    name: 'last_seen_time'
+  })
+  lastSeenTime: string;
+
+  @Column()
   note: string;
-  photo: string;
+
+  @Column()
   gender: string;
+
+  @Column()
   colors: string;
+
+  @Column()
   breed: string;
+
+  @Column()
   species: string;
+
+  @Column()
   features: string;
+
+  @Column()
   name: string;
-  linked_sighting_id: string;
-  is_ctive: boolean;
-  reporter_name: string;
-  reporter_phone: string;
-  reporter_id: string;
+
+  @Column({
+    name: 'linked_sighting_id'
+  })
+  linkedSightingId: string;
+
+  @Column({
+    name: 'is_active'
+  })
+  isActive: boolean;
+
+  @Column({
+    name: 'reporter_name'
+  })
+  reporterName: string;
+
+  @Column({
+    name: 'reporter_phone'
+  })
+  reporterPhone: string;
+
+  @Column({
+    name: 'reporter_id'
+  })
+  reporterId: string;
+
+  @Column()
   size: string;
-  collar_description: string;
+
+  @Column({
+    name: 'collar_description'
+  })
+  collarDescription: string;
+
+  @Column()
   age: number;
-  pet_description_id: string;
+
+  @Column('simple-array')
   photos: string[];
+
+  @Column()
+  behavior: string;
 }

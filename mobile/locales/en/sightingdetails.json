@@ -18,5 +18,9 @@
     "thisIsMyPet": "This is my pet.",
     "viewMatches": "View Matches",
     "unknown": "Unknown",
-    "viewPoster": "View Poster"
+    "viewPoster": "View Poster",
+    "viewOnMap": "Open in Google Maps",
+    "listView": "List",
+    "mapView": "Map",
+    "noMapLocations": "No locations to show on the map."
 }

@@ -1,6 +1,11 @@
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Card, Text, Chip, Button } from "react-native-paper";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  useWindowDimensions,
+} from "react-native";
+import { Card, Text, Chip, Button, Icon, useTheme } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import SightingGallery from "../sightings/gallery";
 
@@ -28,6 +33,63 @@ type PetProfileCardProps = {
   viewPetSightings: () => void;
 };
 
+const TABLET_BREAKPOINT = 600; // dp: phones below, tablets/iPads at or above
+
+const STATUS_STYLES = {
+  lost: { bg: "#FFEBEE", text: "#C62828", icon: "alert-circle-outline" }, // red
+  found: { bg: "#FFF3E0", text: "#EF6C00", icon: "check-circle-outline" }, // orange
+  safe: { bg: "#E8F5E9", text: "#2E7D32", icon: "shield-check-outline" }, // green
+} as const;
+const STATUS_DEFAULT = { bg: "#ECEFF1", text: "#37474F", icon: "paw" }; // grey
+
+// colors may be a comma-separated string or an array
+function toColorList(colors: unknown): string[] {
+  if (!colors) return [];
+  if (Array.isArray(colors)) return colors.map(String).filter(Boolean);
+  return String(colors)
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean);
+}
+
+function genderIcon(gender?: string) {
+  if (gender === "Male") return "gender-male";
+  if (gender === "Female") return "gender-female";
+  return "help-circle-outline";
+}
+
+function Label({ children }: { children: React.ReactNode }) {
+  const theme = useTheme();
+  return (
+    <Text
+      variant="labelSmall"
+      style={{
+        color: theme.colors.onSurfaceVariant,
+        textTransform: "uppercase",
+      }}
+    >
+      {children}
+    </Text>
+  );
+}
+
+function Detail({
+  label,
+  width,
+  children,
+}: {
+  label: string;
+  width: `${number}%`;
+  children: React.ReactNode;
+}) {
+  return (
+    <View style={[styles.detail, { width }]}>
+      <Label>{label}</Label>
+      <View style={styles.detailValue}>{children}</View>
+    </View>
+  );
+}
+
 const PetProfileCard: React.FC<PetProfileCardProps> = ({
   petProfile,
   onEditPet,
@@ -37,6 +99,8 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
   viewPetSightings,
 }) => {
   const { t } = useTranslation(["petprofile", "translation"]);
+  const theme = useTheme();
+  const { width } = useWindowDimensions();
   const [isVisibleGallery, setIsVisibleGallery] = React.useState(false);
   const {
     name,
@@ -50,205 +114,296 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     note,
     photos,
   } = petProfile;
-  const getStatusColor = () => {
-    switch (status) {
-      case "lost":
-        return { bg: "#FFEBEE", text: "#C62828" }; // red
-      case "found":
-        return { bg: "#FFF3E0", text: "#EF6C00" }; // orange
-      case "safe":
-        return { bg: "#E8F5E9", text: "#2E7D32" }; // green
-      default:
-        return { bg: "#ECEFF1", text: "#37474F" }; // grey
-    }
-  };
+
+  const isWide = width >= TABLET_BREAKPOINT;
+  // 2 columns on phones, 4 on tablets/iPads
+  const detailWidth: `${number}%` = isWide ? "25%" : "50%";
+
+  const statusStyle = status ? STATUS_STYLES[status] : STATUS_DEFAULT;
+  const colorList = toColorList(colors);
+  const hasPhotos = !!photos && photos.length > 0;
 
   return (
-    <ScrollView>
-      <Card style={styles.card}>
-        {photos && photos.length > 0 ? (
-          <SightingGallery
-            images={photos.map((photo) => ({ uri: photo }))}
-            isVisible={isVisibleGallery}
-            setIsVisible={setIsVisibleGallery}
-            mainPhoto={photos[0]}
-          />
-        ) : (
-          <View style={[styles.image, styles.placeholder]}>
-            <Text style={styles.placeholderText}>
-              {t("noPhoto", "No Photo", { ns: "translation" })}
-            </Text>
-          </View>
-        )}
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.page}>
+        <Card
+          mode="outlined"
+          style={[styles.card, { backgroundColor: theme.colors.surface }]}
+        >
+          <View style={[styles.content, isWide && styles.contentWide]}>
+            {/* Photos (left on tablets, top on phones) */}
+            <View
+              style={[
+                styles.photoWrap,
+                isWide ? styles.photoWide : styles.photoNarrow,
+              ]}
+            >
+              {hasPhotos ? (
+                <SightingGallery
+                  images={photos!.map((photo) => ({ uri: photo }))}
+                  isVisible={isVisibleGallery}
+                  setIsVisible={setIsVisibleGallery}
+                  mainPhoto={photos![0]}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.photoPlaceholder,
+                    { backgroundColor: theme.colors.surfaceVariant },
+                  ]}
+                >
+                  <Icon
+                    source="image-off-outline"
+                    size={isWide ? 56 : 44}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <Text
+                    variant="bodySmall"
+                    style={{ color: theme.colors.onSurfaceVariant }}
+                  >
+                    {t("noPhoto", "No Photo", { ns: "translation" })}
+                  </Text>
+                </View>
+              )}
+            </View>
 
-        <Card.Content>
-          <View style={styles.header}>
-            <Text style={styles.name}>{name || "Unknown"}</Text>
-            {status && (
-              <Chip
-                style={{
-                  backgroundColor: getStatusColor().bg,
-                }}
-                textStyle={{ color: getStatusColor().text, fontWeight: "bold" }}
-              >
-                {t(`status.${status}`)}
-              </Chip>
+            {/* Details (right on tablets, below on phones) */}
+            <View style={styles.details}>
+              <View style={styles.titleRow}>
+                <Text
+                  variant="titleLarge"
+                  style={styles.title}
+                  numberOfLines={2}
+                >
+                  {name || "Unknown"}
+                </Text>
+                {!!status && (
+                  <Chip
+                    compact
+                    icon={statusStyle.icon}
+                    style={{ backgroundColor: statusStyle.bg }}
+                    textStyle={{ color: statusStyle.text, fontWeight: "bold" }}
+                  >
+                    {t(`status.${status}`)}
+                  </Chip>
+                )}
+              </View>
+
+              <View style={styles.grid}>
+                {!!breed && (
+                  <Detail label={t("breed", "Breed")} width={detailWidth}>
+                    <Text variant="bodyMedium">{breed}</Text>
+                  </Detail>
+                )}
+                {!!species && (
+                  <Detail
+                    label={t("species", "Species", { ns: "translation" })}
+                    width={detailWidth}
+                  >
+                    <Text variant="bodyMedium">
+                      {t(`animal.${species}`, species, { ns: "translation" })}
+                    </Text>
+                  </Detail>
+                )}
+                {!!gender && (
+                  <Detail
+                    label={t("genderLabel", { ns: "translation" })}
+                    width={detailWidth}
+                  >
+                    <Icon
+                      source={genderIcon(gender)}
+                      size={16}
+                      color={theme.colors.onSurface}
+                    />
+                    <Text variant="bodyMedium">
+                      {" "}
+                      {t(`gender.${gender}`, { ns: "translation" })}
+                    </Text>
+                  </Detail>
+                )}
+                {age !== undefined && (
+                  <Detail
+                    label={t("ageLabel", "Age", { ns: "translation" })}
+                    width={detailWidth}
+                  >
+                    <Text variant="bodyMedium">
+                      {t("ageWithCount", age.toString(), {
+                        count: age,
+                        ns: "translation",
+                      })}
+                    </Text>
+                  </Detail>
+                )}
+              </View>
+
+              {colorList.length > 0 && (
+                <View style={styles.section}>
+                  <Label>{t("colors", "Colors")}</Label>
+                  <View style={styles.chips}>
+                    {colorList.map((c) => (
+                      <Chip key={c} compact mode="outlined">
+                        {c}
+                      </Chip>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {!!features && (
+                <View style={styles.section}>
+                  <Label>{t("features", "Features")}</Label>
+                  <Text variant="bodyMedium">{features}</Text>
+                </View>
+              )}
+
+              {!!note && (
+                <View style={styles.section}>
+                  <Label>{t("notes", "Notes")}</Label>
+                  <Text variant="bodyMedium">{note}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* CTA row */}
+          <View
+            style={[
+              styles.ctaRow,
+              isWide ? styles.ctaRowWide : styles.ctaRowNarrow,
+              { borderTopColor: theme.colors.outlineVariant },
+            ]}
+          >
+            {/* Primary action depends on status */}
+            {status === "lost" && (
+              <Button mode="contained" icon="check" onPress={onPetFound}>
+                {t("reportPetFound", "Report Pet Found")}
+              </Button>
             )}
-          </View>
-
-          {gender && (
-            <Text style={styles.detail}>
-              🐾 {t("genderLabel", { ns: "translation" })}:{" "}
-              {t(`gender.${gender}`, { ns: "translation" })}
-            </Text>
-          )}
-          {breed && (
-            <Text style={styles.detail}>
-              🐾 {t("breed", "Breed:")} {breed}
-            </Text>
-          )}
-          {species && (
-            <Text style={styles.detail}>
-              🐾 {t("species", "Species", { ns: "translation" })}:{" "}
-              {t(`animal.${species}`, species, { ns: "translation" })}
-            </Text>
-          )}
-          {age !== undefined && (
-            <Text style={styles.detail}>
-              🎂 {t("ageLabel", "Age", { ns: "translation" })}:{" "}
-              {t("ageWithCount", age.toString(), {
-                count: age,
-                ns: "translation",
-              })}
-            </Text>
-          )}
-          {colors && (
-            <Text style={styles.detail}>
-              🎨 {t("colors", "Colors:")} {colors}
-            </Text>
-          )}
-          {features && (
-            <Text style={styles.detail}>
-              ⭐ {t("features", "Features:")} {features}
-            </Text>
-          )}
-          {note && (
-            <Text style={styles.detail}>
-              📝 {t("notes", "Notes:")} {note}
-            </Text>
-          )}
-        </Card.Content>
-        <Card.Actions>
-          <View style={{ flex: 1, flexDirection: "column" }}>
-            <View style={styles.buttonContainer}>
-              <Button
-                icon={"paw"}
-                theme={{ colors: { primary: "blue" } }}
-                mode={"text"}
-                style={{ backgroundColor: "transparent", marginTop: 15 }}
-                onPress={onEditPet}
-                compact={true}
-              >
-                {t("edit", "Edit")}
+            {status === "safe" && (
+              <Button mode="contained" icon="alert-outline" onPress={onPetLost}>
+                {t("reportLostPet", "Report Lost Pet")}
               </Button>
+            )}
 
+            {/* Secondary actions */}
+            {status === "lost" && (
               <Button
-                icon={"paw"}
-                theme={{ colors: { primary: "red" } }}
-                mode={"text"}
-                style={{ backgroundColor: "transparent", marginTop: 15 }}
-                onPress={onDeletePet}
-                compact={true}
+                mode="outlined"
+                icon="map-marker-multiple-outline"
+                onPress={viewPetSightings}
               >
-                {t("delete", "Delete")}
+                {t("viewPetSightings", "View Pet Sightings")}
               </Button>
+            )}
+            <Button mode="outlined" icon="pencil-outline" onPress={onEditPet}>
+              {t("edit", "Edit")}
+            </Button>
 
-              {status === "lost" && (
-                <Button
-                  icon={"paw"}
-                  theme={{ colors: { primary: "green" } }}
-                  mode={"text"}
-                  style={{ backgroundColor: "transparent", marginTop: 15 }}
-                  onPress={onPetFound}
-                  compact={true}
-                >
-                  {t("reportPetFound", "Report Pet Found")}
-                </Button>
-              )}
-              {status === "safe" && (
-                <Button
-                  icon={"paw"}
-                  theme={{ colors: { primary: "purple" } }}
-                  mode={"text"}
-                  style={{ backgroundColor: "transparent", marginTop: 15 }}
-                  onPress={onPetLost}
-                  compact={true}
-                >
-                  {t("reportLostPet", "Report Lost Pet")}
-                </Button>
-              )}
-            </View>
-            <View>
-              {status === "lost" && (
-                <Button
-                  icon={"paw"}
-                  theme={{ colors: { primary: "#C62828" } }}
-                  mode={"text"}
-                  style={{ backgroundColor: "transparent", marginTop: 15 }}
-                  onPress={viewPetSightings}
-                  compact={true}
-                >
-                  {t("viewPetSightings", "View Pet Sightings")}
-                </Button>
-              )}
-            </View>
+            {/* Destructive action */}
+            <Button
+              mode="text"
+              icon="delete-outline"
+              textColor={theme.colors.error}
+              onPress={onDeletePet}
+            >
+              {t("delete", "Delete")}
+            </Button>
           </View>
-        </Card.Actions>
-      </Card>
+        </Card>
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    margin: 12,
-    borderRadius: 16,
-    elevation: 3,
-    flexWrap: "wrap",
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 32,
   },
-  image: {
+  page: {
     width: "100%",
-    height: "auto",
-    aspectRatio: 1.5,
+    maxWidth: 900, // keeps the card readable on large iPads
+    alignSelf: "center",
   },
-  placeholder: {
-    backgroundColor: "#CFD8DC",
-    justifyContent: "center",
-    alignItems: "center",
+  card: {
+    borderRadius: 16,
   },
-  placeholderText: {
-    color: "#546E7A",
-    fontSize: 14,
+  content: {
+    padding: 16,
+    gap: 16,
   },
-  header: {
+  contentWide: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+    gap: 24,
+    padding: 20,
   },
-  name: {
-    fontSize: 20,
-    fontWeight: "bold",
+  photoWrap: {
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  photoNarrow: {
+    width: "100%",
+  },
+  photoWide: {
+    width: 240,
+    alignSelf: "flex-start",
+  },
+  photoPlaceholder: {
+    width: "100%",
+    aspectRatio: 4 / 3,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+  },
+  details: {
+    flex: 1,
+    gap: 14,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  title: {
+    fontWeight: "700",
+    flexShrink: 1,
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    rowGap: 12,
   },
   detail: {
-    fontSize: 16,
-    color: "#555",
+    paddingRight: 8,
+  },
+  detailValue: {
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 2,
   },
-  buttonContainer: {
-    flex: 1,
+  section: {
+    gap: 6,
+  },
+  chips: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  ctaRow: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    padding: 16,
+    gap: 8,
+  },
+  ctaRowNarrow: {
+    flexDirection: "column",
+    alignItems: "stretch",
+  },
+  ctaRowWide: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
 });
 

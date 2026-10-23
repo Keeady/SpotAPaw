@@ -13,18 +13,22 @@ type Pin = {
   latitude: number;
   longitude: number;
   title: string;
+  color?: string;
+  description?: string;
 };
 
 type DropPinOnMapProps = {
   currentLocation?: SightingLocation;
   handleActionButton: (location?: SightingLocation) => void;
   pins?: Pin[];
+  readonly?: boolean;
 };
 
 export default function DropPinOnMap({
   currentLocation,
   handleActionButton,
   pins,
+  readonly,
 }: DropPinOnMapProps) {
   const { t } = useTranslation("translation");
   const { width } = useWindowDimensions();
@@ -61,6 +65,8 @@ export default function DropPinOnMap({
                 longitude: pin.longitude,
               }}
               title={pin.title}
+              pinColor={pin.color}
+              description={pin.description}
             />
           ),
       );
@@ -76,7 +82,7 @@ export default function DropPinOnMap({
       <MapView
         style={{ width: mapWidth, height: 350 }}
         region={initialRegion}
-        onPress={handleMapPress}
+        onPress={!readonly ? handleMapPress : undefined}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
       >
@@ -89,27 +95,32 @@ export default function DropPinOnMap({
         )}
         {pins && renderMarkerPins()}
       </MapView>
-      <Card.Content style={styles.mapFooter}>
-        <Text style={styles.mapFooterText}>
-          {selectedLocation
-            ? t("pinPlaced", "Pin placed! Tap button to confirm.")
-            : t("tapMap", "Tap the map to place a pin or double tap to zoom.")}
-        </Text>
-        <Button
-          mode="contained"
-          onPress={() => {
-            handleActionButton({
-              lat: selectedLocation?.latitude || 0,
-              lng: selectedLocation?.longitude || 0,
-            });
-            setDisabled(true);
-          }}
-          disabled={!selectedLocation || disabled}
-          style={styles.confirmButton}
-        >
-          {t("confirmLocation", "Confirm Location")}
-        </Button>
-      </Card.Content>
+      {!readonly && (
+        <Card.Content style={styles.mapFooter}>
+          <Text style={styles.mapFooterText}>
+            {selectedLocation
+              ? t("pinPlaced", "Pin placed! Tap button to confirm.")
+              : t(
+                  "tapMap",
+                  "Tap the map to place a pin or double tap to zoom.",
+                )}
+          </Text>
+          <Button
+            mode="contained"
+            onPress={() => {
+              handleActionButton({
+                lat: selectedLocation?.latitude || 0,
+                lng: selectedLocation?.longitude || 0,
+              });
+              setDisabled(true);
+            }}
+            disabled={!selectedLocation || disabled}
+            style={styles.confirmButton}
+          >
+            {t("confirmLocation", "Confirm Location")}
+          </Button>
+        </Card.Content>
+      )}
     </Card>
   );
 }

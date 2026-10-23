@@ -25,3 +25,27 @@ export type AggregatedSighting = {
   photos: string[];
   behavior: string | null;
 };
+
+export type Sighting = AggregatedSighting;
+
+type AggregatedSightingsSuccessResponse<T> = {
+  data: T;
+  error: undefined
+};
+
+type AggregatedSightingsErrorResponse = {
+  error: string;
+  data: undefined
+};
+
+export type AggregatedSightingsResponse<T> =
+  | AggregatedSightingsSuccessResponse<T>
+  | AggregatedSightingsErrorResponse;
+
+export type AggregatedSightingDetail = {
+  summary: AggregatedSighting;
+  sightings: Sighting[];
+  claimed: boolean;
+  hasOwner: boolean;
+  petName: string
+};

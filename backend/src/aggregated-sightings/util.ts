@@ -25,12 +25,12 @@ const publicSightingKeys = [
   "behavior",
 ] as const satisfies readonly (keyof AggregatedSighting)[];
 
-type PublicAggregatedSighting = Pick<
+export type PublicAggregatedSighting = Pick<
   AggregatedSighting,
   (typeof publicSightingKeys)[number]
 >;
 
-function toPublicSighting(
+export function toPublicSighting(
   sighting: AggregatedSighting
 ): PublicAggregatedSighting {
   return Object.fromEntries(
