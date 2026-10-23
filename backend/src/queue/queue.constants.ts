@@ -1,9 +1,10 @@
-export type JobType = 'matching' | 'poster' | 'notify';
+export type JobType = 'matching' | 'poster-data' | 'notify' | 'poster-gen';
 
 export const QUEUES: Record<JobType, string> = {
   matching: 'aggregated_sighting_matching',
-  poster: 'aggregated_sighting_poster',
+  'poster-data': 'aggregated_sighting_poster_data',
   notify: 'aggregated_sighting_notify',
+  'poster-gen': 'aggregated_sighting_poster_gen',
 };
 
 export const dlqName = (queue: string) => `${queue}_dlq`;

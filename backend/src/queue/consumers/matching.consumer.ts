@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { BaseQueueConsumer, NonRetryableError } from '../base-queue.consumer.js';
+import {
+  BaseQueueConsumer,
+  NonRetryableError,
+} from '../base-queue.consumer.js';
 import { JobTrackerService } from '../job-tracker.service.js';
 import { QueueService } from '../queue.service.js';
-import { DEFAULT_CONSUMER_OPTIONS, JobType, AggregatedSightingMessage } from '../queue.constants.js';
+import {
+  DEFAULT_CONSUMER_OPTIONS,
+  JobType,
+  AggregatedSightingMessage,
+} from '../queue.constants.js';
 
 @Injectable()
 export class MatchingConsumer extends BaseQueueConsumer {
@@ -19,14 +26,25 @@ export class MatchingConsumer extends BaseQueueConsumer {
     backoffMaxSec: 900,
   };
 
-  constructor(pgmq: QueueService, tracker: JobTrackerService /*, private matching: MatchingService */) {
+  constructor(
+    pgmq: QueueService,
+    tracker: JobTrackerService /*, private matching: MatchingService */,
+  ) {
     super(pgmq, tracker);
   }
 
-  protected async handle({ aggregated_sighting_id }: AggregatedSightingMessage): Promise<void> {
+  protected async handle({
+    aggregated_sighting_id,
+  }: AggregatedSightingMessage): Promise<void> {
     // 1. Load the sighting (throw NonRetryableError if it no longer exists).
-    const { rows } = await this.pgmq.query('select * from aggregated_sightings where id = $1', [aggregated_sighting_id]);
-    if (rows.length === 0) throw new NonRetryableError(`sighting ${aggregated_sighting_id} not found`);
+    const { rows } = await this.pgmq.query(
+      'select * from aggregated_sightings where id = $1',
+      [aggregated_sighting_id],
+    );
+    if (rows.length === 0)
+      throw new NonRetryableError(
+        `sighting ${aggregated_sighting_id} not found`,
+      );
 
     // 2. TODO: build embedding for the sighting and upsert keyed by sighting_id.
     // 3. TODO: vector search against lost-pet reports.

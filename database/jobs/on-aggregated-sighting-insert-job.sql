@@ -1,11 +1,12 @@
 select pgmq.create('aggregated_sighting_matching');
-select pgmq.create('aggregated_sighting_poster');
+select pgmq.create('aggregated_sighting_poster_data');
 select pgmq.create('aggregated_sighting_notify');
+select pgmq.create('aggregated_sighting_poster_gen');
 
 create table aggregated_sighting_jobs (
   id uuid primary key default gen_random_uuid(),
   aggregated_sighting_id uuid not null references aggregated_sightings(id) on delete cascade,
-  job_type text not null check (job_type in ('matching','poster','notify')),
+  job_type text not null check (job_type in ('matching','poster-data','notify', 'poster-gen')),
   status text not null default 'pending' check (status in ('pending','running','succeeded','failed','dead')),
   attempts int not null default 0,
   last_error text,
@@ -16,5 +17,6 @@ create table aggregated_sighting_jobs (
 );
 
 select pgmq.create('aggregated_sighting_matching_dlq');
-select pgmq.create('aggregated_sighting_poster_dlq');
+select pgmq.create('aggregated_sighting_poster_data_dlq');
 select pgmq.create('aggregated_sighting_notify_dlq');
+select pgmq.create('aggregated_sighting_poster_gen_dlq');
