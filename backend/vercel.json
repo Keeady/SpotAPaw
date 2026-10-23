@@ -2,10 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "daemons": {
     "worker": {
-      "root": "worker/",
+      "root": ".",
       "entrypoint": "Dockerfile",
       "instances": { "iad1": 2 },
-      "command": ["node", "dist/worker.js"]
+      "command": ["node", "dist/worker.js"],
+      "terminationGracePeriodSeconds": 120
     }
   }
 }
