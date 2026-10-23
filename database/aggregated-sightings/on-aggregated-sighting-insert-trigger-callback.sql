@@ -1,0 +1,12 @@
+create or replace function enqueue_aggregated_sighting_jobs() 
+returns trigger as $$
+begin
+  insert into aggregated_sighting_jobs (sighting_id, job_type)
+  values (new.id,'matching'),(new.id,'poster'),(new.id,'notify');
+
+  perform pgmq.send('aggregated_sighting_matching', jsonb_build_object('aggregated_sighting_id', new.id));
+  perform pgmq.send('aggregated_sighting_poster',   jsonb_build_object('aggregated_sighting_id', new.id));
+  perform pgmq.send('aggregated_sighting_notify',   jsonb_build_object('aggregated_sighting_id', new.id));
+  return new;
+end;
+$$ language plpgsql security definer;

@@ -1,8 +1,3 @@
-CREATE OR REPLACE FUNCTION update_aggregated_sighting()
-RETURNS TRIGGER AS $$
-
--- This function creates a parent sighting with all the latest updates related to all created sightings of a pet
-
 DECLARE 
   pet_owner UUID;
   pet_name TEXT;
@@ -22,7 +17,7 @@ BEGIN
       -- Only update photo if NEW.photo is not empty/null
       photo = CASE 
         WHEN NEW.photo IS NOT NULL AND NEW.photo != '' THEN NEW.photo 
-        ELSE photo
+        ELSE photo 
       END,
       photos = CASE 
         WHEN NEW.photos IS NOT NULL THEN NEW.photos
@@ -105,5 +100,3 @@ BEGIN
   
   RETURN NEW;
 END;
-
-$$ LANGUAGE plpgsql SECURITY DEFINER;

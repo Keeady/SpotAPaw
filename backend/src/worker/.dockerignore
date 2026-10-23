@@ -1,0 +1,37 @@
+# Dependencies and build output (rebuilt inside the image)
+node_modules
+dist
+build
+coverage
+*.md
+test
+.vercel
+
+# Version control
+.git
+.gitignore
+
+# Docker files themselves
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Local env and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Logs and package manager debris
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.yarn/cache
+.yarn/install-state.gz
+
+# Editor, OS and CI files
+.vscode
+.idea
+.DS_Store
+.github

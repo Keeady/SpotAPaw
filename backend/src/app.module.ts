@@ -30,7 +30,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         autoLoadEntities: true,
         driver: pg,
         retryAttempts: 10,
-        extra: { max: 1 },
+        extra: { max: configService.getOrThrow<number>('WORKER_DB_POOL_SIZE') },
       }),
     }),
     SightingsModule,
