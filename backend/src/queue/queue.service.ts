@@ -12,10 +12,14 @@ import { QueueMessage } from './queue.constants.js';
 export class QueueService implements OnApplicationShutdown {
   private readonly pool: Pool;
 
-  constructor(config: ConfigService) {
+  constructor(configService: ConfigService) {
     this.pool = new Pool({
-      connectionString: config.getOrThrow<string>('SUPABASE_DB_URL'),
-      max: Number(config.get('WORKER_DB_POOL_SIZE') ?? 10),
+      host: configService.getOrThrow<string>('DB_HOST'),
+      port: Number(configService.getOrThrow<number>('DB_PORT')),
+      user: configService.getOrThrow<string>('DB_USERNAME'),
+      password: configService.getOrThrow<string>('DB_PASSWORD'),
+      database: configService.getOrThrow<string>('DB'),
+      max: Number(configService.get<number>('WORKER_DB_POOL_SIZE') ?? 10),
       ssl: { rejectUnauthorized: false },
     });
   }
@@ -24,7 +28,11 @@ export class QueueService implements OnApplicationShutdown {
     return this.pool.query<T>(text, params);
   }
 
-  async read<T>(queue: string, vtSec: number, qty: number): Promise<QueueMessage<T>[]> {
+  async read<T>(
+    queue: string,
+    vtSec: number,
+    qty: number,
+  ): Promise<QueueMessage<T>[]> {
     const { rows } = await this.pool.query(
       'select msg_id, read_ct, enqueued_at, vt, message from pgmq.read($1, $2, $3)',
       [queue, vtSec, qty],
@@ -41,16 +49,29 @@ export class QueueService implements OnApplicationShutdown {
   }
 
   async archive(queue: string, msgId: number): Promise<void> {
-    await this.pool.query('select pgmq.archive($1, $2::bigint)', [queue, msgId]);
+    await this.pool.query('select pgmq.archive($1, $2::bigint)', [
+      queue,
+      msgId,
+    ]);
   }
 
   /** Reschedule a message: it becomes visible again after vtSec seconds. */
-  async setVisibility(queue: string, msgId: number, vtSec: number): Promise<void> {
-    await this.pool.query('select pgmq.set_vt($1, $2::bigint, $3)', [queue, msgId, vtSec]);
+  async setVisibility(
+    queue: string,
+    msgId: number,
+    vtSec: number,
+  ): Promise<void> {
+    await this.pool.query('select pgmq.set_vt($1, $2::bigint, $3)', [
+      queue,
+      msgId,
+      vtSec,
+    ]);
   }
 
   async metrics(queue: string) {
-    const { rows } = await this.pool.query('select * from pgmq.metrics($1)', [queue]);
+    const { rows } = await this.pool.query('select * from pgmq.metrics($1)', [
+      queue,
+    ]);
     return rows[0];
   }
 
