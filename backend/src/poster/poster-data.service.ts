@@ -17,8 +17,8 @@ const asText = (v: string[] | string | null | undefined): string =>
   Array.isArray(v) ? v.join(', ') : (v ?? '');
 
 @Injectable()
-export class PosterService {
-  private readonly logger = new Logger(PosterService.name);
+export class PosterDataService {
+  private readonly logger = new Logger(PosterDataService.name);
 
   constructor(
     @InjectRepository(Poster)

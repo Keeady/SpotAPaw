@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { PosterDataService } from '../../poster/poster-data.service.js';
+import { PosterSightingNotFoundError } from '../../poster/poster.types.js';
 import {
   BaseQueueConsumer,
   NonRetryableError,
 } from '../base-queue.consumer.js';
 import { JobTrackerService } from '../job-tracker.service.js';
-import { QueueService } from '../queue.service.js';
 import {
+  AggregatedSightingMessage,
   DEFAULT_CONSUMER_OPTIONS,
   JobType,
-  AggregatedSightingMessage,
 } from '../queue.constants.js';
-import { PosterService } from '../../poster/poster.service.js';
-import { PosterSightingNotFoundError } from '../../poster/poster.types.js';
+import { QueueService } from '../queue.service.js';
 
 @Injectable()
 export class PosterConsumer extends BaseQueueConsumer {
@@ -29,7 +29,7 @@ export class PosterConsumer extends BaseQueueConsumer {
   constructor(
     pgmq: QueueService,
     tracker: JobTrackerService,
-    private readonly posters: PosterService,
+    private readonly posters: PosterDataService,
   ) {
     super(pgmq, tracker);
   }

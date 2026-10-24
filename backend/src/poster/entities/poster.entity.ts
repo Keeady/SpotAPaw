@@ -44,4 +44,10 @@ export class Poster {
 
   @Column({ type: 'text', default: '' })
   colors!: string;
+
+  @Column({ name: 'pdf_url', type: 'text', nullable: true })
+  pdfUrl!: string | null;
+
+  @Column({ name: 'png_url', type: 'text', nullable: true })
+  pngUrl!: string | null;
 }
