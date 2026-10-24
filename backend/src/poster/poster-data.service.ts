@@ -26,7 +26,7 @@ export class PosterDataService {
     @InjectRepository(AggregatedSighting)
     private readonly sightingRepo: Repository<AggregatedSighting>,
     private readonly ai: PosterAiService,
-    private readonly config: ConfigService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -82,7 +82,7 @@ export class PosterDataService {
 
   /** Public link for the poster, or null */
   buildPosterUrl(poster: Poster): string | null {
-    const base = this.config.get<string>('POSTER_BASE_URL');
+    const base = this.configService.get<string>('POSTER_BASE_URL');
     return base ? `${base.replace(/\/$/, '')}/${poster.id}` : null;
   }
 
@@ -126,7 +126,7 @@ export class PosterDataService {
   ): Promise<PosterCopy> {
     const fallback = this.templatedCopy(payload, type);
     const useAi =
-      opts.useAi ?? this.config.get<string>('POSTER_AI_ENABLED') !== 'false';
+      opts.useAi ?? this.configService.get<string>('POSTER_AI_ENABLED') !== 'false';
     if (!useAi) return fallback;
 
     try {

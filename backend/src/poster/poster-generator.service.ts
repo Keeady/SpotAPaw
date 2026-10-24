@@ -28,16 +28,16 @@ export class PosterGeneratorService {
   constructor(
     @InjectRepository(Poster)
     private readonly posterRepo: Repository<Poster>,
-    config: ConfigService,
+    configService: ConfigService,
   ) {
     const supabase = createClient(
-      config.getOrThrow<string>('SUPABASE_URL'),
-      config.getOrThrow<string>('SUPABASE_SERVICE_ROLE_KEY'),
+      configService.getOrThrow<string>('SUPABASE_URL'),
+      configService.getOrThrow<string>('SUPABASE_SERVICE_ROLE_KEY'),
     );
     this.storage = supabase.storage;
-    this.browserlessToken = config.getOrThrow<string>('BROWSERLESS_API_TOKEN');
+    this.browserlessToken = configService.getOrThrow<string>('BROWSERLESS_API_TOKEN');
     this.renderBaseUrl = (
-      config.get<string>('POSTER_RENDER_BASE_URL') ?? DEFAULT_RENDER_BASE_URL
+      configService.get<string>('POSTER_RENDER_BASE_URL') ?? DEFAULT_RENDER_BASE_URL
     ).replace(/\/$/, '');
   }
 

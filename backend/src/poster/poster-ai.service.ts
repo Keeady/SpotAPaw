@@ -9,14 +9,14 @@ const GEMINI_URL =
 export class PosterAiService {
   private readonly logger = new Logger(PosterAiService.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   /** Throws on any failure; the caller decides whether to fall back. */
   async generateCopy(
     payload: PosterPayload,
     posterType: PosterType,
   ): Promise<Partial<PosterCopy>> {
-    const apiKey = this.config.getOrThrow<string>('GOOGLE_GENAI_API_KEY');
+    const apiKey = this.configService.getOrThrow<string>('GOOGLE_GENAI_API_KEY');
 
     const prompt = `Write a ${posterType} pet poster copy from structured pet data.
 Return ONLY valid JSON:
