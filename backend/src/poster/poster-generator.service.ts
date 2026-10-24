@@ -32,7 +32,7 @@ export class PosterGeneratorService {
   ) {
     const supabase = createClient(
       configService.getOrThrow<string>('SUPABASE_URL'),
-      configService.getOrThrow<string>('SUPABASE_SERVICE_ROLE_KEY'),
+      configService.getOrThrow<string>('SUPABASE_SECRET_KEYS'),
     );
     this.storage = supabase.storage;
     this.browserlessToken = configService.getOrThrow<string>('BROWSERLESS_API_TOKEN');
