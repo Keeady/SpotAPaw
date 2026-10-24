@@ -16,16 +16,17 @@ export async function getAggregatedSightings({
 > {
   const host = process.env.API_HOST;
   const port = process.env.API_PORT;
-  if (!host || !port) {
+  if (!host) {
     return { error: "Invalid endpoint api.", data: undefined };
   }
 
+  const portPath = port ? `:${port}` : "";
+  const path = `${host}${portPath}`;
   try {
     const res = await fetch(
-      `${host}:${port}/aggregated-sightings?latitude=${latitude}&longitude=${longitude}`,
+      `${path}/aggregated-sightings?latitude=${latitude}&longitude=${longitude}`,
     );
     if (!res.ok) {
-      console.log(res);
       return { data: undefined, error: "Failed to fetch aggregated sightings" };
     }
     const data = await res.json();

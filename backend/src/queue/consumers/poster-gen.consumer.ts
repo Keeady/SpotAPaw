@@ -10,9 +10,13 @@ import {
   JobType,
   AggregatedSightingMessage,
 } from '../queue.constants.js';
+import {
+  PosterGeneratorService,
+  PosterNotFoundError,
+} from '../../poster/poster-generator.service.js';
 
 @Injectable()
-export class PosterConsumer extends BaseQueueConsumer {
+export class PosterGenConsumer extends BaseQueueConsumer {
   protected readonly jobType: JobType = 'poster-gen';
 
   // Rendering is CPU/IO heavy: small batches, generous timeout.
@@ -26,7 +30,8 @@ export class PosterConsumer extends BaseQueueConsumer {
 
   constructor(
     pgmq: QueueService,
-    tracker: JobTrackerService /*, private posters: PosterService */,
+    tracker: JobTrackerService,
+    private readonly generator: PosterGeneratorService,
   ) {
     super(pgmq, tracker);
   }
@@ -34,18 +39,16 @@ export class PosterConsumer extends BaseQueueConsumer {
   protected async handle({
     aggregated_sighting_id,
   }: AggregatedSightingMessage): Promise<void> {
-    const { rows } = await this.pgmq.query(
-      'select * from aggregated_sightings where id = $1',
-      [aggregated_sighting_id],
-    );
-    if (rows.length === 0)
-      throw new NonRetryableError(
-        `sighting ${aggregated_sighting_id} not found`,
-      );
-
-    // TODO: gather data for the poster from a_sightings table, AI gen
-    // save in poster table
-    // update a_sightings with poster_id
-    // TODO: update a_sightings.poster_url (idempotent UPDATE).
+    try {
+      // Renders PDF + PNG, upserts both to storage, saves URLs on the poster.
+      await this.generator.generateForSighting(aggregated_sighting_id);
+    } catch (err) {
+      // The poster-data stage creates the poster before enqueueing this job,
+      // so a missing poster won't fix itself on retry.
+      if (err instanceof PosterNotFoundError) {
+        throw new NonRetryableError(err.message);
+      }
+      throw err; // Browserless / storage / DB errors -> normal retry/backoff
+    }
   }
 }
