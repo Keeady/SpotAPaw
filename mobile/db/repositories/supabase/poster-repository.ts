@@ -37,7 +37,7 @@ export class SupabasePosterRepository implements IPosterRepository {
     return data as Poster;
   }
 
-  async getPoster(posterId: string): Promise<Poster | null> {
+  async getPoster(posterId: string, sightingId?: string): Promise<Poster | null> {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }

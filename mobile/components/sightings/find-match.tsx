@@ -1,19 +1,24 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { SightingWizardStepData } from "./wizard-interface";
 import { View } from "react-native";
 import { Text } from "react-native-paper";
 import { AggregatedSighting } from "@/db/models/sighting";
 import { SightingSelection } from "../sightings/sighting-selection";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
-import { WizardHeader } from "./wizard-header";
 import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
 import { createErrorLogMessage } from "../util";
 import { log } from "../logs";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useTranslation } from "react-i18next";
+import { WizardHeader } from "../wizard/wizard-header";
 
-export function FindMatch({ sightingFormData }: SightingWizardStepData) {
+export function ShowMatches({
+  sightingId,
+  petDescriptionId,
+}: {
+  sightingId: string;
+  petDescriptionId: string;
+}) {
   const { t } = useTranslation("wizard");
   const [loading, setLoading] = useState(false);
   const [matchResults, setMatchResults] = useState<AggregatedSighting[]>([]);
@@ -30,14 +35,11 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
   }, []);
 
   useEffect(() => {
-    if (sightingFormData?.sightingId && sightingFormData?.petDescriptionId) {
+    if (sightingId && petDescriptionId) {
       setLoading(true);
       const repository = new SightingRepository();
       repository
-        .getMatchingSightings(
-          sightingFormData.sightingId,
-          sightingFormData.petDescriptionId,
-        )
+        .getMatchingSightings(sightingId, petDescriptionId)
         .then((results) => {
           if (!isMountedRef.current) {
             return;
@@ -67,7 +69,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
           setLoading(false);
         });
     }
-  }, [sightingFormData?.sightingId, sightingFormData?.petDescriptionId]);
+  }, [sightingId, petDescriptionId]);
 
   const onSightingSelect = (id: string) => {
     if (!id) {
@@ -134,6 +136,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
   return (
     <View style={{ flex: 1 }}>
       <WizardHeader title={title} subTitle={subTitle} />
+
       {bodyText && (
         <View
           style={{
@@ -150,7 +153,7 @@ export function FindMatch({ sightingFormData }: SightingWizardStepData) {
       {!loading && matchResults.length > 0 && (
         <SightingSelection
           setSelectedSightingId={onSightingSelect}
-          selectedSightingId={sightingFormData.sightingId}
+          selectedSightingId={sightingId}
           sightings={matchResults}
         />
       )}

@@ -8,8 +8,8 @@ export class PosterRepository implements IPosterRepository {
     const repository = new SupabasePosterRepository(supabase);
     return repository.generatePosterForSighting(sightingId, isAiFeatureEnabled);
   }
-  getPoster(posterId: string): Promise<Poster | null> {
+  getPoster(posterId: string, sightingId?: string): Promise<Poster | null> {
     const repository = new SupabasePosterRepository(supabase);
-    return repository.getPoster(posterId);
+    return repository.getPoster(posterId, sightingId);
   }
 }
