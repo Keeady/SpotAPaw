@@ -81,4 +81,20 @@ export class SupabasePosterRepository implements IPosterRepository {
 
     return data[0] as Poster;
   }
+
+  async updatePoster(posterId: string, data: Partial<Poster>) {
+    if (!this.supabaseClient) {
+      throw new Error("Undefined supabase client");
+    }
+
+    const { error } = await this.supabaseClient
+      .from("posters")
+      .update(data)
+      .eq("id", posterId);
+
+    if (error) {
+      console.error("Failed to fetch poster:", error);
+      throw error;
+    }
+  }
 }

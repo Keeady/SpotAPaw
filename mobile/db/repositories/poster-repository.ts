@@ -12,4 +12,9 @@ export class PosterRepository implements IPosterRepository {
     const repository = new SupabasePosterRepository(supabase);
     return repository.getPoster(posterId, sightingId);
   }
+
+  updatePoster(posterId: string, data: Partial<Poster>): Promise<void> {
+    const repository = new SupabasePosterRepository(supabase);
+    return repository.updatePoster(posterId, data);
+  }
 }
