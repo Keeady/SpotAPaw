@@ -6,11 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import pg from 'pg';
 import { Poster } from './poster/entities/poster.entity.js';
 import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
+import { AggregatedSightingsModule } from './aggregated-sightings/aggregated-sightings.module.js';
+import { PosterModule } from './poster/poster.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    QueueModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -27,6 +28,9 @@ import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-s
         extra: { max: configService.getOrThrow<number>('WORKER_DB_POOL_SIZE') },
       }),
     }),
+    AggregatedSightingsModule,
+    PosterModule,
+    QueueModule,
   ],
 })
 export class WorkerModule {
