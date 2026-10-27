@@ -117,10 +117,4 @@ export class AggregatedSighting {
     name: "poster_id"
   })
   posterId: number;
-
-  @Column({
-    name: "poster_url",
-    nullable: true
-  })
-  posterUrl: string | null;
 }

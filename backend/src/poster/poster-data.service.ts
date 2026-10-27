@@ -80,12 +80,6 @@ export class PosterDataService {
     );
   }
 
-  /** Public link for the poster, or null */
-  buildPosterUrl(poster: Poster): string | null {
-    const base = this.configService.get<string>('POSTER_BASE_URL');
-    return base ? `${base.replace(/\/$/, '')}/${poster.id}` : null;
-  }
-
   // ---- internals ----------------------------------------------------------
 
   // pet_desc_results has no entity here, so read the one column via raw SQL.
