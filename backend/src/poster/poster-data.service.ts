@@ -146,7 +146,7 @@ export class PosterDataService {
     const species = p.species || 'pet';
     const lost = type === 'lost';
     return {
-      headline: lost ? `Lost ${species}` : `Found ${species}`,
+      headline: lost ? `LOST ${species}` : `FOUND ${species}`,
       subheadline: lost
         ? `Have you seen this ${species}?`
         : `Do you know this ${species}?`,
