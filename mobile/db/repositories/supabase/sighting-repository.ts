@@ -55,6 +55,7 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
           size: "large",
           petDescriptionId: "",
           linkedSightings: [],
+          posterId: 1
         },
       ],
       count: 1,

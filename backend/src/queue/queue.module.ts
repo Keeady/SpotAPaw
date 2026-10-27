@@ -5,6 +5,7 @@ import { MatchingConsumer } from './consumers/matching.consumer.js';
 import { NotifyConsumer } from './consumers/notify.consumer.js';
 import { PosterConsumer } from './consumers/poster-data.consumer.js';
 import { QueueService } from './queue.service.js';
+import { QueueMaintenanceService } from './queue-maintenance.service.js';
 
 @Module({
   imports: [ConfigModule],
@@ -14,6 +15,7 @@ import { QueueService } from './queue.service.js';
     MatchingConsumer,
     PosterConsumer,
     NotifyConsumer,
+    QueueMaintenanceService,
   ],
   exports: [QueueService, JobTrackerService],
 })

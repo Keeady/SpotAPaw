@@ -6,7 +6,7 @@
       "entrypoint": "Dockerfile",
       "instances": { "iad1": 2 },
       "command": ["node", "dist/worker.js"],
-      "terminationGracePeriodSeconds": 120
+      "terminationGracePeriodSeconds": 150
     }
   }
 }
