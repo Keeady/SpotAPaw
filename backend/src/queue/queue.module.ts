@@ -6,9 +6,10 @@ import { NotifyConsumer } from './consumers/notify.consumer.js';
 import { PosterConsumer } from './consumers/poster-data.consumer.js';
 import { QueueService } from './queue.service.js';
 import { QueueMaintenanceService } from './queue-maintenance.service.js';
+import { PosterModule } from '../poster/poster.module.js';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, PosterModule],
   providers: [
     QueueService,
     JobTrackerService,
