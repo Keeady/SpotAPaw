@@ -11,6 +11,7 @@ import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-s
 import { DataSource } from 'typeorm';
 import * as pg from 'pg';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PosterModule } from './poster/poster.module.js';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     SightingContactsModule,
     AggregatedSightingsModule,
     UsersModule,
+    PosterModule
   ],
   controllers: [AppController],
   providers: [AppService],

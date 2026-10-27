@@ -76,7 +76,7 @@ export class PosterDataService {
   async linkToSighting(sightingId: string, poster: Poster): Promise<void> {
     await this.sightingRepo.update(
       { id: sightingId },
-      { posterId: poster.id, posterUrl: this.buildPosterUrl(poster) },
+      { posterId: poster.id },
     );
   }
 
