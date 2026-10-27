@@ -34,22 +34,21 @@ export class QueueService implements OnApplicationShutdown {
     qty: number,
   ): Promise<QueueMessage<T>[]> {
     const { rows } = await this.pool.query(
-      'select msg_id, read_ct, enqueued_at, vt, message from pgmq.read($1, $2, $3)',
+      'select msg_id, read_ct, enqueued_at, vt, message from pgmq.read($1::text, $2::integer, $3::integer)',
       [queue, vtSec, qty],
     );
     return rows;
   }
 
   async send(queue: string, payload: object, delaySec = 0): Promise<void> {
-    await this.pool.query('select pgmq.send($1, $2::jsonb, $3)', [
-      queue,
-      JSON.stringify(payload),
-      delaySec,
-    ]);
+    await this.pool.query(
+      'select pgmq.send($1::text, $2::jsonb, $3::integer)',
+      [queue, JSON.stringify(payload), delaySec],
+    );
   }
 
   async archive(queue: string, msgId: number): Promise<void> {
-    await this.pool.query('select pgmq.archive($1, $2::bigint)', [
+    await this.pool.query('select pgmq.archive($1::text, $2::bigint)', [
       queue,
       msgId,
     ]);
@@ -61,17 +60,17 @@ export class QueueService implements OnApplicationShutdown {
     msgId: number,
     vtSec: number,
   ): Promise<void> {
-    await this.pool.query('select pgmq.set_vt($1, $2::bigint, $3)', [
-      queue,
-      msgId,
-      vtSec,
-    ]);
+    await this.pool.query(
+      'select pgmq.set_vt($1::text, $2::bigint, $3::integer)',
+      [queue, msgId, vtSec],
+    );
   }
 
   async metrics(queue: string) {
-    const { rows } = await this.pool.query('select * from pgmq.metrics($1)', [
-      queue,
-    ]);
+    const { rows } = await this.pool.query(
+      'select * from pgmq.metrics($1::text)',
+      [queue],
+    );
     return rows[0];
   }
 

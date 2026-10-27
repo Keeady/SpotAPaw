@@ -183,12 +183,20 @@ export abstract class BaseQueueConsumer implements OnApplicationBootstrap, Befor
   private async deadLetter(msg: QueueMessage<AggregatedSightingMessage>, sightingId: string, reason: string) {
     this.logger.error(`sighting=${sightingId} dead-lettered: ${reason}`);
     await this.tracker.markDead(sightingId, this.jobType, reason);
-    await this.pgmq.send(dlqName(this.queue), {
-      ...msg.message,
-      error: reason,
-      read_ct: msg.read_ct,
-      original_msg_id: msg.msg_id,
-    });
+    try {
+      await this.pgmq.send(dlqName(this.queue), {
+        ...msg.message,
+        error: reason,
+        read_ct: msg.read_ct,
+        original_msg_id: msg.msg_id,
+      });
+    } catch (err) {
+      // sighting_jobs already records this job as dead with the reason. A DLQ problem must not
+      // leave the message in the queue, or it is re-read and re-fails forever.
+      this.logger.error(
+        `DLQ copy failed for sighting=${sightingId} (${dlqName(this.queue)}): ${(err as Error).message}`,
+      );
+    }
     await this.pgmq.archive(this.queue, msg.msg_id);
   }
 
