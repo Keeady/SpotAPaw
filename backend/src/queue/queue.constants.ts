@@ -20,7 +20,7 @@ export interface QueueMessage<T = unknown> {
   vt: Date;
   message: T;
 }
-
+ 
 export interface ConsumerOptions {
   /** Visibility timeout in seconds. Must exceed the slowest handler run. */
   visibilityTimeoutSec: number;
@@ -30,11 +30,13 @@ export interface ConsumerOptions {
   maxAttempts: number;
   /** Sleep between polls when the queue is empty. */
   pollIntervalMs: number;
+  /** Abort a handler after this long. Defaults to 80% of the visibility timeout. */
+  handlerTimeoutMs?: number;
   /** Backoff: base * 2^(attempt-1), capped at max, with jitter. */
   backoffBaseSec: number;
   backoffMaxSec: number;
 }
-
+ 
 export const DEFAULT_CONSUMER_OPTIONS: ConsumerOptions = {
   visibilityTimeoutSec: 60,
   batchSize: 5,

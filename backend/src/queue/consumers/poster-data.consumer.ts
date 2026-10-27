@@ -37,19 +37,6 @@ export class PosterConsumer extends BaseQueueConsumer {
   protected async handle({
     aggregated_sighting_id,
   }: AggregatedSightingMessage): Promise<void> {
-    /* const { rows } = await this.pgmq.query(
-      'select * from aggregated_sightings where id = $1',
-      [aggregated_sighting_id],
-    );
-    if (rows.length === 0)
-      throw new NonRetryableError(
-        `sighting ${aggregated_sighting_id} not found`,
-      );
-*/
-    // TODO: gather data for the poster from aggregated_sightings table, AI gen
-    // save in poster table
-    // update aggregated_sightings with poster_id
-    // TODO: update aggregated_sightings.poster_url (idempotent UPDATE).
     let poster;
     try {
       // Idempotent: returns the existing poster on retries.
