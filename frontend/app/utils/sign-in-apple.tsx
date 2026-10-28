@@ -4,8 +4,8 @@
 import { useState } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/auth/supabase/client";
 import Button from "../components/button";
+import { AuthHandler } from "@/lib/auth/auth";
 
 declare global {
   interface Window {
@@ -35,7 +35,7 @@ export default function AppleSignIn({
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  const auth = new AuthHandler();
 
   const handleClick = async () => {
     if (!window.AppleID) return;
@@ -55,23 +55,14 @@ export default function AppleSignIn({
     try {
       const res = await window.AppleID.auth.signIn();
 
-      const { data, error } = await supabase.auth.signInWithIdToken({
+      const { data, error } = await auth.signInWithIdToken({
         provider: "apple",
         token: res.authorization.id_token,
         nonce, // raw goes to Supabase
       });
       if (error) throw error;
 
-      // Name only arrives on the very first authorization
-      const first = res.user?.name?.firstName;
-      const last = res.user?.name?.lastName;
-      if (first || last) {
-        await supabase.auth.updateUser({
-          data: { full_name: [first, last].filter(Boolean).join(" ") },
-        });
-      }
-
-      router.push("/dashboard");
+      router.push("/aggregated-sightings");
       router.refresh();
     } catch (err: any) {
       if (err?.error !== "popup_closed_by_user") console.error(err);

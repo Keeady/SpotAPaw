@@ -1,15 +1,15 @@
 "use client";
 
-import { createClient } from "@/lib/auth/supabase/client";
 import Button from "../components/button";
+import { AuthHandler } from "@/lib/auth/auth";
 
 export function GoogleSignIn() {
-  const supabase = createClient();
+  const auth = new AuthHandler()
   return (
     <Button
       variant="secondary"
       onClick={() =>
-        supabase.auth.signInWithOAuth({
+        auth.signInWithOAuth({
           provider: "google",
           options: { redirectTo: `${process.env.NEXT_PUBLIC_REDIRECT_TO}` },
         })
