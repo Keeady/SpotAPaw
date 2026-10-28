@@ -19,16 +19,14 @@ type SignInFormProps = {
   onApple?: () => void;
 };
 
-export default function SignInForm({
-  onGoogle,
-  onApple,
-}: SignInFormProps) {
+export default function SignInForm({ onGoogle, onApple }: SignInFormProps) {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const validate = (): Errors => {
     const e: Errors = {};
@@ -46,6 +44,7 @@ export default function SignInForm({
     setErrors(e);
     if (Object.keys(e).length) return;
     setLoading(true);
+    setDisabled(true);
     try {
       await signInWithEmail();
     } finally {
@@ -66,6 +65,7 @@ export default function SignInForm({
       })
       .catch((error) => {
         console.error(error);
+        setDisabled(false);
       })
       .finally(() => {
         setLoading(false);
@@ -110,7 +110,7 @@ export default function SignInForm({
         </div>
       </div>
 
-      <Button type="submit" loading={loading}>
+      <Button type="submit" loading={loading} disabled={disabled}>
         Sign in
       </Button>
 
