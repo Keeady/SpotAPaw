@@ -47,11 +47,12 @@ export class SupabaseAuthHandler extends BaseAuthHandler {
       email: email,
       password: password,
       options: {
-        emailRedirectTo: "spotapaw://auth/verify",
+        emailRedirectTo: process.env.NEXT_PUBLIC_EMAIL_REDIRECT_TO,
       },
     });
 
     if (error) {
+      console.log(error);
       throw error;
     }
 
