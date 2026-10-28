@@ -14,8 +14,8 @@ export async function getAggregatedSightings({
 }: AggregatedSightingsProps): Promise<
   AggregatedSightingsResponse<AggregatedSighting[]>
 > {
-  const host = process.env.API_HOST;
-  const port = process.env.API_PORT;
+  const host = process.env.NEXT_PUBLIC_API_HOST;
+  const port = process.env.NEXT_PUBLIC_API_PORT;
   if (!host) {
     return { error: "Invalid endpoint api.", data: undefined };
   }

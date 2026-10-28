@@ -178,12 +178,12 @@ type SightingDetailRendererProps = {
   summary: AggregatedSighting;
   claimed: boolean;
   onEdit?: () => void;
-  onAddSighting: () => void;
+  onAddSighting?: () => void;
   claimPet?: () => void;
   hasOwner: boolean;
   isOwner: boolean;
   onPetFound?: () => void;
-  onShareSighting: () => void;
+  onShareSighting?: () => void;
   onViewMatches?: () => void;
   onViewPoster?: () => void;
 };

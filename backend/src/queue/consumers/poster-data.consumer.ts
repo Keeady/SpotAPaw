@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PosterDataService } from '../../poster/poster-data.service.js';
-import { PosterSightingNotFoundError } from '../../poster/poster.types.js';
+import { PosterDataService } from '../../posters/poster-data.service.js';
+import { PosterSightingNotFoundError } from '../../posters/poster.types.js';
 import {
   BaseQueueConsumer,
   NonRetryableError,

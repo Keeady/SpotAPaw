@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { QueueModule } from './queue/queue.module.js';
-import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import pg from 'pg';
-import { Poster } from './poster/entities/poster.entity.js';
-import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
+import { DataSource } from 'typeorm';
 import { AggregatedSightingsModule } from './aggregated-sightings/aggregated-sightings.module.js';
-import { PosterModule } from './poster/poster.module.js';
+import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
+import { Poster } from './posters/entities/poster.entity.js';
+import { PosterModule } from './posters/poster.module.js';
+import { QueueModule } from './queue/queue.module.js';
 
 @Module({
   imports: [

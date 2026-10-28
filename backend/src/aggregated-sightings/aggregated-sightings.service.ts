@@ -6,7 +6,15 @@ import { AggregatedSighting } from './entities/aggregated-sighting.entity.js';
 import { Repository } from 'typeorm';
 import { toPublicSighting, toPublicSightings } from './util.js';
 
-const SIGHTING_RADIUSKM = 8.05;
+export interface NearbyQuery {
+  lat: number;
+  lng: number;
+  radiusKm: number;
+  /** Only sightings updated at or after this date. */
+  updatedSince: Date;
+  /** Exclude this sighting (the one we are matching). */
+  excludeId?: string;
+}
 
 @Injectable()
 export class AggregatedSightingsService {
@@ -19,12 +27,12 @@ export class AggregatedSightingsService {
     return 'This action adds a new aggregatedSighting';
   }
 
-  async findAll(latitude: number, longitude: number) {
+  async findAll(latitude: number, longitude: number, radius: number) {
     // ~111 km per 1 degree latitude
-    const latDegree = SIGHTING_RADIUSKM / 111;
+    const latDegree = radius / 111;
     // adjust longitude scaling by latitude
     const lngDegree =
-      SIGHTING_RADIUSKM / (111 * Math.cos(latitude * (Math.PI / 180)));
+      radius / (111 * Math.cos(latitude * (Math.PI / 180)));
 
     const minLat = latitude - latDegree;
     const maxLat = latitude + latDegree;
@@ -49,6 +57,43 @@ export class AggregatedSightingsService {
       .where('aggregated_sightings.id = :id', { id })
       .getOneOrFail();
     return toPublicSighting(data);
+  }
+
+    /**
+   * Active sightings with a pet description inside the bounding box around
+   * (lat, lng). Same approximation as the original edge function:
+   * ~111 km per degree of latitude, longitude scaled by cos(lat).
+   */
+  async findNearbyWithPetDescription(q: NearbyQuery): Promise<AggregatedSighting[]> {
+    const latDelta = q.radiusKm / 111;
+    const lngDelta = q.radiusKm / (111 * Math.cos((q.lat * Math.PI) / 180));
+
+    const qb = this.aggregatedSightingsRepository
+      .createQueryBuilder('s')
+      .where('s.is_active = true')
+      .andWhere('s.pet_description_id IS NOT NULL')
+      .andWhere('s.last_seen_lat BETWEEN :minLat AND :maxLat', {
+        minLat: q.lat - latDelta,
+        maxLat: q.lat + latDelta,
+      })
+      .andWhere('s.last_seen_long BETWEEN :minLng AND :maxLng', {
+        minLng: q.lng - lngDelta,
+        maxLng: q.lng + lngDelta,
+      })
+      .andWhere('s.updated_at >= :since', { since: q.updatedSince });
+
+    if (q.excludeId) qb.andWhere('s.id <> :excludeId', { excludeId: q.excludeId });
+
+    return qb.getMany();
+  }
+
+  /** Bulk fetch, used to hydrate match results for the frontend. */
+  async findByIds(ids: string[]): Promise<AggregatedSighting[]> {
+    if (ids.length === 0) return [];
+    return this.aggregatedSightingsRepository
+      .createQueryBuilder('s')
+      .where('s.id IN (:...ids)', { ids })
+      .getMany();
   }
 
   update(id: number, updateAggregatedSightingDto: UpdateAggregatedSightingDto) {
