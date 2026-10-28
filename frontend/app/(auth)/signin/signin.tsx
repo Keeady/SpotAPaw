@@ -14,12 +14,8 @@ import { useRouter } from "next/navigation";
 
 type Errors = { email?: string; password?: string };
 
-type SignInFormProps = {
-  onGoogle?: () => void;
-  onApple?: () => void;
-};
 
-export default function SignInForm({ onGoogle, onApple }: SignInFormProps) {
+export default function SignInForm() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -115,7 +111,7 @@ export default function SignInForm({ onGoogle, onApple }: SignInFormProps) {
       </Button>
 
       <Divider />
-      <SocialButtons onGoogle={onGoogle} onApple={onApple} />
+      <SocialButtons />
 
       <p className="text-center text-sm text-neutral-700">
         Don&apos;t have an account?{" "}

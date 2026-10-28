@@ -19,23 +19,10 @@ type Errors = {
   top?: string;
 };
 
-type SignUpFormProps = {
-  onSubmit?: (values: {
-    email: string;
-    password: string;
-  }) => Promise<void> | void;
-  onGoogle?: () => void;
-  onApple?: () => void;
-};
-
 const PASSWORD_HELP =
   "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character.";
 
-export default function SignUpForm({
-  onSubmit,
-  onGoogle,
-  onApple,
-}: SignUpFormProps) {
+export default function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -152,7 +139,7 @@ export default function SignUpForm({
           </Button>
 
           <Divider />
-          <SocialButtons onGoogle={onGoogle} onApple={onApple} />
+          <SocialButtons />
 
           <p className="text-center text-sm text-neutral-700">
             Already have an account?{" "}

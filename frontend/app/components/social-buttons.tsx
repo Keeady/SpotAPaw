@@ -1,39 +1,11 @@
-import Button from "../components/button";
+import AppleSignIn from "../utils/sign-in-apple";
+import { GoogleSignIn } from "../utils/sign-in-google";
 
-type SocialButtonsProps = {
-  onGoogle?: () => void;
-  onApple?: () => void;
-};
-
-/** Placeholder for the real brand logo; replace with official assets. */
-function LogoPlaceholder({ label }: { label: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="flex h-5 w-5 items-center justify-center rounded bg-neutral-200 text-[10px] font-bold text-neutral-500"
-    >
-      {label}
-    </span>
-  );
-}
-
-export default function SocialButtons({ onGoogle, onApple }: SocialButtonsProps) {
+export default function SocialButtons() {
   return (
     <div className="flex w-full flex-col gap-3">
-      <Button
-        variant="outline"
-        onClick={onGoogle}
-        leftIcon={<LogoPlaceholder label="G" />}
-      >
-        Continue with Google
-      </Button>
-      <Button
-        variant="outline"
-        onClick={onApple}
-        leftIcon={<LogoPlaceholder label="A" />}
-      >
-        Continue with Apple
-      </Button>
+      <GoogleSignIn />
+      <AppleSignIn />
     </div>
   );
 }
