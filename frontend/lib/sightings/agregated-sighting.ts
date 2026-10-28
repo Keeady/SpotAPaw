@@ -24,6 +24,7 @@ export type AggregatedSighting = {
   age: number | null;
   photos: string[];
   behavior: string | null;
+  posterId: string | null;
 };
 
 export type Sighting = AggregatedSighting;

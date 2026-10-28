@@ -1,8 +1,3 @@
-select pgmq.create('aggregated_sighting_matching');
-select pgmq.create('aggregated_sighting_poster_data');
-select pgmq.create('aggregated_sighting_notify');
-select pgmq.create('aggregated_sighting_poster_gen');
-
 create table aggregated_sighting_jobs (
   id uuid primary key default gen_random_uuid(),
   aggregated_sighting_id uuid not null references aggregated_sightings(id) on delete cascade,
@@ -15,8 +10,3 @@ create table aggregated_sighting_jobs (
   created_at timestamptz not null default now(),
   unique (aggregated_sighting_id, job_type)          -- idempotency anchor
 );
-
-select pgmq.create('aggregated_sighting_matching_dlq');
-select pgmq.create('aggregated_sighting_poster_data_dlq');
-select pgmq.create('aggregated_sighting_notify_dlq');
-select pgmq.create('aggregated_sighting_poster_gen_dlq');

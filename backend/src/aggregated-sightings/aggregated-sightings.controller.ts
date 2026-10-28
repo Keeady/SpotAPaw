@@ -16,6 +16,7 @@ import { AggregatedSightingsService } from './aggregated-sightings.service.js';
 import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
 import { SightingsService } from '../sightings/sightings.service.js';
+import { GetAggregatedSightingsDto } from './dto/get-aggregated-sightings.dto.js';
 
 @Controller('aggregated-sightings')
 export class AggregatedSightingsController {
@@ -30,24 +31,12 @@ export class AggregatedSightingsController {
   }
 
   @Get()
-  findAll(
-    @Query('latitude', ParseFloatPipe) latitude: number,
-    @Query('longitude', ParseFloatPipe) longitude: number,
-  ) {
-    if (
-      !Number.isFinite(latitude) ||
-      latitude < -90 ||
-      latitude > 90 ||
-      !Number.isFinite(longitude) ||
-      longitude < -180 ||
-      longitude > 180
-    ) {
-      throw new HttpException(
-        'Invalid or missing parameters',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    return this.aggregatedSightingsService.findAll(latitude, longitude);
+  findAll(@Query() query: GetAggregatedSightingsDto) {
+    return this.aggregatedSightingsService.findAll(
+      query.latitude,
+      query.longitude,
+      query.radius,
+    );
   }
 
   @Get(':id')
@@ -59,8 +48,8 @@ export class AggregatedSightingsController {
     const sightings = await this.sightingsService.findAll(linked_sighting_id);
 
     return {
-      summary: summary,
-      sightings: sightings,
+      summary,
+      sightings,
       hasOwner: false,
       claimed: false,
     };

@@ -10,6 +10,10 @@ import {
   JobType,
   AggregatedSightingMessage,
 } from '../queue.constants.js';
+import {
+  SightingMatchesService,
+  SightingNotFoundError,
+} from '../../sighting-matches/sighting-matches.service.js';
 
 @Injectable()
 export class MatchingConsumer extends BaseQueueConsumer {
@@ -28,7 +32,8 @@ export class MatchingConsumer extends BaseQueueConsumer {
 
   constructor(
     pgmq: QueueService,
-    tracker: JobTrackerService /*, private matching: MatchingService */,
+    tracker: JobTrackerService,
+    private readonly matching: SightingMatchesService,
   ) {
     super(pgmq, tracker);
   }
@@ -36,20 +41,23 @@ export class MatchingConsumer extends BaseQueueConsumer {
   protected async handle({
     aggregated_sighting_id,
   }: AggregatedSightingMessage): Promise<void> {
-    // 1. Load the sighting (throw NonRetryableError if it no longer exists).
-    const { rows } = await this.pgmq.query(
-      'select * from aggregated_sightings where id = $1',
-      [aggregated_sighting_id],
-    );
-    if (rows.length === 0)
-      throw new NonRetryableError(
-        `sighting ${aggregated_sighting_id} not found`,
-      );
+    let result;
+    try {
+      result = await this.matching.processMatches(aggregated_sighting_id);
+    } catch (err) {
+      // A deleted sighting will never succeed on retry.
+      if (err instanceof SightingNotFoundError) {
+        throw new NonRetryableError(err.message);
+      }
+      throw err; // anything else is retried with backoff
+    }
 
-    // 2. TODO: build embedding for the sighting and upsert keyed by sighting_id.
-    // 3. TODO: vector search against lost-pet reports.
-    // 4. TODO: upsert matches ON CONFLICT (sighting_id, candidate_id) DO UPDATE.
-    // 5. TODO: if a likely match exists, publish a `match_found` message to its own
-    //    queue instead of calling the notifier directly.
+    if (result.likelyMatch) {
+         await this.pgmq.send('aggregated_sighting_matching_found', {
+           aggregated_sighting_id,
+           match_id: result.likelyMatch.id,
+         });
+         await this.matching.markNotified(result.likelyMatch.id);
+    }
   }
 }

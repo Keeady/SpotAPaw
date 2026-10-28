@@ -23,6 +23,7 @@ const publicSightingKeys = [
   "age",
   "photos",
   "behavior",
+  "petDescriptionId"
 ] as const satisfies readonly (keyof AggregatedSighting)[];
 
 export type PublicAggregatedSighting = Pick<

@@ -1,17 +1,20 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as pg from 'pg';
+import { DataSource } from 'typeorm';
+import { AggregatedSightingsModule } from './aggregated-sightings/aggregated-sightings.module.js';
+import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { SightingsModule } from './sightings/sightings.module.js';
 import { PetsModule } from './pets/pets.module.js';
+import { PosterModule } from './posters/poster.module.js';
 import { SightingContactsModule } from './sighting-contacts/sighting-contacts.module.js';
-import { AggregatedSightingsModule } from './aggregated-sightings/aggregated-sightings.module.js';
+import { SightingsModule } from './sightings/sightings.module.js';
 import { UsersModule } from './users/users.module.js';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AggregatedSighting } from './aggregated-sightings/entities/aggregated-sighting.entity.js';
-import { DataSource } from 'typeorm';
-import * as pg from 'pg';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PosterModule } from './poster/poster.module.js';
+import { Poster } from './posters/entities/poster.entity.js';
+import { SightingMatch } from './sighting-matches/entities/sighting-match.entity.js';
+import { SightingMatchesModule } from './sighting-matches/sighting-matches.module.js';
 
 @Module({
   imports: [
@@ -27,7 +30,7 @@ import { PosterModule } from './poster/poster.module.js';
         username: configService.getOrThrow<string>('DB_USERNAME'),
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB'),
-        entities: [AggregatedSighting],
+        entities: [AggregatedSighting, Poster, SightingMatch],
         autoLoadEntities: true,
         driver: pg,
         retryAttempts: 10,
@@ -39,7 +42,8 @@ import { PosterModule } from './poster/poster.module.js';
     SightingContactsModule,
     AggregatedSightingsModule,
     UsersModule,
-    PosterModule
+    PosterModule,
+    SightingMatchesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

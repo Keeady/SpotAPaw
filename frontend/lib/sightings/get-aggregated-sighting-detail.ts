@@ -1,8 +1,6 @@
 import {
-  AggregatedSighting,
   AggregatedSightingDetail,
   AggregatedSightingsResponse,
-  Sighting,
 } from "./agregated-sighting";
 
 type AggregatedSightingByIdProps = {
@@ -16,9 +14,9 @@ export async function getAggregatedSightingById({
 }: AggregatedSightingByIdProps): Promise<
   AggregatedSightingsResponse<AggregatedSightingDetail>
 > {
-  const host = process.env.API_HOST;
-  const port = process.env.API_PORT;
-  if (!host || !port) {
+  const host = process.env.NEXT_PUBLIC_API_HOST;
+  const port = process.env.NEXT_PUBLIC_API_PORT;
+  if (!host) {
     return { error: "Invalid endpoint api.", data: undefined };
   }
 
@@ -26,9 +24,12 @@ export async function getAggregatedSightingById({
     return { error: "Invalid parameter.", data: undefined };
   }
 
+  const portPath = port ? `:${port}` : "";
+  const path = `${host}${portPath}`;
+
   try {
     const res = await fetch(
-      `${host}:${port}/aggregated-sightings/${aggregatedSightingId}?linked_sighting_id=${linkedSightingId}`,
+      `${path}/aggregated-sightings/${aggregatedSightingId}?linked_sighting_id=${linkedSightingId}`,
     );
     if (!res.ok) {
       console.log(res);
