@@ -21,46 +21,6 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
       throw new Error("Undefined supabase client");
     }
 
-    return Promise.resolve({
-      data: [
-        {
-          photos: [
-            "https://tdrhuucwalyoftbzwojm.supabase.co/storage/v1/object/public/pet_photos/ai_sightings/87594fc70db086ce9c8b88a658d8e7ee6681351f37aa2062b4a3f634eafc7ac8.jpeg",
-          ],
-          name: "Louis",
-          species: "Dog",
-          lastSeenTime: "2026-10-19T16:00:58.489Z",
-          lastSeenLat: 37.3286521167393,
-          lastSeenLong: -122.022899799049,
-          breed: "German Shepherd mix",
-          gender: "Male",
-          age: 3,
-          colors: "black, tan, black and tan points",
-          collarDescription: "black collar,silver buckle,black leash attached",
-          lastSeenLocation: "10390 N Blaney Ave, Cupertino, CA",
-          features:
-            "medium-length fur, fluffy curled tail with lighter tip and underside, tan markings on legs and paws, small white patch on left hip",
-          updatedAt: "2026-10-19 04:58:52.077+00",
-          ownerId: "e866fe24-0f5a-4045-a8d8-c61bdedc4be2",
-          linkedSightingId: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-          id: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-          petId: "b7f449ab-bc2a-4f23-91ad-8f309bcbdd16",
-          createdAt: "2026-10-18 05:02:28.797588+00",
-          note: "",
-          photo: "",
-          isActive: true,
-          reporterId: "",
-          reporterName: "Emma",
-          reporterPhone: "2039194426",
-          size: "large",
-          petDescriptionId: "",
-          linkedSightings: [],
-          posterId: 1
-        },
-      ],
-      count: 1,
-    });
-
     const { minLat, maxLat, minLng, maxLng, paginationStart, paginationEnd } =
       filters;
 
@@ -91,40 +51,6 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
-
-    return Promise.resolve({
-      photos: [
-        "https://tdrhuucwalyoftbzwojm.supabase.co/storage/v1/object/public/pet_photos/ai_sightings/87594fc70db086ce9c8b88a658d8e7ee6681351f37aa2062b4a3f634eafc7ac8.jpeg",
-      ],
-      name: "Louis",
-      species: "Dog",
-      lastSeenTime: "2026-10-19T16:00:58.489Z",
-      lastSeenLat: 37.3286521167393,
-      lastSeenLong: -122.022899799049,
-      breed: "German Shepherd mix",
-      gender: "Male",
-      age: 3,
-      colors: "black, tan, black and tan points",
-      collarDescription: "black collar,silver buckle,black leash attached",
-      lastSeenLocation: "10390 N Blaney Ave, Cupertino, CA",
-      features:
-        "medium-length fur, fluffy curled tail with lighter tip and underside, tan markings on legs and paws, small white patch on left hip",
-      updatedAt: "2026-10-19 04:58:52.077+00",
-      ownerId: "e866fe24-0f5a-4045-a8d8-c61bdedc4be2",
-      linkedSightingId: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-      id: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-      petId: "b7f449ab-bc2a-4f23-91ad-8f309bcbdd16",
-      createdAt: "2026-10-18 05:02:28.797588+00",
-      note: "",
-      photo: "",
-      isActive: true,
-      reporterId: "",
-      reporterName: "Emma",
-      reporterPhone: "2039194426",
-      size: "large",
-      petDescriptionId: "",
-      linkedSightings: [],
-    });
 
     const { data, error } = await this.supabaseClient
       .from("aggregated_sightings")
@@ -210,104 +136,6 @@ export class SupabaseSightingRepository extends BaseSightingRepository {
     if (!this.supabaseClient) {
       throw new Error("Undefined supabase client");
     }
-
-    return Promise.resolve([{
-      photos: [
-        "https://tdrhuucwalyoftbzwojm.supabase.co/storage/v1/object/public/pet_photos/ai_sightings/87594fc70db086ce9c8b88a658d8e7ee6681351f37aa2062b4a3f634eafc7ac8.jpeg",
-      ],
-      name: "Louis",
-      species: "Dog",
-      lastSeenTime: "2026-10-19T16:30:58.489Z",
-      lastSeenLat: 37.3286521167393,
-      lastSeenLong: -122.022899799049,
-      breed: "German Shepherd mix",
-      gender: "Male",
-      age: 3,
-      colors: "black, tan, black and tan points",
-      collarDescription: "black collar,silver buckle,black leash attached",
-      lastSeenLocation: "10390 N Blaney Ave, Cupertino, CA",
-      features:
-        "medium-length fur, fluffy curled tail with lighter tip and underside, tan markings on legs and paws, small white patch on left hip",
-      updatedAt: "2026-10-19 04:58:52.077+00",
-      ownerId: "e866fe24-0f5a-4045-a8d8-c61bdedc4be2",
-      linkedSightingId: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-      id: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-      petId: "b7f449ab-bc2a-4f23-91ad-8f309bcbdd16",
-      createdAt: "2026-10-18 05:02:28.797588+00",
-      note: "Sweet dog",
-      photo: "",
-      isActive: true,
-      reporterId: "",
-      reporterName: "Ando",
-      reporterPhone: "2039194426",
-      size: "large",
-      petDescriptionId: "",
-      linkedSightings: []
-    }, {
-      photos: [
-        "https://tdrhuucwalyoftbzwojm.supabase.co/storage/v1/object/public/pet_photos/ai_sightings/87594fc70db086ce9c8b88a658d8e7ee6681351f37aa2062b4a3f634eafc7ac8.jpeg",
-      ],
-      name: "Louis",
-      species: "Dog",
-      lastSeenTime: "2026-10-19T16:00:58.489Z",
-      lastSeenLat: 37.3051496411616,
-      lastSeenLong: -122.022899799049,
-      breed: "German Shepherd mix",
-      gender: "Male",
-      age: 3,
-      colors: "black, tan, black and tan points",
-      collarDescription: "black collar,silver buckle,black leash attached",
-      lastSeenLocation: "10390 N Blaney Ave, Cupertino, CA",
-      features:
-        "medium-length fur, fluffy curled tail with lighter tip and underside, tan markings on legs and paws, small white patch on left hip",
-      updatedAt: "2026-10-19 04:58:52.077+00",
-      ownerId: "e866fe24-0f5a-4045-a8d8-c61bdedc4be2",
-      linkedSightingId: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-      id: "02e383fb-5e54-4129-be7d-8f7bf6f4cexc",
-      petId: "b7f449ab-bc2a-4f23-91ad-8f309bcbdd16",
-      createdAt: "2026-10-18 05:02:28.797588+00",
-      note: "",
-      photo: "",
-      isActive: true,
-      reporterId: "",
-      reporterName: "Ando",
-      reporterPhone: "2039194426",
-      size: "large",
-      petDescriptionId: "",
-      linkedSightings: []
-    }, {
-      photos: [
-        "https://tdrhuucwalyoftbzwojm.supabase.co/storage/v1/object/public/pet_photos/ai_sightings/87594fc70db086ce9c8b88a658d8e7ee6681351f37aa2062b4a3f634eafc7ac8.jpeg",
-      ],
-      name: "Louis",
-      species: "Dog",
-      lastSeenTime: "2026-10-19T16:00:58.489Z",
-      lastSeenLat: 37.3286521167393,
-      lastSeenLong: -122.053175568581,
-      breed: "German Shepherd mix",
-      gender: "Male",
-      age: 3,
-      colors: "black, tan, black and tan points",
-      collarDescription: "black collar,silver buckle,black leash attached",
-      lastSeenLocation: "10390 N Blaney Ave, Cupertino, CA",
-      features:
-        "medium-length fur, fluffy curled tail with lighter tip and underside, tan markings on legs and paws, small white patch on left hip",
-      updatedAt: "2026-10-19 04:58:52.077+00",
-      ownerId: "e866fe24-0f5a-4045-a8d8-c61bdedc4be2",
-      linkedSightingId: "02e383fb-5e54-4129-be7d-8f7bf6f4cefd",
-      id: "02e383fb-5e54-4129-be7d-8f7bf6f4cesd",
-      petId: "b7f449ab-bc2a-4f23-91ad-8f309bcbdd16",
-      createdAt: "2026-10-18 05:02:28.797588+00",
-      note: "Sweet dog",
-      photo: "",
-      isActive: true,
-      reporterId: "",
-      reporterName: "Miray",
-      reporterPhone: "2039194426",
-      size: "large",
-      petDescriptionId: "",
-      linkedSightings: []
-    }]);
 
     const { data, error } = await this.supabaseClient
       .from("sightings")
