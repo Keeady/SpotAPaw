@@ -1,34 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PetsService } from './pets.service.js';
-import { CreatePetDto } from './dto/create-pet.dto.js';
-import { UpdatePetDto } from './dto/update-pet.dto.js';
+import {
+  Controller,
+  Get,
+  UseGuards,
+} from "@nestjs/common";
+import { User } from "@supabase/supabase-js";
+import { SupabaseAuthGuard } from "../auth/supabase-auth.guard.js";
+import { CurrentUser } from "../auth/current-user.decorator.js";
+import { PetsService } from "./pets.service.js";
 
-@Controller('pets')
+@Controller("pets")
+@UseGuards(SupabaseAuthGuard)
 export class PetsController {
-  constructor(private readonly petsService: PetsService) {}
+  constructor(
+    private readonly petsService: PetsService,
+  ) {}
 
-  @Post()
-  create(@Body() createPetDto: CreatePetDto) {
-    return this.petsService.create(createPetDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.petsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.petsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePetDto: UpdatePetDto) {
-    return this.petsService.update(+id, updatePetDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.petsService.remove(+id);
+  @Get("my")
+  async getMyPets(
+    @CurrentUser("id") userId: string
+  ) {
+    return this.petsService.findByOwner(userId);
   }
 }

@@ -5,13 +5,9 @@ export async function getPosterById(
   sightingId: string | null,
 ): Promise<PostersResponse<Poster>> {
   const host = process.env.NEXT_PUBLIC_API_HOST;
-  const port = process.env.NEXT_PUBLIC_API_PORT;
   if (!host) {
     return { error: "Invalid endpoint api.", data: undefined };
   }
-
-  const portPath = port ? `:${port}` : "";
-  const path = `${host}${portPath}`;
 
   const query = new URLSearchParams();
 
@@ -19,7 +15,7 @@ export async function getPosterById(
   if (sightingId) query.set("sightingId", sightingId);
 
   try {
-    const res = await fetch(`${path}/posters?${query.toString()}`);
+    const res = await fetch(`${host}/posters?${query.toString()}`);
     if (!res.ok) {
       console.log(res)
       return { data: undefined, error: "Failed to fetch posters" };

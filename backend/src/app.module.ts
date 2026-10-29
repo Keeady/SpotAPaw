@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module.js';
 import { Poster } from './posters/entities/poster.entity.js';
 import { SightingMatch } from './sighting-matches/entities/sighting-match.entity.js';
 import { SightingMatchesModule } from './sighting-matches/sighting-matches.module.js';
+import { Pet } from './pets/entities/pet.entity.js';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { SightingMatchesModule } from './sighting-matches/sighting-matches.modul
         username: configService.getOrThrow<string>('DB_USERNAME'),
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB'),
-        entities: [AggregatedSighting, Poster, SightingMatch],
+        entities: [AggregatedSighting, Poster, SightingMatch, Pet],
         autoLoadEntities: true,
         driver: pg,
         retryAttempts: 10,
