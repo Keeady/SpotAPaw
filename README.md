@@ -19,3 +19,5 @@ Our AI compares the meaning behind descriptions, not just keywords. "Golden retr
 [App Store](https://apps.apple.com/us/app/spotapaw-lost-pet-finder/id6757455715)
 
 [Spotapaw.com](https://spotapaw.com)
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/keeady)
