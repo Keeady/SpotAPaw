@@ -15,6 +15,7 @@
     "date-fns": "^4.4.0",
     "geolib": "^4.0.0",
     "leaflet": "^1.9.4",
+    "libphonenumber-js": "^1.13.15",
     "lottie-react": "^3.1.2",
     "lucide-react": "^1.56.0",
     "next": "16.4.3",

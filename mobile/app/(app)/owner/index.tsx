@@ -12,7 +12,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Platform,
   Keyboard,
   KeyboardAvoidingView,
 } from "react-native";
@@ -28,6 +27,17 @@ import {
 } from "react-native-paper";
 import isEmail from "validator/es/lib/isEmail";
 import { useTranslation } from "react-i18next";
+
+// Design tokens shared with the web PetListRenderer (Tailwind equivalents in comments)
+const PRIMARY = "#6750A4"; // bg-[#6750A4]
+const PRIMARY_CONTAINER = "#EADDFF";
+const PRIMARY_TINT = "#F3EDF7";
+const TEXT_MUTED = "#525252"; // text-neutral-600
+const BORDER = "#E5E5E5"; // neutral-200
+const BORDER_STRONG = "#D4D4D4"; // neutral-300
+const RADIUS_CARD = 16; // rounded-2xl
+const RADIUS_PILL = 999; // rounded-full
+const MAX_WIDTH = 900; // max-w-[900px]
 
 const ProfileScreen = () => {
   const { t } = useTranslation(["owner", "translation"]);
@@ -244,6 +254,14 @@ const ProfileScreen = () => {
     setIsEditing(false);
   };
 
+  const inputProps = {
+    mode: "outlined" as const,
+    outlineColor: BORDER_STRONG,
+    activeOutlineColor: PRIMARY,
+    outlineStyle: styles.inputOutline,
+    style: styles.input,
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -253,13 +271,18 @@ const ProfileScreen = () => {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
-            <Avatar.Icon size={120} icon={"account"} style={styles.avatar} />
+            <Avatar.Icon
+              size={120}
+              icon={"account"}
+              color={PRIMARY}
+              style={styles.avatar}
+            />
             {isEditing && (
               <IconButton
                 icon="camera"
                 size={24}
                 mode="contained"
-                containerColor={theme.colors.primary}
+                containerColor={PRIMARY}
                 iconColor="#fff"
                 style={styles.cameraButton}
               />
@@ -283,6 +306,7 @@ const ProfileScreen = () => {
               <IconButton
                 icon="pencil"
                 size={20}
+                iconColor={PRIMARY}
                 onPress={() => setIsEditing(true)}
               />
             ) : null}
@@ -290,25 +314,24 @@ const ProfileScreen = () => {
 
           <View style={styles.formContainer}>
             <TextInput
+              {...inputProps}
               label={t("firstName", "First Name")}
               left={<TextInput.Icon icon="account" />}
               onChangeText={(text) => setFirstName(text)}
               value={firstName}
               placeholder={t("firstName", "First Name")}
               autoCapitalize={"none"}
-              mode="outlined"
               disabled={!isEditing}
-              style={styles.input}
             />
 
             <TextInput
+              {...inputProps}
               label={t("lastName", "Last Name")}
               left={<TextInput.Icon icon="account" />}
               onChangeText={(text) => setLastName(text)}
               value={lastName}
               placeholder={t("lastName", "Last Name")}
               autoCapitalize={"none"}
-              mode="outlined"
               disabled={!isEditing}
             />
             <View>
@@ -318,6 +341,7 @@ const ProfileScreen = () => {
                   : ""}
               </Text>
               <TextInput
+                {...inputProps}
                 error={hasEmailError}
                 label={t("email", "Email", { ns: "translation" })}
                 left={<TextInput.Icon icon="email" />}
@@ -325,7 +349,6 @@ const ProfileScreen = () => {
                 value={email}
                 placeholder="youremail@email.com"
                 autoCapitalize={"none"}
-                mode="outlined"
                 keyboardType="email-address"
                 disabled={!isEditing}
               />
@@ -347,6 +370,8 @@ const ProfileScreen = () => {
                   mode="outlined"
                   onPress={handleCancel}
                   style={[styles.button, styles.cancelButton]}
+                  labelStyle={styles.buttonLabel}
+                  textColor={PRIMARY}
                 >
                   {t("cancel", "Cancel", { ns: "translation" })}
                 </Button>
@@ -354,6 +379,9 @@ const ProfileScreen = () => {
                   mode="contained"
                   onPress={() => createContact()}
                   style={styles.button}
+                  labelStyle={styles.buttonLabel}
+                  buttonColor={PRIMARY}
+                  textColor="#fff"
                   disabled={
                     loading ||
                     disableSubmitBtn ||
@@ -367,10 +395,10 @@ const ProfileScreen = () => {
             )}
           </View>
 
-          <Surface style={styles.navigationCard} elevation={1}>
+          <Surface style={styles.navigationCard} elevation={0}>
             <TouchableOpacity
               style={styles.navigationItem}
-              activeOpacity={0.7}
+              activeOpacity={0.8}
               onPress={() => router.navigate("/(app)/owner/my-reports")}
             >
               <View style={styles.navigationContent}>
@@ -378,7 +406,7 @@ const ProfileScreen = () => {
                   <IconButton
                     icon="file-document-multiple"
                     size={28}
-                    iconColor={theme.colors.primary}
+                    iconColor={PRIMARY}
                   />
                 </View>
                 <View style={styles.navigationText}>
@@ -393,7 +421,11 @@ const ProfileScreen = () => {
                   </Text>
                 </View>
               </View>
-              <IconButton icon="chevron-right" size={24} />
+              <IconButton
+                icon="chevron-right"
+                size={24}
+                iconColor={TEXT_MUTED}
+              />
             </TouchableOpacity>
           </Surface>
           <TextInput
@@ -412,52 +444,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  header: {
-    backgroundColor: "#714ea9ff",
-    paddingVertical: 16,
-    paddingTop: Platform.OS === "ios" ? 50 : 16,
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "#BBDEFB",
-    marginTop: 4,
-  },
   profileHeader: {
     alignItems: "center",
     paddingTop: 10,
     paddingBottom: 10,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
   },
   avatarContainer: {
     position: "relative",
     marginBottom: 10,
   },
   avatar: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: PRIMARY_CONTAINER,
   },
   cameraButton: {
     position: "absolute",
     bottom: 0,
     right: 0,
-    elevation: 4,
   },
   name: {
     fontWeight: "600",
     marginTop: 8,
   },
   subtitle: {
-    color: "#666",
+    color: TEXT_MUTED,
     marginTop: 4,
   },
   content: {
-    padding: 16,
+    width: "100%",
+    maxWidth: MAX_WIDTH,
+    alignSelf: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 16,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -468,22 +485,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   formContainer: {
-    borderRadius: 16,
     marginBottom: 8,
   },
   input: {
     marginBottom: 16,
+    backgroundColor: "#fff",
+  },
+  inputOutline: {
+    borderRadius: RADIUS_CARD,
   },
   phoneContainer: {
     gap: 12,
     marginBottom: 16,
-  },
-  countryCode: {
-    flex: 1,
-    maxWidth: 110,
-  },
-  phoneNumber: {
-    flex: 2,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -494,12 +507,21 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    borderRadius: RADIUS_PILL,
+  },
+  buttonLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    letterSpacing: 0,
   },
   cancelButton: {
-    borderColor: "#ddd",
+    borderColor: BORDER_STRONG,
   },
   navigationCard: {
-    borderRadius: 16,
+    borderRadius: RADIUS_CARD,
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: "#fff",
     overflow: "hidden",
   },
   navigationItem: {
@@ -517,7 +539,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: PRIMARY_TINT,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -529,7 +551,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   navigationSubtitle: {
-    color: "#666",
+    color: TEXT_MUTED,
     marginTop: 2,
   },
 });

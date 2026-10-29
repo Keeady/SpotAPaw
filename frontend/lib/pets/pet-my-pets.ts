@@ -26,8 +26,8 @@ export async function getMyPets(): Promise<PetsResponse<Pet[]>> {
 
   if (!response.ok) {
     return {
-      error: "Not authenticated",
-      errorCode: "NOT_AUTHENTICATED",
+      error: "Failed to fetch pets",
+      errorCode: "",
       data: undefined,
     };
   }

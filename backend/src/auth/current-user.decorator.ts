@@ -3,7 +3,11 @@ import {
   ExecutionContext,
 } from "@nestjs/common";
 
-import { AuthenticatedRequest } from "./types/authenticated-request.type.js";
+import { AuthUser } from "./auth-user.type.js";
+
+type AuthenticatedRequest = Request & {
+  user: AuthUser;
+};
 
 export const CurrentUser = createParamDecorator(
   (
