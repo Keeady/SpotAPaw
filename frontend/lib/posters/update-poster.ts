@@ -12,16 +12,12 @@ export async function updatePoster(
   changes: PosterChanges,
 ): Promise<PostersResponse<PosterUpdate>> {
   const host = process.env.NEXT_PUBLIC_API_HOST;
-  const port = process.env.NEXT_PUBLIC_API_PORT;
   if (!host) {
     return { error: "Invalid endpoint api.", data: undefined };
   }
 
-  const portPath = port ? `:${port}` : "";
-  const path = `${host}${portPath}`;
-
   try {
-    const res = await fetch(`${path}/posters/${id}`, {
+    const res = await fetch(`${host}/posters/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
