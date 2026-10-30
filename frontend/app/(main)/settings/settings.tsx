@@ -1,5 +1,6 @@
 import PetListRenderer from "@/app/components/pets/pet-list-renderer";
 import UserProfile from "@/app/components/profile/user-profile";
+import SettingsList from "@/app/components/settings/settings-list";
 import SettingsRenderer from "@/app/components/settings/settings-renderer";
 import { getMyPets } from "@/lib/pets/pet-my-pets";
 import { getMyProfile } from "@/lib/profile/get-profile";
@@ -7,7 +8,7 @@ import { getMySettings } from "@/lib/settings/get-settings";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
-export default async function Settings() {
+export default async function SettingsPage() {
   const { data, error, errorCode } = await getMySettings();
 
   if (!data || error) {
@@ -26,7 +27,7 @@ export default async function Settings() {
 
   return (
     <div className="flex w-full grow flex-col px-3 items-start justify-start text-start">
-      <SettingsRenderer settings={data} />
+      <SettingsList settings={data} />
     </div>
   );
 }
