@@ -34,8 +34,8 @@ export default function AccountSection({
         icon={Mail}
         tone="sky"
         title="Contact Us"
-        description="Get in touch or send us your feedback!"
-        onClick={() => setOpenDialog("contact")}
+        description="Get in touch or send us your feedback to spotapaw@spotapaw.com!"
+        // onClick={() => setOpenDialog("contact")}
       />
 
       <DeleteAccountDialog

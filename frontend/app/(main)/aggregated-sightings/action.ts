@@ -2,6 +2,7 @@
 
 import { SightingLocation } from "@/app/components/location/location-types";
 import { SIGHTING_LOCATION_KEY } from "@/app/components/location/location-utils";
+import { createClient } from "@/lib/auth/supabase/server";
 import { cookies } from "next/headers";
 
 export async function saveSearchLocation(location: SightingLocation) {
@@ -60,5 +61,16 @@ export async function resetSavedSearchLocation() {
     });
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function logOut() {
+  const supabase = await createClient();
+  try {
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    
   }
 }

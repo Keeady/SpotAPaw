@@ -5,6 +5,7 @@ export type Profile = {
     email?: string;
     phone?: string;
     countryCode?: string;
+    deleteAccount?: boolean;
 }
 
 type ProfileSuccessResponse<T> = {

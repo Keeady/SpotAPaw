@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'owner' })
@@ -29,7 +30,7 @@ export class User {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @CreateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
   @DeleteDateColumn({
