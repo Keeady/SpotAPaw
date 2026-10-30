@@ -277,6 +277,7 @@ export default function UserProfileRenderer({
                 disabled={!isEditing}
                 className="w-40 shrink-0 truncate rounded-2xl border border-neutral-300 bg-white px-3 py-3 text-sm text-neutral-900 outline-none transition-colors focus:border-[#6750A4] focus:ring-1 focus:ring-[#6750A4] disabled:cursor-not-allowed disabled:bg-neutral-50 disabled:text-neutral-500"
               >
+                <option value="">Select country</option>
                 {countries.map((c) => (
                   <option key={c.code} value={c.code}>
                     {c.label}
@@ -314,7 +315,6 @@ export default function UserProfileRenderer({
             ) : null}
           </div>
 
-          {/* Honeypot: hidden from people, tempting to bots */}
           <input
             type="text"
             name="extra_info"
