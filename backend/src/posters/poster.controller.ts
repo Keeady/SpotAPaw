@@ -49,17 +49,7 @@ export class PosterController {
     @Param() params: PosterParamsDto,
     @Body() body: UpdatePosterDto,
   ) {
-    // Explicitly select editable fields and omit undefined values.
-    const changes = Object.fromEntries(
-      Object.entries({
-        description: body.description,
-        cta: body.cta,
-        contactName: body.contactName,
-        contactPhone: body.contactPhone,
-      }).filter(([, value]) => value !== undefined),
-    ) as UpdatePosterDto;
-
-    if (Object.keys(changes).length === 0) {
+    if (Object.keys(body).length === 0) {
       throw new BadRequestException(
         'Provide at least one editable field.',
       );
@@ -67,7 +57,7 @@ export class PosterController {
 
     const poster = await this.posterService.updatePoster(
       params.posterId,
-      changes,
+      body,
     );
 
     if (!poster) {

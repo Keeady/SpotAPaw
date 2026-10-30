@@ -20,7 +20,7 @@ export async function updatePoster(
     const res = await fetch(`${host}/posters/${id}`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       credentials: "include",
       body: JSON.stringify(changes),

@@ -8,8 +8,8 @@ import {
 
 @Entity({ name: 'owner' })
 export class User {
-  @PrimaryColumn()
-  id!: number;
+  @PrimaryColumn({ name: 'owner_id' })
+  ownerId: string;
 
   @Column({ type: 'text' })
   firstname: string;
@@ -23,8 +23,8 @@ export class User {
   @Column({ type: 'text' })
   phone: string;
 
-  @Column({ type: 'text' })
-  country_code: string;
+  @Column({ type: 'text', name: 'country_code' })
+  countryCode: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

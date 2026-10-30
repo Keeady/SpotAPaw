@@ -19,7 +19,6 @@ export async function MatchesList({
   }
 
   const { data } = await getMatches(sightingId);
-  console.log(data);
 
   if (!data || data.length === 0) {
     return (

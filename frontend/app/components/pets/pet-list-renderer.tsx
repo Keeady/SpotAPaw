@@ -7,7 +7,7 @@ export default function PetListRenderer({ pets }: { pets: Pet[] }) {
   const noop = () => void 0;
 
   return (
-    <ul className="flex flex-col">
+    <ul className="flex flex-col text-start">
       {pets.map((pet) => (
         <li key={pet.id}>
           <PetProfileCard

@@ -147,7 +147,6 @@ export class SightingMatchesService {
       qb.andWhere('m.score >= :minScore', { minScore: opts.minScore });
     }
     const matches = await qb.getMany();
-    console.log("matches", matches);
 
     const candidates = await this.sightings.findByIds(
       matches.map((m) => m.candidateSightingId),

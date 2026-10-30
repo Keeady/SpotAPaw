@@ -173,6 +173,7 @@ export default function PhoneNumberInput({
             keyboardType="phone-pad"
             error={hasPhoneError || !!showInvalidPhoneError}
             disabled={disabled}
+            style={{backgroundColor: "#fff",}}
           />
         </View>
       </View>
