@@ -63,7 +63,7 @@ export function SightingLocationManager({
     navigator.permissions
       .query({ name: "geolocation" })
       .then((s) => {
-        if (s.state) {
+        if (s.state === "granted") {
           refreshPermission();
         }
       })

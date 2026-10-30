@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LogIn, UserRoundPlus } from "lucide-react";
+import { ExternalLink, LogIn, UserRoundPlus } from "lucide-react";
 
 export default function Home() {
   return (
@@ -81,10 +81,35 @@ export default function Home() {
         </Link>
 
         <p className="mt-4 text-center text-sm">
-          {" "}
-          By using <Link href="/about">SpotAPaw,</Link> you agree to our{" "}
-          <Link href="/privacy">Privacy Policy</Link> and{" "}
-          <Link href="/terms">Terms of Service</Link>
+          By using{" "}
+          <Link
+            href="https://www.restlessmoonstudio.com/products/spotapaw"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6750A4] underline-offset-4 transition-colors hover:text-[#5a4590] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6750A4]"
+          >
+            SpotAPaw <ExternalLink className="size-4 shrink-0" aria-hidden />,
+          </Link>{" "}
+          you agree to our{" "}
+          <Link
+            href="https://www.restlessmoonstudio.com/products/spotapaw/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6750A4] underline-offset-4 transition-colors hover:text-[#5a4590] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6750A4]"
+          >
+            Privacy Policy{" "}
+            <ExternalLink className="size-4 shrink-0" aria-hidden />
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="https://www.restlessmoonstudio.com/products/spotapaw/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6750A4] underline-offset-4 transition-colors hover:text-[#5a4590] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6750A4]"
+          >
+            Terms of Service{" "}
+            <ExternalLink className="size-4 shrink-0" aria-hidden />
+          </Link>
         </p>
       </section>
     </main>
