@@ -2,7 +2,7 @@ import { createClient } from "../auth/supabase/client";
 import { Settings, SettingsResponse } from "./settings";
 
 export async function updateSettings(
-  changes: Settings,
+  changes: Partial<Settings>,
 ): Promise<SettingsResponse<Settings>> {
   const supabase = createClient();
   const {

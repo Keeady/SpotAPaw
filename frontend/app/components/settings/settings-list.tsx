@@ -1,13 +1,19 @@
 "use client";
 
-import { Profile } from "@/lib/profile/profile";
-import { updateMyProfile } from "@/lib/profile/update-profile";
 import { useState } from "react";
-import { DEFAULT_PREFERENCES, Settings } from "@/lib/settings/settings";
+import { Settings } from "@/lib/settings/settings";
 import SettingsRenderer from "./settings-renderer";
 import { updateSettings } from "@/lib/settings/update-settings";
+import { SightingLocation } from "../location/location-types";
+import { resetSavedSearchLocation } from "@/app/(main)/aggregated-sightings/action";
 
-export default function SettingsList({ settings }: { settings: Settings }) {
+export default function SettingsList({
+  settings,
+  savedLocationCookie,
+}: {
+  settings: Settings;
+  savedLocationCookie: SightingLocation;
+}) {
   const [error, setError] = useState("");
 
   let data = settings;
@@ -33,12 +39,18 @@ export default function SettingsList({ settings }: { settings: Settings }) {
         onPreferencesChange={onPreferencesChange}
         onDeleteAccount={noop}
         onSendMessage={noop}
-        onResetLocation={noop}
         links={{
           about: "https://www.restlessmoonstudio.com/products/spotapaw",
-          privacy: "https://www.restlessmoonstudio.com/products/spotapaw/privacy",
+          privacy:
+            "https://www.restlessmoonstudio.com/products/spotapaw/privacy",
           terms: "https://www.restlessmoonstudio.com/products/spotapaw/terms",
         }}
+        fallbackLocation={{
+          latitude: data.savedLatitude,
+          longitude: data.savedLongitude,
+        }}
+        savedLocationCookie={savedLocationCookie}
+        onResetLocation={resetSavedSearchLocation}
       />
 
       <div className="flex flex-1 flex-col self-start self-stretch py-2 mb-4">

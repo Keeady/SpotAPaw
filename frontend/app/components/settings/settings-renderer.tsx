@@ -10,6 +10,7 @@ import LocationSection, {
 import PreferencesSection from "@/app/components/settings/preference-section";
 import { DEFAULT_PREFERENCES, Settings } from "@/lib/settings/settings";
 import { useEffect, useState } from "react";
+import { SightingLocation } from "../location/location-types";
 
 type SettingsPageProps = {
   settings: Settings;
@@ -19,11 +20,11 @@ type SettingsPageProps = {
   /** Manually selected coordinates, used to show a city when device location is off. */
   fallbackLocation?: Coordinates;
   /** Cookie that holds the manually selected location (default: "saved_location"). */
-  savedLocationCookie?: string;
+  savedLocationCookie?: SightingLocation;
   onResetLocation?: () => void;
   initialPreferences?: Partial<Settings>;
   /** Persist preferences (API call, cookie, localStorage...). */
-  onPreferencesChange?: (preferences: Settings) => void;
+  onPreferencesChange: (preferences: Settings) => void;
 };
 
 export default function SettingsRenderer({

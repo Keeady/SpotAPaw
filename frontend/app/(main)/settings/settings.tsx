@@ -1,10 +1,14 @@
 import SettingsList from "@/app/components/settings/settings-list";
 import { getMySettings } from "@/lib/settings/get-settings";
 import { DEFAULT_PREFERENCES } from "@/lib/settings/settings";
+import {
+  getSavedSearchLocation,
+} from "../aggregated-sightings/action";
 
 export default async function SettingsPage() {
   const { data, error, errorCode } = await getMySettings();
-  console.log(data, error, errorCode)
+
+  const savedLocation = await getSavedSearchLocation();
 
   if (!data && error && errorCode !== "NOT_AUTHENTICATED") {
     const message = "Something went wrong.";
@@ -19,7 +23,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex w-full grow flex-col px-3 items-start justify-start text-start">
-      <SettingsList settings={data || DEFAULT_PREFERENCES} />
+      <SettingsList
+        settings={data || DEFAULT_PREFERENCES}
+        savedLocationCookie={savedLocation}
+      />
     </div>
   );
 }

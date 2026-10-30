@@ -2,7 +2,7 @@
 
 import { Crosshair, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import Divider from "../divider";
 import type { SightingLocation } from "./location-types";
 
@@ -42,7 +42,10 @@ export function SightingLocationManager({
     (navigator.geolocation.getCurrentPosition((pos) => {
       setLocating(false);
       if (pos) {
-        setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+        setLocation({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
         onNewLocationSelected({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
@@ -54,6 +57,21 @@ export function SightingLocationManager({
       () => {
         setError("Failed to get location. Please try again.");
       });
+  }, []);
+
+  const getCurrentPermission = useCallback(() => {
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((s) => {
+        if (s.state) {
+          refreshPermission();
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    getCurrentPermission();
   }, []);
 
   return (

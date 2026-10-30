@@ -3,16 +3,22 @@
 import { LocateFixed, MapPin, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button, SettingsItem, SettingsSection } from "./utils";
+import { SightingLocation } from "../location/location-types";
 
 export type Coordinates = { latitude: number; longitude: number };
 
-type LocationPermission = "checking" | "granted" | "denied" | "prompt" | "unsupported";
+type LocationPermission =
+  | "checking"
+  | "granted"
+  | "denied"
+  | "prompt"
+  | "unsupported";
 
 type LocationSectionProps = {
   /** Manually selected / last known coordinates, used when device location is off. */
-  fallbackLocation?: Coordinates;
+  fallbackLocation?: SightingLocation;
   /** Name of the cookie that stores the manually selected location. */
-  savedLocationCookie?: string;
+  savedLocationCookie?: SightingLocation;
   /** Called after the saved-location cookie has been cleared. */
   onReset?: () => void;
   /** Override the default reverse geocoder (coordinates -> "City, Region"). */
@@ -41,7 +47,7 @@ async function defaultReverseGeocode(
 
 export default function LocationSection({
   fallbackLocation,
-  savedLocationCookie = "saved_location",
+  savedLocationCookie,
   onReset,
   reverseGeocode,
 }: LocationSectionProps) {
@@ -90,8 +96,9 @@ export default function LocationSection({
   }, []);
 
   // Resolve the city name when we are not using the device location.
-  const latitude = fallbackLocation?.latitude;
-  const longitude = fallbackLocation?.longitude;
+  const latitude = savedLocationCookie?.latitude ?? fallbackLocation?.latitude;
+  const longitude =
+    savedLocationCookie?.longitude ?? fallbackLocation?.longitude;
   useEffect(() => {
     if (permission === "checking" || permission === "granted") return;
     if (latitude === undefined || longitude === undefined) return;
@@ -135,7 +142,6 @@ export default function LocationSection({
   };
 
   const handleReset = () => {
-    document.cookie = `${savedLocationCookie}=; Max-Age=0; path=/; SameSite=Lax`;
     onReset?.();
     setResetDone(true);
   };
@@ -180,12 +186,9 @@ export default function LocationSection({
             <span className="text-sm font-medium text-emerald-600">
               Granted
             </span>
-          ) : permission === "checking" || permission === "unsupported" ? null : (
-            <Button
-              size="sm"
-              onClick={requestPermission}
-              disabled={requesting}
-            >
+          ) : permission === "checking" ||
+            permission === "unsupported" ? null : (
+            <Button size="sm" onClick={requestPermission} disabled={requesting}>
               {requesting ? "Requesting…" : "Request"}
             </Button>
           )
@@ -198,23 +201,24 @@ export default function LocationSection({
         title="Current Location"
         description={currentLocation}
       />
-
-      <SettingsItem
-        icon={RotateCcw}
-        tone="amber"
-        title="Reset Saved Location"
-        description="Remove your manually selected location"
-        trailing={
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={handleReset}
-            disabled={resetDone}
-          >
-            {resetDone ? "Cleared" : "Reset"}
-          </Button>
-        }
-      />
+      {savedLocationCookie && (
+        <SettingsItem
+          icon={RotateCcw}
+          tone="amber"
+          title="Reset Saved Location"
+          description="Remove your manually selected location"
+          trailing={
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleReset}
+              disabled={resetDone}
+            >
+              {resetDone ? "Cleared" : "Reset"}
+            </Button>
+          }
+        />
+      )}
     </SettingsSection>
   );
 }
