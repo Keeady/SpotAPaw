@@ -1,10 +1,8 @@
-import { connection } from "next/server";
-import { createClient } from "../auth/supabase/server";
+import { createClient } from "../auth/supabase/client";
 import { Pet, PetsResponse } from "./pet";
 
 export async function getMyPets(): Promise<PetsResponse<Pet[]>> {
-  await connection();
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { session },
     error,

@@ -8,8 +8,8 @@ import LocationSection, {
   Coordinates,
 } from "@/app/components/settings/location-section";
 import PreferencesSection from "@/app/components/settings/preference-section";
-import { Settings } from "@/lib/settings/settings";
-import { useState } from "react";
+import { DEFAULT_PREFERENCES, Settings } from "@/lib/settings/settings";
+import { useEffect, useState } from "react";
 
 type SettingsPageProps = {
   settings: Settings;
@@ -26,17 +26,8 @@ type SettingsPageProps = {
   onPreferencesChange?: (preferences: Settings) => void;
 };
 
-const DEFAULT_PREFERENCES = {
-  isLocationEnabled: false,
-  savedLongitude: 0,
-  savedLatitude: 0,
-  isAIenabled: false,
-  language: "EN",
-  radius: 25,
-  isNotificationEnabled: false,
-};
-
 export default function SettingsRenderer({
+  settings,
   links,
   onDeleteAccount,
   onSendMessage,
@@ -50,6 +41,10 @@ export default function SettingsRenderer({
     ...DEFAULT_PREFERENCES,
     ...initialPreferences,
   });
+
+  useEffect(() => {
+    setPreferences(settings);
+  }, [settings]);
 
   const updatePreferences = (patch: Partial<Settings>) => {
     const next = { ...preferences, ...patch };

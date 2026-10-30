@@ -9,7 +9,15 @@ export class SettingsService {
   }
 
   findAll() {
-    return {};
+    return {
+      isLocationEnabled: false,
+      savedLongitude: 0,
+      savedLatitude: 0,
+      isAIenabled: true,
+      language: 'EN',
+      radius: 5,
+      isNotificationEnabled: true,
+    };
   }
 
   findOne(id: number) {

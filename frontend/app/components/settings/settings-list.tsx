@@ -3,7 +3,7 @@
 import { Profile } from "@/lib/profile/profile";
 import { updateMyProfile } from "@/lib/profile/update-profile";
 import { useState } from "react";
-import { Settings } from "@/lib/settings/settings";
+import { DEFAULT_PREFERENCES, Settings } from "@/lib/settings/settings";
 import SettingsRenderer from "./settings-renderer";
 import { updateSettings } from "@/lib/settings/update-settings";
 

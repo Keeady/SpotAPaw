@@ -1,10 +1,8 @@
-import { connection } from "next/server";
-import { createClient } from "../auth/supabase/server";
 import { Profile, ProfileResponse } from "./profile";
+import { createClient } from "../auth/supabase/client";
 
 export async function getMyProfile(): Promise<ProfileResponse<Profile>> {
-  await connection();
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { session },
     error,

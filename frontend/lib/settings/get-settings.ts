@@ -1,27 +1,21 @@
-import { connection } from "next/server";
-import { createClient } from "../auth/supabase/server";
 import { Settings, SettingsResponse } from "./settings";
+import { createClient } from "../auth/supabase/client";
 
 export async function getMySettings(): Promise<SettingsResponse<Settings>> {
-  await connection();
-  const supabase = await createClient();
+  const supabase = createClient();
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession();
 
-  if (error || !session) {
-    return {
-      error: "Not authenticated",
-      errorCode: "NOT_AUTHENTICATED",
-      data: undefined,
-    };
+  let headers = {};
+  if (session) {
+    headers = {
+      Authorization: `Bearer ${session.access_token}`,
+    }
   }
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/settings`, {
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-    },
+    headers,
   });
 
   if (!response.ok) {
@@ -32,10 +26,10 @@ export async function getMySettings(): Promise<SettingsResponse<Settings>> {
     };
   }
 
-  const profile = await response.json();
+  const settings = await response.json();
   return {
     error: undefined,
     errorCode: undefined,
-    data: profile,
+    data: settings,
   };
 }
