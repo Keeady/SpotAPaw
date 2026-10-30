@@ -17,6 +17,7 @@ import { SightingMatch } from './sighting-matches/entities/sighting-match.entity
 import { SightingMatchesModule } from './sighting-matches/sighting-matches.module.js';
 import { Pet } from './pets/entities/pet.entity.js';
 import { ProfileModule } from './profiles/profile.module.js';
+import { SettingsModule } from './settings/settings.module.js';
 
 @Module({
   imports: [
@@ -46,7 +47,9 @@ import { ProfileModule } from './profiles/profile.module.js';
     UsersModule,
     PosterModule,
     SightingMatchesModule,
-    ProfileModule
+    ProfileModule,
+    SettingsModule,
+    SettingsModule
   ],
   controllers: [AppController],
   providers: [AppService],

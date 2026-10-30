@@ -2,6 +2,7 @@
 
 import { SightingLocation } from "@/app/components/location/location-types";
 import { SIGHTING_LOCATION_KEY } from "@/app/components/location/location-utils";
+import { createClient } from "@/lib/auth/supabase/server";
 import { cookies } from "next/headers";
 
 export async function saveSearchLocation(location: SightingLocation) {
@@ -40,10 +41,36 @@ export async function getSavedSearchLocation() {
   try {
     const cookieStore = await cookies();
     const savedLocation = cookieStore.get(SIGHTING_LOCATION_KEY);
-    if (savedLocation) {
+    if (savedLocation?.value && savedLocation.value.length > 0) {
       return JSON.parse(savedLocation.value);
     }
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function resetSavedSearchLocation() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(SIGHTING_LOCATION_KEY, "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function logOut() {
+  const supabase = await createClient();
+  try {
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    
   }
 }

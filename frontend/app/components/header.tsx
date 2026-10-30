@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogIn, LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { AuthHandler } from "@/lib/auth/auth";
+import { logOut } from "../(main)/aggregated-sightings/action";
 
 type HeaderProps = {
   isAuthenticated?: boolean;
@@ -29,11 +30,7 @@ export default function Header({
   const [open, setOpen] = useState(false);
 
   const onLogout = useCallback(async () => {
-    const authHandler = new AuthHandler();
-    await authHandler.signOut().catch((error) => {
-      console.log(`Sign out failed: ${error}`);
-    });
-
+    await logOut();
     router.replace("/");
   }, []);
   // Close the mobile menu on route change

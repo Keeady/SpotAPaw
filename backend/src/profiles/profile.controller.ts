@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Patch,
   UseGuards,
@@ -44,5 +45,10 @@ export class ProfileController {
     }
 
     return this.profileService.updateProfile(user.id, body);
+  }
+
+  @Delete()
+  async deleteProfile(@CurrentUser() user: AuthUser) {
+    return this.profileService.deleteProfile(user.id);
   }
 }

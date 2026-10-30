@@ -60,10 +60,13 @@ export class ProfileService {
     if (existingUser) {
       response = await this.userRepository.update({ ownerId: userId }, changes);
       if (response.affected === 0) {
-        throw new NotFoundException('Poster not found.'); 
+        throw new NotFoundException('Profile not found.');
       }
     } else {
-      response = await this.userRepository.insert({ ownerId: userId, ...changes });
+      response = await this.userRepository.insert({
+        ownerId: userId,
+        ...changes,
+      });
       if (response.identifiers.length === 0) {
         throw new InternalServerErrorException();
       }
@@ -72,5 +75,25 @@ export class ProfileService {
     return this.userRepository.findOneOrFail({
       where: { ownerId: userId },
     });
+  }
+
+  async deleteProfile(userId: string): Promise<void> {
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        ownerId: userId,
+      },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('Profile not found.');
+    }
+
+    const response = await this.userRepository.update(
+      { ownerId: userId },
+      { markedForDeletion: true },
+    );
+    if (response.affected === 0) {
+      throw new NotFoundException('Profile not found.');
+    }
   }
 }
