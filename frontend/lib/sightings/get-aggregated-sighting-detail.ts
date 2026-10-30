@@ -28,7 +28,6 @@ export async function getAggregatedSightingById({
       `${host}/aggregated-sightings/${aggregatedSightingId}?linked_sighting_id=${linkedSightingId}`,
     );
     if (!res.ok) {
-      console.log(res);
       return {
         data: undefined,
         error: "Failed to fetch aggregated sighting detail",

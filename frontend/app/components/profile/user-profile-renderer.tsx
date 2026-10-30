@@ -101,7 +101,7 @@ export default function UserProfileRenderer({
   }, [form.email]);
 
   const phoneValid =
-    form.phone.trim() !== "" && isValidPhoneNumber(form.phone, form.countryCode as CountryCode);
+    form.phone && form.phone.trim() !== "" && isValidPhoneNumber(form.phone || "", form.countryCode as CountryCode || "");
   const showPhoneError = phoneTouched && !phoneValid;
 
   const dirty =
@@ -119,8 +119,13 @@ export default function UserProfileRenderer({
   const handlePhoneChange = (raw: string) => {
     // Only re-format while typing forward so backspacing through
     // punctuation doesn't get undone by the formatter.
+    let length = 0
+    if (form.phone) {
+       length = form.phone.length
+    }
+
     const next =
-      raw.length > form.phone.length
+      raw.length > length
         ? new AsYouType(form.countryCode as CountryCode).input(raw)
         : raw;
     update("phone", next);
@@ -140,7 +145,7 @@ export default function UserProfileRenderer({
 
     setPhoneTouched(true);
     if (!phoneValid) return;
-    if (!isEmail(form.email)) {
+    if (form.email &&!isEmail(form.email)) {
       setEmailError(true);
       return;
     }

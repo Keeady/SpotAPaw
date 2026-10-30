@@ -1,13 +1,14 @@
 import { Profile, ProfileResponse } from "./profile";
 import { createClient } from "../auth/supabase/client";
 
-export async function updateMyProfile(changes: Profile): Promise<ProfileResponse<Profile>> {
+export async function updateMyProfile(
+  changes: Profile,
+): Promise<ProfileResponse<Profile>> {
   const supabase = createClient();
   const {
     data: { session },
     error,
   } = await supabase.auth.getSession();
-  console.log(error, session)
 
   if (error || !session) {
     return {
@@ -20,10 +21,17 @@ export async function updateMyProfile(changes: Profile): Promise<ProfileResponse
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/profile`, {
     method: "PATCH",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${session.access_token}`,
     },
     credentials: "include",
-      body: JSON.stringify(changes),
+    body: JSON.stringify({
+      firstname: changes.firstname,
+      lastname: changes.lastname,
+      email: changes.email,
+      countryCode: changes.countryCode,
+      phone: changes.phone
+    }),
   });
 
   if (!response.ok) {

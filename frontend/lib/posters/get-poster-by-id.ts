@@ -17,11 +17,9 @@ export async function getPosterById(
   try {
     const res = await fetch(`${host}/posters?${query.toString()}`);
     if (!res.ok) {
-      console.log(res)
       return { data: undefined, error: "Failed to fetch posters" };
     }
     const data = await res.json();
-    console.log(data);
 
     return { data, error: undefined };
   } catch (error) {

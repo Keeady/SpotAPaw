@@ -1,10 +1,10 @@
 export type Profile = {
     ownerId: string;
-    firstname: string;
-    lastname: string;
-    email: string;
-    phone: string;
-    countryCode: string;
+    firstname?: string;
+    lastname?: string;
+    email?: string;
+    phone?: string;
+    countryCode?: string;
 }
 
 type ProfileSuccessResponse<T> = {

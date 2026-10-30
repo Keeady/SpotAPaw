@@ -1,6 +1,8 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,7 +27,7 @@ export class ProfileService {
     const changes: Partial<User> = {};
 
     if (dto.countryCode !== undefined) {
-      changes.country_code = dto.countryCode;
+      changes.countryCode = dto.countryCode;
     }
 
     if (dto.email !== undefined) {
@@ -54,10 +56,17 @@ export class ProfileService {
       },
     });
 
+    let response;
     if (existingUser) {
-      await this.userRepository.update({ ownerId: userId }, changes);
+      response = await this.userRepository.update({ ownerId: userId }, changes);
+      if (response.affected === 0) {
+        throw new NotFoundException('Poster not found.'); 
+      }
     } else {
-      await this.userRepository.insert({ ownerId: userId, ...changes });
+      response = await this.userRepository.insert({ ownerId: userId, ...changes });
+      if (response.identifiers.length === 0) {
+        throw new InternalServerErrorException();
+      }
     }
 
     return this.userRepository.findOneOrFail({

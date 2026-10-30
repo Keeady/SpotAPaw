@@ -23,8 +23,8 @@ export class User {
   @Column({ type: 'text' })
   phone: string;
 
-  @Column({ type: 'text' })
-  country_code: string;
+  @Column({ type: 'text', name: 'country_code' })
+  countryCode: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

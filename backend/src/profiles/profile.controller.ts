@@ -39,20 +39,10 @@ export class ProfileController {
     @CurrentUser() user: AuthUser,
     @Body() body: UpdateProfileDto,
   ) {
-    const changes = Object.fromEntries(
-      Object.entries({
-        firstname: body.firstname,
-        lastname: body.lastname,
-        email: body.email,
-        countryCode: body.countryCode,
-        phone: body.phone,
-      }).filter(([, value]) => value !== undefined),
-    ) as UpdateProfileDto;
-
-    if (Object.keys(changes).length === 0) {
+    if (Object.keys(body).length === 0) {
       throw new BadRequestException('Provide at least one editable field.');
     }
 
-    return this.profileService.updateProfile(user.id, changes);
+    return this.profileService.updateProfile(user.id, body);
   }
 }
