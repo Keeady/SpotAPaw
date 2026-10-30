@@ -138,7 +138,6 @@ export default function PetProfileCard({
   const GenderIcon = genderIcon(gender);
   const colorList = toColorList(colors);
   const hasPhotos = !!photos && photos.length > 0;
-  const hideCta = true;
 
   return (
     <div className="p-4 pb-8">
@@ -236,61 +235,47 @@ export default function PetProfileCard({
         </div>
 
         {/* CTA row */}
-        {!hideCta && (
-          <div className="flex flex-col items-stretch gap-2 border-t border-neutral-200 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:px-5">
-            {/* Primary action depends on status */}
-            {status === "lost" && (
-              <button
-                type="button"
-                className={buttonPrimary}
-                onClick={onPetFound}
-              >
-                <Check className="size-4" />
-                Report Pet Found
-              </button>
-            )}
-            {status === "safe" && (
-              <button
-                type="button"
-                className={buttonPrimary}
-                onClick={onPetLost}
-              >
-                <TriangleAlert className="size-4" />
-                Report Lost Pet
-              </button>
-            )}
+        <div className="flex flex-col items-stretch gap-2 border-t border-neutral-200 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:px-5">
+          {/* Primary action depends on status */}
+          {status === "lost" && (
+            <button
+              type="button"
+              className={buttonPrimary}
+              onClick={onPetFound}
+            >
+              <Check className="size-4" />
+              Report Pet Found
+            </button>
+          )}
+          {status === "safe" && (
+            <button type="button" className={buttonPrimary} onClick={onPetLost}>
+              <TriangleAlert className="size-4" />
+              Report Lost Pet
+            </button>
+          )}
 
-            {/* Secondary actions */}
-            {status === "lost" && (
-              <button
-                type="button"
-                className={buttonOutlined}
-                onClick={viewPetSightings}
-              >
-                <MapPinned className="size-4" />
-                View Pet Sightings
-              </button>
-            )}
+          {/* Secondary actions */}
+          {status === "lost" && (
             <button
               type="button"
               className={buttonOutlined}
-              onClick={onEditPet}
+              onClick={viewPetSightings}
             >
-              <Pencil className="size-4" />
-              Edit
+              <MapPinned className="size-4" />
+              View Pet Sightings
             </button>
+          )}
+          <button type="button" className={buttonOutlined} onClick={onEditPet}>
+            <Pencil className="size-4" />
+            Edit
+          </button>
 
-            {/* Destructive action */}
-            <button
-              type="button"
-              className={buttonDanger}
-              onClick={onDeletePet}
-            >
-              <Trash2 className="size-4" />
-              Delete
-            </button>
-          </div>
-        )}
+          {/* Destructive action */}
+          <button type="button" className={buttonDanger} onClick={onDeletePet}>
+            <Trash2 className="size-4" />
+            Delete
+          </button>
+        </div>
       </article>
     </div>
   );
