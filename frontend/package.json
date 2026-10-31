@@ -12,6 +12,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
+    "@vercel/analytics": "^2.0.1",
     "date-fns": "^4.4.0",
     "geolib": "^4.0.0",
     "leaflet": "^1.9.4",
