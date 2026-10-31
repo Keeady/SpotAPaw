@@ -5,12 +5,9 @@ export async function updateSettings(
   changes: Partial<Settings>,
 ): Promise<SettingsResponse<Settings>> {
   const supabase = createClient();
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+  const {data: {session}} = await supabase.auth.getSession();
 
-  if (error || !session) {
+  if (!session) {
     return {
       error: "Not authenticated",
       errorCode: "NOT_AUTHENTICATED",

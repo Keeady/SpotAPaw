@@ -1,4 +1,5 @@
 import { Profile, ProfileResponse } from "./profile";
+import { getCurrentSession } from "../auth/action";
 import { createClient } from "../auth/supabase/client";
 
 export async function updateMyProfile(
@@ -7,10 +8,9 @@ export async function updateMyProfile(
   const supabase = createClient();
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession();
 
-  if (error || !session) {
+  if (!session) {
     return {
       error: "Not authenticated",
       errorCode: "NOT_AUTHENTICATED",
@@ -30,7 +30,7 @@ export async function updateMyProfile(
       lastname: changes.lastname,
       email: changes.email,
       countryCode: changes.countryCode,
-      phone: changes.phone
+      phone: changes.phone,
     }),
   });
 

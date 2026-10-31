@@ -1,14 +1,10 @@
-import { createClient } from "../auth/supabase/client";
+import { getCurrentSession } from "../auth/action";
 import { Pet, PetsResponse } from "./pet";
 
 export async function getMyPets(): Promise<PetsResponse<Pet[]>> {
-  const supabase = createClient();
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+  const session = await getCurrentSession();
 
-  if (error || !session) {
+  if (!session) {
     return {
       error: "Not authenticated",
       errorCode: "NOT_AUTHENTICATED",

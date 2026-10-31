@@ -1,15 +1,12 @@
-import { Profile, ProfileResponse } from "./profile";
+import { ProfileResponse } from "./profile";
 import { createClient } from "../auth/supabase/client";
 
 export async function deleteMyProfile(
 ): Promise<ProfileResponse<void>> {
-  const supabase = createClient();
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+    const supabase = createClient();
+    const {data: {session}} = await supabase.auth.getSession();
 
-  if (error || !session) {
+  if (!session) {
     return {
       error: "Not authenticated",
       errorCode: "NOT_AUTHENTICATED",

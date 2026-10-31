@@ -1,14 +1,10 @@
 import { Profile, ProfileResponse } from "./profile";
-import { createClient } from "../auth/supabase/client";
+import { getCurrentSession } from "../auth/action";
 
 export async function getMyProfile(): Promise<ProfileResponse<Profile>> {
-  const supabase = createClient();
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+  const session = await getCurrentSession();
 
-  if (error || !session) {
+  if (!session) {
     return {
       error: "Not authenticated",
       errorCode: "NOT_AUTHENTICATED",

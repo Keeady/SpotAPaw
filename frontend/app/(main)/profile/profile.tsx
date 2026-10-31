@@ -1,13 +1,8 @@
-import PetListRenderer from "@/app/components/pets/pet-list-renderer";
 import UserProfile from "@/app/components/profile/user-profile";
-import { getMyPets } from "@/lib/pets/pet-my-pets";
 import { getMyProfile } from "@/lib/profile/get-profile";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 
 export default async function Profile() {
   const { data, error, errorCode } = await getMyProfile();
-  console.log(data, error, errorCode);
 
   if (!data || error) {
     const message =

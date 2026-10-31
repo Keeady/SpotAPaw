@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateSightingDto } from './dto/create-sighting.dto.js';
 import { UpdateSightingDto } from './dto/update-sighting.dto.js';
 import { Sighting } from './entities/sighting.entity.js';
@@ -24,6 +24,22 @@ export class SightingsService {
       .orWhere('sighting.linked_sighting_id = :linked_sighting_id', {
         linked_sighting_id,
       })
+      .getMany();
+
+    if (data.length > 0) {
+      return toPublicSightings(data);
+    }
+    return [];
+  }
+
+  async findAllMySightings(userId: string): Promise<PublicSighting[]> {
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+    
+    const data = await this.sightingsRepository
+      .createQueryBuilder('sighting')
+      .where('sighting.reporterId = :id', { id: userId })
       .getMany();
 
     if (data.length > 0) {
