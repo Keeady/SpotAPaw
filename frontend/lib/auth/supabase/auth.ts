@@ -52,7 +52,7 @@ export class SupabaseAuthHandler extends BaseAuthHandler {
     });
 
     if (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     }
 

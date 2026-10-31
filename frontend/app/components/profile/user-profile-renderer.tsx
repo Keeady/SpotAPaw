@@ -163,7 +163,7 @@ export default function UserProfileRenderer({
     }
   };
 
-  const fullName = `${form.firstname} ${form.lastname}`.trim();
+  const fullName = `${form.firstname ?? ""} ${form.lastname ?? ""}`.trim();
 
   return (
     <div className="flex w-full grow flex-col bg-white px-3">
@@ -176,7 +176,7 @@ export default function UserProfileRenderer({
           <h1 className="mt-3 text-2xl font-semibold text-neutral-900">
             {fullName}
           </h1>
-          <p className="mt-1 text-sm text-neutral-600">{form.email}</p>
+          <p className="mt-1 text-sm text-neutral-600">{form.email ?? ""}</p>
         </div>
 
         {/* Section header */}
@@ -206,7 +206,7 @@ export default function UserProfileRenderer({
             <input
               id={`${uid}-first`}
               type="text"
-              value={form.firstname}
+              value={form.firstname || ""}
               onChange={(e) => update("firstname", e.target.value)}
               placeholder="First Name"
               autoComplete="given-name"
@@ -223,7 +223,7 @@ export default function UserProfileRenderer({
             <input
               id={`${uid}-last`}
               type="text"
-              value={form.lastname}
+              value={form.lastname || ""}
               onChange={(e) => update("lastname", e.target.value)}
               placeholder="Last Name"
               autoComplete="family-name"
@@ -242,7 +242,7 @@ export default function UserProfileRenderer({
               id={`${uid}-email`}
               type="email"
               inputMode="email"
-              value={form.email}
+              value={form.email || ""}
               onChange={(e) => update("email", e.target.value)}
               placeholder="youremail@email.com"
               autoComplete="email"
@@ -268,7 +268,7 @@ export default function UserProfileRenderer({
             <div className="flex gap-3">
               <select
                 aria-label="Country"
-                value={form.countryCode}
+                value={form.countryCode || ""}
                 onChange={(e) => {
                   const countryCode = e.target.value as CountryCode;
                   setForm((prev) => ({
@@ -298,7 +298,7 @@ export default function UserProfileRenderer({
                   id={`${uid}-phone`}
                   type="tel"
                   inputMode="tel"
-                  value={form.phone}
+                  value={form.phone || ""}
                   onChange={(e) => handlePhoneChange(e.target.value)}
                   onBlur={() => setPhoneTouched(true)}
                   placeholder="Phone number"

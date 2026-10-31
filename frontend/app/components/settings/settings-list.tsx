@@ -19,7 +19,6 @@ export default function SettingsList({
   settings: Settings;
   savedLocationCookie: SightingLocation;
 }) {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
 

@@ -1,11 +1,10 @@
 import PetListRenderer from "@/app/components/pets/pet-list-renderer";
-import { getMyPets } from "@/lib/pets/pet-my-pets";
+import { getMyPets } from "@/lib/pets/get-my-pets";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function PetList() {
   const { data, error, errorCode } = await getMyPets();
-  const hideCta = true;
 
   if (!data || error) {
     const message =

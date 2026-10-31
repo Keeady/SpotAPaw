@@ -1,11 +1,8 @@
 import { Settings, SettingsResponse } from "./settings";
-import { createClient } from "../auth/supabase/client";
+import { getCurrentSession } from "../auth/action";
 
 export async function getMySettings(): Promise<SettingsResponse<Settings>> {
-  const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const session = await getCurrentSession();
 
   let headers = {};
   if (session) {
