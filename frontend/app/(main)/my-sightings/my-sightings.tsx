@@ -7,10 +7,8 @@ export default async function MySightingsPage() {
 
   if (errorCode === "NOT_AUTHENTICATED") {
     isGuest = true;
-  }
-
-  if (!data || error) {
-    const message = "Something went wrong.";
+  } else if (!data || error) {
+    const message = "Something went wrong. Please try again.";
     return (
       <div className="flex flex-col px-3 w-full">
         <p className="my-10 self-center text-sm text-neutral-600 dark:text-neutral-400">
