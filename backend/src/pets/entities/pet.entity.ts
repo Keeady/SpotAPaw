@@ -111,4 +111,11 @@ export class Pet {
     default: false,
   })
   isLost: boolean;
+
+  @Column({
+    name: 'behavior',
+    type: 'text',
+    nullable: true,
+  })
+  behavior: string;
 }

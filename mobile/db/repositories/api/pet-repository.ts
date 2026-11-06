@@ -1,0 +1,67 @@
+import { Pet } from "@/db/models/pet";
+import { BasePetRepository } from "../base-pet-repository";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { ApiClient } from "./client";
+
+export class ApiPetRepository extends BasePetRepository {
+  apiClient: ApiClient;
+  constructor(apiClient: ApiClient) {
+    super();
+    this.apiClient = apiClient;
+  }
+
+  async getPet(id: string): Promise<Pet | undefined> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    return this.apiClient.get<Pet>(`/pets/my/${id}`);
+  }
+
+  async getPets(ownerId: string): Promise<Pet[]> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    return this.apiClient.get<Pet[]>(`/pets/my`);
+  }
+
+  async createPet(pet: Partial<Pet>): Promise<string> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    return this.apiClient.post(`/pets`, pet);
+  }
+
+  async deletePet(id: string, ownerId: string): Promise<void> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    return this.apiClient.delete(`/pets/my/${id}`);
+  }
+
+  async updatePet(id: string, payload: Partial<Pet>): Promise<void> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    const changes = {
+      name: payload.name,
+      age: payload.age,
+      species: payload.species,
+      breed: payload.breed,
+      behavior: payload.behavior,
+      size: payload.size,
+      gender: payload.gender,
+      isLost: payload.isLost,
+      features: payload.features,
+      note: payload.note,
+      colors: payload.colors,
+      collarDescription: payload.collarDescription,
+    };
+
+    return this.apiClient.patch(`/pets/my/${id}`, changes);
+  }
+}

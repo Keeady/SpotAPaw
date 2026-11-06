@@ -19,4 +19,7 @@ export interface Pet {
     photo: string,
     petDescriptionId: string,
     photos: string[];
+    behavior: string;
+    size: string;
+    collarDescription: string;
 }

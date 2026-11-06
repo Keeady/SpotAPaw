@@ -18,7 +18,7 @@ export default function MyNewSighting() {
           "Thank you for helping bring our lost friends home.",
         ),
         nextActionName: t("continue", "Continue"),
-        onComplete: (data) => console.log("start done:", data.reportType),
+        onComplete: (data) => undefined,
       },
       {
         id: "choose_pet",
@@ -28,10 +28,7 @@ export default function MyNewSighting() {
           "Sorry to hear your pet is missing. Let's bring them back!",
         ),
         nextActionName: t("continue", "Continue"),
-        onComplete: async (data) => {
-          // e.g. await sightingRepository.create(data);
-          console.log("pet chosen:", data.id);
-        },
+        onComplete: () => undefined,
         skip: (data) => data.reportType === "found_stray"
       },
       {

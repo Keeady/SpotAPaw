@@ -25,7 +25,7 @@ export function EditPetContinuedStep({
     age,
     name,
     id,
-    petBehavior,
+    behavior,
     collar,
     collarDescription,
     images,
@@ -165,7 +165,7 @@ export function EditPetContinuedStep({
         </RadioButton.Group>
       </View>
 
-      {collar === "yes_collar" && (
+      {(collar === "yes_collar" || collarDescription) && (
         <View style={[styles.verticallySpaced, styles.mt10]}>
           <AIFieldAnalysisBannerOrHelperText
             loading={loading}
@@ -208,8 +208,8 @@ export function EditPetContinuedStep({
           {t("howIsThePetBehaving", "How is the pet behaving?")}
         </Text>
         <RadioButton.Group
-          onValueChange={(value) => set({ petBehavior: value })}
-          value={petBehavior ?? ""}
+          onValueChange={(value) => set({ behavior: value })}
+          value={behavior ?? ""}
         >
           <View style={styles.radioGroupCol}>
             <View style={styles.radioItem}>

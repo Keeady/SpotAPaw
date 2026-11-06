@@ -1,12 +1,37 @@
 import { SightingWizard } from "@/components/wizard2.0/wizard";
+import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
-import { useRouter } from "expo-router";
-import { useMemo } from "react";
+import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
+import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { showMessage } from "react-native-flash-message";
 
 export default function EditPet() {
+  const { petId } = useLocalSearchParams<{ petId: string }>();
+  const [initialData, setInitialData] = useState(PET_FIELDS_CLEARED);
   const { t } = useTranslation("wizard");
   const router = useRouter();
+  const onPhotoAnalyze = usePhotoAnalyzeStep();
+
+  useEffect(() => {
+    if (!petId) {
+      return;
+    }
+    const petRepository = new PetRepository();
+    petRepository
+      .getPet(petId)
+      .then((data) => {
+        if (data) {
+          setInitialData(data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [petId]);
 
   const config: WizardConfig = useMemo(
     () => [
@@ -18,7 +43,7 @@ export default function EditPet() {
           "Thank you for helping bring our lost friends home.",
         ),
         nextActionName: t("continue", "Continue"),
-        onComplete: (data) => console.log("start done:", data.reportType),
+        onComplete: () => undefined,
         skip: () => true,
       },
       {
@@ -29,10 +54,7 @@ export default function EditPet() {
           "Sorry to hear your pet is missing. Let's bring them back!",
         ),
         nextActionName: t("continue", "Continue"),
-        onComplete: async (data) => {
-          // e.g. await sightingRepository.create(data);
-          console.log("pet chosen:", data.id);
-        },
+        onComplete: () => undefined,
         skip: () => true,
       },
       {
@@ -44,11 +66,7 @@ export default function EditPet() {
         ),
         nextActionName: t("continue", "Continue"),
         onComplete: async (data) => {
-          // Optional: run AI analysis and return the fields to merge, e.g.
-          // const analysis = await analyzePhoto(data.images?.[0]);
-          // return { breed: analysis.breed, colors: analysis.colors };
-          // Throwing here keeps the user on the step and shows the message.
-          // await sightingRepository.create(data);
+          return onPhotoAnalyze(data.images);
         },
       },
       {
@@ -72,10 +90,7 @@ export default function EditPet() {
           "Review and edit pet description",
         ),
         nextActionName: t("continue", "Continue"),
-        onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
-        },
+        onComplete: () => undefined,
       },
       {
         id: "last_seen",
@@ -91,7 +106,6 @@ export default function EditPet() {
         skip: (data) => !data.isLost,
         onComplete: () => undefined,
       },
-
       {
         id: "add_contact",
         title: t("updateYourContactInfo", "Update your contact info."),
@@ -101,8 +115,36 @@ export default function EditPet() {
         ),
         nextActionName: t("submitReport", "Submit report"),
         onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
+          if (data.id) {
+            const petRepository = new PetRepository();
+            return petRepository
+              .updatePet(data.id, data)
+              .then(() => {
+                showMessage({
+                  message: t(
+                    "successfullyUpdatedPetProfile",
+                    "Successfully updated pet profile.",
+                  ),
+                  type: "success",
+                  icon: "success",
+                  statusBarHeight: 50,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+                showMessage({
+                  message: t(
+                    "errorSavingPetProfilePleaseTryAgain",
+                    "Error saving pet profile. Please try again.",
+                  ),
+                  type: "warning",
+                  icon: "warning",
+                  statusBarHeight: 50,
+                });
+              });
+          } else {
+            throw new Error("Not pet info found.");
+          }
         },
       },
     ],
@@ -111,6 +153,7 @@ export default function EditPet() {
 
   return (
     <SightingWizard
+      initialData={{ ...initialData, reportType: "edit_pet" }}
       config={config}
       onFinish={() => router.back()}
       onCancel={() => router.back()}

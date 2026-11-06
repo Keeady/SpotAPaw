@@ -1,5 +1,7 @@
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import { PetRepository } from "@/db/repositories/pet-repository";
+import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,6 +9,7 @@ import { useTranslation } from "react-i18next";
 export default function AddPet() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
+  const onPhotoAnalyze = usePhotoAnalyzeStep();
 
   const config: WizardConfig = useMemo(
     () => [
@@ -19,7 +22,7 @@ export default function AddPet() {
         ),
         nextActionName: t("continue", "Continue"),
         onComplete: (data) => console.log("start done:", data.reportType),
-        skip: () => true
+        skip: () => true,
       },
       {
         id: "choose_pet",
@@ -33,7 +36,7 @@ export default function AddPet() {
           // e.g. await sightingRepository.create(data);
           console.log("pet chosen:", data.id);
         },
-        skip: () => true
+        skip: () => true,
       },
       {
         id: "upload_photo",
@@ -44,33 +47,39 @@ export default function AddPet() {
         ),
         nextActionName: t("continue", "Continue"),
         onComplete: async (data) => {
-          // Optional: run AI analysis and return the fields to merge, e.g.
-          // const analysis = await analyzePhoto(data.images?.[0]);
-          // return { breed: analysis.breed, colors: analysis.colors };
-          // Throwing here keeps the user on the step and shows the message.
-          // await sightingRepository.create(data);
+          console.log(data.images);
+          return onPhotoAnalyze(data.images);
         },
       },
-            {
+      {
         id: "edit_pet",
         title: t("whatDidThePetLookLike", "What did the pet look like?"),
-        subtitle: t("reviewAndEditPetDescription", "Review and edit pet description"),
+        subtitle: t(
+          "reviewAndEditPetDescription",
+          "Review and edit pet description",
+        ),
         nextActionName: t("continue", "Continue"),
         onComplete: () => undefined,
       },
       {
         id: "edit_pet_continued",
-        title: t("whatDidThePetLookLikeCont", "What did the pet look like? (Cont.)"),
-        subtitle: t("reviewAndEditPetDescription", "Review and edit pet description"),
+        title: t(
+          "whatDidThePetLookLikeCont",
+          "What did the pet look like? (Cont.)",
+        ),
+        subtitle: t(
+          "reviewAndEditPetDescription",
+          "Review and edit pet description",
+        ),
         nextActionName: t("continue", "Continue"),
-        onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
-        },
+        onComplete: () => undefined,
       },
-            {
+      {
         id: "last_seen",
-        title: t("whenAndWhereWasThePetLastSeen", "When and where was the pet last seen?"),
+        title: t(
+          "whenAndWhereWasThePetLastSeen",
+          "When and where was the pet last seen?",
+        ),
         subtitle: t(
           "selectADateAndTimeThenPlaceAPin",
           "Select a date and time, then place a pin on the map.",
@@ -83,14 +92,24 @@ export default function AddPet() {
       {
         id: "add_contact",
         title: t("updateYourContactInfo", "Update your contact info."),
-        subtitle: t("reviewAndEditYourContactInfo", "Review and edit your contact info."),
+        subtitle: t(
+          "reviewAndEditYourContactInfo",
+          "Review and edit your contact info.",
+        ),
         nextActionName: t("submitReport", "Submit report"),
         onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
+          if (data) {
+            const petRepository = new PetRepository();
+            const id = await petRepository.createPet(data);
+            return {
+              ...data,
+              id,
+            };
+          } else {
+            throw new Error("Not pet info found.");
+          }
         },
       },
-
     ],
     [t],
   );

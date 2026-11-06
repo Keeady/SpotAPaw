@@ -21,7 +21,11 @@ type SightingWizardProps = {
 type SubmitFn = () => void | Promise<void>;
 
 /** Index of the first step after `from` that is not skipped, or -1 if none. */
-function findNextIndex(config: WizardConfig, from: number, data: SightingFormData) {
+function findNextIndex(
+  config: WizardConfig,
+  from: number,
+  data: SightingFormData,
+) {
   for (let i = from + 1; i < config.length; i++) {
     if (!config[i].skip?.(data)) return i;
   }
@@ -117,6 +121,12 @@ export function SightingWizard({
 
   const Screen = wizardRenderers[step.id];
 
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
+
   return (
     <View style={styles.container}>
       <WizardHeader title={step.title} subTitle={step.subtitle} />
@@ -138,7 +148,12 @@ export function SightingWizard({
 
       <View style={[styles.footer, { backgroundColor: theme.colors.surface }]}>
         {(canGoBack || onCancel) && (
-          <Button mode="outlined" onPress={onBack} disabled={loading} style={styles.footerButton}>
+          <Button
+            mode="outlined"
+            onPress={onBack}
+            disabled={loading}
+            style={styles.footerButton}
+          >
             {canGoBack ? t("back", "Back") : t("cancel", "Cancel")}
           </Button>
         )}
