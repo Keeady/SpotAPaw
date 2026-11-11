@@ -16,7 +16,6 @@ export class CreatePetDto {
     @IsDefined()
     @IsString()
     @MaxLength(100)
-    @MinLength(1)
     breed: string;
 
     @ValidateIf((_object, value) => value === "Female" || value === "Male")
@@ -31,6 +30,7 @@ export class CreatePetDto {
     @MaxLength(100)
     colors: string;
 
+    @IsOptional()
     @IsString()
     @MaxLength(254)
     features: string;
@@ -39,12 +39,6 @@ export class CreatePetDto {
     @IsString()
     @MaxLength(254)
     note: string;
-
-    @IsDefined()
-    @MaxLength(5)
-    @MinLength(1)
-    @ArrayNotEmpty()
-    photos: string[];
 
     @IsDefined()
     @IsString()
@@ -56,7 +50,7 @@ export class CreatePetDto {
     @MaxLength(254)
     collarDescription: string;
 
-    @IsDefined()
+    @IsOptional()
     @IsString()
     @MaxLength(100)
     behavior: string;
@@ -64,4 +58,8 @@ export class CreatePetDto {
     @IsDefined()
     @IsBoolean()
     isLost: boolean;
+
+    @IsOptional()
+    @IsNumber()
+    petDescriptionId: string;
 }

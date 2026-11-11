@@ -17,7 +17,7 @@ export default function MyNewSighting() {
           "thankYouForHelping",
           "Thank you for helping bring our lost friends home.",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: (data) => undefined,
       },
       {
@@ -27,7 +27,7 @@ export default function MyNewSighting() {
           "sorryToHearYourPetIsMissing",
           "Sorry to hear your pet is missing. Let's bring them back!",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
         skip: (data) => data.reportType === "found_stray"
       },
@@ -38,7 +38,7 @@ export default function MyNewSighting() {
           "aPhotoWouldReallyHelpIdentifyThisPetFaster",
           "A photo would really help identify this pet faster.",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
           // Optional: run AI analysis and return the fields to merge, e.g.
           // const analysis = await analyzePhoto(data.images?.[0]);
@@ -51,14 +51,14 @@ export default function MyNewSighting() {
         id: "edit_pet",
         title: t("whatDidThePetLookLike", "What did the pet look like?"),
         subtitle: t("reviewAndEditPetDescription", "Review and edit pet description"),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
       },
       {
         id: "edit_pet_continued",
         title: t("whatDidThePetLookLikeCont", "What did the pet look like? (Cont.)"),
         subtitle: t("reviewAndEditPetDescription", "Review and edit pet description"),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
           // Last step: save here. Throwing shows the error and keeps the user on the step.
           // await sightingRepository.create(data);
@@ -71,7 +71,7 @@ export default function MyNewSighting() {
           "selectADateAndTimeThenPlaceAPin",
           "Select a date and time, then place a pin on the map.",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
       },
 
@@ -79,7 +79,7 @@ export default function MyNewSighting() {
         id: "add_contact",
         title: t("updateYourContactInfo", "Update your contact info."),
         subtitle: t("reviewAndEditYourContactInfo", "Review and edit your contact info."),
-        nextActionName: t("submitReport", "Submit report"),
+        nextActionName: () => t("submit", "Submit report"),
         onComplete: async (data) => {
           // Last step: save here. Throwing shows the error and keeps the user on the step.
           // await sightingRepository.create(data);

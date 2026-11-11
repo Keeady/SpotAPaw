@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pet } from './entities/pet.entity.js';
 import { UpdatePetDto } from './dto/update-pet.dto.js';
+import { CreatePetDto } from './dto/create-pet.dto.js';
 
 @Injectable()
 export class PetsService {
@@ -17,21 +18,27 @@ export class PetsService {
   ) {}
 
   async findByOwner(userId: string) {
-    return this.petRepository.find({
-      where: {
-        ownerId: userId,
-      },
-    });
+     return this.petRepository
+    .createQueryBuilder('p')
+    .leftJoinAndSelect('p.petPhotos', 'ph')
+    .leftJoinAndSelect('p.petDescription', 'pdr')
+    .leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
+    .where('p.owner_id = :userId', { userId })
+    .getMany();
   }
 
   async findPetById(userId: string, petId: string) {
-    return this.petRepository.findOneByOrFail({
-      ownerId: userId,
-      id: petId,
-    });
+    return this.petRepository
+    .createQueryBuilder('p')
+    .leftJoinAndSelect('p.petPhotos', 'ph')
+    .leftJoinAndSelect('p.petDescription', 'pdr')
+    .leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
+    .where('p.id = :petId', { petId })
+    .andWhere('p.owner_id = :userId', { userId })
+    .getOneOrFail();
   }
 
-  async createPet(userId: string, dto: UpdatePetDto): Promise<string> {
+  async createPet(userId: string, dto: CreatePetDto): Promise<string> {
     const changes: Partial<Exclude<Pet, 'id'>> = {};
 
     if (dto.name !== undefined) {
@@ -72,6 +79,18 @@ export class PetsService {
 
     if (dto.behavior !== undefined) {
       changes.behavior = dto.behavior;
+    }
+
+    if (dto.collarDescription !== undefined) {
+      changes.collarDescription = dto.collarDescription;
+    }
+
+    if (dto.age !== undefined) {
+      changes.age = dto.age;
+    }
+
+    if (dto.petDescriptionId !== undefined) {
+      changes.petDescriptionId = dto.petDescriptionId;
     }
 
     if (Object.keys(changes).length === 0) {
@@ -139,6 +158,14 @@ export class PetsService {
 
     if (dto.collarDescription !== undefined) {
       changes.collarDescription = dto.collarDescription;
+    }
+
+    if (dto.age !== undefined) {
+      changes.age = dto.age;
+    }
+
+    if (dto.petDescriptionId !== undefined) {
+      changes.petDescriptionId = dto.petDescriptionId;
     }
 
     if (Object.keys(changes).length === 0) {

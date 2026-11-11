@@ -30,9 +30,35 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
               isWide ? styles.photoWide : styles.photoNarrow,
             ]}
           >
-            {pet.photos && pet.photos.length > 0 ? (
+            {pet.petDescription?.petDescriptionPhotos && pet.petDescription.petDescriptionPhotos.length > 0 ? (
+              <Image
+                source={{ uri: pet.petDescription.petDescriptionPhotos[0].publicUrl }}
+                resizeMode="contain"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                  aspectRatio: 1.5,
+                }}
+                testID="pet-photos"
+              />
+            ) : pet.photos && pet.photos.length > 0 ? (
               <Image
                 source={{ uri: pet.photos[0] }}
+                resizeMode="contain"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                  aspectRatio: 1.5,
+                }}
+                testID="pet-photos"
+              />
+            ) : pet.petPhotos && pet.petPhotos.length > 0 ? (
+              <Image
+                source={{ uri: pet.petPhotos[0].publicUrl }}
                 resizeMode="contain"
                 style={{
                   width: "100%",

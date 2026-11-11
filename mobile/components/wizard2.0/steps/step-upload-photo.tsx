@@ -1,4 +1,10 @@
-import { StyleSheet, View, Image, ActivityIndicator, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import { Text, Button, Icon, HelperText } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -29,8 +35,12 @@ export function UploadPhotoStep({
   const [hasErrors, setHasErrors] = useState(false);
   const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
-  const { photos, images } = formData;
-  const hasPhoto = !!photos?.length || !!images?.length;
+  const { photos, images, petPhotos, petDescription } = formData;
+  const hasPhoto =
+    !!photos?.length ||
+    !!images?.length ||
+    !!petPhotos?.length ||
+    !!petDescription?.petDescriptionPhotos?.length;
 
   // This screen's own onComplete: require a photo, then hand off to the base
   // one. Any AI analysis belongs in this step's configured onComplete, which
@@ -119,6 +129,23 @@ export function UploadPhotoStep({
               />
             ))}
           </View>
+        ) : petDescription?.petDescriptionPhotos &&
+          petDescription.petDescriptionPhotos.length > 0 ? (
+          <SightingGallery
+            images={petDescription.petDescriptionPhotos.map((photo) => ({
+              uri: photo.publicUrl,
+            }))}
+            isVisible={isVisibleGallery}
+            setIsVisible={setIsVisibleGallery}
+            mainPhoto={petDescription.petDescriptionPhotos[0].publicUrl}
+          />
+        ) : petPhotos && petPhotos.length > 0 ? (
+          <SightingGallery
+            images={petPhotos.map((photo) => ({ uri: photo.publicUrl }))}
+            isVisible={isVisibleGallery}
+            setIsVisible={setIsVisibleGallery}
+            mainPhoto={petPhotos[0].publicUrl}
+          />
         ) : photos && photos.length > 0 ? (
           <SightingGallery
             images={photos.map((photo) => ({ uri: photo }))}

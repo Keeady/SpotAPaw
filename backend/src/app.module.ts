@@ -18,6 +18,8 @@ import { SightingMatchesModule } from './sighting-matches/sighting-matches.modul
 import { Pet } from './pets/entities/pet.entity.js';
 import { ProfileModule } from './profiles/profile.module.js';
 import { SettingsModule } from './settings/settings.module.js';
+import { PetPhotos } from './pets/entities/pet-photo.entity.js';
+import { PetDescription } from './pets/entities/pet-description.entity.js';
 
 @Module({
   imports: [
@@ -33,7 +35,7 @@ import { SettingsModule } from './settings/settings.module.js';
         username: configService.getOrThrow<string>('DB_USERNAME'),
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB'),
-        entities: [AggregatedSighting, Poster, SightingMatch, Pet],
+        entities: [AggregatedSighting, Poster, SightingMatch, Pet, PetPhotos, PetDescription],
         autoLoadEntities: true,
         driver: pg,
         retryAttempts: 10,

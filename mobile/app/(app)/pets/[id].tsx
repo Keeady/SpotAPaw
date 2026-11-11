@@ -39,6 +39,7 @@ export default function PetProfile() {
     petRepository
       .getPet(id)
       .then((data) => {
+        console.log("pet", data?.petDescription);
         setPet(data);
       })
       .catch((error) => {

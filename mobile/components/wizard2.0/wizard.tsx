@@ -164,7 +164,7 @@ export function SightingWizard({
           disabled={loading}
           style={styles.footerButton}
         >
-          {step.nextActionName}
+          {step.nextActionName(formData)}
         </Button>
       </View>
     </View>

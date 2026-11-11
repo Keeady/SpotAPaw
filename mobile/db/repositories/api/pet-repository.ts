@@ -1,6 +1,5 @@
 import { Pet } from "@/db/models/pet";
 import { BasePetRepository } from "../base-pet-repository";
-import { SupabaseClient } from "@supabase/supabase-js";
 import { ApiClient } from "./client";
 
 export class ApiPetRepository extends BasePetRepository {
@@ -26,12 +25,27 @@ export class ApiPetRepository extends BasePetRepository {
     return this.apiClient.get<Pet[]>(`/pets/my`);
   }
 
-  async createPet(pet: Partial<Pet>): Promise<string> {
+  async createPet(payload: Partial<Pet>): Promise<string> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
     }
 
-    return this.apiClient.post(`/pets`, pet);
+    const changes = {
+      name: payload.name,
+      age: payload.age,
+      species: payload.species,
+      breed: payload.breed,
+      behavior: payload.behavior,
+      size: payload.size,
+      gender: payload.gender,
+      isLost: Boolean(payload.isLost),
+      features: payload.features,
+      note: payload.note,
+      colors: payload.colors,
+      collarDescription: payload.collarDescription,
+    };
+
+    return this.apiClient.post(`/pets/my`, changes);
   }
 
   async deletePet(id: string, ownerId: string): Promise<void> {

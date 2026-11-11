@@ -32,11 +32,15 @@ export function EditPetContinuedStep({
     photos,
     reportType,
     aiGenerated,
+    petPhotos,
+    petDescription,
   } = formData;
   const showAiGeneratedFlag = !!isAiFeatureEnabled && !!aiGenerated;
 
   const needsFullDetails =
-    reportType === "lost_own" || reportType === "new_pet" || reportType === "edit_pet";
+    reportType === "lost_own" ||
+    reportType === "new_pet" ||
+    reportType === "edit_pet";
 
   const errors = {
     size: needsFullDetails && !size,
@@ -74,7 +78,13 @@ export function EditPetContinuedStep({
         petName={name || ""}
         petGender={gender || ""}
         petAge={age || 0}
-        petPhoto={images?.[0]?.uri || photos?.[0] || ""}
+        petPhoto={
+          images?.[0]?.uri ||
+          petDescription?.petDescriptionPhotos?.[0].publicUrl ||
+          petPhotos?.[0].publicUrl ||
+          photos?.[0] ||
+          ""
+        }
         showDetails={false}
       />
 
@@ -101,7 +111,7 @@ export function EditPetContinuedStep({
           mode="outlined"
           multiline
           numberOfLines={3}
-          style={{backgroundColor: "#fff"}}
+          style={{ backgroundColor: "#fff" }}
         />
       </View>
 
@@ -121,9 +131,15 @@ export function EditPetContinuedStep({
           }
         />
         <Text variant="titleMedium">
-          {t("howWouldYouDescribeThePetsSize", "How would you describe the pet's size?")}
+          {t(
+            "howWouldYouDescribeThePetsSize",
+            "How would you describe the pet's size?",
+          )}
         </Text>
-        <RadioButton.Group onValueChange={(value) => set({ size: value })} value={size ?? ""}>
+        <RadioButton.Group
+          onValueChange={(value) => set({ size: value })}
+          value={size ?? ""}
+        >
           <View style={styles.radioGroupCol}>
             <View style={styles.radioItem}>
               <RadioButton value="small" />
@@ -198,7 +214,7 @@ export function EditPetContinuedStep({
             mode="outlined"
             multiline
             numberOfLines={3}
-            style={{backgroundColor: "#fff"}}
+            style={{ backgroundColor: "#fff" }}
           />
         </View>
       )}
@@ -214,7 +230,9 @@ export function EditPetContinuedStep({
           <View style={styles.radioGroupCol}>
             <View style={styles.radioItem}>
               <RadioButton value="friendly" />
-              <Text>{t("friendlyApproachable", "Friendly & approachable")}</Text>
+              <Text>
+                {t("friendlyApproachable", "Friendly & approachable")}
+              </Text>
             </View>
             <View style={styles.radioItem}>
               <RadioButton value="scared" />
@@ -222,7 +240,9 @@ export function EditPetContinuedStep({
             </View>
             <View style={styles.radioItem}>
               <RadioButton value="aggressive" />
-              <Text>{t("aggressiveOrDefensive", "Aggressive or defensive")}</Text>
+              <Text>
+                {t("aggressiveOrDefensive", "Aggressive or defensive")}
+              </Text>
             </View>
             <View style={styles.radioItem}>
               <RadioButton value="injured" />

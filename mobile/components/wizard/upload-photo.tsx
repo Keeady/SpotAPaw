@@ -134,6 +134,13 @@ export function UploadPhoto({
                 />
               ))}
             </View>
+          ): sightingFormData.photos && sightingFormData.photos.length > 0 ? (
+            <SightingGallery
+              images={sightingFormData.photos.map((photo) => ({ uri: photo }))}
+              isVisible={isVisibleGallery}
+              setIsVisible={setIsVisibleGallery}
+              mainPhoto={sightingFormData.photos[0]}
+            />
           ) : sightingFormData.photos && sightingFormData.photos.length > 0 ? (
             <SightingGallery
               images={sightingFormData.photos.map((photo) => ({ uri: photo }))}

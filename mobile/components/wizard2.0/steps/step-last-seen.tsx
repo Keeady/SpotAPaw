@@ -20,19 +20,20 @@ export function LastSeenStep({
 
   const { note, lastSeenTime, lastSeenLat, lastSeenLong } = formData;
 
-  // The picker shows "now" when there is no value; store it so what the user
-  // sees is what gets submitted even if they never touch the picker.
+  console.log("formData", lastSeenLat, lastSeenLong, note);
   useEffect(() => {
     if (!lastSeenTime) {
       updateFormData({ lastSeenTime: new Date().toISOString() });
     }
-    // Only on mount: later edits come from the picker.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const errors = {
     time: !lastSeenTime || Number.isNaN(new Date(lastSeenTime).getTime()),
-    location: lastSeenLat == null || lastSeenLong == null,
+    location:
+      lastSeenLat == null ||
+      lastSeenLat == undefined ||
+      lastSeenLong == null ||
+      lastSeenLong == undefined,
   };
   const isValid = !errors.time && !errors.location;
 
@@ -65,7 +66,10 @@ export function LastSeenStep({
           style={styles.helperText}
           padding="none"
         >
-          {t("pleaseSelectAValidDateAndTime", "Please select a valid date and time!")}
+          {t(
+            "pleaseSelectAValidDateAndTime",
+            "Please select a valid date and time!",
+          )}
         </HelperText>
         <Text variant="bodyLarge" style={styles.sectionLabel}>
           {t("selectADateAndTime", "Select a date and time:")}
@@ -102,7 +106,10 @@ export function LastSeenStep({
                   {
                     latitude: lastSeenLat,
                     longitude: lastSeenLong,
-                    title: t("petsLastSeenLocation", "pet's last seen location"),
+                    title: t(
+                      "petsLastSeenLocation",
+                      "pet's last seen location",
+                    ),
                   },
                 ]
               : []
@@ -142,6 +149,10 @@ const styles = StyleSheet.create({
   mt20: { marginTop: 20 },
   mt10: { marginTop: 10 },
   content: { paddingHorizontal: 12, alignItems: "center", paddingBottom: 24 },
-  sectionLabel: { alignSelf: "flex-start", fontWeight: "bold", marginBottom: 10 },
+  sectionLabel: {
+    alignSelf: "flex-start",
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
   helperText: { alignSelf: "flex-end", fontWeight: "bold" },
 });

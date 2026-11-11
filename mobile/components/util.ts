@@ -214,6 +214,7 @@ export async function createErrorLogMessageAsync(error: unknown) {
 
   if (error instanceof FunctionsHttpError) {
     const errorContext = await error.context.json().catch(() => "");
+    console.log("errorContext", errorContext);
     return errorContext?.message;
   } else if (error instanceof FunctionsRelayError) {
     return error.message;

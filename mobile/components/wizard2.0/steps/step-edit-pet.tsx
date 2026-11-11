@@ -1,5 +1,11 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text, TextInput, RadioButton, HelperText, Menu } from "react-native-paper";
+import {
+  Text,
+  TextInput,
+  RadioButton,
+  HelperText,
+  Menu,
+} from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AIFieldAnalysisBannerOrHelperText } from "../../analyzer/ai-banner";
@@ -19,10 +25,26 @@ export function EditPetStep({
   const { isAiFeatureEnabled } = useAIFeatureContext();
   const [hasErrors, setHasErrors] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedSpecies, setSelectedSpecies] = useState(formData.species || "");
+  const [selectedSpecies, setSelectedSpecies] = useState(
+    formData.species || "",
+  );
 
-  const { colors, species, breed, gender, age, name, id, isLost, photos, images, reportType, aiGenerated } =
-    formData;
+  const {
+    colors,
+    species,
+    breed,
+    gender,
+    age,
+    name,
+    id,
+    isLost,
+    photos,
+    images,
+    reportType,
+    aiGenerated,
+    petPhotos,
+    petDescription,
+  } = formData;
   const showAiGeneratedFlag = !!isAiFeatureEnabled && !!aiGenerated;
 
   const isPetProfile = reportType === "new_pet" || reportType === "edit_pet";
@@ -70,7 +92,13 @@ export function EditPetStep({
         petName={name || ""}
         petGender={gender || ""}
         petAge={age || 0}
-        petPhoto={images?.[0]?.uri || photos?.[0] || ""}
+        petPhoto={
+          images?.[0]?.uri ||
+          petDescription?.petDescriptionPhotos?.[0].publicUrl ||
+          petPhotos?.[0].publicUrl ||
+          photos?.[0] ||
+          ""
+        }
         showDetails={false}
       />
 
@@ -84,7 +112,10 @@ export function EditPetStep({
               style={styles.helperText}
               padding="none"
             >
-              {t("pleaseIndicateIfThePetIsLost", "Please indicate if the pet is lost!")}
+              {t(
+                "pleaseIndicateIfThePetIsLost",
+                "Please indicate if the pet is lost!",
+              )}
             </HelperText>
           </View>
 
@@ -123,7 +154,7 @@ export function EditPetStep({
           value={name}
           onChangeText={(value) => set({ name: value })}
           mode="outlined"
-          style={{backgroundColor: "#fff"}}
+          style={{ backgroundColor: "#fff" }}
         />
       </View>
 
@@ -149,7 +180,7 @@ export function EditPetStep({
           value={colors}
           onChangeText={(value) => set({ colors: value })}
           mode="outlined"
-          style={{backgroundColor: "#fff"}}
+          style={{ backgroundColor: "#fff" }}
         />
       </View>
 
@@ -185,7 +216,7 @@ export function EditPetStep({
                 set({ species: value });
                 setSelectedSpecies(value);
               }}
-              style={{backgroundColor: "#fff"}}
+              style={{ backgroundColor: "#fff" }}
             />
           }
         >
@@ -231,7 +262,7 @@ export function EditPetStep({
           value={breed}
           onChangeText={(value) => set({ breed: value })}
           mode="outlined"
-          style={{backgroundColor: "#fff"}}
+          style={{ backgroundColor: "#fff" }}
         />
       </View>
 
@@ -244,7 +275,10 @@ export function EditPetStep({
             style={styles.helperText}
             padding="none"
           >
-            {t("pleaseProvideApproximateAge", "Please provide approximate age!")}
+            {t(
+              "pleaseProvideApproximateAge",
+              "Please provide approximate age!",
+            )}
           </HelperText>
         </View>
         <TextInput
@@ -253,7 +287,7 @@ export function EditPetStep({
           onChangeText={(v) => set({ age: Number(v) })}
           keyboardType="numeric"
           mode="outlined"
-          style={{backgroundColor: "#fff"}}
+          style={{ backgroundColor: "#fff" }}
         />
       </View>
 
@@ -271,7 +305,9 @@ export function EditPetStep({
         </View>
 
         <RadioButton.Group
-          onValueChange={(value) => set({ gender: value as SightingFormData["gender"] })}
+          onValueChange={(value) =>
+            set({ gender: value as SightingFormData["gender"] })
+          }
           value={gender ?? ""}
         >
           <View style={styles.radioGroupRow}>

@@ -11,6 +11,8 @@ interface imagePayload {
 
 interface reqPayload {
   images: imagePayload[];
+  petId: string | null;
+  sightingId: string | null;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -102,7 +104,7 @@ async function getFileHash(base64String: string): Promise<string> {
 }
 
 Deno.serve(async (req: Request) => {
-  const { images }: reqPayload = await req.json();
+  const { images, petId, sightingId }: reqPayload = await req.json();
 
   const photoPayloads = [];
   let petDescriptionResultId = "";
@@ -219,6 +221,8 @@ Deno.serve(async (req: Request) => {
         await supabaseClient.from("pet_photos").insert({
           photo_hash: hash,
           public_url: photoPublicUrl,
+          pet_id: petId || null,
+          sighting_id: sightingId || null
         });
       }
 

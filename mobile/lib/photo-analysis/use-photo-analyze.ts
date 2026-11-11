@@ -2,45 +2,33 @@ import { AnalysisResponse } from "@/components/analyzer/types";
 import { usePetAnalyzer } from "@/components/analyzer/use-pet-image-analyzer";
 import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { AuthContext } from "@/components/Provider/auth-provider";
+import { useProContext } from "@/components/Provider/pro-context-provider";
 import { createErrorLogMessageAsync } from "@/components/util";
 import { PetImage } from "@/components/wizard/wizard-interface";
 import { startInstrument } from "@/instrumentation/instrument";
 import { useCallback, useContext } from "react";
 
 export default function usePhotoAnalyzeStep() {
+  const { aiPhotoAnalysisAllowed } = useProContext();
   const { user } = useContext(AuthContext);
   const { isAiFeatureEnabled } = useAIFeatureContext();
+  console.log("top", isAiFeatureEnabled, aiPhotoAnalysisAllowed);
 
-  const onImageAnalyzeSuccess = useCallback(
-    (
-      data?: AnalysisResponse,
-      publicUrl?: string,
-      petDescriptionId?: string,
-      publicUrls?: string[],
-    ) => {
-      const response = {
-        publicUrl,
-        publicUrls,
-        petDescriptionId,
-        pets: data && "pets" in data && data.pets.length > 0 ? data.pets : [],
-        aiNote: data && "note" in data && data.note ? data.note : "",
-      };
-
-      if (response.aiNote.toLowerCase().includes("no pets detected")) {
-        throw new Error(response.aiNote, { cause: "NO_PETS_DETECTED" });
-      }
-      return response;
-    },
-    [],
-  );
-
-  const { analyzeMultiple } = usePetAnalyzer({
-    onSuccess: onImageAnalyzeSuccess,
-  });
+  const { analyzeMultiple } = usePetAnalyzer({});
 
   return useCallback(
-    async (images?: PetImage[]) => {
-      if (!isAiFeatureEnabled || !images || images.length === 0) {
+    async (
+      images: PetImage[],
+      petId: string | null,
+      sightingId: string | null,
+    ) => {
+      console.log(isAiFeatureEnabled, aiPhotoAnalysisAllowed);
+      if (
+        !isAiFeatureEnabled ||
+        !images ||
+        images.length === 0 ||
+        !aiPhotoAnalysisAllowed
+      ) {
         return;
       }
 
@@ -53,23 +41,27 @@ export default function usePhotoAnalyzeStep() {
         },
       });
 
-      return analyzeMultiple(images)
-        .then(() => {
+      return analyzeMultiple(images, petId, sightingId)
+        .then((data) => {
+          console.log("d", data);
           instrument.success({
             status: "success",
           });
+
+          return data;
         })
         .catch(async (error) => {
           const errorMessage = await createErrorLogMessageAsync(error);
+          console.log("errorMessage", errorMessage);
           instrument.failure({
             error_message: errorMessage,
             error_type: "image_analysis_error",
             status: "failed",
           });
 
-          return Promise.reject(error);
+          return Promise.reject("Failed to process images.");
         });
     },
-    [isAiFeatureEnabled],
+    [isAiFeatureEnabled, aiPhotoAnalysisAllowed],
   );
 }

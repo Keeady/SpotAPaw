@@ -40,7 +40,7 @@ export type WizardStepConfig = {
   title: string;
   subtitle: string;
   /** Label of the "next" button, e.g. "Continue", "Submit report". */
-  nextActionName: string;
+  nextActionName: (data: SightingFormData) => string;
   /**
    * Return true to skip this step. Evaluated against the latest form data
    * (and against `initialData` for the first step), so any step can be skipped.

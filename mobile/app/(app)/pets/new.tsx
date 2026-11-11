@@ -1,14 +1,28 @@
+import { AnalysisResponse } from "@/components/analyzer/types";
+import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
+import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
+import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
+import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
 import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
+import handlePetCreation from "@/lib/pet-service/pet-create-handler";
+import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
+import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { showMessage } from "react-native-flash-message";
 
 export default function AddPet() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
+  const [initialData, setInitialData] = useState(PET_FIELDS_CLEARED);
+  const { uploadMultiplePetImages } = useUploadMultiplePetImage();
+  //  const { aiPhotoAnalysisAllowed } = useProContext();
+  // const { isAiFeatureEnabled } = useAIFeatureContext();
   const onPhotoAnalyze = usePhotoAnalyzeStep();
 
   const config: WizardConfig = useMemo(
@@ -20,8 +34,8 @@ export default function AddPet() {
           "thankYouForHelping",
           "Thank you for helping bring our lost friends home.",
         ),
-        nextActionName: t("continue", "Continue"),
-        onComplete: (data) => console.log("start done:", data.reportType),
+        nextActionName: () => t("continue", "Continue"),
+        onComplete: () => {},
         skip: () => true,
       },
       {
@@ -31,11 +45,8 @@ export default function AddPet() {
           "sorryToHearYourPetIsMissing",
           "Sorry to hear your pet is missing. Let's bring them back!",
         ),
-        nextActionName: t("continue", "Continue"),
-        onComplete: async (data) => {
-          // e.g. await sightingRepository.create(data);
-          console.log("pet chosen:", data.id);
-        },
+        nextActionName: () => t("continue", "Continue"),
+        onComplete: () => {},
         skip: () => true,
       },
       {
@@ -45,10 +56,17 @@ export default function AddPet() {
           "aPhotoWouldReallyHelpIdentifyThisPetFaster",
           "A photo would really help identify this pet faster.",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          console.log(data.images);
-          return onPhotoAnalyze(data.images);
+          // console.log("isAI:", aiPhotoAnalysisAllowed && isAiFeatureEnabled);
+          if (data.images) {
+            return await handlePhotoUploadAnalyze(
+              onPhotoAnalyze,
+              data.images,
+              null,
+              null,
+            );
+          }
         },
       },
       {
@@ -58,7 +76,7 @@ export default function AddPet() {
           "reviewAndEditPetDescription",
           "Review and edit pet description",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
       },
       {
@@ -71,8 +89,20 @@ export default function AddPet() {
           "reviewAndEditPetDescription",
           "Review and edit pet description",
         ),
-        nextActionName: t("continue", "Continue"),
-        onComplete: () => undefined,
+        nextActionName: (data) =>
+          data.isLost ? t("continue", "Continue") : t("submit", "Submit"),
+        onComplete: async (data) => {
+          const newData = await handlePetCreation(t, data);
+          if (newData && data.images) {
+            await handlePetImageUpload(
+              t,
+              uploadMultiplePetImages,
+              newData,
+              newData.id,
+              data.images,
+            );
+          }
+        },
       },
       {
         id: "last_seen",
@@ -84,11 +114,10 @@ export default function AddPet() {
           "selectADateAndTimeThenPlaceAPin",
           "Select a date and time, then place a pin on the map.",
         ),
-        nextActionName: t("continue", "Continue"),
+        nextActionName: () => t("continue", "Continue"),
         skip: (data) => !data.isLost,
-        onComplete: () => undefined,
+        onComplete: () => {},
       },
-
       {
         id: "add_contact",
         title: t("updateYourContactInfo", "Update your contact info."),
@@ -96,27 +125,25 @@ export default function AddPet() {
           "reviewAndEditYourContactInfo",
           "Review and edit your contact info.",
         ),
-        nextActionName: t("submitReport", "Submit report"),
+        nextActionName: () => t("submit", "Submit report"),
+        skip: (data) => !data.isLost,
         onComplete: async (data) => {
-          if (data) {
-            const petRepository = new PetRepository();
-            const id = await petRepository.createPet(data);
-            return {
-              ...data,
-              id,
-            };
-          } else {
-            throw new Error("Not pet info found.");
+          if (data && data.isLost) {
+            try {
+              const sightingRepository = new SightingRepository();
+              await sightingRepository.createSighting({ ...data });
+            } catch {}
           }
         },
       },
     ],
-    [t],
+    [t, onPhotoAnalyze, uploadMultiplePetImages],
   );
 
   return (
     <SightingWizard
       config={config}
+      initialData={{ ...initialData, reportType: "new_pet" }}
       onFinish={() => router.back()}
       onCancel={() => router.back()}
     />
