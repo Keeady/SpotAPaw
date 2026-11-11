@@ -33,17 +33,12 @@ const SettingsRenderer = ({
   termsSetting,
   accountSetting,
   versionText,
-  proFeatureSetting,
   contactSetting,
 }: SettingsRendererProps) => {
   const { t } = useTranslation(["settings", "translation"]);
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* About Section */}
-        {aboutSection}
-        <Divider />
-
         {/* Location Settings Section */}
         <List.Section>
           <List.Subheader>{t("location")}</List.Subheader>
@@ -53,10 +48,6 @@ const SettingsRenderer = ({
         </List.Section>
         <Divider />
 
-        {/* Pro Features Section (Future Feature) */}
-        {proFeatureSetting}
-        <Divider />
-        
         {/* Preferences Section (Future Feature) */}
         <List.Section>
           <List.Subheader>{t("preferences")}</List.Subheader>
@@ -65,8 +56,11 @@ const SettingsRenderer = ({
           {distanceSetting}
           {notificationSetting}
         </List.Section>
-
         <Divider />
+        {/* About Section */}
+        {aboutSection}
+        <Divider />
+
         {/* Legal Section */}
         <List.Section>
           <List.Subheader>{t("legal")}</List.Subheader>

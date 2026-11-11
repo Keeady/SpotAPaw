@@ -37,6 +37,7 @@ import ProSettings from "./pro-features-setting";
 import { useNotificationPermission } from "../Provider/notification-permission-provider";
 import { updateNotificationSubscriptionEnabled } from "../notification-util";
 import ContactSetting from "./contact-setting";
+import { Linking } from "react-native";
 
 // Define color scheme for icons
 const iconColors = {
@@ -287,16 +288,18 @@ const SettingsContainer = () => {
     }
   };
 
-  const handleOpenPrivacyPolicy = () => {
-    router.push("/privacy");
-  };
+  const handleOpenPrivacyPolicy = () =>
+    Linking.openURL(
+      "https://www.restlessmoonstudio.com/products/spotapaw/privacy",
+    );
 
-  const handleOpenTermsOfService = () => {
-    router.push("/terms");
-  };
+  const handleOpenTermsOfService = () =>
+    Linking.openURL(
+      "https://www.restlessmoonstudio.com/products/spotapaw/terms",
+    );
 
   const handleAboutPress = () => {
-    router.push("/about");
+    Linking.openURL("https://www.restlessmoonstudio.com/products/spotapaw");
   };
 
   const versionText = Application.nativeApplicationVersion ?? "2.0.0";
