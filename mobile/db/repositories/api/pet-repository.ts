@@ -45,7 +45,7 @@ export class ApiPetRepository extends BasePetRepository {
       collarDescription: payload.collarDescription,
     };
 
-    return this.apiClient.post(`/pets/my`, changes);
+    return this.apiClient.post<Pet>(`/pets/my`, changes);
   }
 
   async deletePet(id: string, ownerId: string): Promise<void> {

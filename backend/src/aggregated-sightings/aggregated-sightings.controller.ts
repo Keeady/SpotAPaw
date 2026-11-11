@@ -11,6 +11,7 @@ import {
   HttpStatus,
   ParseFloatPipe,
   ParseUUIDPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { AggregatedSightingsService } from './aggregated-sightings.service.js';
 import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
@@ -44,8 +45,14 @@ export class AggregatedSightingsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Query('linked_sighting_id', ParseUUIDPipe) linked_sighting_id: string,
   ) {
-    const summary = await this.aggregatedSightingsService.findOne(id);
-    const sightings = await this.sightingsService.findAll(linked_sighting_id);
+    const [summary, sightings] = await Promise.all([
+      this.aggregatedSightingsService.findOne(id),
+      this.sightingsService.findAll(linked_sighting_id),
+    ]);
+
+    if (summary.linkedSightingId !== linked_sighting_id) {
+      throw new BadRequestException("Invalid IDs")
+    }
 
     return {
       summary,

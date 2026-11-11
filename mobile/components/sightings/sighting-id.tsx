@@ -149,7 +149,7 @@ export default function SightingProfile() {
   return (
     <SightingDetail
       petName={petName}
-      sightings={timeline}
+      sightings={timeline || []}
       petSummary={summary}
       onAddSighting={onAddSighting}
       onEdit={isOwner ? onEdit : undefined}

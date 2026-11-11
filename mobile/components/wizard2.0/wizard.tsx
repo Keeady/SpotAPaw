@@ -77,6 +77,7 @@ export function SightingWizard({
   const onComplete = useCallback(
     async (patch: SightingFormData = {}) => {
       if (!step) return;
+
       let merged = { ...formData, ...patch };
       setLoading(true);
       setErrorMessage(undefined);

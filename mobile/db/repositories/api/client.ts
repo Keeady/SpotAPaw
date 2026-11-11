@@ -32,8 +32,8 @@ export class ApiClient {
     path: string,
     body?: TBody,
     options?: RequestOptions,
-  ): Promise<TResponse> {
-    return this.request<TResponse>("POST", path, body, options);
+  ): Promise<string> {
+    return this.request<string>("POST", path, body, options);
   }
 
   async patch<TResponse, TBody = unknown>(

@@ -1,5 +1,9 @@
+import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
+import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
+import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,7 +11,8 @@ import { useTranslation } from "react-i18next";
 export default function MyNewSighting() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
-
+  const onPhotoAnalyze = usePhotoAnalyzeStep();
+  const { uploadMultiplePetImages } = useUploadMultiplePetImage();
   const config: WizardConfig = useMemo(
     () => [
       {
@@ -18,7 +23,7 @@ export default function MyNewSighting() {
           "Thank you for helping bring our lost friends home.",
         ),
         nextActionName: () => t("continue", "Continue"),
-        onComplete: (data) => undefined,
+        onComplete: () => undefined,
       },
       {
         id: "choose_pet",
@@ -29,7 +34,7 @@ export default function MyNewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
-        skip: (data) => data.reportType === "found_stray"
+        skip: (data) => data.reportType === "found_stray",
       },
       {
         id: "upload_photo",
@@ -40,33 +45,48 @@ export default function MyNewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          // Optional: run AI analysis and return the fields to merge, e.g.
-          // const analysis = await analyzePhoto(data.images?.[0]);
-          // return { breed: analysis.breed, colors: analysis.colors };
-          // Throwing here keeps the user on the step and shows the message.
-          // await sightingRepository.create(data);
+          // how do images get linked to sightings
+          if (data.images) {
+            return await handlePhotoUploadAnalyze(
+              onPhotoAnalyze,
+              data.images,
+              data.id ?? null,
+              null,
+            );
+          }
         },
       },
-            {
+      {
         id: "edit_pet",
         title: t("whatDidThePetLookLike", "What did the pet look like?"),
-        subtitle: t("reviewAndEditPetDescription", "Review and edit pet description"),
+        subtitle: t(
+          "reviewAndEditPetDescription",
+          "Review and edit pet description",
+        ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
       },
       {
         id: "edit_pet_continued",
-        title: t("whatDidThePetLookLikeCont", "What did the pet look like? (Cont.)"),
-        subtitle: t("reviewAndEditPetDescription", "Review and edit pet description"),
+        title: t(
+          "whatDidThePetLookLikeCont",
+          "What did the pet look like? (Cont.)",
+        ),
+        subtitle: t(
+          "reviewAndEditPetDescription",
+          "Review and edit pet description",
+        ),
         nextActionName: () => t("continue", "Continue"),
-        onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
+        onComplete: () => {
+          // upload images as sighting images
         },
       },
-            {
+      {
         id: "last_seen",
-        title: t("whenAndWhereWasThePetLastSeen", "When and where was the pet last seen?"),
+        title: t(
+          "whenAndWhereWasThePetLastSeen",
+          "When and where was the pet last seen?",
+        ),
         subtitle: t(
           "selectADateAndTimeThenPlaceAPin",
           "Select a date and time, then place a pin on the map.",
@@ -78,16 +98,19 @@ export default function MyNewSighting() {
       {
         id: "add_contact",
         title: t("updateYourContactInfo", "Update your contact info."),
-        subtitle: t("reviewAndEditYourContactInfo", "Review and edit your contact info."),
+        subtitle: t(
+          "reviewAndEditYourContactInfo",
+          "Review and edit your contact info.",
+        ),
         nextActionName: () => t("submit", "Submit report"),
         onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
+          if (data) {
+            return await handleSightingCreation(t, data);
+          }
         },
       },
-
     ],
-    [t],
+    [t, onPhotoAnalyze, uploadMultiplePetImages],
   );
 
   return (

@@ -5,13 +5,11 @@ export interface ISightingRepository {
   getLinkedSightings(id: string): Promise<AggregatedSighting[]>;
   createSighting(data: Sighting): Promise<string>;
   updateSighting(id: string, data: AggregatedSighting): Promise<void>;
-  updateSightingStatusByPet(id: string): Promise<void>;
   getSightings(filters: SightingFilters): Promise<SightingRepositoryResponse>;
   getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]>;
-  getSightingsByPetId(petId: string): Promise<AggregatedSighting[]>;
-  getSightingByLinkedSightingId(linkedSightingId: string): Promise<AggregatedSighting>;
-  getMatchingSightings(id: string, petDescriptionId: string): Promise<AggregatedSighting[]>;
-  findMatchingSightings(sightingId: string, userLocationLat: number, userLocationLong: number, sightingRadiusKm: number): Promise<void>;
+  getSightingByLinkedSightingId(
+    linkedSightingId: string,
+  ): Promise<AggregatedSighting>;
 }
 
 export interface SightingRepositoryResponse {
@@ -19,31 +17,36 @@ export interface SightingRepositoryResponse {
   count: number | null;
 }
 
+export interface AggregatedSightingResponse {
+  summary: AggregatedSighting;
+  sightings: AggregatedSighting[];
+}
+
 export interface SightingFilters {
-  minLat: number;
-  maxLat: number;
-  minLng: number;
-  maxLng: number;
+  latitude: number;
+  longitude: number;
+  radius: number;
   paginationStart: number;
   paginationEnd: number;
 }
 
 export class BaseSightingRepository implements ISightingRepository {
-  findMatchingSightings(sightingId: string, userLocationLat: number, userLocationLong: number, sightingRadiusKm: number): Promise<void> {
+  getAggregatedSightingById(
+    _aggregatedSightingId: string,
+    _linkedSightingId: string,
+  ): Promise<AggregatedSightingResponse> {
     throw new Error("Method not implemented.");
   }
-  getMatchingSightings(_id: string, _petDescriptionId: string): Promise<AggregatedSighting[]> {
-    throw new Error("Method not implemented.");
-  }
-  getSightingByLinkedSightingId(_linkedSightingId: string): Promise<AggregatedSighting> {
+ 
+  getSightingByLinkedSightingId(
+    _linkedSightingId: string,
+  ): Promise<AggregatedSighting> {
     throw new Error("Method not implemented.");
   }
   getSightingsByReporter(_reporterId: string): Promise<AggregatedSighting[]> {
     throw new Error("Method not implemented.");
   }
-  updateSightingStatusByPet(_id: string): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
+
   getLinkedSightings(_id: string): Promise<AggregatedSighting[]> {
     throw new Error("Method not implemented.");
   }
@@ -60,9 +63,6 @@ export class BaseSightingRepository implements ISightingRepository {
     throw new Error("Method not implemented.");
   }
   getSightings(_filters: SightingFilters): Promise<SightingRepositoryResponse> {
-    throw new Error("Method not implemented.");
-  }
-  getSightingsByPetId(_petId: string): Promise<AggregatedSighting[]> {
     throw new Error("Method not implemented.");
   }
 }

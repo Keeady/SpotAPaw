@@ -11,6 +11,7 @@ import handlePetCreation from "@/lib/pet-service/pet-create-handler";
 import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
+import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -129,10 +130,8 @@ export default function AddPet() {
         skip: (data) => !data.isLost,
         onComplete: async (data) => {
           if (data && data.isLost) {
-            try {
-              const sightingRepository = new SightingRepository();
-              await sightingRepository.createSighting({ ...data });
-            } catch {}
+            // how images get linked to sightings
+            return await handleSightingCreation(t, data);
           }
         },
       },

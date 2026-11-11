@@ -1,12 +1,22 @@
 import { supabase } from "@/components/supabase-client";
 import { AggregatedSighting, Sighting } from "../models/sighting";
 import {
+  AggregatedSightingResponse,
   ISightingRepository,
   SightingFilters,
 } from "./base-sighting-repository";
-import { SupabaseSightingRepository } from "./supabase/sighting-repository";
+import { ApiSightingRepository, SupabaseSightingRepository } from "./api/sighting-repository";
+import { ApiClient, authenticatedApiClient, publicApiClient } from "./api/client";
 
 export class SightingRepository implements ISightingRepository {
+  getAggregatedSightingById(
+      aggregatedSightingId: string,
+      linkedSightingId: string,
+    ): Promise<AggregatedSightingResponse> {
+      const repository = new ApiSightingRepository(publicApiClient);
+      return repository.getAggregatedSightingById(aggregatedSightingId, linkedSightingId)
+    }
+
   findMatchingSightings(
     sightingId: string,
     userLocationLat: number,
@@ -46,7 +56,7 @@ export class SightingRepository implements ISightingRepository {
     return repository.getSightingByLinkedSightingId(linkedSightingId);
   }
   createSighting(data: Partial<Sighting>): Promise<string> {
-    const repository = new SupabaseSightingRepository(supabase);
+    const repository = new ApiSightingRepository(authenticatedApiClient)
     return repository.createSighting(data);
   }
   updateSighting(id: string, data: Partial<AggregatedSighting>): Promise<void> {
@@ -54,7 +64,7 @@ export class SightingRepository implements ISightingRepository {
     return repository.updateSighting(id, data);
   }
   getSightings(filters: SightingFilters) {
-    const repository = new SupabaseSightingRepository(supabase);
+    const repository = new ApiSightingRepository(publicApiClient)
     return repository.getSightings(filters);
   }
 

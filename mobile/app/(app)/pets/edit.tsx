@@ -14,8 +14,22 @@ import { useTranslation } from "react-i18next";
 import { showMessage } from "react-native-flash-message";
 
 export default function EditPet() {
-  const { petId } = useLocalSearchParams<{ petId: string }>();
-  const [initialData, setInitialData] = useState(PET_FIELDS_CLEARED);
+  const {
+    id: sightingId,
+    petId,
+    is_lost: isPetLost,
+  } = useLocalSearchParams<{
+    id: string;
+    petId: string;
+    is_lost: string;
+    linkedSightingId: string;
+  }>();
+
+  const [initialData, setInitialData] = useState({
+    ...PET_FIELDS_CLEARED,
+    reportType: "edit_pet",
+    isLost: Boolean(isPetLost),
+  });
   const { t } = useTranslation("wizard");
   const router = useRouter();
 
@@ -31,7 +45,7 @@ export default function EditPet() {
       .getPet(petId)
       .then((data) => {
         if (data) {
-          setInitialData(data);
+          setInitialData({ ...initialData, ...data });
         }
       })
       .catch((error) => {
@@ -108,6 +122,7 @@ export default function EditPet() {
             : t("updatePet", "Update Pet"),
         onComplete: async (data) => {
           if (data.id) {
+            // TODO check if data changed
             await handlePetUpdate(t, data.id, data);
             if (data.images) {
               await handlePetImageUpload(
@@ -161,12 +176,15 @@ export default function EditPet() {
         },
       },
     ],
-    [t],
+    [t, onPhotoAnalyze, uploadMultiplePetImages],
   );
 
   return (
     <SightingWizard
-      initialData={{ ...initialData, reportType: "edit_pet" }}
+      initialData={{
+        ...initialData,
+        reportType: "edit_pet",
+      }}
       config={config}
       onFinish={() => router.back()}
       onCancel={() => router.back()}

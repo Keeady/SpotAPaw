@@ -37,10 +37,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
+    textAlign: "center",
   },
   headerSubtitle: {
     fontSize: 14,
     color: "#BBDEFB",
     marginTop: 4,
+    textAlign: "center",
   },
 });

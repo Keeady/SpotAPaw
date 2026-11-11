@@ -1,16 +1,25 @@
+import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import {
   SightingFormData,
   WizardConfig,
 } from "@/components/wizard2.0/wizard-types";
+import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
+import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
+import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
+import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { showMessage } from "react-native-flash-message";
 
 export default function NewSighting() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
+  const onPhotoAnalyze = usePhotoAnalyzeStep();
+  const { uploadMultiplePetImages } = useUploadMultiplePetImage();
 
   const config: WizardConfig = useMemo(
     () => [
@@ -34,8 +43,15 @@ export default function NewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          // e.g. await sightingRepository.create(data);
-          console.log("pet chosen:", data.id);
+          // fetch pet
+          if (data.id) {
+            const petRepository = new PetRepository();
+            const pet = await petRepository.getPet(data.id);
+            return {
+              ...data,
+              ...pet,
+            };
+          }
         },
         skip: (data) => data.reportType === "found_stray",
       },
@@ -48,11 +64,14 @@ export default function NewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          // Optional: run AI analysis and return the fields to merge, e.g.
-          // const analysis = await analyzePhoto(data.images?.[0]);
-          // return { breed: analysis.breed, colors: analysis.colors };
-          // Throwing here keeps the user on the step and shows the message.
-          // await sightingRepository.create(data);
+          if (data.images) {
+            return await handlePhotoUploadAnalyze(
+              onPhotoAnalyze,
+              data.images,
+              data.id ?? null,
+              null,
+            );
+          }
         },
       },
       {
@@ -76,10 +95,7 @@ export default function NewSighting() {
           "Review and edit pet description",
         ),
         nextActionName: () => t("continue", "Continue"),
-        onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
-        },
+        onComplete: () => undefined,
       },
       {
         id: "last_seen",
@@ -103,12 +119,13 @@ export default function NewSighting() {
         ),
         nextActionName: () => t("submit", "Submit report"),
         onComplete: async (data) => {
-          // Last step: save here. Throwing shows the error and keeps the user on the step.
-          // await sightingRepository.create(data);
+          if (data) {
+           return await handleSightingCreation(t, data)
+          }
         },
       },
     ],
-    [t],
+    [t, onPhotoAnalyze, uploadMultiplePetImages],
   );
 
   return (
