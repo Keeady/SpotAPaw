@@ -13,7 +13,6 @@ export class PetclaimsController {
   create(
     @CurrentUser('id') userId: string,
     @Body() createPetclaimDto: CreatePetclaimDto) {
-      console.log("createPetclaimDto", createPetclaimDto)
     return this.petclaimsService.create(userId, createPetclaimDto);
   }
 
