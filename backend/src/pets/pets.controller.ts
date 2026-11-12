@@ -16,7 +16,6 @@ import { PetsService } from './pets.service.js';
 import { PetParamsDto } from './dto/pet-params.dto.js';
 import { UpdatePetDto } from './dto/update-pet.dto.js';
 import { CreatePetDto } from './dto/create-pet.dto.js';
-import { AggregatedSightingsService } from '../aggregated-sightings/aggregated-sightings.service.js';
 
 @Controller('pets')
 @UseGuards(SupabaseAuthGuard)
