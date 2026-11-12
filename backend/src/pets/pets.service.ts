@@ -18,24 +18,28 @@ export class PetsService {
   ) {}
 
   async findByOwner(userId: string) {
-     return this.petRepository
-    .createQueryBuilder('p')
-    .leftJoinAndSelect('p.petPhotos', 'ph')
-    .leftJoinAndSelect('p.petDescription', 'pdr')
-    .leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
-    .where('p.owner_id = :userId', { userId })
-    .getMany();
+    return (
+      this.petRepository
+        .createQueryBuilder('p')
+        .leftJoinAndSelect('p.petPhotos', 'ph')
+        //.leftJoinAndSelect('p.petDescription', 'pdr')
+        //.leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
+        .where('p.owner_id = :userId', { userId })
+        .getMany()
+    );
   }
 
   async findPetById(userId: string, petId: string) {
-    return this.petRepository
-    .createQueryBuilder('p')
-    .leftJoinAndSelect('p.petPhotos', 'ph')
-    .leftJoinAndSelect('p.petDescription', 'pdr')
-    .leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
-    .where('p.id = :petId', { petId })
-    .andWhere('p.owner_id = :userId', { userId })
-    .getOneOrFail();
+    return (
+      this.petRepository
+        .createQueryBuilder('p')
+        .leftJoinAndSelect('p.petPhotos', 'ph')
+        //.leftJoinAndSelect('p.petDescription', 'pdr')
+        //.leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
+        .where('p.id = :petId', { petId })
+        .andWhere('p.owner_id = :userId', { userId })
+        .getOneOrFail()
+    );
   }
 
   async createPet(userId: string, dto: CreatePetDto): Promise<string> {

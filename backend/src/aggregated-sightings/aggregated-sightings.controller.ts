@@ -26,11 +26,6 @@ export class AggregatedSightingsController {
     private readonly sightingsService: SightingsService,
   ) {}
 
-  @Post()
-  create(@Body() createAggregatedSightingDto: CreateAggregatedSightingDto) {
-    return this.aggregatedSightingsService.create(createAggregatedSightingDto);
-  }
-
   @Get()
   findAll(@Query() query: GetAggregatedSightingsDto) {
     return this.aggregatedSightingsService.findAll(
@@ -51,7 +46,7 @@ export class AggregatedSightingsController {
     ]);
 
     if (summary.linkedSightingId !== linked_sighting_id) {
-      throw new BadRequestException("Invalid IDs")
+      throw new BadRequestException('Invalid IDs');
     }
 
     return {
@@ -71,5 +66,21 @@ export class AggregatedSightingsController {
       +id,
       updateAggregatedSightingDto,
     );
+  }
+
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateAggregatedSightingDto: UpdateAggregatedSightingDto,
+  ) {
+    return this.aggregatedSightingsService.updateStatus(
+      +id,
+      updateAggregatedSightingDto.isActive,
+    );
+  }
+
+  @Get('/pets/:petId')
+  async getPetSightings(@Param('petId') petId: string) {
+    return this.aggregatedSightingsService.findActivePetSightingsById(petId);
   }
 }

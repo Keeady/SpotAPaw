@@ -88,8 +88,9 @@ export class ApiSightingRepository extends BaseSightingRepository {
     await this.apiClient.patch<AggregatedSighting>(
       `/aggregated-sightings/my/${id}`,
       {
-        ...payload
-      }
+        ...payload,
+        petId: payload.id,
+      },
     );
   }
 
@@ -98,18 +99,40 @@ export class ApiSightingRepository extends BaseSightingRepository {
       throw new Error("Undefined api client");
     }
 
-   return this.apiClient.post<AggregatedSighting>(
-      `/aggregated-sightings`,
-      {
-        ...payload
-      }
-    );
+    const data = {
+      name: payload.name,
+      petId: payload.petId,
+      lastSeenLat: payload.lastSeenLat,
+      lastSeenLong: payload.lastSeenLong,
+      lastSeenLocation: payload.lastSeenLocation,
+      lastSeenTime: payload.lastSeenTime,
+      note: payload.note,
+      gender: payload.gender,
+      colors: payload.colors,
+      breed: payload.breed,
+      species: payload.species,
+      features: payload.features,
+      linkedSightingId: payload.linkedSightingId,
+      isActive: true,
+      reporterName: payload.reporterName,
+      reporterPhone: payload.reporterPhone,
+      reporterId: payload.reporterId,
+      size: payload.size,
+      collarDescription: payload.collarDescription,
+      age: payload.age ?? 0,
+      photos: payload.photos,
+      behavior: payload.behavior,
+    };
+
+    console.log("payload", data);
+
+    return this.apiClient.post<AggregatedSighting>(`/sightings`, data)
   }
 
   async getSightingsByReporter(
     reporterId: string,
   ): Promise<AggregatedSighting[]> {
-     if (!this.apiClient) {
+    if (!this.apiClient) {
       throw new Error("Undefined api client");
     }
 
@@ -125,5 +148,30 @@ export class ApiSightingRepository extends BaseSightingRepository {
     }
 
     return this.apiClient.get(`/matches?aggregated-sighting-id=${id}`);
+  }
+
+  async updateSightingStatusByPet(id: string): Promise<void> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    await this.apiClient.patch<AggregatedSighting>(
+      `/aggregated-sightings/my/${id}/status`,
+      {
+        isActive: false,
+      },
+    );
+  }
+
+  async getSightingsByPetId(petId: string): Promise<AggregatedSighting[]> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    const response = await this.apiClient.get<AggregatedSighting[]>(
+      `/aggregated-sightings/pets/${petId}`,
+    );
+
+    return response;
   }
 }

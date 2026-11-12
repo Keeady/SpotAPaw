@@ -33,7 +33,7 @@ type PetProfileCardProps = {
   onEditPet: () => void;
   onPetLost: () => void;
   onPetFound: () => void;
-  viewPetSightings: () => void;
+  viewPetSightings?: () => void;
 };
 
 const TABLET_BREAKPOINT = 600; // dp: phones below, tablets/iPads at or above
@@ -308,7 +308,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             )}
 
             {/* Secondary actions */}
-            {status === "lost" && (
+            {status === "lost" && viewPetSightings && (
               <Button
                 mode="outlined"
                 icon="map-marker-multiple-outline"

@@ -1,4 +1,6 @@
 import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
+import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
+import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
@@ -8,6 +10,7 @@ import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePetUpdate from "@/lib/pet-service/pet-update-handler";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
+import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,6 +38,8 @@ export default function EditPet() {
 
   const onPhotoAnalyze = usePhotoAnalyzeStep();
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
+  const { aiPhotoAnalysisAllowed } = useProContext();
+  const { isAiFeatureEnabled } = useAIFeatureContext();
 
   useEffect(() => {
     if (!petId) {
@@ -86,7 +91,12 @@ export default function EditPet() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          if (data.images && data.id) {
+          if (
+            data.images &&
+            data.id &&
+            aiPhotoAnalysisAllowed &&
+            isAiFeatureEnabled
+          ) {
             return await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
@@ -121,21 +131,26 @@ export default function EditPet() {
             ? t("continue", "Continue")
             : t("updatePet", "Update Pet"),
         onComplete: async (data) => {
+          let petData = data;
           if (data.id) {
-            // TODO check if data changed
-            await handlePetUpdate(t, data.id, data);
             if (data.images) {
-              await handlePetImageUpload(
+              const response = await handlePetImageUpload(
                 t,
                 uploadMultiplePetImages,
                 data,
                 data.id,
                 data.images,
               );
-            }
 
+              if (response) {
+                petData = response;
+              }
+            }
+            // TODO check if data changed
+            await handlePetUpdate(t, data.id, petData);
+            
             return {
-              ...data,
+              ...petData,
               lastSeenLat: undefined,
               lastSeenLong: undefined,
             };
@@ -154,7 +169,7 @@ export default function EditPet() {
         ),
         nextActionName: () => t("continue", "Continue"),
         skip: (data) => !data.isLost,
-        onComplete: async (data) => {},
+        onComplete: () => undefined,
       },
       {
         id: "add_contact",
@@ -166,17 +181,20 @@ export default function EditPet() {
         nextActionName: () => t("submit", "Submit report"),
         skip: (data) => !data.isLost,
         onComplete: async (data) => {
-          // TODO
+          // create sighting
           if (data && data.isLost) {
-            try {
-              const sightingRepository = new SightingRepository();
-              await sightingRepository.createSighting({ ...data });
-            } catch {}
+            return await handleSightingCreation(t, data);
           }
         },
       },
     ],
-    [t, onPhotoAnalyze, uploadMultiplePetImages],
+    [
+      t,
+      onPhotoAnalyze,
+      uploadMultiplePetImages,
+      aiPhotoAnalysisAllowed,
+      isAiFeatureEnabled,
+    ],
   );
 
   return (

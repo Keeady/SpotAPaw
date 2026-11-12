@@ -108,6 +108,7 @@ Deno.serve(async (req: Request) => {
 
   const photoPayloads = [];
   let petDescriptionResultId = "";
+  let textResponse = "";
   const petDescriptionIds = new Set<string>();
 
   if (!images || images.length === 0) {
@@ -222,7 +223,7 @@ Deno.serve(async (req: Request) => {
           photo_hash: hash,
           public_url: photoPublicUrl,
           pet_id: petId || null,
-          sighting_id: sightingId || null
+          sighting_id: sightingId || null,
         });
       }
 
@@ -242,17 +243,33 @@ Deno.serve(async (req: Request) => {
   // If all photos have the same pet description ID and it's not empty,
   // we can return early with the existing description and photo URLs
   if (petDescriptionIds.size === 1 && !petDescriptionIds.has("")) {
-    return new Response(
-      JSON.stringify({
-        success: true,
-        publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
-        petDescriptionId: petDescriptionIds.values().next().value,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      },
-    );
+    const id = petDescriptionIds.values().next().value;
+    try {
+      const { data, error: selectPetDescResultsError } = await supabaseClient
+        .from("pet_desc_results")
+        .select("*")
+        .eq("id", id);
+
+      if (!data || data.length === 0 || selectPetDescResultsError) {
+        console.error(selectPetDescResultsError);
+        return getErrorResponse("Failed to fetch pet description", 500);
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          result: data[0].description,
+          publicUrls: photoPayloads.map((p) => p.file_data.file_uri),
+          petDescriptionId: id,
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   if (photoPayloads.length === 0) {
@@ -260,7 +277,6 @@ Deno.serve(async (req: Request) => {
     return getErrorResponse(error, 400);
   }
 
-  let textResponse = "";
   try {
     const AiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 

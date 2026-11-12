@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AggregatedSighting } from './entities/aggregated-sighting.entity.js';
@@ -23,16 +22,11 @@ export class AggregatedSightingsService {
     private aggregatedSightingsRepository: Repository<AggregatedSighting>,
   ) {}
 
-  create(createAggregatedSightingDto: CreateAggregatedSightingDto) {
-    return 'This action adds a new aggregatedSighting';
-  }
-
   async findAll(latitude: number, longitude: number, radius: number) {
     // ~111 km per 1 degree latitude
     const latDegree = radius / 111;
     // adjust longitude scaling by latitude
-    const lngDegree =
-      radius / (111 * Math.cos(latitude * (Math.PI / 180)));
+    const lngDegree = radius / (111 * Math.cos(latitude * (Math.PI / 180)));
 
     const minLat = latitude - latDegree;
     const maxLat = latitude + latDegree;
@@ -59,12 +53,14 @@ export class AggregatedSightingsService {
     return toPublicSighting(data);
   }
 
-    /**
+  /**
    * Active sightings with a pet description inside the bounding box around
    * (lat, lng). Same approximation as the original edge function:
    * ~111 km per degree of latitude, longitude scaled by cos(lat).
    */
-  async findNearbyWithPetDescription(q: NearbyQuery): Promise<AggregatedSighting[]> {
+  async findNearbyWithPetDescription(
+    q: NearbyQuery,
+  ): Promise<AggregatedSighting[]> {
     const latDelta = q.radiusKm / 111;
     const lngDelta = q.radiusKm / (111 * Math.cos((q.lat * Math.PI) / 180));
 
@@ -82,7 +78,8 @@ export class AggregatedSightingsService {
       })
       .andWhere('s.updated_at >= :since', { since: q.updatedSince });
 
-    if (q.excludeId) qb.andWhere('s.id <> :excludeId', { excludeId: q.excludeId });
+    if (q.excludeId)
+      qb.andWhere('s.id <> :excludeId', { excludeId: q.excludeId });
 
     return qb.getMany();
   }
@@ -100,7 +97,14 @@ export class AggregatedSightingsService {
     return `This action updates a #${id} aggregatedSighting`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} aggregatedSighting`;
+  updateStatus(id: number, isActive: boolean) {
+    return `This action updates a #${id} aggregatedSighting`;
+  }
+
+  async findActivePetSightingsById(petId: string) {
+    return this.aggregatedSightingsRepository.findBy({
+      petId,
+      isActive: true
+    })
   }
 }

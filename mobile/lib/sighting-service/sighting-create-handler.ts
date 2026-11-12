@@ -7,6 +7,7 @@ export default async function handleSightingCreation(
   t: TFunction<"wizard", undefined>,
   data: SightingFormData,
 ) {
+  console.log("handleSightingCreation", data)
   try {
     const repository = new SightingRepository();
     const id = await repository.createSighting(data);

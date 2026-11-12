@@ -97,6 +97,7 @@ export function SightingWizard({
           setIndex(next);
         }
       } catch (error) {
+        console.log("error: ", error)
         // Stay on the step and let the screen show the message.
         setErrorMessage(error instanceof Error ? error.message : String(error));
       } finally {

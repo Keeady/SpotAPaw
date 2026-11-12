@@ -155,10 +155,12 @@ export function useUploadMultiplePetImage() {
 
         if (!data || !data.publicUrls) {
           callback([], "No public URLs returned from upload");
-          return;
+          return [];
         }
 
         callback(data.publicUrls);
+        
+        return data.publicUrls;
       } catch (error) {
         throw error;
       }

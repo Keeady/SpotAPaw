@@ -9,7 +9,7 @@ type RenderPetDetailsProps = {
   onEditPet: () => void;
   onPetLost: () => void;
   onPetFound: () => void;
-  viewPetSightings: () => void;
+  viewPetSightings?: () => void;
 };
 
 export default function RenderPetDetails({

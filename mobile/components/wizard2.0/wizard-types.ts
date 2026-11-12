@@ -31,6 +31,8 @@ export type SightingFormData = Partial<SightingPet> & {
   reporterName?: string;
   reporterPhone?: string;
   contactPhoneCountryCode?: string;
+
+  sightingId?: string;
 };
 
 /** One entry in the wizard configuration. */

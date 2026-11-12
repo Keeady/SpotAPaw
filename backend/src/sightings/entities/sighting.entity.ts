@@ -26,12 +26,12 @@ export class Sighting {
   lastSeenLong: number;
 
   @Column({
-    name: 'last_seen_location'
+    name: 'last_seen_location',
   })
   lastSeenLocation: string;
 
   @Column({
-    name: 'last_seen_time'
+    name: 'last_seen_time',
   })
   lastSeenTime: string;
 
@@ -57,27 +57,27 @@ export class Sighting {
   name: string;
 
   @Column({
-    name: 'linked_sighting_id'
+    name: 'linked_sighting_id',
   })
   linkedSightingId: string;
 
   @Column({
-    name: 'is_active'
+    name: 'is_active',
   })
   isActive: boolean;
 
   @Column({
-    name: 'reporter_name'
+    name: 'reporter_name',
   })
   reporterName: string;
 
   @Column({
-    name: 'reporter_phone'
+    name: 'reporter_phone',
   })
   reporterPhone: string;
 
   @Column({
-    name: 'reporter_id'
+    name: 'reporter_id',
   })
   reporterId: string;
 
@@ -85,14 +85,14 @@ export class Sighting {
   size: string;
 
   @Column({
-    name: 'collar_description'
+    name: 'collar_description',
   })
   collarDescription: string;
 
   @Column()
   age: number;
 
-  @Column('simple-array')
+  @Column('text', { array: true })
   photos: string[];
 
   @Column()

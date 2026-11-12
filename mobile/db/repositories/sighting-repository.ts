@@ -40,7 +40,7 @@ export class SightingRepository implements ISightingRepository {
     return repository.getSightingsByReporter(reporterId);
   }
   updateSightingStatusByPet(id: string): Promise<void> {
-    const repository = new SupabaseSightingRepository(supabase);
+    const repository = new ApiSightingRepository(authenticatedApiClient);
     return repository.updateSightingStatusByPet(id);
   }
   getLinkedSightings(id: string): Promise<AggregatedSighting[]> {
@@ -60,7 +60,7 @@ export class SightingRepository implements ISightingRepository {
     return repository.createSighting(data);
   }
   updateSighting(id: string, data: Partial<AggregatedSighting>): Promise<void> {
-    const repository = new SupabaseSightingRepository(supabase);
+    const repository = new ApiSightingRepository(authenticatedApiClient);
     return repository.updateSighting(id, data);
   }
   getSightings(filters: SightingFilters) {
@@ -69,7 +69,7 @@ export class SightingRepository implements ISightingRepository {
   }
 
   getSightingsByPetId(petId: string): Promise<AggregatedSighting[]> {
-    const repository = new SupabaseSightingRepository(supabase);
+    const repository = new ApiSightingRepository(authenticatedApiClient);
     return repository.getSightingsByPetId(petId);
   }
 }

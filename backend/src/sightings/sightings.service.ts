@@ -14,7 +14,93 @@ export class SightingsService {
   ) {}
 
   create(createSightingDto: CreateSightingDto) {
-    return 'This action adds a new sighting';
+    const changes = {} as Sighting;
+
+    if (createSightingDto.photos) {
+      changes.photos = createSightingDto.photos;
+    }
+
+    if (createSightingDto.name) {
+      changes.name = createSightingDto.name;
+    }
+
+    if (createSightingDto.petId) {
+      changes.petId = createSightingDto.petId;
+    }
+
+    if (createSightingDto.lastSeenLat) {
+      changes.lastSeenLat = createSightingDto.lastSeenLat;
+    }
+
+    if (createSightingDto.lastSeenLong) {
+      changes.lastSeenLong = createSightingDto.lastSeenLong;
+    }
+
+    if (createSightingDto.lastSeenLocation) {
+      changes.lastSeenLocation = createSightingDto.lastSeenLocation;
+    }
+
+    if (createSightingDto.lastSeenTime) {
+      changes.lastSeenTime = createSightingDto.lastSeenTime;
+    }
+
+    if (createSightingDto.note) {
+      changes.note = createSightingDto.note;
+    }
+
+    if (createSightingDto.gender) {
+      changes.colors = createSightingDto.colors;
+    }
+
+    if (createSightingDto.breed) {
+      changes.breed = createSightingDto.breed;
+    }
+
+    if (createSightingDto.species) {
+      changes.species = createSightingDto.species;
+    }
+
+    if (createSightingDto.features) {
+      changes.features = createSightingDto.features;
+    }
+
+    if (createSightingDto.linkedSightingId) {
+      changes.linkedSightingId = createSightingDto.linkedSightingId;
+    }
+
+    if (createSightingDto.isActive) {
+      changes.isActive = createSightingDto.isActive;
+    }
+
+    if (createSightingDto.reporterId) {
+      changes.reporterId = createSightingDto.reporterId;
+    }
+
+    if (createSightingDto.reporterName) {
+      changes.reporterName = createSightingDto.reporterName;
+    }
+
+    if (createSightingDto.reporterPhone) {
+      changes.reporterPhone = createSightingDto.reporterPhone;
+    }
+
+    if (createSightingDto.size) {
+      changes.size = createSightingDto.size;
+    }
+
+    if (createSightingDto.collarDescription) {
+      changes.collarDescription = createSightingDto.collarDescription;
+    }
+
+    if (createSightingDto.age) {
+      changes.age = createSightingDto.age;
+    }
+
+    if (createSightingDto.behavior) {
+      changes.behavior = createSightingDto.behavior;
+    }
+
+    return this.sightingsRepository.insert(changes)
   }
 
   async findAll(linked_sighting_id: string): Promise<PublicSighting[]> {

@@ -22,8 +22,8 @@ export default function AddPet() {
   const router = useRouter();
   const [initialData, setInitialData] = useState(PET_FIELDS_CLEARED);
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
-  //  const { aiPhotoAnalysisAllowed } = useProContext();
-  // const { isAiFeatureEnabled } = useAIFeatureContext();
+  const { aiPhotoAnalysisAllowed } = useProContext();
+  const { isAiFeatureEnabled } = useAIFeatureContext();
   const onPhotoAnalyze = usePhotoAnalyzeStep();
 
   const config: WizardConfig = useMemo(
@@ -59,14 +59,16 @@ export default function AddPet() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          // console.log("isAI:", aiPhotoAnalysisAllowed && isAiFeatureEnabled);
-          if (data.images) {
-            return await handlePhotoUploadAnalyze(
+          if (data.images && isAiFeatureEnabled && aiPhotoAnalysisAllowed) {
+            const response = await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
               null,
               null,
             );
+
+            console.log(response);
+            return response;
           }
         },
       },
@@ -136,7 +138,13 @@ export default function AddPet() {
         },
       },
     ],
-    [t, onPhotoAnalyze, uploadMultiplePetImages],
+    [
+      t,
+      onPhotoAnalyze,
+      uploadMultiplePetImages,
+      aiPhotoAnalysisAllowed,
+      isAiFeatureEnabled,
+    ],
   );
 
   return (
