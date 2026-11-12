@@ -2,22 +2,75 @@ import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
 import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
+import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import handleSightingImageUpload from "@/lib/sighting-service/sighting-image-upload";
-import { useRouter } from "expo-router";
-import { useMemo } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function MyNewSighting() {
+  const {
+    id: sightingId,
+    petId,
+    is_lost: isPetLost,
+    linkedSightingId,
+  } = useLocalSearchParams<{
+    id: string;
+    petId: string;
+    is_lost: string;
+    linkedSightingId: string;
+  }>();
+
   const { t } = useTranslation("wizard");
   const router = useRouter();
   const onPhotoAnalyze = usePhotoAnalyzeStep();
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
   const { aiPhotoAnalysisAllowed } = useProContext();
   const { isAiFeatureEnabled } = useAIFeatureContext();
+
+  const [initialData, setInitialData] = useState({
+    ...PET_FIELDS_CLEARED,
+    reportType: undefined,
+    isLost: true,
+    id: petId,
+    sightingId,
+  });
+
+  useEffect(() => {
+    if (!sightingId) {
+      return;
+    }
+
+    const repository = new SightingRepository();
+    repository.getSighting(sightingId).then((data) => {
+      if (data) {
+        setInitialData((prev) => ({ ...prev, ...data }));
+      }
+    });
+  }, [sightingId]);
+
+  useEffect(() => {
+    if (!petId) {
+      return;
+    }
+    const petRepository = new PetRepository();
+    petRepository
+      .getPet(petId)
+      .then((data) => {
+        if (data) {
+          setInitialData((prev) => ({ ...prev, ...data }));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [petId]);
 
   const config: WizardConfig = useMemo(
     () => [
@@ -136,6 +189,7 @@ export default function MyNewSighting() {
 
   return (
     <SightingWizard
+      initialData={initialData}
       config={config}
       onFinish={() => router.back()}
       onCancel={() => router.back()}

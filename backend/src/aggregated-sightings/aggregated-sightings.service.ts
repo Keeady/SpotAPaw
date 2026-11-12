@@ -53,6 +53,15 @@ export class AggregatedSightingsService {
     return toPublicSighting(data);
   }
 
+  async findByLinkedSightingId(id: string) {
+    const data = await this.aggregatedSightingsRepository
+      .createQueryBuilder('aggregated_sightings')
+      .where('aggregated_sightings.linked_sighting_id = :id', { id })
+      .orderBy('aggregated_sightings.created_at', 'DESC')
+      .getMany();
+    return toPublicSighting(data[0]);
+  }
+
   /**
    * Active sightings with a pet description inside the bounding box around
    * (lat, lng). Same approximation as the original edge function:
@@ -94,7 +103,7 @@ export class AggregatedSightingsService {
   }
 
   async update(
-    id: number,
+    id: string,
     userId: string,
     updateAggregatedSightingDto: UpdateAggregatedSightingDto,
   ) {
@@ -178,10 +187,6 @@ export class AggregatedSightingsService {
 
     if (updateAggregatedSightingDto.behavior) {
       changes.behavior = updateAggregatedSightingDto.behavior;
-    }
-
-    if (userId) {
-      changes.reporterId = userId;
     }
 
     if (Object.keys(changes).length === 0) {

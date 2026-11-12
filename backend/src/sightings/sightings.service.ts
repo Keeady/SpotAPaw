@@ -148,10 +148,6 @@ export class SightingsService {
     return [];
   }
 
-  findOne(id: number): Sighting | undefined {
-    return undefined;
-  }
-
   updateStatus(ids: string[], isActive: boolean) {
     return this.sightingsRepository.update(
       { linkedSightingId: In(ids) },

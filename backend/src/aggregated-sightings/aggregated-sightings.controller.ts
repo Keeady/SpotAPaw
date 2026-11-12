@@ -58,21 +58,22 @@ export class AggregatedSightingsController {
     };
   }
 
-  @Get('my/:linkedSightingId')
+  @Get('my')
   async findByLinkedSightingId(
-    @Param('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
+    @Query('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
   ) {
-    return this.sightingsService.findAll(linkedSightingId);
+    return this.aggregatedSightingsService.findByLinkedSightingId(linkedSightingId);
   }
 
   @Patch('my/:id')
+  @UseGuards(SupabaseAuthGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAggregatedSightingDto: UpdateAggregatedSightingDto,
     @CurrentUser('id') userId?: string
   ) {
     return this.aggregatedSightingsService.update(
-      +id,
+      id,
       userId || "",
       updateAggregatedSightingDto,
     );
@@ -82,7 +83,7 @@ export class AggregatedSightingsController {
   @UseGuards(SupabaseAuthGuard)
   async updateStatus(
     @Query('petId') petId: string,
-    @Body('status') status: boolean,
+    @Body('isActive') isActive: boolean,
     @CurrentUser('id') userId: string,
   ) {
     const sightings =
@@ -98,11 +99,11 @@ export class AggregatedSightingsController {
 
     const updated = await this.aggregatedSightingsService.updateStatus(
       ids,
-      status,
+      isActive,
     );
 
     if (updated) {
-      await this.sightingsService.updateStatus(linkedSightingIds, status);
+      await this.sightingsService.updateStatus(linkedSightingIds, isActive);
     }
   }
 

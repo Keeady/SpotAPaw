@@ -43,6 +43,7 @@ export class PosterService {
   }
 
   async updatePoster(
+    userId: string,
     posterId: number,
     dto: UpdatePosterDto,
   ): Promise<Poster> {
@@ -73,7 +74,7 @@ export class PosterService {
     }
 
     const result = await this.posterRepository.update(
-      { id: posterId },
+      { id: posterId, ownerId: userId },
       changes,
     );
 

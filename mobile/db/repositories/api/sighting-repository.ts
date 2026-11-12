@@ -71,7 +71,7 @@ export class ApiSightingRepository extends BaseSightingRepository {
     }
 
     const response = await this.apiClient.get<AggregatedSighting>(
-      `/aggregated-sightings/my/${linkedSightingId}`,
+      `/aggregated-sightings/my?linkedSightingId=${linkedSightingId}`,
     );
 
     return response;
@@ -118,7 +118,7 @@ export class ApiSightingRepository extends BaseSightingRepository {
     await this.apiClient.patch<AggregatedSighting>(
       `/aggregated-sightings/my/${id}`,
       {
-        ...payload,
+        ...changes,
         petId: payload.id,
       },
     );

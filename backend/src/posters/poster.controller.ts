@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,6 +16,8 @@ import { PosterService } from './poster.service.js';
 import { GetPosterQueryDto } from './dto/get-poster-query.dto.js';
 import { UpdatePosterDto } from './dto/update-poster.dto.js';
 import { PosterParamsDto } from './dto/poster-params.dto.js';
+import { SupabaseAuthGuard } from '../auth/supabase-auth.guard.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
 
 @Controller('posters')
 @UsePipes(
@@ -45,7 +48,9 @@ export class PosterController {
   }
 
   @Patch(':posterId')
+  @UseGuards(SupabaseAuthGuard)
   async updatePoster(
+    @CurrentUser('id') userId: string,
     @Param() params: PosterParamsDto,
     @Body() body: UpdatePosterDto,
   ) {
@@ -56,6 +61,7 @@ export class PosterController {
     }
 
     const poster = await this.posterService.updatePoster(
+      userId,
       params.posterId,
       body,
     );

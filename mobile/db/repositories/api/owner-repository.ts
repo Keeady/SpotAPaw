@@ -37,8 +37,8 @@ export class ApiOwnerRepository extends BaseOwnerRepository {
     }
 
     return this.apiClient.patch("/profile", {
-      firstname: payload.firstName,
-      lastname: payload.lastName,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
       email: payload.email,
       phone: payload.phone,
       countryCode: payload.countryCode,

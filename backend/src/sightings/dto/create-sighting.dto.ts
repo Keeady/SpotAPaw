@@ -12,6 +12,7 @@ import {
   Min,
   Max,
   IsDefined,
+  IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -100,4 +101,8 @@ export class CreateSightingDto {
   @IsString()
   @IsOptional()
   behavior?: string;
+
+  @IsOptional()
+  @IsNumber()
+  petDescriptionId: number;
 }

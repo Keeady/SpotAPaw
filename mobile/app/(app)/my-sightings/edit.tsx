@@ -4,6 +4,7 @@ import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
@@ -53,6 +54,23 @@ export default function EditPetSighting() {
       }
     });
   }, [sightingId]);
+
+  useEffect(() => {
+    if (!petId) {
+      return;
+    }
+    const petRepository = new PetRepository();
+    petRepository
+      .getPet(petId)
+      .then((data) => {
+        if (data) {
+          setInitialData((prev) => ({ ...prev, ...data }));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [petId]);
 
   const config: WizardConfig = useMemo(
     () => [

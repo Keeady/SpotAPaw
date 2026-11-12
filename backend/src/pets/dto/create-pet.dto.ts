@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsBoolean, IsDefined, IsNumber, IsOptional, IsString, MaxLength, MinLength, ValidateIf } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsBoolean, IsDefined, IsNumber, IsOptional, IsString, MaxLength, MinLength, ValidateIf } from "class-validator";
 
 export class CreatePetDto {
     @IsDefined()
@@ -62,4 +62,7 @@ export class CreatePetDto {
     @IsOptional()
     @IsNumber()
     petDescriptionId: string;
+
+    @IsArray()
+    photos: string[];
 }
