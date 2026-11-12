@@ -12,11 +12,11 @@ export class User {
   @PrimaryColumn({ name: 'owner_id' })
   ownerId: string;
 
-  @Column({ type: 'text' })
-  firstname: string;
+  @Column({ type: 'text', name: "firstname" })
+  firstName: string;
 
-  @Column({ type: 'text' })
-  lastname: string;
+  @Column({ type: 'text', name: "lastname" })
+  lastName: string;
 
   @Column({ type: 'text' })
   email: string;
@@ -33,7 +33,7 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @DeleteDateColumn({
+  @Column({
     name: 'deleted_at',
     type: 'timestamptz',
     nullable: true,

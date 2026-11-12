@@ -209,24 +209,14 @@ const fetchSightingsWithLocation = async (
   }
 
   const { lat, lng } = location;
-  // ~111 km per 1 degree latitude
-  const latDegree = SIGHTING_RADIUSKM / 111;
-  // adjust longitude scaling by latitude
-  const lngDegree = SIGHTING_RADIUSKM / (111 * Math.cos(lat * (Math.PI / 180)));
-
-  const minLat = lat - latDegree;
-  const maxLat = lat + latDegree;
-  const minLng = lng - lngDegree;
-  const maxLng = lng + lngDegree;
 
   // Default: fetch all sightings
   const repository = new SightingRepository();
   repository
     .getSightings({
-      minLat,
-      maxLat,
-      minLng,
-      maxLng,
+      latitude: lat,
+      longitude: lng,
+      radius: SIGHTING_RADIUSKM,
       paginationEnd: pagination.end,
       paginationStart: pagination.start,
     })

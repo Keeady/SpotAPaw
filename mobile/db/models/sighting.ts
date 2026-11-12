@@ -24,6 +24,7 @@ export interface Sighting {
     age: number;
     petDescriptionId: string;
     photos: string[];
+    behavior: string;
 }
 
 export interface AggregatedSighting extends Sighting {

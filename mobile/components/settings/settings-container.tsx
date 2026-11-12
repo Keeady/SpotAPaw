@@ -13,7 +13,6 @@ import {
 import { SupportedLanguage } from "@/components/location-request-util";
 import { onDeleteAccount } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { useRouter } from "expo-router";
 import { PermissionContext } from "../Provider/permission-provider";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { createErrorLogMessage } from "../util";
@@ -37,6 +36,7 @@ import ProSettings from "./pro-features-setting";
 import { useNotificationPermission } from "../Provider/notification-permission-provider";
 import { updateNotificationSubscriptionEnabled } from "../notification-util";
 import ContactSetting from "./contact-setting";
+import { Linking } from "react-native";
 
 // Define color scheme for icons
 const iconColors = {
@@ -64,7 +64,6 @@ const languages: SupportedLanguage[] = [
 
 const SettingsContainer = () => {
   const { t } = useTranslation(["settings", "translation"]);
-  const router = useRouter();
 
   // Location states
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
@@ -287,19 +286,21 @@ const SettingsContainer = () => {
     }
   };
 
-  const handleOpenPrivacyPolicy = () => {
-    router.push("/privacy");
-  };
+  const handleOpenPrivacyPolicy = () =>
+    Linking.openURL(
+      "https://www.restlessmoonstudio.com/products/spotapaw/privacy",
+    );
 
-  const handleOpenTermsOfService = () => {
-    router.push("/terms");
-  };
+  const handleOpenTermsOfService = () =>
+    Linking.openURL(
+      "https://www.restlessmoonstudio.com/products/spotapaw/terms",
+    );
 
   const handleAboutPress = () => {
-    router.push("/about");
+    Linking.openURL("https://www.restlessmoonstudio.com/products/spotapaw");
   };
 
-  const versionText = Application.nativeApplicationVersion ?? "1.9.0";
+  const versionText = Application.nativeApplicationVersion ?? "2.0.0";
   const locationPermissionStatusDisplayText = locationPermission
     ? t("granted", "Granted")
     : t("request", "Request");

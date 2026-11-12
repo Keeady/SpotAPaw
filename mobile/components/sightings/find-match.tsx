@@ -14,10 +14,8 @@ import { WizardHeader } from "../wizard/wizard-header";
 
 export function ShowMatches({
   sightingId,
-  petDescriptionId,
 }: {
   sightingId: string;
-  petDescriptionId: string;
 }) {
   const { t } = useTranslation("wizard");
   const [loading, setLoading] = useState(false);
@@ -35,11 +33,11 @@ export function ShowMatches({
   }, []);
 
   useEffect(() => {
-    if (sightingId && petDescriptionId) {
+    if (sightingId) {
       setLoading(true);
       const repository = new SightingRepository();
       repository
-        .getMatchingSightings(sightingId, petDescriptionId)
+        .getMatchingSightings(sightingId)
         .then((results) => {
           if (!isMountedRef.current) {
             return;
@@ -69,7 +67,7 @@ export function ShowMatches({
           setLoading(false);
         });
     }
-  }, [sightingId, petDescriptionId]);
+  }, [sightingId]);
 
   const onSightingSelect = (id: string) => {
     if (!id) {

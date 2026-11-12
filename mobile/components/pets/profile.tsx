@@ -8,6 +8,7 @@ import {
 import { Card, Text, Chip, Button, Icon, useTheme } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import SightingGallery from "../sightings/gallery";
+import { PetDescription, PetPhoto } from "@/db/models/pet";
 
 type PetProfile = {
   id: string;
@@ -22,6 +23,8 @@ type PetProfile = {
   species?: string;
   note?: string;
   photos?: string[];
+  petPhotos?: PetPhoto[];
+  petDescription?: PetDescription;
 };
 
 type PetProfileCardProps = {
@@ -30,7 +33,7 @@ type PetProfileCardProps = {
   onEditPet: () => void;
   onPetLost: () => void;
   onPetFound: () => void;
-  viewPetSightings: () => void;
+  viewPetSightings?: () => void;
 };
 
 const TABLET_BREAKPOINT = 600; // dp: phones below, tablets/iPads at or above
@@ -113,6 +116,8 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     species,
     note,
     photos,
+    petPhotos,
+    petDescription,
   } = petProfile;
 
   const isWide = width >= TABLET_BREAKPOINT;
@@ -138,7 +143,24 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                 isWide ? styles.photoWide : styles.photoNarrow,
               ]}
             >
-              {hasPhotos ? (
+              {!!petDescription?.petDescriptionPhotos &&
+              petDescription.petDescriptionPhotos.length > 0 ? (
+                <SightingGallery
+                  images={petDescription.petDescriptionPhotos!.map((photo) => ({
+                    uri: photo.publicUrl,
+                  }))}
+                  isVisible={isVisibleGallery}
+                  setIsVisible={setIsVisibleGallery}
+                  mainPhoto={petDescription.petDescriptionPhotos![0].publicUrl}
+                />
+              ) : !!petPhotos && petPhotos.length > 0 ? (
+                <SightingGallery
+                  images={petPhotos!.map((photo) => ({ uri: photo.publicUrl }))}
+                  isVisible={isVisibleGallery}
+                  setIsVisible={setIsVisibleGallery}
+                  mainPhoto={petPhotos![0].publicUrl}
+                />
+              ) : hasPhotos ? (
                 <SightingGallery
                   images={photos!.map((photo) => ({ uri: photo }))}
                   isVisible={isVisibleGallery}
@@ -227,7 +249,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                     width={detailWidth}
                   >
                     <Text variant="bodyMedium">
-                      {t("ageWithCount", age.toString(), {
+                      {t("ageWithCount", age?.toString(), {
                         count: age,
                         ns: "translation",
                       })}
@@ -286,7 +308,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
             )}
 
             {/* Secondary actions */}
-            {status === "lost" && (
+            {status === "lost" && viewPetSightings && (
               <Button
                 mode="outlined"
                 icon="map-marker-multiple-outline"

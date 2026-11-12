@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service.js';
@@ -33,6 +34,18 @@ export class ProfileController {
     }
 
     return data;
+  }
+
+  @Post()
+  async createProfile(
+    @CurrentUser() user: AuthUser,
+    @Body() body: UpdateProfileDto,
+  ) {
+    if (Object.keys(body).length === 0) {
+      throw new BadRequestException('Provide at least one editable field.');
+    }
+
+    return this.profileService.updateProfile(user.id, body);
   }
 
   @Patch()

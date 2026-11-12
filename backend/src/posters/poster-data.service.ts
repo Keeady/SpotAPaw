@@ -67,6 +67,7 @@ export class PosterDataService {
       name: payload.name,
       breed: payload.breed,
       colors: payload.colors,
+      ownerId: payload.ownerId
     });
 
     return this.posterRepo.save(poster);
@@ -110,6 +111,7 @@ export class PosterDataService {
       collarDescription: s.collarDescription ?? [],
       features: s.features ?? [],
       gender: s.gender || '',
+      ownerId: s.reporterId || ''
     };
   }
 

@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AggregatedSighting } from './entities/aggregated-sighting.entity.js';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { toPublicSighting, toPublicSightings } from './util.js';
 
 export interface NearbyQuery {
@@ -23,16 +22,11 @@ export class AggregatedSightingsService {
     private aggregatedSightingsRepository: Repository<AggregatedSighting>,
   ) {}
 
-  create(createAggregatedSightingDto: CreateAggregatedSightingDto) {
-    return 'This action adds a new aggregatedSighting';
-  }
-
   async findAll(latitude: number, longitude: number, radius: number) {
     // ~111 km per 1 degree latitude
     const latDegree = radius / 111;
     // adjust longitude scaling by latitude
-    const lngDegree =
-      radius / (111 * Math.cos(latitude * (Math.PI / 180)));
+    const lngDegree = radius / (111 * Math.cos(latitude * (Math.PI / 180)));
 
     const minLat = latitude - latDegree;
     const maxLat = latitude + latDegree;
@@ -59,12 +53,23 @@ export class AggregatedSightingsService {
     return toPublicSighting(data);
   }
 
-    /**
+  async findByLinkedSightingId(id: string) {
+    const data = await this.aggregatedSightingsRepository
+      .createQueryBuilder('aggregated_sightings')
+      .where('aggregated_sightings.linked_sighting_id = :id', { id })
+      .orderBy('aggregated_sightings.created_at', 'DESC')
+      .getMany();
+    return toPublicSighting(data[0]);
+  }
+
+  /**
    * Active sightings with a pet description inside the bounding box around
    * (lat, lng). Same approximation as the original edge function:
    * ~111 km per degree of latitude, longitude scaled by cos(lat).
    */
-  async findNearbyWithPetDescription(q: NearbyQuery): Promise<AggregatedSighting[]> {
+  async findNearbyWithPetDescription(
+    q: NearbyQuery,
+  ): Promise<AggregatedSighting[]> {
     const latDelta = q.radiusKm / 111;
     const lngDelta = q.radiusKm / (111 * Math.cos((q.lat * Math.PI) / 180));
 
@@ -82,7 +87,8 @@ export class AggregatedSightingsService {
       })
       .andWhere('s.updated_at >= :since', { since: q.updatedSince });
 
-    if (q.excludeId) qb.andWhere('s.id <> :excludeId', { excludeId: q.excludeId });
+    if (q.excludeId)
+      qb.andWhere('s.id <> :excludeId', { excludeId: q.excludeId });
 
     return qb.getMany();
   }
@@ -96,11 +102,118 @@ export class AggregatedSightingsService {
       .getMany();
   }
 
-  update(id: number, updateAggregatedSightingDto: UpdateAggregatedSightingDto) {
-    return `This action updates a #${id} aggregatedSighting`;
+  async update(
+    id: string,
+    userId: string,
+    updateAggregatedSightingDto: UpdateAggregatedSightingDto,
+  ) {
+    const changes = {} as AggregatedSighting;
+
+    if (updateAggregatedSightingDto.photos) {
+      changes.photos = updateAggregatedSightingDto.photos;
+    }
+
+    if (updateAggregatedSightingDto.name) {
+      changes.name = updateAggregatedSightingDto.name;
+    }
+
+    if (updateAggregatedSightingDto.lastSeenLat) {
+      changes.lastSeenLat = updateAggregatedSightingDto.lastSeenLat;
+    }
+
+    if (updateAggregatedSightingDto.lastSeenLong) {
+      changes.lastSeenLong = updateAggregatedSightingDto.lastSeenLong;
+    }
+
+    if (updateAggregatedSightingDto.lastSeenLocation) {
+      changes.lastSeenLocation = updateAggregatedSightingDto.lastSeenLocation;
+    }
+
+    if (updateAggregatedSightingDto.lastSeenTime) {
+      changes.lastSeenTime = updateAggregatedSightingDto.lastSeenTime;
+    }
+
+    if (updateAggregatedSightingDto.note) {
+      changes.note = updateAggregatedSightingDto.note;
+    }
+
+    if (updateAggregatedSightingDto.gender) {
+      changes.gender = updateAggregatedSightingDto.gender;
+    }
+
+    if (updateAggregatedSightingDto.colors) {
+      changes.colors = updateAggregatedSightingDto.colors;
+    }
+
+    if (updateAggregatedSightingDto.breed) {
+      changes.breed = updateAggregatedSightingDto.breed;
+    }
+
+    if (updateAggregatedSightingDto.species) {
+      changes.species = updateAggregatedSightingDto.species;
+    }
+
+    if (updateAggregatedSightingDto.features) {
+      changes.features = updateAggregatedSightingDto.features;
+    }
+
+    if (updateAggregatedSightingDto.linkedSightingId) {
+      changes.linkedSightingId = updateAggregatedSightingDto.linkedSightingId;
+    }
+
+    if (updateAggregatedSightingDto.isActive) {
+      changes.isActive = updateAggregatedSightingDto.isActive;
+    }
+
+    if (updateAggregatedSightingDto.reporterName) {
+      changes.reporterName = updateAggregatedSightingDto.reporterName;
+    }
+
+    if (updateAggregatedSightingDto.reporterPhone) {
+      changes.reporterPhone = updateAggregatedSightingDto.reporterPhone;
+    }
+
+    if (updateAggregatedSightingDto.size) {
+      changes.size = updateAggregatedSightingDto.size;
+    }
+
+    if (updateAggregatedSightingDto.collarDescription) {
+      changes.collarDescription = updateAggregatedSightingDto.collarDescription;
+    }
+
+    if (updateAggregatedSightingDto.age) {
+      changes.age = updateAggregatedSightingDto.age;
+    }
+
+    if (updateAggregatedSightingDto.behavior) {
+      changes.behavior = updateAggregatedSightingDto.behavior;
+    }
+
+    if (Object.keys(changes).length === 0) {
+      throw new BadRequestException('Provide at least one editable field.');
+    }
+
+    const result = await this.aggregatedSightingsRepository.update(id, changes);
+
+    return !!(result.affected && result.affected > 0);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} aggregatedSighting`;
+  async updateStatus(ids: string[], isActive: boolean) {
+    const result = await this.aggregatedSightingsRepository.update(
+      { id: In(ids) },
+      {
+        isActive,
+      },
+    );
+
+    return !!(result.affected && result.affected > 0);
+  }
+
+  async findActivePetSightingsById(userId: string, petId: string) {
+    return this.aggregatedSightingsRepository.findBy({
+      petId,
+      isActive: true,
+      ownerId: userId,
+    });
   }
 }

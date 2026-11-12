@@ -5,7 +5,14 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Index,
+  OneToMany,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
+
+import { PetPhotos } from './pet-photo.entity.js';
+import { PetDescription } from './pet-description.entity.js';
 
 @Entity('pets')
 export class Pet {
@@ -111,4 +118,18 @@ export class Pet {
     default: false,
   })
   isLost: boolean;
+
+  @Column({
+    name: 'behavior',
+    type: 'text',
+    nullable: true,
+  })
+  behavior: string;
+
+  @OneToMany(() => PetPhotos, (photo) => photo.pet)
+  petPhotos: Relation<PetPhotos[]>;
+
+  @OneToOne(() => PetDescription, (petDescription) => petDescription.pet)
+  @JoinColumn({ name: 'pet_description_id' })
+  petDescription: Relation<PetDescription> | null;
 }

@@ -76,6 +76,8 @@ export const uploadPhotoWithProcessing = async (
 
 export const uploadMultiplePhotosWithProcessing = async (
   images: { uri: string; filename: string; filetype: string }[],
+  petId: string | null,
+  sightingId: string | null,
 ) => {
   try {
     const processedImages = await Promise.all(
@@ -96,6 +98,8 @@ export const uploadMultiplePhotosWithProcessing = async (
       {
         body: {
           images: processedImages,
+          petId,
+          sightingId
         },
       },
     );
@@ -115,6 +119,8 @@ export function useUploadMultiplePetImage() {
     async (
       images: { uri: string; filename: string; filetype: string }[],
       callback: (uri: string[], error?: string) => void,
+      petId: string | null,
+      sightingId: string | null
     ) => {
       try {
         const processedImages = await Promise.all(
@@ -135,6 +141,8 @@ export function useUploadMultiplePetImage() {
           {
             body: {
               images: processedImages,
+              petId,
+              sightingId
             },
           },
         );
@@ -145,10 +153,12 @@ export function useUploadMultiplePetImage() {
 
         if (!data || !data.publicUrls) {
           callback([], "No public URLs returned from upload");
-          return;
+          return [];
         }
 
         callback(data.publicUrls);
+        
+        return data.publicUrls;
       } catch (error) {
         throw error;
       }

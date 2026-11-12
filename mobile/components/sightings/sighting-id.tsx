@@ -119,11 +119,11 @@ export default function SightingProfile() {
 
   const onViewMatches = useCallback(() => {
     router.push(`/matches?sightingId=${sightingId}`);
-  }, [sightingId]);
+  }, [sightingId, router]);
 
   const onViewPoster = useCallback(() => {
     router.push(`/posters?sightingId=${sightingId}`);
-  }, [sightingId]);
+  }, [sightingId, router]);
 
   if (error) {
     log(error);
@@ -149,11 +149,11 @@ export default function SightingProfile() {
   return (
     <SightingDetail
       petName={petName}
-      sightings={timeline}
+      sightings={timeline || []}
       petSummary={summary}
       onAddSighting={onAddSighting}
       onEdit={isOwner ? onEdit : undefined}
-      claimPet={user && !petOwner ? onClaimPet : undefined}
+      claimPet={user && !petOwner && !claimed ? onClaimPet : undefined}
       claimed={claimed && !cleanedPetId}
       hasOwner={!!petOwner || !!cleanedPetId}
       isOwner={!!isOwner}

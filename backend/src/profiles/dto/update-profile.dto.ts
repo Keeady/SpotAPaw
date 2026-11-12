@@ -15,13 +15,13 @@ export class UpdateProfileDto {
   @Transform(trimString)
   @IsString()
   @MaxLength(100)
-  firstname?: string;
+  firstName?: string;
 
   @IsOptional()
   @Transform(trimString)
   @IsString()
   @MaxLength(100)
-  lastname?: string;
+  lastName?: string;
 
   @IsOptional()
   @Transform(trimString)

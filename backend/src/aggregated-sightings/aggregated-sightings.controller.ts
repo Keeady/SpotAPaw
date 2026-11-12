@@ -1,22 +1,21 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   Query,
-  HttpException,
-  HttpStatus,
-  ParseFloatPipe,
   ParseUUIDPipe,
+  BadRequestException,
+  NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { AggregatedSightingsService } from './aggregated-sightings.service.js';
-import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
 import { SightingsService } from '../sightings/sightings.service.js';
 import { GetAggregatedSightingsDto } from './dto/get-aggregated-sightings.dto.js';
+import { SupabaseAuthGuard } from '../auth/supabase-auth.guard.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
 
 @Controller('aggregated-sightings')
 export class AggregatedSightingsController {
@@ -24,11 +23,6 @@ export class AggregatedSightingsController {
     private readonly aggregatedSightingsService: AggregatedSightingsService,
     private readonly sightingsService: SightingsService,
   ) {}
-
-  @Post()
-  create(@Body() createAggregatedSightingDto: CreateAggregatedSightingDto) {
-    return this.aggregatedSightingsService.create(createAggregatedSightingDto);
-  }
 
   @Get()
   findAll(@Query() query: GetAggregatedSightingsDto) {
@@ -39,30 +33,89 @@ export class AggregatedSightingsController {
     );
   }
 
-  @Get(':id')
-  async findOne(
+  @Get(':id/')
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.aggregatedSightingsService.findOne(id);
+  }
+
+  @Get(':id/details')
+  async findOneWithDetails(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('linked_sighting_id', ParseUUIDPipe) linked_sighting_id: string,
   ) {
-    const summary = await this.aggregatedSightingsService.findOne(id);
-    const sightings = await this.sightingsService.findAll(linked_sighting_id);
+    const [summary, sightings] = await Promise.all([
+      this.aggregatedSightingsService.findOne(id),
+      this.sightingsService.findAll(linked_sighting_id),
+    ]);
+
+    if (summary.linkedSightingId !== linked_sighting_id) {
+      throw new BadRequestException('Invalid IDs');
+    }
 
     return {
       summary,
       sightings,
-      hasOwner: false,
-      claimed: false,
     };
   }
 
-  @Patch(':id')
+  @Get('my')
+  async findByLinkedSightingId(
+    @Query('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
+  ) {
+    return this.aggregatedSightingsService.findByLinkedSightingId(linkedSightingId);
+  }
+
+  @Patch('my/:id')
+  @UseGuards(SupabaseAuthGuard)
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAggregatedSightingDto: UpdateAggregatedSightingDto,
+    @CurrentUser('id') userId?: string
   ) {
     return this.aggregatedSightingsService.update(
-      +id,
+      id,
+      userId || "",
       updateAggregatedSightingDto,
+    );
+  }
+
+  @Patch('/status')
+  @UseGuards(SupabaseAuthGuard)
+  async updateStatus(
+    @Query('petId') petId: string,
+    @Body('isActive') isActive: boolean,
+    @CurrentUser('id') userId: string,
+  ) {
+    const sightings =
+      await this.aggregatedSightingsService.findActivePetSightingsById(
+        userId,
+        petId,
+      );
+    if (!sightings || sightings.length === 0) {
+      throw new NotFoundException('Sighting not found');
+    }
+    const ids = sightings.map((s) => s.id);
+    const linkedSightingIds = sightings.map((s) => s.linkedSightingId);
+
+    const updated = await this.aggregatedSightingsService.updateStatus(
+      ids,
+      isActive,
+    );
+
+    if (updated) {
+      await this.sightingsService.updateStatus(linkedSightingIds, isActive);
+    }
+  }
+
+  @Get('/pets/:petId')
+  @UseGuards(SupabaseAuthGuard)
+  async getPetSightings(
+    @Param('petId') petId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.aggregatedSightingsService.findActivePetSightingsById(
+      userId,
+      petId,
     );
   }
 }

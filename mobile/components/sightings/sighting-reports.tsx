@@ -21,7 +21,7 @@ import { useRouter } from "expo-router";
 import { log } from "../logs";
 import { createErrorLogMessage, isValidUuid } from "../util";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
-import { AggregatedSighting } from "@/db/models/sighting";
+import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 import { showMessage } from "react-native-flash-message";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +31,7 @@ const ReportListPage = () => {
   const { t } = useTranslation(["sightingpage", "owner", "translation"]);
   const router = useRouter();
   const theme = useTheme();
-  const [reports, setReports] = useState<AggregatedSighting[]>([]);
+  const [reports, setReports] = useState<Sighting[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(AuthContext);
@@ -174,7 +174,7 @@ const ReportListPage = () => {
   };
 
   // Render individual report item
-  const renderReportItem = ({ item }: { item: AggregatedSighting }) => (
+  const renderReportItem = ({ item }: { item: Sighting }) => (
     <Card
       style={styles.card}
       mode="elevated"

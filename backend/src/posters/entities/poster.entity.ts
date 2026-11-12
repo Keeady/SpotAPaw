@@ -50,4 +50,7 @@ export class Poster {
 
   @Column({ name: 'png_url', type: 'text', nullable: true })
   pngUrl!: string | null;
+
+  @Column({name: "owner_id"})
+  ownerId: string;
 }

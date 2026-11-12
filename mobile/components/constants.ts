@@ -6,9 +6,12 @@ const AppConstants = {
   EXPO_PUBLIC_SUPABASE_URL:
     Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL,
   EXPO_GOOGLE_MAP_API_KEY: Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY,
-  EXPO_GOOGLE_MAP_API_KEY_WEB: Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY_WEB,
+  EXPO_GOOGLE_MAP_API_KEY_WEB:
+    Constants.expoConfig?.extra?.EXPO_GOOGLE_MAP_API_KEY_WEB,
   EXPO_GOOGLE_GEOCODE_API_KEY:
     Constants.expoConfig?.extra?.EXPO_GOOGLE_GEOCODE_API_KEY,
+  EXPO_PUBLIC_BACKEND_API_HOST:
+    Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_API_HOST,
 };
 export default AppConstants;
 
@@ -32,4 +35,5 @@ export const NO_PETS_DETECTED = "NO_PETS_DETECTED";
 
 export const SUPPORT_EMAIL = "spotapaw@spotapaw.com";
 
-export const SENTRY_DSN= "https://5e8229b6033ab197a3425d52cac19073@o4512193431076864.ingest.us.sentry.io/4512193438416896";
+export const SENTRY_DSN =
+  "https://5e8229b6033ab197a3425d52cac19073@o4512193431076864.ingest.us.sentry.io/4512193438416896";

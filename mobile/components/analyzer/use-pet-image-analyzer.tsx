@@ -3,7 +3,7 @@ import {
   uploadMultiplePhotosWithProcessing,
   uploadPhotoWithProcessing,
 } from "../image-upload-handler";
-import type { AnalysisResponse } from "./types";
+import type { AnalysisResponse, PetAnalysisResult } from "./types";
 
 interface UsePetAnalyzerOptions {
   onSuccess?: (
@@ -18,8 +18,16 @@ interface UsePetAnalyzerReturn {
   analyze: (uri: string, filename: string, filetype: string) => Promise<void>;
   analyzeMultiple: (
     images: { uri: string; filename: string; filetype: string }[],
-  ) => Promise<void>;
+    petId: string | null,
+    sightingId: string | null,
+  ) => Promise<AnalyzeMultipleResponse>;
   loading: boolean;
+}
+
+export interface AnalyzeMultipleResponse {
+  data?: PetAnalysisResult;
+  publicUrls: string[];
+  petDescriptionId: string;
 }
 
 export function usePetAnalyzer(
@@ -50,9 +58,7 @@ export function usePetAnalyzer(
     async (uri: string, filename: string, filetype: string) => {
       try {
         if (!uri) {
-          throw new Error(
-            "Missing required parameter uri.",
-          );
+          throw new Error("Missing required parameter uri.");
         }
 
         setLoading(true);
@@ -92,13 +98,17 @@ export function usePetAnalyzer(
   );
 
   const analyzeMultiple = useCallback(
-    async (images: { uri: string; filename: string; filetype: string }[]) => {
+    async (
+      images: { uri: string; filename: string; filetype: string }[],
+      petId: string | null,
+      sightingId: string | null,
+    ): Promise<AnalyzeMultipleResponse> => {
       try {
         let hasError = false;
         if (!images || images.length === 0) {
           throw new Error("No images provided for analysis.");
         }
-        
+
         images.forEach(({ uri }) => {
           if (!uri) {
             hasError = true;
@@ -107,12 +117,14 @@ export function usePetAnalyzer(
         });
 
         if (hasError) {
-          throw new Error(
-            "Missing required parameter uri.",
-          );
+          throw new Error("Missing required parameter uri.");
         }
         setLoading(true);
-        const response = await uploadMultiplePhotosWithProcessing(images);
+        const response = await uploadMultiplePhotosWithProcessing(
+          images,
+          petId,
+          sightingId,
+        );
 
         if (!response) {
           throw new Error("Failed with no response");
@@ -123,17 +135,20 @@ export function usePetAnalyzer(
         if (result) {
           const data = parseJsonResponse(result);
           onSuccess?.(data, undefined, petDescriptionId, publicUrls);
-          return;
+          return {data, petDescriptionId, publicUrls};
         }
 
         if (petDescriptionId) {
           onSuccess?.(undefined, undefined, petDescriptionId, publicUrls);
-          return;
+          return {data: undefined, petDescriptionId, publicUrls};
         }
 
         if (publicUrls) {
           onSuccess?.(undefined, undefined, undefined, publicUrls);
+          return {data: undefined, petDescriptionId: "", publicUrls};
         }
+
+        return {data: undefined, petDescriptionId: "", publicUrls: []}
       } catch (error) {
         throw error;
       } finally {

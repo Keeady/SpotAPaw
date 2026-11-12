@@ -21,7 +21,7 @@ export default function ClaimLostPet() {
   const [loadingPet, setLoadingPet] = useState(false);
   const [loadingSighting, setLoadingSighting] = useState(false);
 
-  const { petId, sightingId } = useLocalSearchParams<{
+  const { sightingId } = useLocalSearchParams<{
     petId: string;
     sightingId: string;
   }>();
@@ -55,6 +55,9 @@ export default function ClaimLostPet() {
   }, [user?.id]);
 
   useEffect(() => {
+    if (!sightingId) {
+      return;
+    }
     setLoadingSighting(true);
     const sightingRepository = new SightingRepository();
     sightingRepository
@@ -82,7 +85,7 @@ export default function ClaimLostPet() {
       .finally(() => {
         setLoadingSighting(false);
       });
-  }, [petId, sightingId]);
+  }, [sightingId]);
 
   const onConfirm = useCallback(
     async (selectedPetId: string) => {
@@ -110,7 +113,6 @@ export default function ClaimLostPet() {
         })
         .catch((error) => {
           const errorMessage = createErrorLogMessage(error);
-          log(`createClaim: Error submitting claim ${errorMessage}`);
           showMessage({
             message: t(
               "errorUpdatingPetSighting",
