@@ -60,8 +60,6 @@ export class ApiSightingRepository extends BaseSightingRepository {
       `/aggregated-sightings/${aggregatedSightingId}`,
     );
 
-    console.log(response)
-
     return response;
   }
 

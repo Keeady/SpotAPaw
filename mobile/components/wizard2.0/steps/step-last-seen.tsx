@@ -20,7 +20,6 @@ export function LastSeenStep({
 
   const { note, lastSeenTime, lastSeenLat, lastSeenLong } = formData;
 
-  console.log("formData", lastSeenLat, lastSeenLong, note);
   useEffect(() => {
     if (!lastSeenTime) {
       updateFormData({ lastSeenTime: new Date().toISOString() });

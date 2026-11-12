@@ -21,7 +21,6 @@ export class ApiClaimRepository extends BaseClaimRepository {
       throw new Error("Undefined api client");
     }
 
-    console.log(payload)
 
     return this.apiClient.post("/claims", {
       petId: payload.petId,

@@ -15,7 +15,7 @@ export default async function handlePetImageUpload(
     sightingId: string | null,
   ) => Promise<void>,
   data: SightingFormData,
-  petId: string,
+  petId: string | null,
   images: PetImage[],
 ) {
   if (images.length === 0) {

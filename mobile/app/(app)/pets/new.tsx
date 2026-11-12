@@ -67,7 +67,6 @@ export default function AddPet() {
               null,
             );
 
-            console.log(response);
             return response;
           }
         },
@@ -95,16 +94,36 @@ export default function AddPet() {
         nextActionName: (data) =>
           data.isLost ? t("continue", "Continue") : t("submit", "Submit"),
         onComplete: async (data) => {
-          const newData = await handlePetCreation(t, data);
-          if (newData && data.images) {
-            await handlePetImageUpload(
+          let petData = data;
+          // upload images
+          if (data.images) {
+            const response = await handlePetImageUpload(
               t,
               uploadMultiplePetImages,
-              newData,
-              newData.id,
+              data,
+              null,
               data.images,
             );
+
+            if (response) {
+              petData = response;
+            }
           }
+          const response = await handlePetCreation(t, petData);
+
+          if (response) {
+            return {
+              ...response,
+              lastSeenLat: undefined,
+              lastSeenLong: undefined,
+            };
+          }
+
+          return {
+            ...petData,
+            lastSeenLat: undefined,
+            lastSeenLong: undefined,
+          };
         },
       },
       {
@@ -132,7 +151,6 @@ export default function AddPet() {
         skip: (data) => !data.isLost,
         onComplete: async (data) => {
           if (data && data.isLost) {
-            // how images get linked to sightings
             return await handleSightingCreation(t, data);
           }
         },

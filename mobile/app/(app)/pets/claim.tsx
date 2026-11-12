@@ -33,7 +33,6 @@ export default function ClaimLostPet() {
       petRepository
         .getPets(user.id)
         .then((data) => {
-          console.log("getPets", data);
           if (data && data.length > 0) {
             setPets(data);
           }
@@ -56,7 +55,6 @@ export default function ClaimLostPet() {
   }, [user?.id]);
 
   useEffect(() => {
-    console.log("sightingId", sightingId)
     if (!sightingId) {
       return;
     }
@@ -65,7 +63,6 @@ export default function ClaimLostPet() {
     sightingRepository
       .getSighting(sightingId)
       .then((data) => {
-        console.log("sighting", data);
         if (data) {
           setSighting(data);
         }
@@ -95,7 +92,6 @@ export default function ClaimLostPet() {
       if (!isValidUuid(selectedPetId) || !isValidUuid(sightingId)) {
         return;
       }
-      console.log(selectedPetId, sightingId)
       const repository = new ClaimRepository();
       repository
         .createClaim({
@@ -116,9 +112,7 @@ export default function ClaimLostPet() {
           router.replace(`/(app)/my-sightings`);
         })
         .catch((error) => {
-          console.log(error)
           const errorMessage = createErrorLogMessage(error);
-          console.log(`createClaim: Error submitting claim ${errorMessage}`);
           showMessage({
             message: t(
               "errorUpdatingPetSighting",

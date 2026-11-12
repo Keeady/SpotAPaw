@@ -39,7 +39,6 @@ export default function PetProfile() {
     petRepository
       .getPet(id)
       .then((data) => {
-        console.log("pet", data?.petDescription);
         setPet(data);
       })
       .catch((error) => {
@@ -58,7 +57,6 @@ export default function PetProfile() {
     sightingRepository
       .getSightingsByPetId(id)
       .then((data) => {
-        console.log(data)
         if (data.length > 0) {
           setSighting(data[0]);
         }

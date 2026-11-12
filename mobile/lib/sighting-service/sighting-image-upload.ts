@@ -34,8 +34,6 @@ export default async function handleSightingImageUpload(
     sightingId,
   );
 
-  console.log("urls", urls);
-
   return {
     ...data,
     photos: urls,

@@ -12,7 +12,6 @@ export default function usePhotoAnalyzeStep() {
   const { aiPhotoAnalysisAllowed } = useProContext();
   const { user } = useContext(AuthContext);
   const { isAiFeatureEnabled } = useAIFeatureContext();
-  console.log("top", isAiFeatureEnabled, aiPhotoAnalysisAllowed);
 
   const { analyzeMultiple } = usePetAnalyzer({});
 
@@ -22,7 +21,6 @@ export default function usePhotoAnalyzeStep() {
       petId: string | null,
       sightingId: string | null,
     ) => {
-      console.log(isAiFeatureEnabled, aiPhotoAnalysisAllowed);
       if (
         !isAiFeatureEnabled ||
         !images ||
@@ -43,7 +41,6 @@ export default function usePhotoAnalyzeStep() {
 
       return analyzeMultiple(images, petId, sightingId)
         .then((data) => {
-          console.log("d", data);
           instrument.success({
             status: "success",
           });
@@ -52,7 +49,6 @@ export default function usePhotoAnalyzeStep() {
         })
         .catch(async (error) => {
           const errorMessage = await createErrorLogMessageAsync(error);
-          console.log("errorMessage", errorMessage);
           instrument.failure({
             error_message: errorMessage,
             error_type: "image_analysis_error",

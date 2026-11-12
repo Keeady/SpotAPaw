@@ -16,7 +16,6 @@ export default async function handlePhotoUploadAnalyze(
   if (analysis) {
     const { data, petDescriptionId, publicUrls } = analysis;
 
-    console.log("data", data, petDescriptionId, publicUrls);
     const response = {
       publicUrls,
       petDescriptionId,
@@ -28,7 +27,6 @@ export default async function handlePhotoUploadAnalyze(
       response.pets.length === 0 ||
       response.aiNote.toLowerCase().includes("no pets detected")
     ) {
-      console.log("no pets");
       throw new Error(response.aiNote || "Not pets detected", {
         cause: "NO_PETS_DETECTED",
       });

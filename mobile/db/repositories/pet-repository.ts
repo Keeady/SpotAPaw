@@ -22,8 +22,6 @@ export class PetRepository implements IPetRepository {
     return petRepository.updatePet(id, data);
   }
   getPets(ownerId: string): Promise<Pet[]> {
-    console.log(process.env.EXPO_PUBLIC_BACKEND_API_HOST)
-    console.log(AppConstants.EXPO_PUBLIC_BACKEND_API_HOST)
     const petRepository = new ApiPetRepository(authenticatedApiClient);
     return petRepository.getPets(ownerId);
   }

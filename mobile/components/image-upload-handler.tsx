@@ -104,8 +104,6 @@ export const uploadMultiplePhotosWithProcessing = async (
       },
     );
 
-    console.log(data, error)
-
     if (error) {
       throw error;
     }
