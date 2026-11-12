@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { HelperText, Surface, Text, useTheme } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -1,25 +1,25 @@
 import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
+import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
+import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
-import {
-  SightingFormData,
-  WizardConfig,
-} from "@/components/wizard2.0/wizard-types";
+import { WizardConfig } from "@/components/wizard2.0/wizard-types";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
+import handleSightingImageUpload from "@/lib/sighting-service/sighting-image-upload";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { showMessage } from "react-native-flash-message";
 
 export default function NewSighting() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
   const onPhotoAnalyze = usePhotoAnalyzeStep();
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
+  const { aiPhotoAnalysisAllowed } = useProContext();
+  const { isAiFeatureEnabled } = useAIFeatureContext();
 
   const config: WizardConfig = useMemo(
     () => [
@@ -64,7 +64,7 @@ export default function NewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          if (data.images) {
+          if (data.images && aiPhotoAnalysisAllowed && isAiFeatureEnabled) {
             return await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
@@ -120,12 +120,29 @@ export default function NewSighting() {
         nextActionName: () => t("submit", "Submit report"),
         onComplete: async (data) => {
           if (data) {
-           return await handleSightingCreation(t, data)
+            let newData = data;
+            // upload images
+            if (data.images && data.images.length > 0) {
+              newData = await handleSightingImageUpload(
+                t,
+                uploadMultiplePetImages,
+                data,
+                null,
+                data.images,
+              );
+            }
+            return await handleSightingCreation(t, newData);
           }
         },
       },
     ],
-    [t, onPhotoAnalyze, uploadMultiplePetImages],
+    [
+      t,
+      onPhotoAnalyze,
+      uploadMultiplePetImages,
+      aiPhotoAnalysisAllowed,
+      isAiFeatureEnabled,
+    ],
   );
 
   return (

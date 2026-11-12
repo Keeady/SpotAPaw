@@ -97,7 +97,7 @@ export function SightingWizard({
           setIndex(next);
         }
       } catch (error) {
-        console.log("error: ", error)
+        console.log("error: ", error);
         // Stay on the step and let the screen show the message.
         setErrorMessage(error instanceof Error ? error.message : String(error));
       } finally {
@@ -119,15 +119,15 @@ export function SightingWizard({
     }
   };
 
-  if (!step) return null;
-
-  const Screen = wizardRenderers[step.id];
-
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
     }
   }, [initialData]);
+
+  if (!step) return null;
+
+  const Screen = wizardRenderers[step.id];
 
   return (
     <View style={styles.container}>

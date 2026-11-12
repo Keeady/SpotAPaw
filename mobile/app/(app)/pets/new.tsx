@@ -1,26 +1,22 @@
-import { AnalysisResponse } from "@/components/analyzer/types";
 import { useUploadMultiplePetImage } from "@/components/image-upload-handler";
 import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
-import { PetRepository } from "@/db/repositories/pet-repository";
-import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePetCreation from "@/lib/pet-service/pet-create-handler";
 import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { showMessage } from "react-native-flash-message";
 
 export default function AddPet() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
-  const [initialData, setInitialData] = useState(PET_FIELDS_CLEARED);
+  const [initialData, _setInitialData] = useState(PET_FIELDS_CLEARED);
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
   const { aiPhotoAnalysisAllowed } = useProContext();
   const { isAiFeatureEnabled } = useAIFeatureContext();

@@ -119,11 +119,11 @@ export default function SightingProfile() {
 
   const onViewMatches = useCallback(() => {
     router.push(`/matches?sightingId=${sightingId}`);
-  }, [sightingId]);
+  }, [sightingId, router]);
 
   const onViewPoster = useCallback(() => {
     router.push(`/posters?sightingId=${sightingId}`);
-  }, [sightingId]);
+  }, [sightingId, router]);
 
   if (error) {
     log(error);

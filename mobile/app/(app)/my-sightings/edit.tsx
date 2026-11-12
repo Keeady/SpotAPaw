@@ -4,7 +4,6 @@ import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
-import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingImageUpload from "@/lib/sighting-service/sighting-image-upload";
@@ -25,7 +24,7 @@ export default function EditPetSighting() {
     linkedSightingId: string;
   }>();
 
-  const [initialData, setInitialData] = useState({
+  const [initialData, _setInitialData] = useState({
     ...PET_FIELDS_CLEARED,
     reportType: undefined,
     isLost: Boolean(isPetLost),
@@ -72,23 +71,13 @@ export default function EditPetSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: async (data) => {
-          if (data.images) {
-            if (aiPhotoAnalysisAllowed && isAiFeatureEnabled) {
-              return await handlePhotoUploadAnalyze(
-                onPhotoAnalyze,
-                data.images,
-                data.id ?? null,
-                data.sightingId ?? null,
-              );
-            } else {
-              return await handleSightingImageUpload(
-                t,
-                uploadMultiplePetImages,
-                data,
-                data.sightingId ?? null,
-                data.images,
-              );
-            }
+          if (data.images && aiPhotoAnalysisAllowed && isAiFeatureEnabled) {
+            return await handlePhotoUploadAnalyze(
+              onPhotoAnalyze,
+              data.images,
+              data.id ?? null,
+              data.sightingId ?? null,
+            );
           }
         },
       },
@@ -137,8 +126,19 @@ export default function EditPetSighting() {
         ),
         nextActionName: () => t("submit", "Submit report"),
         onComplete: async (data) => {
+          let newData = data;
+          if (data && data.images && data.images.length > 0) {
+            newData = await handleSightingImageUpload(
+              t,
+              uploadMultiplePetImages,
+              data,
+              data.sightingId ?? null,
+              data.images,
+            );
+          }
+          
           if (data && data.sightingId) {
-            await handleSightingUpdate(t, data.sightingId, data);
+            await handleSightingUpdate(t, data.sightingId, newData);
           }
         },
       },

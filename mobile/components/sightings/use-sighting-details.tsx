@@ -1,9 +1,7 @@
-import { AggregatedSighting } from "@/db/models/sighting";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useCallback, useEffect, useState } from "react";
 import { log } from "../logs";
 import { createErrorLogMessage, isValidUuid } from "../util";
-import { captureError } from "@/instrumentation/instrument-util";
 import { InstrumentCallbacks } from "@/instrumentation/telemetry";
 import { AggregatedSightingResponse } from "@/db/repositories/base-sighting-repository";
 

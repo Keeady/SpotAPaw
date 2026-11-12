@@ -13,7 +13,6 @@ import {
 import { SupportedLanguage } from "@/components/location-request-util";
 import { onDeleteAccount } from "@/components/account/delete";
 import { AuthContext } from "@/components/Provider/auth-provider";
-import { useRouter } from "expo-router";
 import { PermissionContext } from "../Provider/permission-provider";
 import { useAIFeatureContext } from "../Provider/ai-context-provider";
 import { createErrorLogMessage } from "../util";
@@ -65,7 +64,6 @@ const languages: SupportedLanguage[] = [
 
 const SettingsContainer = () => {
   const { t } = useTranslation(["settings", "translation"]);
-  const router = useRouter();
 
   // Location states
   const [locationPermission, setLocationPermission] = useState<boolean>(false);

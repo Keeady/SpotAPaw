@@ -21,7 +21,7 @@ export default function ClaimLostPet() {
   const [loadingPet, setLoadingPet] = useState(false);
   const [loadingSighting, setLoadingSighting] = useState(false);
 
-  const { petId, sightingId } = useLocalSearchParams<{
+  const { sightingId } = useLocalSearchParams<{
     petId: string;
     sightingId: string;
   }>();

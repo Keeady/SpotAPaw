@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, StyleSheet, useWindowDimensions, View } from "react-native";
-import { Card, Divider, Icon, Text, useTheme } from "react-native-paper";
+import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { SightingPet } from "../wizard/wizard-interface";
 import { useTranslation } from "react-i18next";
 

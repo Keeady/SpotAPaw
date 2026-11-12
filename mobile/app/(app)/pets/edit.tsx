@@ -5,7 +5,6 @@ import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
 import { PetRepository } from "@/db/repositories/pet-repository";
-import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePetUpdate from "@/lib/pet-service/pet-update-handler";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
@@ -14,11 +13,9 @@ import handleSightingCreation from "@/lib/sighting-service/sighting-create-handl
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { showMessage } from "react-native-flash-message";
 
 export default function EditPet() {
   const {
-    id: sightingId,
     petId,
     is_lost: isPetLost,
   } = useLocalSearchParams<{
@@ -50,7 +47,7 @@ export default function EditPet() {
       .getPet(petId)
       .then((data) => {
         if (data) {
-          setInitialData({ ...initialData, ...data });
+          setInitialData(prev => ({...prev, ...data}));
         }
       })
       .catch((error) => {

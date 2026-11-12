@@ -24,15 +24,15 @@ export function LastSeenStep({
     if (!lastSeenTime) {
       updateFormData({ lastSeenTime: new Date().toISOString() });
     }
-  }, []);
+  }, [lastSeenTime, updateFormData]);
 
   const errors = {
     time: !lastSeenTime || Number.isNaN(new Date(lastSeenTime).getTime()),
     location:
-      lastSeenLat == null ||
-      lastSeenLat == undefined ||
-      lastSeenLong == null ||
-      lastSeenLong == undefined,
+      lastSeenLat === null ||
+      lastSeenLat === undefined ||
+      lastSeenLong === null ||
+      lastSeenLong === undefined,
   };
   const isValid = !errors.time && !errors.location;
 
