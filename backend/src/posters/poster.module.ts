@@ -8,6 +8,7 @@ import { PosterDataService } from './poster-data.service.js';
 import { PosterGeneratorService } from './poster-generator.service.js';
 import { PosterController } from './poster.controller.js';
 import { PosterService } from './poster.service.js';
+import { AuthModule } from '../auth/auth.module.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PosterService } from './poster.service.js';
     PosterDataService,
     PosterGeneratorService,
     PosterService,
+    AuthModule
   ],
   exports: [PosterDataService, PosterGeneratorService],
   controllers: [PosterController],
