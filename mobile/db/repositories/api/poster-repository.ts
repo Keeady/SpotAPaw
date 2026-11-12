@@ -26,7 +26,7 @@ export class ApiPosterRepository implements IPosterRepository {
       throw new Error("Undefined api client");
     }
 
-    this.apiClient.patch<Poster>(`/posters/${posterId}`, {
+    await this.apiClient.patch<Poster>(`/posters/${posterId}`, {
       description: data.description,
       cta: data.cta,
       contactName: data.contact_name,

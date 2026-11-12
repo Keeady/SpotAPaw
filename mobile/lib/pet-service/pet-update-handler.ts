@@ -33,6 +33,6 @@ export default async function handlePetUpdate(
       statusBarHeight: 50,
     });
 
-    return Promise.reject(error);
+    throw error;
   }
 }

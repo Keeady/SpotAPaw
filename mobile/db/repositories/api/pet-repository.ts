@@ -43,6 +43,8 @@ export class ApiPetRepository extends BasePetRepository {
       note: payload.note,
       colors: payload.colors,
       collarDescription: payload.collarDescription,
+      photos: payload.photos || [],
+      petDescriptionId: payload.petDescriptionId      
     };
 
     return this.apiClient.post<Pet>(`/pets/my`, changes);
@@ -66,7 +68,15 @@ export class ApiPetRepository extends BasePetRepository {
       note: payload.note,
       colors: payload.colors,
       collarDescription: payload.collarDescription,
-    };
+    } as Partial<Pet>;
+
+    if (payload.photos && payload.photos.length > 0) {
+      changes.photos = payload.photos;
+    }
+
+    if (payload.petDescriptionId) {
+      changes.petDescriptionId = payload.petDescriptionId;
+    }
 
     return this.apiClient.patch(`/pets/my/${id}`, changes);
   }

@@ -23,8 +23,11 @@ export class SightingsController {
   constructor(private readonly sightingsService: SightingsService) {}
 
   @Post()
-  create(@Body() createSightingDto: CreateSightingDto) {
-    return this.sightingsService.create(createSightingDto);
+  create(
+    @Body() createSightingDto: CreateSightingDto,
+      @CurrentUser('id') userId?: string,
+) {
+    return this.sightingsService.create(userId || "", createSightingDto);
   }
 
   @UseGuards(SupabaseAuthGuard)

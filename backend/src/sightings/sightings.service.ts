@@ -19,7 +19,7 @@ export class SightingsService {
     private sightingsRepository: Repository<Sighting>,
   ) {}
 
-  create(createSightingDto: CreateSightingDto) {
+  create(userId: string, createSightingDto: CreateSightingDto) {
     const changes = {} as Sighting;
 
     if (createSightingDto.photos) {
@@ -82,10 +82,6 @@ export class SightingsService {
       changes.isActive = createSightingDto.isActive;
     }
 
-    if (createSightingDto.reporterId) {
-      changes.reporterId = createSightingDto.reporterId;
-    }
-
     if (createSightingDto.reporterName) {
       changes.reporterName = createSightingDto.reporterName;
     }
@@ -108,6 +104,10 @@ export class SightingsService {
 
     if (createSightingDto.behavior) {
       changes.behavior = createSightingDto.behavior;
+    }
+
+    if (userId) {
+      changes.reporterId = userId;
     }
 
     if (Object.keys(changes).length === 0) {

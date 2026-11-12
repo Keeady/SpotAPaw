@@ -10,10 +10,11 @@ import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import handleSightingImageUpload from "@/lib/sighting-service/sighting-image-upload";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function NewSighting() {
+  const [initialData, _setInitialData] = useState(PET_FIELDS_CLEARED);
   const { t } = useTranslation("wizard");
   const router = useRouter();
   const onPhotoAnalyze = usePhotoAnalyzeStep();
@@ -147,7 +148,7 @@ export default function NewSighting() {
 
   return (
     <SightingWizard
-      initialData={PET_FIELDS_CLEARED}
+      initialData={initialData}
       config={config}
       onFinish={() => router.back()}
       onCancel={() => router.back()}

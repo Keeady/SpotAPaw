@@ -50,7 +50,7 @@ export class CreateAggregatedSightingDto {
   colors: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   breed: string;
 
   @IsString()
@@ -82,10 +82,6 @@ export class CreateAggregatedSightingDto {
 
   @IsString()
   @IsOptional()
-  reporterId: string;
-
-  @IsString()
-  @IsNotEmpty()
   size: string;
 
   @IsString()

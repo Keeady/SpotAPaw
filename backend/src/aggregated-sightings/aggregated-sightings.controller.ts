@@ -8,11 +8,14 @@ import {
   ParseUUIDPipe,
   BadRequestException,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { AggregatedSightingsService } from './aggregated-sightings.service.js';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
 import { SightingsService } from '../sightings/sightings.service.js';
 import { GetAggregatedSightingsDto } from './dto/get-aggregated-sightings.dto.js';
+import { SupabaseAuthGuard } from '../auth/supabase-auth.guard.js';
+import { CurrentUser } from '../auth/current-user.decorator.js';
 
 @Controller('aggregated-sightings')
 export class AggregatedSightingsController {
@@ -62,24 +65,31 @@ export class AggregatedSightingsController {
     return this.sightingsService.findAll(linkedSightingId);
   }
 
-  @Patch(':id')
+  @Patch('my/:id')
   update(
     @Param('id') id: string,
     @Body() updateAggregatedSightingDto: UpdateAggregatedSightingDto,
+    @CurrentUser('id') userId?: string
   ) {
     return this.aggregatedSightingsService.update(
       +id,
+      userId || "",
       updateAggregatedSightingDto,
     );
   }
 
   @Patch('/status')
+  @UseGuards(SupabaseAuthGuard)
   async updateStatus(
-    @Param('petId') petId: string,
+    @Query('petId') petId: string,
     @Body('status') status: boolean,
+    @CurrentUser('id') userId: string,
   ) {
     const sightings =
-      await this.aggregatedSightingsService.findActivePetSightingsById(petId);
+      await this.aggregatedSightingsService.findActivePetSightingsById(
+        userId,
+        petId,
+      );
     if (!sightings || sightings.length === 0) {
       throw new NotFoundException('Sighting not found');
     }
@@ -97,7 +107,14 @@ export class AggregatedSightingsController {
   }
 
   @Get('/pets/:petId')
-  async getPetSightings(@Param('petId') petId: string) {
-    return this.aggregatedSightingsService.findActivePetSightingsById(petId);
+  @UseGuards(SupabaseAuthGuard)
+  async getPetSightings(
+    @Param('petId') petId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.aggregatedSightingsService.findActivePetSightingsById(
+      userId,
+      petId,
+    );
   }
 }

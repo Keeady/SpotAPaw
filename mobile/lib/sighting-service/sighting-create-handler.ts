@@ -9,7 +9,7 @@ export default async function handleSightingCreation(
 ) {
   try {
     const repository = new SightingRepository();
-    const id = await repository.createSighting(data);
+    const id = await repository.createSighting({...data, petId: data.id });
     if (id) {
       showMessage({
         message: t(
@@ -38,6 +38,6 @@ export default async function handleSightingCreation(
       icon: "warning",
       statusBarHeight: 50,
     });
-    Promise.reject("Failed to create pet sighting.");
+    throw error;
   }
 }

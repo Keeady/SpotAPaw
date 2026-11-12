@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { CreatePetclaimDto } from './dto/create-petclaim.dto.js';
-import { UpdatePetclaimDto } from './dto/update-petclaim.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Petclaim } from './entities/petclaim.entity.js';
 import { Repository } from 'typeorm';

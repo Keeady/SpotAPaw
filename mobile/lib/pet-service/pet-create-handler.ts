@@ -37,6 +37,6 @@ export default async function handlePetCreation(
       statusBarHeight: 50,
     });
 
-    return Promise.reject("Failed to create pet");
+    throw error;
   }
 }

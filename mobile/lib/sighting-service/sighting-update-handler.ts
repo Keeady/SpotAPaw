@@ -32,6 +32,6 @@ export default async function handleSightingUpdate(
       icon: "warning",
       statusBarHeight: 50,
     });
-    Promise.reject("Failed to update pet sighting.");
+    throw error;
   }
 }

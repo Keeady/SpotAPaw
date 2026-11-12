@@ -95,6 +95,7 @@ export class AggregatedSightingsService {
 
   async update(
     id: number,
+    userId: string,
     updateAggregatedSightingDto: UpdateAggregatedSightingDto,
   ) {
     const changes = {} as AggregatedSighting;
@@ -155,10 +156,6 @@ export class AggregatedSightingsService {
       changes.isActive = updateAggregatedSightingDto.isActive;
     }
 
-    if (updateAggregatedSightingDto.reporterId) {
-      changes.reporterId = updateAggregatedSightingDto.reporterId;
-    }
-
     if (updateAggregatedSightingDto.reporterName) {
       changes.reporterName = updateAggregatedSightingDto.reporterName;
     }
@@ -183,6 +180,10 @@ export class AggregatedSightingsService {
       changes.behavior = updateAggregatedSightingDto.behavior;
     }
 
+    if (userId) {
+      changes.reporterId = userId;
+    }
+
     if (Object.keys(changes).length === 0) {
       throw new BadRequestException('Provide at least one editable field.');
     }
@@ -203,10 +204,11 @@ export class AggregatedSightingsService {
     return !!(result.affected && result.affected > 0);
   }
 
-  async findActivePetSightingsById(petId: string) {
+  async findActivePetSightingsById(userId: string, petId: string) {
     return this.aggregatedSightingsRepository.findBy({
       petId,
       isActive: true,
+      ownerId: userId,
     });
   }
 }

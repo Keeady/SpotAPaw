@@ -34,12 +34,12 @@ export class ProfileService {
       changes.email = dto.email;
     }
 
-    if (dto.firstname !== undefined) {
-      changes.firstname = dto.firstname;
+    if (dto.firstName !== undefined) {
+      changes.firstName = dto.firstName;
     }
 
-    if (dto.lastname !== undefined) {
-      changes.lastname = dto.lastname;
+    if (dto.lastName !== undefined) {
+      changes.lastName = dto.lastName;
     }
 
     if (dto.phone !== undefined) {
@@ -88,9 +88,10 @@ export class ProfileService {
       throw new NotFoundException('Profile not found.');
     }
 
+    const date = new Date();
     const response = await this.userRepository.update(
       { ownerId: userId },
-      { markedForDeletion: true },
+      { markedForDeletion: true, deletedAt: date.toISOString()},
     );
     if (response.affected === 0) {
       throw new NotFoundException('Profile not found.');

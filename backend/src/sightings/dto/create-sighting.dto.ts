@@ -50,7 +50,7 @@ export class CreateSightingDto {
   colors: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   breed: string;
 
   @IsString()
@@ -82,10 +82,6 @@ export class CreateSightingDto {
 
   @IsString()
   @IsOptional()
-  reporterId: string;
-
-  @IsString()
-  @IsNotEmpty()
   size: string;
 
   @IsString()

@@ -4,12 +4,13 @@ import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingImageUpload from "@/lib/sighting-service/sighting-image-upload";
 import handleSightingUpdate from "@/lib/sighting-service/sighting-update-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function EditPetSighting() {
@@ -17,6 +18,7 @@ export default function EditPetSighting() {
     id: sightingId,
     petId,
     is_lost: isPetLost,
+    linkedSightingId,
   } = useLocalSearchParams<{
     id: string;
     petId: string;
@@ -24,7 +26,7 @@ export default function EditPetSighting() {
     linkedSightingId: string;
   }>();
 
-  const [initialData, _setInitialData] = useState({
+  const [initialData, setInitialData] = useState({
     ...PET_FIELDS_CLEARED,
     reportType: undefined,
     isLost: Boolean(isPetLost),
@@ -38,6 +40,20 @@ export default function EditPetSighting() {
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
   const { aiPhotoAnalysisAllowed } = useProContext();
   const { isAiFeatureEnabled } = useAIFeatureContext();
+
+  useEffect(() => {
+    if (!sightingId) {
+      return;
+    }
+
+    const repository = new SightingRepository();
+    repository.getSighting(sightingId).then((data) => {
+      if (data) {
+        setInitialData((prev) => ({ ...prev, ...data }));
+      }
+    });
+  }, [sightingId]);
+
   const config: WizardConfig = useMemo(
     () => [
       {
@@ -136,7 +152,7 @@ export default function EditPetSighting() {
               data.images,
             );
           }
-          
+
           if (data && data.sightingId) {
             await handleSightingUpdate(t, data.sightingId, newData);
           }

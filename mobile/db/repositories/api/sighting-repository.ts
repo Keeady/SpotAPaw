@@ -85,6 +85,36 @@ export class ApiSightingRepository extends BaseSightingRepository {
       throw new Error("Undefined api client");
     }
 
+    const changes = {
+      name: payload.name,
+      petId: payload.petId,
+      lastSeenLat: payload.lastSeenLat,
+      lastSeenLong: payload.lastSeenLong,
+      lastSeenLocation: payload.lastSeenLocation,
+      lastSeenTime: payload.lastSeenTime,
+      note: payload.note,
+      gender: payload.gender,
+      colors: payload.colors,
+      breed: payload.breed,
+      species: payload.species,
+      features: payload.features,
+      linkedSightingId: payload.linkedSightingId,
+      reporterName: payload.reporterName,
+      reporterPhone: payload.reporterPhone,
+      size: payload.size,
+      collarDescription: payload.collarDescription,
+      age: payload.age ?? 0,
+      behavior: payload.behavior,
+    } as Partial<AggregatedSighting>;
+
+    if (payload.photos && payload.photos.length > 0) {
+      changes.photos = payload.photos;
+    }
+
+    if (payload.petDescriptionId) {
+      changes.petDescriptionId = payload.petDescriptionId;
+    }
+
     await this.apiClient.patch<AggregatedSighting>(
       `/aggregated-sightings/my/${id}`,
       {
@@ -116,15 +146,18 @@ export class ApiSightingRepository extends BaseSightingRepository {
       isActive: true,
       reporterName: payload.reporterName,
       reporterPhone: payload.reporterPhone,
-      reporterId: payload.reporterId,
       size: payload.size,
       collarDescription: payload.collarDescription,
       age: payload.age ?? 0,
       photos: payload.photos,
       behavior: payload.behavior,
-    };
+    } as Partial<AggregatedSighting>;
 
-    return this.apiClient.post<AggregatedSighting>(`/sightings`, data)
+    if (payload.petDescriptionId) {
+      data.petDescriptionId = payload.petDescriptionId;
+    }
+
+    return this.apiClient.post<AggregatedSighting>(`/sightings`, data);
   }
 
   async getSightingsByReporter(
@@ -137,9 +170,7 @@ export class ApiSightingRepository extends BaseSightingRepository {
     return this.apiClient.get(`sightings/my`);
   }
 
-  async getMatchingSightings(
-    id: string,
-  ): Promise<AggregatedSighting[]> {
+  async getMatchingSightings(id: string): Promise<AggregatedSighting[]> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
     }

@@ -4,17 +4,17 @@ import { ApiClient } from "./client";
 
 export class ApiOwnerRepository extends BaseOwnerRepository {
   apiClient: ApiClient;
-    constructor(apiClient: ApiClient) {
-      super();
-      this.apiClient = apiClient;
-    }
+  constructor(apiClient: ApiClient) {
+    super();
+    this.apiClient = apiClient;
+  }
 
   async getOwner(userId: string): Promise<Owner | undefined> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
     }
-    
-    return this.apiClient.get("/profile");
+
+   return this.apiClient.get<Owner>("/profile");
   }
 
   async createOwner(payload: Partial<Owner>): Promise<string> {
@@ -23,12 +23,12 @@ export class ApiOwnerRepository extends BaseOwnerRepository {
     }
 
     return this.apiClient.post("/profile", {
-      firstname: payload.firstName,
-      lastname: payload.lastName,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
       email: payload.email,
       phone: payload.phone,
-      countryCode: payload.countryCode
-    })
+      countryCode: payload.countryCode,
+    });
   }
 
   async updateOwner(id: string, payload: Partial<Owner>): Promise<void> {
@@ -41,8 +41,8 @@ export class ApiOwnerRepository extends BaseOwnerRepository {
       lastname: payload.lastName,
       email: payload.email,
       phone: payload.phone,
-      countryCode: payload.countryCode
-    })
+      countryCode: payload.countryCode,
+    });
   }
 
   async deleteOwner(id: string): Promise<void> {
@@ -50,6 +50,6 @@ export class ApiOwnerRepository extends BaseOwnerRepository {
       throw new Error("Undefined api client");
     }
 
-    return this.apiClient.delete("/profile")
+    return this.apiClient.delete("/profile");
   }
 }
