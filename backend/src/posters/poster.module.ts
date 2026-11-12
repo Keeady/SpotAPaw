@@ -15,13 +15,13 @@ import { AuthModule } from '../auth/auth.module.js';
     ConfigModule,
     TypeOrmModule.forFeature([AggregatedSighting]),
     TypeOrmModule.forFeature([Poster]),
+    AuthModule,
   ],
   providers: [
     PosterAiService,
     PosterDataService,
     PosterGeneratorService,
     PosterService,
-    AuthModule
   ],
   exports: [PosterDataService, PosterGeneratorService],
   controllers: [PosterController],

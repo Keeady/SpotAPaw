@@ -9,6 +9,10 @@ import { AuthModule } from '../auth/auth.module.js';
 @Module({
   controllers: [AggregatedSightingsController],
   providers: [AggregatedSightingsService],
-  imports: [TypeOrmModule.forFeature([AggregatedSighting]), SightingsModule, AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([AggregatedSighting]),
+    SightingsModule,
+    AuthModule,
+  ],
 })
 export class AggregatedSightingsModule {}

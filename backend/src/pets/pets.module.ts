@@ -9,7 +9,11 @@ import { PetPhotos } from './entities/pet-photo.entity.js';
 import { PetDescription } from './entities/pet-description.entity.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Pet, PetPhotos, PetDescription]), AuthModule, ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([Pet, PetPhotos, PetDescription]),
+    AuthModule,
+    ConfigModule,
+  ],
   controllers: [PetsController],
   providers: [PetsService],
 })
