@@ -1,20 +1,15 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   Query,
-  HttpException,
-  HttpStatus,
-  ParseFloatPipe,
   ParseUUIDPipe,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AggregatedSightingsService } from './aggregated-sightings.service.js';
-import { CreateAggregatedSightingDto } from './dto/create-aggregated-sighting.dto.js';
 import { UpdateAggregatedSightingDto } from './dto/update-aggregated-sighting.dto.js';
 import { SightingsService } from '../sightings/sightings.service.js';
 import { GetAggregatedSightingsDto } from './dto/get-aggregated-sightings.dto.js';
@@ -35,8 +30,13 @@ export class AggregatedSightingsController {
     );
   }
 
-  @Get(':id')
-  async findOne(
+  @Get(':id/')
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.aggregatedSightingsService.findOne(id);
+  }
+
+  @Get(':id/details')
+  async findOneWithDetails(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('linked_sighting_id', ParseUUIDPipe) linked_sighting_id: string,
   ) {
@@ -52,9 +52,14 @@ export class AggregatedSightingsController {
     return {
       summary,
       sightings,
-      hasOwner: false,
-      claimed: false,
     };
+  }
+
+  @Get('my/:linkedSightingId')
+  async findByLinkedSightingId(
+    @Param('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
+  ) {
+    return this.sightingsService.findAll(linkedSightingId);
   }
 
   @Patch(':id')
@@ -68,15 +73,27 @@ export class AggregatedSightingsController {
     );
   }
 
-  @Patch(':id/status')
-  updateStatus(
-    @Param('id') id: string,
-    @Body() updateAggregatedSightingDto: UpdateAggregatedSightingDto,
+  @Patch('/status')
+  async updateStatus(
+    @Param('petId') petId: string,
+    @Body('status') status: boolean,
   ) {
-    return this.aggregatedSightingsService.updateStatus(
-      +id,
-      updateAggregatedSightingDto.isActive,
+    const sightings =
+      await this.aggregatedSightingsService.findActivePetSightingsById(petId);
+    if (!sightings || sightings.length === 0) {
+      throw new NotFoundException('Sighting not found');
+    }
+    const ids = sightings.map((s) => s.id);
+    const linkedSightingIds = sightings.map((s) => s.linkedSightingId);
+
+    const updated = await this.aggregatedSightingsService.updateStatus(
+      ids,
+      status,
     );
+
+    if (updated) {
+      await this.sightingsService.updateStatus(linkedSightingIds, status);
+    }
   }
 
   @Get('/pets/:petId')

@@ -9,7 +9,6 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { PetsModule } from './pets/pets.module.js';
 import { PosterModule } from './posters/poster.module.js';
-import { SightingContactsModule } from './sighting-contacts/sighting-contacts.module.js';
 import { SightingsModule } from './sightings/sightings.module.js';
 import { UsersModule } from './users/users.module.js';
 import { Poster } from './posters/entities/poster.entity.js';
@@ -20,6 +19,8 @@ import { ProfileModule } from './profiles/profile.module.js';
 import { SettingsModule } from './settings/settings.module.js';
 import { PetPhotos } from './pets/entities/pet-photo.entity.js';
 import { PetDescription } from './pets/entities/pet-description.entity.js';
+import { PetclaimsModule } from './petclaims/petclaims.module.js';
+import { Petclaim } from './petclaims/entities/petclaim.entity.js';
 
 @Module({
   imports: [
@@ -35,7 +36,15 @@ import { PetDescription } from './pets/entities/pet-description.entity.js';
         username: configService.getOrThrow<string>('DB_USERNAME'),
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB'),
-        entities: [AggregatedSighting, Poster, SightingMatch, Pet, PetPhotos, PetDescription],
+        entities: [
+          AggregatedSighting,
+          Poster,
+          SightingMatch,
+          Pet,
+          PetPhotos,
+          PetDescription,
+          Petclaim,
+        ],
         autoLoadEntities: true,
         driver: pg,
         retryAttempts: 10,
@@ -44,14 +53,14 @@ import { PetDescription } from './pets/entities/pet-description.entity.js';
     }),
     SightingsModule,
     PetsModule,
-    SightingContactsModule,
     AggregatedSightingsModule,
     UsersModule,
     PosterModule,
     SightingMatchesModule,
     ProfileModule,
     SettingsModule,
-    SettingsModule
+    SettingsModule,
+    PetclaimsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

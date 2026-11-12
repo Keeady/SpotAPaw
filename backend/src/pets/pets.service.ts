@@ -18,28 +18,20 @@ export class PetsService {
   ) {}
 
   async findByOwner(userId: string) {
-    return (
-      this.petRepository
-        .createQueryBuilder('p')
-        .leftJoinAndSelect('p.petPhotos', 'ph')
-        //.leftJoinAndSelect('p.petDescription', 'pdr')
-        //.leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
-        .where('p.owner_id = :userId', { userId })
-        .getMany()
-    );
+    return this.petRepository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.petPhotos', 'ph')
+      .where('p.owner_id = :userId', { userId })
+      .getMany();
   }
 
   async findPetById(userId: string, petId: string) {
-    return (
-      this.petRepository
-        .createQueryBuilder('p')
-        .leftJoinAndSelect('p.petPhotos', 'ph')
-        //.leftJoinAndSelect('p.petDescription', 'pdr')
-        //.leftJoinAndSelect('pdr.petDescriptionPhotos', 'pdrph')
-        .where('p.id = :petId', { petId })
-        .andWhere('p.owner_id = :userId', { userId })
-        .getOneOrFail()
-    );
+    return this.petRepository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.petPhotos', 'ph')
+      .where('p.id = :petId', { petId })
+      .andWhere('p.owner_id = :userId', { userId })
+      .getOneOrFail();
   }
 
   async createPet(userId: string, dto: CreatePetDto): Promise<string> {
@@ -182,6 +174,17 @@ export class PetsService {
     }
 
     const result = await this.petRepository.update({ id: petId }, changes);
+
+    return !!(result.affected && result.affected > 0);
+  }
+
+  async deletePet(userId: string, petId: string): Promise<boolean> {
+    const pet = await this.findPetById(userId, petId);
+    if (!pet) {
+      throw new NotFoundException('Pet not found.');
+    }
+
+    const result = await this.petRepository.softDelete({ id: petId });
 
     return !!(result.affected && result.affected > 0);
   }

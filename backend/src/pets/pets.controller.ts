@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   InternalServerErrorException,
   Param,
@@ -15,6 +16,7 @@ import { PetsService } from './pets.service.js';
 import { PetParamsDto } from './dto/pet-params.dto.js';
 import { UpdatePetDto } from './dto/update-pet.dto.js';
 import { CreatePetDto } from './dto/create-pet.dto.js';
+import { AggregatedSightingsService } from '../aggregated-sightings/aggregated-sightings.service.js';
 
 @Controller('pets')
 @UseGuards(SupabaseAuthGuard)
@@ -73,5 +75,19 @@ export class PetsController {
     }
 
     return updated;
+  }
+
+  @Delete('my/:petId')
+  async deletePet(
+    @CurrentUser('id') userId: string,
+    @Param() params: PetParamsDto,
+  ) {
+    const deleted = await this.petsService.deletePet(userId, params.petId);
+
+    if (!deleted) {
+      throw new InternalServerErrorException('Failed to deleted pet.');
+    }
+
+    return deleted;
   }
 }

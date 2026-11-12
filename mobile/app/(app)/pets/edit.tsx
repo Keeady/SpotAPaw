@@ -50,6 +50,7 @@ export default function EditPet() {
       .getPet(petId)
       .then((data) => {
         if (data) {
+          console.log("pet by id", data)
           setInitialData({ ...initialData, ...data });
         }
       })

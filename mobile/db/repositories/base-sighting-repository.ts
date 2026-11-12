@@ -2,7 +2,6 @@ import { AggregatedSighting, Sighting } from "../models/sighting";
 
 export interface ISightingRepository {
   getSighting(id: string): Promise<AggregatedSighting>;
-  getLinkedSightings(id: string): Promise<AggregatedSighting[]>;
   createSighting(data: Sighting): Promise<string>;
   updateSighting(id: string, data: AggregatedSighting): Promise<void>;
   getSightings(filters: SightingFilters): Promise<SightingRepositoryResponse>;
@@ -47,9 +46,6 @@ export class BaseSightingRepository implements ISightingRepository {
     throw new Error("Method not implemented.");
   }
 
-  getLinkedSightings(_id: string): Promise<AggregatedSighting[]> {
-    throw new Error("Method not implemented.");
-  }
   getSighting(_id: string): Promise<AggregatedSighting> {
     throw new Error("Method not implemented.");
   }

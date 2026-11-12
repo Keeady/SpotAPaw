@@ -9,20 +9,20 @@ export class ApiPetRepository extends BasePetRepository {
     this.apiClient = apiClient;
   }
 
-  async getPet(id: string): Promise<Pet | undefined> {
-    if (!this.apiClient) {
-      throw new Error("Undefined api client");
-    }
-
-    return this.apiClient.get<Pet>(`/pets/my/${id}`);
-  }
-
   async getPets(ownerId: string): Promise<Pet[]> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
     }
 
     return this.apiClient.get<Pet[]>(`/pets/my`);
+  }
+
+  async getPet(id: string): Promise<Pet | undefined> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    return this.apiClient.get<Pet>(`/pets/my/${id}`);
   }
 
   async createPet(payload: Partial<Pet>): Promise<string> {
@@ -48,14 +48,6 @@ export class ApiPetRepository extends BasePetRepository {
     return this.apiClient.post<Pet>(`/pets/my`, changes);
   }
 
-  async deletePet(id: string, ownerId: string): Promise<void> {
-    if (!this.apiClient) {
-      throw new Error("Undefined api client");
-    }
-
-    return this.apiClient.delete(`/pets/my/${id}`);
-  }
-
   async updatePet(id: string, payload: Partial<Pet>): Promise<void> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
@@ -77,5 +69,13 @@ export class ApiPetRepository extends BasePetRepository {
     };
 
     return this.apiClient.patch(`/pets/my/${id}`, changes);
+  }
+
+    async deletePet(id: string, ownerId: string): Promise<void> {
+    if (!this.apiClient) {
+      throw new Error("Undefined api client");
+    }
+
+    return this.apiClient.delete(`/pets/my/${id}`);
   }
 }

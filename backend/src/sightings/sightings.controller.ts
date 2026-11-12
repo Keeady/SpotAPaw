@@ -44,17 +44,4 @@ export class SightingsController {
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.sightingsService.findOne(+id);
   }
-
-  @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateSightingDto: UpdateSightingDto,
-  ) {
-    return this.sightingsService.update(+id, updateSightingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.sightingsService.remove(+id);
-  }
 }

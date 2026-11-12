@@ -1,8 +1,14 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateSightingDto } from './dto/create-sighting.dto.js';
 import { UpdateSightingDto } from './dto/update-sighting.dto.js';
 import { Sighting } from './entities/sighting.entity.js';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PublicSighting, toPublicSightings } from './util.js';
 
@@ -48,8 +54,12 @@ export class SightingsService {
       changes.note = createSightingDto.note;
     }
 
-    if (createSightingDto.gender) {
+    if (createSightingDto.colors) {
       changes.colors = createSightingDto.colors;
+    }
+
+    if (createSightingDto.gender) {
+      changes.gender = createSightingDto.gender;
     }
 
     if (createSightingDto.breed) {
@@ -100,7 +110,11 @@ export class SightingsService {
       changes.behavior = createSightingDto.behavior;
     }
 
-    return this.sightingsRepository.insert(changes)
+    if (Object.keys(changes).length === 0) {
+      throw new BadRequestException('Provide at least one editable field.');
+    }
+
+    return this.sightingsRepository.insert(changes);
   }
 
   async findAll(linked_sighting_id: string): Promise<PublicSighting[]> {
@@ -122,7 +136,7 @@ export class SightingsService {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    
+
     const data = await this.sightingsRepository
       .createQueryBuilder('sighting')
       .where('sighting.reporterId = :id', { id: userId })
@@ -138,11 +152,14 @@ export class SightingsService {
     return undefined;
   }
 
-  update(id: number, updateSightingDto: UpdateSightingDto) {
-    return `This action updates a #${id} sighting`;
+  updateStatus(ids: string[], isActive: boolean) {
+    return this.sightingsRepository.update(
+      { linkedSightingId: In(ids) },
+      { isActive },
+    );
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} sighting`;
   }
 }

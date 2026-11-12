@@ -1,4 +1,3 @@
-import { supabase } from "@/components/supabase-client";
 import { Pet } from "../models/pet";
 import { IPetRepository } from "./base-pet-repository";
 import { authenticatedApiClient } from "./api/client";

@@ -153,7 +153,7 @@ export default function SightingProfile() {
       petSummary={summary}
       onAddSighting={onAddSighting}
       onEdit={isOwner ? onEdit : undefined}
-      claimPet={user && !petOwner ? onClaimPet : undefined}
+      claimPet={user && !petOwner && !claimed ? onClaimPet : undefined}
       claimed={claimed && !cleanedPetId}
       hasOwner={!!petOwner || !!cleanedPetId}
       isOwner={!!isOwner}
