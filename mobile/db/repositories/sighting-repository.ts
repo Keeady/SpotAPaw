@@ -20,7 +20,7 @@ export class SightingRepository implements ISightingRepository {
     const repository = new ApiSightingRepository(publicApiClient);
     return repository.getMatchingSightings(id);
   }
-  getSightingsByReporter(reporterId: string): Promise<AggregatedSighting[]> {
+  getSightingsByReporter(reporterId: string): Promise<Sighting[]> {
     const repository = new ApiSightingRepository(authenticatedApiClient);
     return repository.getSightingsByReporter(reporterId);
   }

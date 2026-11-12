@@ -162,7 +162,7 @@ export class ApiSightingRepository extends BaseSightingRepository {
 
   async getSightingsByReporter(
     reporterId: string,
-  ): Promise<AggregatedSighting[]> {
+  ): Promise<Sighting[]> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
     }
