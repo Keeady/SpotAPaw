@@ -33,6 +33,18 @@ export class AggregatedSightingsController {
     );
   }
 
+  @Get('my')
+  @UseGuards(SupabaseAuthGuard)
+  async findByLinkedSightingId(
+    @Query('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
+    @CurrentUser('id') userId?: string,
+  ) {
+    return this.aggregatedSightingsService.findByLinkedSightingId(
+      linkedSightingId,
+      userId,
+    );
+  }
+
   @Get(':id/')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.aggregatedSightingsService.findOne(id);
@@ -41,14 +53,14 @@ export class AggregatedSightingsController {
   @Get(':id/details')
   async findOneWithDetails(
     @Param('id', ParseUUIDPipe) id: string,
-    @Query('linked_sighting_id', ParseUUIDPipe) linked_sighting_id: string,
+    @Query('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
   ) {
     const [summary, sightings] = await Promise.all([
       this.aggregatedSightingsService.findOne(id),
-      this.sightingsService.findAll(linked_sighting_id),
+      this.sightingsService.findAll(linkedSightingId),
     ]);
 
-    if (summary.linkedSightingId !== linked_sighting_id) {
+    if (summary.linkedSightingId !== linkedSightingId) {
       throw new BadRequestException('Invalid IDs');
     }
 
@@ -56,13 +68,6 @@ export class AggregatedSightingsController {
       summary,
       sightings,
     };
-  }
-
-  @Get('my')
-  async findByLinkedSightingId(
-    @Query('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
-  ) {
-    return this.aggregatedSightingsService.findByLinkedSightingId(linkedSightingId);
   }
 
   @Patch('my/:id')

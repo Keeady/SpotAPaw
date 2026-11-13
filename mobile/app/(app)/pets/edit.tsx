@@ -3,7 +3,10 @@ import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
-import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import {
+  SightingFormData,
+  WizardConfig,
+} from "@/components/wizard2.0/wizard-types";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePetUpdate from "@/lib/pet-service/pet-update-handler";
@@ -15,17 +18,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function EditPet() {
-  const {
-    petId,
-    is_lost: isPetLost,
-  } = useLocalSearchParams<{
+  const { petId, is_lost: isPetLost } = useLocalSearchParams<{
     id: string;
     petId: string;
     is_lost: string;
     linkedSightingId: string;
   }>();
 
-  const [initialData, setInitialData] = useState({
+  const [initialData, setInitialData] = useState<SightingFormData>({
     ...PET_FIELDS_CLEARED,
     reportType: "edit_pet",
     isLost: Boolean(isPetLost),
@@ -47,7 +47,11 @@ export default function EditPet() {
       .getPet(petId)
       .then((data) => {
         if (data) {
-          setInitialData(prev => ({...prev, ...data}));
+          setInitialData((prev) => ({
+            ...prev,
+            ...data,
+            isLost: Boolean(isPetLost),
+          }));
         }
       })
       .catch((error) => {
@@ -145,7 +149,7 @@ export default function EditPet() {
             }
             // TODO check if data changed
             await handlePetUpdate(t, data.id, petData);
-            
+
             return {
               ...petData,
               lastSeenLat: undefined,
@@ -196,10 +200,7 @@ export default function EditPet() {
 
   return (
     <SightingWizard
-      initialData={{
-        ...initialData,
-        reportType: "edit_pet",
-      }}
+      initialData={initialData}
       config={config}
       onFinish={() => router.back()}
       onCancel={() => router.back()}

@@ -50,7 +50,11 @@ export default function MyNewSighting() {
     const repository = new SightingRepository();
     repository.getSighting(sightingId).then((data) => {
       if (data) {
-        setInitialData((prev) => ({ ...prev, ...data }));
+        setInitialData((prev) => ({
+          ...prev,
+          ...data,
+          linkedSightingId: sightingId,
+        }));
       }
     });
   }, [sightingId]);
@@ -64,7 +68,7 @@ export default function MyNewSighting() {
       .getPet(petId)
       .then((data) => {
         if (data) {
-          setInitialData((prev) => ({ ...prev, ...data }));
+          setInitialData((prev) => ({ ...prev, ...data, id: petId }));
         }
       })
       .catch((error) => {
@@ -82,6 +86,7 @@ export default function MyNewSighting() {
           "Thank you for helping bring our lost friends home.",
         ),
         nextActionName: () => t("continue", "Continue"),
+        skip: (data) => !!data.sightingId,
         onComplete: () => undefined,
       },
       {
@@ -93,7 +98,7 @@ export default function MyNewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
-        skip: (data) => data.reportType === "found_stray",
+        skip: (data) => data.reportType === "found_stray" || !!data.id,
       },
       {
         id: "upload_photo",

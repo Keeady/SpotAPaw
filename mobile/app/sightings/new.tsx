@@ -4,23 +4,50 @@ import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
-import { PetRepository } from "@/db/repositories/pet-repository";
+import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
 import handleSightingCreation from "@/lib/sighting-service/sighting-create-handler";
 import handleSightingImageUpload from "@/lib/sighting-service/sighting-image-upload";
-import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function NewSighting() {
-  const [initialData, _setInitialData] = useState(PET_FIELDS_CLEARED);
+  const { id: sightingId } = useLocalSearchParams<{
+    id: string;
+    linkedSightingId: string;
+  }>();
+
+  const [initialData, setInitialData] = useState({
+    ...PET_FIELDS_CLEARED,
+    reportType: undefined,
+    isLost: true,
+    linkedSightingId: sightingId,
+  });
   const { t } = useTranslation("wizard");
   const router = useRouter();
   const onPhotoAnalyze = usePhotoAnalyzeStep();
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
   const { aiPhotoAnalysisAllowed } = useProContext();
   const { isAiFeatureEnabled } = useAIFeatureContext();
+
+  useEffect(() => {
+    if (!sightingId) {
+      return;
+    }
+
+    const repository = new SightingRepository();
+    repository.getSighting(sightingId).then((data) => {
+      if (data) {
+        setInitialData((prev) => ({
+          ...prev,
+          ...data,
+          linkedSightingId: sightingId,
+        }));
+      }
+    });
+  }, [sightingId]);
 
   const config: WizardConfig = useMemo(
     () => [
@@ -34,6 +61,7 @@ export default function NewSighting() {
         nextActionName: () => t("continue", "Continue"),
         onComplete: (data) =>
           data.reportType === "found_stray" ? PET_FIELDS_CLEARED : undefined,
+        skip: () => !!sightingId
       },
       {
         id: "choose_pet",
@@ -43,18 +71,8 @@ export default function NewSighting() {
           "Sorry to hear your pet is missing. Let's bring them back!",
         ),
         nextActionName: () => t("continue", "Continue"),
-        onComplete: async (data) => {
-          // fetch pet
-          if (data.id) {
-            const petRepository = new PetRepository();
-            const pet = await petRepository.getPet(data.id);
-            return {
-              ...data,
-              ...pet,
-            };
-          }
-        },
-        skip: (data) => data.reportType === "found_stray",
+        onComplete: () => undefined,
+        skip: () => true,
       },
       {
         id: "upload_photo",

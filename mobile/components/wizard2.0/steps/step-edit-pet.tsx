@@ -42,8 +42,6 @@ export function EditPetStep({
     images,
     reportType,
     aiGenerated,
-    petPhotos,
-    petDescription,
   } = formData;
   const showAiGeneratedFlag = !!isAiFeatureEnabled && !!aiGenerated;
 
@@ -93,11 +91,11 @@ export function EditPetStep({
         petGender={gender || ""}
         petAge={age || 0}
         petPhoto={
-          images?.[0]?.uri ||
-          petDescription?.petDescriptionPhotos?.[0].publicUrl ||
-          petPhotos?.[0].publicUrl ||
-          photos?.[0] ||
-          ""
+          images && images.length > 0
+            ? images[0].uri
+            : photos && photos.length > 0
+              ? photos[0]
+              : ""
         }
         showDetails={false}
       />

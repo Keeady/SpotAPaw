@@ -34,7 +34,7 @@ export class SightingRepository implements ISightingRepository {
     return repository.getSighting(id);
   }
   getSightingByLinkedSightingId(linkedSightingId: string): Promise<AggregatedSighting> {
-    const repository = new ApiSightingRepository(publicApiClient);
+    const repository = new ApiSightingRepository(authenticatedApiClient);
     return repository.getSightingByLinkedSightingId(linkedSightingId);
   }
   createSighting(data: Partial<Sighting>): Promise<string> {

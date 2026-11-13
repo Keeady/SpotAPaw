@@ -1,3 +1,4 @@
+import { PetInfo } from "@/components/analyzer/types";
 import { AnalyzeMultipleResponse } from "@/components/analyzer/use-pet-image-analyzer";
 import { PetImage } from "@/components/wizard/wizard-interface";
 import { Pet } from "@/db/models/pet";
@@ -16,25 +17,22 @@ export default async function handlePhotoUploadAnalyze(
   if (analysis) {
     const { data, petDescriptionId, publicUrls } = analysis;
 
-    const response = {
-      publicUrls,
-      petDescriptionId,
-      pets: data && "pets" in data && data.pets.length > 0 ? data.pets : [],
-      aiNote: data && "note" in data && data.note ? data.note : "",
-    };
+    const pets: PetInfo[] =
+      data && "pets" in data && data.pets.length > 0 ? data.pets : [];
+    const aiNote = data && "note" in data && data.note ? data.note : "";
 
     if (
-      response.pets.length === 0 ||
-      response.aiNote.toLowerCase().includes("no pets detected")
+      pets.length === 0 ||
+      aiNote.toLowerCase().includes("no pets detected")
     ) {
-      throw new Error(response.aiNote || "Not pets detected", {
+      throw new Error(aiNote || "Not pets detected", {
         cause: "NO_PETS_DETECTED",
       });
     }
 
     const pet = {} as Pet;
-    if (response.pets.length > 0) {
-      const petInfo = response.pets[0];
+    if (pets.length > 0) {
+      const petInfo = pets[0];
       if (petInfo.species) {
         pet["species"] = petInfo.species;
       }
@@ -70,17 +68,17 @@ export default async function handlePhotoUploadAnalyze(
       }
 
       if (petInfo.note) {
-        pet["note"] = petInfo.note;
+        pet["note"] = petInfo.note || aiNote;
+      }
+
+      if (petDescriptionId) {
+        pet["petDescriptionId"] = petDescriptionId;
       }
     }
 
-    return Promise.resolve({
-      ...data,
+    return {
       ...pet,
-      photos: [...response.publicUrls],
-      petDescriptionId: response.petDescriptionId,
-      note: response.aiNote,
       images: [],
-    });
+    };
   }
 }

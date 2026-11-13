@@ -100,7 +100,12 @@ export class ApiClient {
       return undefined as T;
     }
 
-    return response.json() as Promise<T>;
+    try {
+      return response.json() as Promise<T>;
+    } catch (error) {
+      console.error(error);
+      return {} as Promise<T>;
+    }
   }
 }
 

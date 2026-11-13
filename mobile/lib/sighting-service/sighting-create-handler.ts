@@ -9,7 +9,10 @@ export default async function handleSightingCreation(
 ) {
   try {
     const repository = new SightingRepository();
-    const id = await repository.createSighting({...data, petId: data.id });
+    const id = await repository.createSighting({
+      ...data,
+      petId: data.id,
+    });
     if (id) {
       showMessage({
         message: t(

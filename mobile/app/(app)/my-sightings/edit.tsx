@@ -3,7 +3,7 @@ import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
-import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import { SightingFormData, WizardConfig } from "@/components/wizard2.0/wizard-types";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
@@ -27,7 +27,7 @@ export default function EditPetSighting() {
     linkedSightingId: string;
   }>();
 
-  const [initialData, setInitialData] = useState({
+  const [initialData, setInitialData] = useState<SightingFormData>({
     ...PET_FIELDS_CLEARED,
     reportType: undefined,
     isLost: Boolean(isPetLost),
@@ -188,7 +188,7 @@ export default function EditPetSighting() {
 
   return (
     <SightingWizard
-      initialData={{ ...initialData, reportType: undefined }}
+      initialData={initialData}
       config={config}
       onFinish={() => router.back()}
       onCancel={() => router.back()}

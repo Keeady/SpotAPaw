@@ -3,7 +3,10 @@ import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
-import { WizardConfig } from "@/components/wizard2.0/wizard-types";
+import {
+  SightingFormData,
+  WizardConfig,
+} from "@/components/wizard2.0/wizard-types";
 import handlePetCreation from "@/lib/pet-service/pet-create-handler";
 import handlePetImageUpload from "@/lib/pet-service/pet-image-upload";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
@@ -16,7 +19,10 @@ import { useTranslation } from "react-i18next";
 export default function AddPet() {
   const { t } = useTranslation("wizard");
   const router = useRouter();
-  const [initialData, _setInitialData] = useState(PET_FIELDS_CLEARED);
+  const [initialData, _setInitialData] = useState<SightingFormData>({
+    ...PET_FIELDS_CLEARED,
+    reportType: "new_pet",
+  });
   const { uploadMultiplePetImages } = useUploadMultiplePetImage();
   const { aiPhotoAnalysisAllowed } = useProContext();
   const { isAiFeatureEnabled } = useAIFeatureContext();
@@ -164,7 +170,7 @@ export default function AddPet() {
   return (
     <SightingWizard
       config={config}
-      initialData={{ ...initialData, reportType: "new_pet" }}
+      initialData={initialData}
       onFinish={() => router.back()}
       onCancel={() => router.back()}
     />

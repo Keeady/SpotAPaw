@@ -56,19 +56,6 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
                 }}
                 testID="pet-photos"
               />
-            ) : pet.petPhotos && pet.petPhotos.length > 0 ? (
-              <Image
-                source={{ uri: pet.petPhotos[0].publicUrl }}
-                resizeMode="contain"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  borderTopLeftRadius: 12,
-                  borderTopRightRadius: 12,
-                  aspectRatio: 1.5,
-                }}
-                testID="pet-photos"
-              />
             ) : (
               <View
                 style={[
