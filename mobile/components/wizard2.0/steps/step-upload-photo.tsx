@@ -35,11 +35,10 @@ export function UploadPhotoStep({
   const [hasErrors, setHasErrors] = useState(false);
   const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
-  const { photos, images, petPhotos, petDescription } = formData;
+  const { photos, images, petDescription } = formData;
   const hasPhoto =
     !!photos?.length ||
     !!images?.length ||
-    !!petPhotos?.length ||
     !!petDescription?.petDescriptionPhotos?.length;
 
   // This screen's own onComplete: require a photo, then hand off to the base
@@ -138,13 +137,6 @@ export function UploadPhotoStep({
             isVisible={isVisibleGallery}
             setIsVisible={setIsVisibleGallery}
             mainPhoto={petDescription.petDescriptionPhotos[0].publicUrl}
-          />
-        ) : petPhotos && petPhotos.length > 0 ? (
-          <SightingGallery
-            images={petPhotos.map((photo) => ({ uri: photo.publicUrl }))}
-            isVisible={isVisibleGallery}
-            setIsVisible={setIsVisibleGallery}
-            mainPhoto={petPhotos[0].publicUrl}
           />
         ) : photos && photos.length > 0 ? (
           <SightingGallery

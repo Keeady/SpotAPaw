@@ -116,7 +116,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     species,
     note,
     photos,
-    petPhotos,
     petDescription,
   } = petProfile;
 
@@ -152,13 +151,6 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                   isVisible={isVisibleGallery}
                   setIsVisible={setIsVisibleGallery}
                   mainPhoto={petDescription.petDescriptionPhotos![0].publicUrl}
-                />
-              ) : !!petPhotos && petPhotos.length > 0 ? (
-                <SightingGallery
-                  images={petPhotos!.map((photo) => ({ uri: photo.publicUrl }))}
-                  isVisible={isVisibleGallery}
-                  setIsVisible={setIsVisibleGallery}
-                  mainPhoto={petPhotos![0].publicUrl}
                 />
               ) : hasPhotos ? (
                 <SightingGallery
