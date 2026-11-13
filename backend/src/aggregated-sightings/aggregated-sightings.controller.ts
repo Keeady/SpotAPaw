@@ -75,11 +75,11 @@ export class AggregatedSightingsController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAggregatedSightingDto: UpdateAggregatedSightingDto,
-    @CurrentUser('id') userId?: string
+    @CurrentUser('id') userId?: string,
   ) {
     return this.aggregatedSightingsService.update(
       id,
-      userId || "",
+      userId || '',
       updateAggregatedSightingDto,
     );
   }
@@ -102,14 +102,19 @@ export class AggregatedSightingsController {
     const ids = sightings.map((s) => s.id);
     const linkedSightingIds = sightings.map((s) => s.linkedSightingId);
 
-    const updated = await this.aggregatedSightingsService.updateStatus(
+    let updated = await this.aggregatedSightingsService.updateStatus(
       ids,
       isActive,
     );
 
     if (updated) {
-      await this.sightingsService.updateStatus(linkedSightingIds, isActive);
+      updated = await this.sightingsService.updateStatus(
+        linkedSightingIds,
+        isActive,
+      );
     }
+
+    return updated;
   }
 
   @Get('/pets/:petId')

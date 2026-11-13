@@ -148,14 +148,12 @@ export class SightingsService {
     return [];
   }
 
-  updateStatus(ids: string[], isActive: boolean) {
-    return this.sightingsRepository.update(
-      { linkedSightingId: In(ids) },
+  async updateStatus(ids: string[], isActive: boolean) {
+    const result = await this.sightingsRepository.update(
+      { linkedSightingId: In(ids), id: In(ids) },
       { isActive },
     );
-  }
 
-  remove(id: string) {
-    return `This action removes a #${id} sighting`;
+    return !!(result.affected && result.affected > 0);
   }
 }
