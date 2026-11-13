@@ -117,12 +117,12 @@ export class SightingsService {
     return this.sightingsRepository.insert(changes);
   }
 
-  async findAll(linked_sighting_id: string): Promise<PublicSighting[]> {
+  async findAll(linkedSightingId: string): Promise<PublicSighting[]> {
     const data = await this.sightingsRepository
       .createQueryBuilder('sighting')
-      .where('sighting.id = :id', { id: linked_sighting_id })
-      .orWhere('sighting.linked_sighting_id = :linked_sighting_id', {
-        linked_sighting_id,
+      .where('sighting.id = :id', { id: linkedSightingId })
+      .orWhere('sighting.linked_sighting_id = :linkedSightingId', {
+        linkedSightingId,
       })
       .getMany();
 

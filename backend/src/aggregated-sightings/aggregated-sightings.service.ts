@@ -53,7 +53,7 @@ export class AggregatedSightingsService {
     return toPublicSighting(data);
   }
 
-  async findByLinkedSightingId(id: string) {
+  async findByLinkedSightingId(id: string, userId?: string) {
     const data = await this.aggregatedSightingsRepository
       .createQueryBuilder('aggregated_sightings')
       .where('aggregated_sightings.linked_sighting_id = :id', { id })

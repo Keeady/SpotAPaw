@@ -35,8 +35,8 @@ export class SightingsController {
 
   @Get()
   async findAll(
-    @Query('linked_sighting_id', ParseUUIDPipe) linked_sighting_id: string,
+    @Query('linkedSightingId', ParseUUIDPipe) linkedSightingId: string,
   ) {
-    return this.sightingsService.findAll(linked_sighting_id);
+    return this.sightingsService.findAll(linkedSightingId);
   }
 }
