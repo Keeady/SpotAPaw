@@ -13,13 +13,14 @@ import { CreateSightingDto } from './dto/create-sighting.dto.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import type { AuthUser } from '../auth/auth-user.type.js';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard.js';
+import { SupabaseAnonyMousGuard } from '../auth/supabase-anonymous.guard.js';
 
 @Controller('sightings')
 export class SightingsController {
   constructor(private readonly sightingsService: SightingsService) {}
 
   @Post()
-  @UseGuards(SupabaseAuthGuard)
+  @UseGuards(SupabaseAnonyMousGuard)
   create(
     @Body() createSightingDto: CreateSightingDto,
     @CurrentUser('id') userId?: string,

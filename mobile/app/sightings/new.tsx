@@ -4,7 +4,6 @@ import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
 import { WizardConfig } from "@/components/wizard2.0/wizard-types";
-import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
 import usePhotoAnalyzeStep from "@/lib/photo-analysis/use-photo-analyze";
@@ -24,7 +23,7 @@ export default function NewSighting() {
     ...PET_FIELDS_CLEARED,
     reportType: undefined,
     isLost: true,
-    sightingId,
+    linkedSightingId: sightingId,
   });
   const { t } = useTranslation("wizard");
   const router = useRouter();
@@ -62,6 +61,7 @@ export default function NewSighting() {
         nextActionName: () => t("continue", "Continue"),
         onComplete: (data) =>
           data.reportType === "found_stray" ? PET_FIELDS_CLEARED : undefined,
+        skip: () => !!sightingId
       },
       {
         id: "choose_pet",
@@ -71,18 +71,8 @@ export default function NewSighting() {
           "Sorry to hear your pet is missing. Let's bring them back!",
         ),
         nextActionName: () => t("continue", "Continue"),
-        onComplete: async (data) => {
-          // fetch pet
-          if (data.id) {
-            const petRepository = new PetRepository();
-            const pet = await petRepository.getPet(data.id);
-            return {
-              ...data,
-              ...pet,
-            };
-          }
-        },
-        skip: (data) => data.reportType === "found_stray",
+        onComplete: () => undefined,
+        skip: () => true,
       },
       {
         id: "upload_photo",
