@@ -35,11 +35,11 @@ export function UploadPhotoStep({
   const [hasErrors, setHasErrors] = useState(false);
   const [isVisibleGallery, setIsVisibleGallery] = useState(false);
 
-  const { photos, images, petDescription } = formData;
+  const { photos, images, petDescription, petPhotos } = formData;
   const hasPhoto =
     !!photos?.length ||
     !!images?.length ||
-    !!petDescription?.petDescriptionPhotos?.length;
+    !!petPhotos?.length;
 
   // This screen's own onComplete: require a photo, then hand off to the base
   // one. Any AI analysis belongs in this step's configured onComplete, which
@@ -128,15 +128,15 @@ export function UploadPhotoStep({
               />
             ))}
           </View>
-        ) : petDescription?.petDescriptionPhotos &&
-          petDescription.petDescriptionPhotos.length > 0 ? (
+        ) : petPhotos &&
+          petPhotos.length > 0 ? (
           <SightingGallery
-            images={petDescription.petDescriptionPhotos.map((photo) => ({
+            images={petPhotos.map((photo) => ({
               uri: photo.publicUrl,
             }))}
             isVisible={isVisibleGallery}
             setIsVisible={setIsVisibleGallery}
-            mainPhoto={petDescription.petDescriptionPhotos[0].publicUrl}
+            mainPhoto={petPhotos[0].publicUrl}
           />
         ) : photos && photos.length > 0 ? (
           <SightingGallery

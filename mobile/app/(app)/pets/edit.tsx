@@ -115,7 +115,9 @@ export default function EditPet() {
           "Review and edit pet description",
         ),
         nextActionName: () => t("continue", "Continue"),
-        onComplete: () => undefined,
+        onComplete: (data) => {
+          console.log("edit complete", data)
+        },
       },
       {
         id: "edit_pet_continued",
@@ -132,6 +134,7 @@ export default function EditPet() {
             ? t("continue", "Continue")
             : t("updatePet", "Update Pet"),
         onComplete: async (data) => {
+          console.log("edit complete2", data)
           let petData = data;
           if (data.id) {
             if (data.images) {

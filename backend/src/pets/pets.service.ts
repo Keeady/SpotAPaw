@@ -34,7 +34,7 @@ export class PetsService {
       .getOneOrFail();
   }
 
-  async createPet(userId: string, dto: CreatePetDto): Promise<string> {
+  async createPet(userId: string, dto: CreatePetDto) {
     const changes: Partial<Exclude<Pet, 'id'>> = {};
 
     if (dto.name !== undefined) {
@@ -89,6 +89,10 @@ export class PetsService {
       changes.petDescriptionId = dto.petDescriptionId;
     }
 
+    if (dto.photos !== undefined && dto.photos.length > 0) {
+      changes.photos = dto.photos;
+    }
+
     if (Object.keys(changes).length === 0) {
       throw new BadRequestException('Provide at least one editable field.');
     }
@@ -102,7 +106,7 @@ export class PetsService {
       throw new InternalServerErrorException('Pet not created.');
     }
 
-    return result.identifiers[0]['id'];
+    return result;
   }
 
   async updatePet(
@@ -162,6 +166,10 @@ export class PetsService {
 
     if (dto.petDescriptionId !== undefined) {
       changes.petDescriptionId = dto.petDescriptionId;
+    }
+
+    if (dto.photos !== undefined && dto.photos.length > 0) {
+      changes.photos = dto.photos;
     }
 
     if (Object.keys(changes).length === 0) {

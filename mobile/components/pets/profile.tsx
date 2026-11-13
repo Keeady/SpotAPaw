@@ -117,6 +117,7 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
     note,
     photos,
     petDescription,
+    petPhotos,
   } = petProfile;
 
   const isWide = width >= TABLET_BREAKPOINT;
@@ -158,6 +159,13 @@ const PetProfileCard: React.FC<PetProfileCardProps> = ({
                   isVisible={isVisibleGallery}
                   setIsVisible={setIsVisibleGallery}
                   mainPhoto={photos![0]}
+                />
+              ) : petPhotos && petPhotos.length > 0 ? (
+                <SightingGallery
+                  images={petPhotos!.map((photo) => ({ uri: photo.publicUrl }))}
+                  isVisible={isVisibleGallery}
+                  setIsVisible={setIsVisibleGallery}
+                  mainPhoto={petPhotos![0].publicUrl}
                 />
               ) : (
                 <View

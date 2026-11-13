@@ -1,7 +1,12 @@
 import { useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, HelperText, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  HelperText,
+  Text,
+} from "react-native-paper";
 import { showMessage } from "react-native-flash-message";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../Provider/auth-provider";
@@ -53,7 +58,6 @@ export function ChoosePetStep({
       .finally(() => {
         if (isMountedRef.current) setLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   // This screen's own onComplete: validate, copy the pet into the form, hand off.
@@ -65,17 +69,7 @@ export function ChoosePetStep({
     }
     setHasErrors(false);
     await onComplete({
-      id: pet.id,
-      species: pet.species,
-      age: pet.age,
-      name: pet.name,
-      breed: pet.breed,
-      colors: pet.colors,
-      gender: pet.gender,
-      features: pet.features,
-      note: pet.note,
-      photos: pet.photos,
-      isLost: pet.isLost,
+      ...pet,
     });
   }, [pets, selectedPetId, onComplete]);
 
@@ -138,5 +132,9 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 12, flexGrow: 1 },
   helperText: { alignSelf: "flex-end", fontWeight: "bold" },
   button: { width: "100%", marginBottom: 16, borderWidth: 1, borderRadius: 12 },
-  noPetContainer: { flexGrow: 1, justifyContent: "center", alignItems: "center" },
+  noPetContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

@@ -28,7 +28,13 @@ export function PetSelection({
           petName={pet.name}
           petGender={pet.gender}
           petAge={pet.age}
-          petPhoto={pet.photos && pet.photos.length > 0 ? pet.photos[0] : ""}
+          petPhoto={
+            pet.photos && pet.photos.length > 0
+              ? pet.photos[0]
+              : pet.petPhotos && pet.petPhotos.length > 0
+                ? pet.petPhotos[0].publicUrl
+                : ""
+          }
           showDetails={true}
         />
       ))}

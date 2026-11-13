@@ -72,9 +72,7 @@ export class ProfileService {
       }
     }
 
-    return this.userRepository.findOneOrFail({
-      where: { ownerId: userId },
-    });
+    return response;
   }
 
   async deleteProfile(userId: string): Promise<void> {
