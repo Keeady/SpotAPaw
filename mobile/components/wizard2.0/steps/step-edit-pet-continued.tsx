@@ -32,7 +32,7 @@ export function EditPetContinuedStep({
     photos,
     reportType,
     aiGenerated,
-    petDescription,
+    petPhotos,
   } = formData;
   const showAiGeneratedFlag = !!isAiFeatureEnabled && !!aiGenerated;
 
@@ -82,7 +82,9 @@ export function EditPetContinuedStep({
             ? images[0].uri
             : photos && photos.length > 0
               ? photos[0]
-              : ""
+              : petPhotos && petPhotos.length > 0
+                ? petPhotos[0].publicUrl
+                : ""
         }
         showDetails={false}
       />

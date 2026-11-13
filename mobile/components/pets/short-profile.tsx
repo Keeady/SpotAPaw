@@ -30,9 +30,9 @@ export default function RenderShortProfile({ pet }: ShortProfileProp) {
               isWide ? styles.photoWide : styles.photoNarrow,
             ]}
           >
-            {pet.petDescription?.petDescriptionPhotos && pet.petDescription.petDescriptionPhotos.length > 0 ? (
+            {pet.petPhotos && pet.petPhotos.length > 0 ? (
               <Image
-                source={{ uri: pet.petDescription.petDescriptionPhotos[0].publicUrl }}
+                source={{ uri: pet.petPhotos[0].publicUrl }}
                 resizeMode="contain"
                 style={{
                   width: "100%",
