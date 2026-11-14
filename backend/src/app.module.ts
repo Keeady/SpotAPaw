@@ -21,6 +21,9 @@ import { PetPhotos } from './pets/entities/pet-photo.entity.js';
 import { PetDescription } from './pets/entities/pet-description.entity.js';
 import { PetclaimsModule } from './petclaims/petclaims.module.js';
 import { Petclaim } from './petclaims/entities/petclaim.entity.js';
+import { JobsModule } from './jobs/jobs.module.js';
+import { QueueModule } from './queue/queue.module.js';
+import { NotificationsModule } from './notifications/notifications.module.js';
 
 @Module({
   imports: [
@@ -61,6 +64,9 @@ import { Petclaim } from './petclaims/entities/petclaim.entity.js';
     SettingsModule,
     SettingsModule,
     PetclaimsModule,
+    JobsModule,
+    QueueModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [AppService],
