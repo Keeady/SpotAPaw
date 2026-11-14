@@ -20,7 +20,7 @@ export class NotifyConsumer extends BaseQueueConsumer {
     ...DEFAULT_CONSUMER_OPTIONS,
     visibilityTimeoutSec: 60,
     batchSize: 10,
-    maxAttempts: 6,
+    maxAttempts: 3,
     backoffBaseSec: 5,
   };
 

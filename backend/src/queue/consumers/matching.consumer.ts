@@ -23,8 +23,8 @@ export class MatchingConsumer extends BaseQueueConsumer {
   protected readonly options = {
     ...DEFAULT_CONSUMER_OPTIONS,
     visibilityTimeoutSec: 120,
-    batchSize: 1,
-    maxAttempts: 5,
+    batchSize: 10,
+    maxAttempts: 3,
     pollIntervalMs: 1000,
     backoffBaseSec: 10,
     backoffMaxSec: 900,
