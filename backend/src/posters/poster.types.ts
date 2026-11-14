@@ -24,7 +24,7 @@ export interface PosterPayload {
   collarDescription: string[] | string;
   features: string[] | string;
   gender: string;
-  ownerId: string;
+  ownerId?: string;
 }
 
 export interface GeneratePosterOptions {

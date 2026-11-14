@@ -111,7 +111,7 @@ export class PosterDataService {
       collarDescription: s.collarDescription ?? [],
       features: s.features ?? [],
       gender: s.gender || '',
-      ownerId: s.reporterId || ''
+      ownerId: s.ownerId || undefined
     };
   }
 

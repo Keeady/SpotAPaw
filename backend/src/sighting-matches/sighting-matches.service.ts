@@ -69,6 +69,7 @@ export class SightingMatchesService {
       sighting.lastSeenLat == null ||
       sighting.lastSeenLong == null
     ) {
+      this.logger.log("Returning empty matches either missing lat/long or pet desc ID.")
       return empty;
     }
 
@@ -93,7 +94,10 @@ export class SightingMatchesService {
       Number(sighting.petDescriptionId),
       [...sightingByPetDesc.keys()],
     );
-    if (rows.length === 0) return empty; // no embedding yet, or nothing above threshold
+    if (rows.length === 0) {
+      this.logger.log("Returning no empty matches. No matching rows found.")
+      return empty;
+    } // no embedding yet, or nothing above threshold
 
     const toSave = rows
       .map((r) => ({

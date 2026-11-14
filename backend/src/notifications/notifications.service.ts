@@ -3,6 +3,13 @@ import { NotificationClaimService } from './notifications-claim.service.js';
 import { NotificationType } from './entities/notification-sent.entity.js';
 import { PushService } from './push.service.js';
 import { SubscriberFinderService } from './subscriber-finder.service.js';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AggregatedSighting } from '../aggregated-sightings/entities/aggregated-sighting.entity.js';
+import { Repository } from 'typeorm';
+import {
+  NotificationSightingNotFoundError,
+  NotificationSightingNotRetryableError,
+} from './notifications.type.js';
 
 export interface SightingNotificationInput {
   id: string;
@@ -26,13 +33,29 @@ export class NotificationsService {
     private readonly finder: SubscriberFinderService,
     private readonly claims: NotificationClaimService,
     private readonly push: PushService,
+    @InjectRepository(AggregatedSighting)
+    private readonly sightingRepo: Repository<AggregatedSighting>,
   ) {}
 
   async notifyNearbySubscribers(
-    sighting: SightingNotificationInput,
+    sightingId: string,
   ): Promise<{ found: number; claimed: number; sent: number }> {
+    const sighting = await this.sightingRepo.findOne({
+      where: { id: sightingId, isActive: true },
+    });
+
+    if (!sighting) throw new NotificationSightingNotFoundError(sightingId);
+
+    if (sighting.lastSeenLat === null || sighting.lastSeenLong === null)
+      throw new NotificationSightingNotRetryableError(
+        `sighting ${sightingId} has no location`,
+      );
+
     // 1. Find
-    const found = await this.finder.findNearby(sighting.long, sighting.lat);
+    const found = await this.finder.findNearby(
+      sighting.lastSeenLong,
+      sighting.lastSeenLat,
+    );
     if (found.length === 0) {
       this.logger.log(`No subscribers near sighting ${sighting.id}`);
       return { found: 0, claimed: 0, sent: 0 };
@@ -89,11 +112,11 @@ export class NotificationsService {
     };
   }
 
-  private title(s: SightingNotificationInput): string {
+  private title(s: AggregatedSighting): string {
     return `Have you seen ${s.name || `this ${s.species}`}?`;
   }
 
-  private body(s: SightingNotificationInput): string {
+  private body(s: AggregatedSighting): string {
     return `Looking for a lost ${s.colors ?? ''} ${s.breed ?? ''} ${s.species} nearby.`
       .replace(/\s+/g, ' ')
       .trim();
