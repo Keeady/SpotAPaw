@@ -47,7 +47,9 @@ export class AggregatedSightingsController {
 
   @Get(':id/')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.aggregatedSightingsService.findOne(id);
+    const summary = await this.aggregatedSightingsService.findOne(id);
+
+    return {summary, sightings: []};
   }
 
   @Get(':id/details')

@@ -60,6 +60,10 @@ export class ApiSightingRepository extends BaseSightingRepository {
       `/aggregated-sightings/${aggregatedSightingId}`,
     );
 
+    if ("summary" in response && response["summary"]) {
+      return response.summary as AggregatedSighting;
+    }
+
     return response;
   }
 
@@ -70,12 +74,10 @@ export class ApiSightingRepository extends BaseSightingRepository {
       throw new Error("Undefined api client");
     }
 
-    console.log("repo linkedSightingId", linkedSightingId)
     const response = await this.apiClient.get<AggregatedSighting>(
       `/aggregated-sightings/my?linkedSightingId=${linkedSightingId}`,
     );
 
-    console.log("response", response)
     return response;
   }
 

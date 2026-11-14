@@ -3,11 +3,11 @@ import { JobsService } from './jobs.service.js';
 import { CronProcessAuthGuard } from '../auth/cron-auth.guard.js';
 
 @Controller('jobs')
-// @UseGuards(CronProcessAuthGuard)
+@UseGuards(CronProcessAuthGuard)
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
-  @Get('process')
+  @Post('process')
   async process() {
     await this.jobsService.findAll();
   }

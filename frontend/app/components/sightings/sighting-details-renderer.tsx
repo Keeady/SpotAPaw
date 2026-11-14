@@ -265,6 +265,12 @@ export default function SightingDetailRenderer({
                   openIndex={lightboxIndex}
                   onOpenIndexChange={setLightboxIndex}
                 />
+              ) : summary?.photos?.[0] ? (
+                <img
+                  src={summary?.photos?.[0]}
+                  alt=""
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
               ) : (
                 <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 rounded-xl bg-neutral-100 text-neutral-500">
                   <ImageOff className="h-11 w-11 sm:h-14 sm:w-14" />

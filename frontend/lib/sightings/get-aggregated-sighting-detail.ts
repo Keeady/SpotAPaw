@@ -23,10 +23,11 @@ export async function getAggregatedSightingById({
     return { error: "Invalid parameter.", data: undefined };
   }
 
+  const url = linkedSightingId
+    ? `${host}/aggregated-sightings/${aggregatedSightingId}/details?linkedSightingId=${linkedSightingId}`
+    : `${host}/aggregated-sightings/${aggregatedSightingId}`;
   try {
-    const res = await fetch(
-      `${host}/aggregated-sightings/${aggregatedSightingId}?linked_sighting_id=${linkedSightingId}`,
-    );
+    const res = await fetch(url);
     if (!res.ok) {
       return {
         data: undefined,
