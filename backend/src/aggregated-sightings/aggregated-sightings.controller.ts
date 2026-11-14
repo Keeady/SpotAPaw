@@ -46,10 +46,13 @@ export class AggregatedSightingsController {
   }
 
   @Get(':id/')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const summary = await this.aggregatedSightingsService.findOne(id);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('isActive') isActive?: boolean,
+  ) {
+    const summary = await this.aggregatedSightingsService.findOne(id, isActive);
 
-    return {summary, sightings: []};
+    return { summary, sightings: [] };
   }
 
   @Get(':id/details')

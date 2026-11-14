@@ -62,7 +62,7 @@ export class SightingMatchesService {
   ): Promise<ProcessMatchesResult> {
     const empty: ProcessMatchesResult = { matches: [], likelyMatch: null };
 
-    const sighting = await this.sightings.findOne(sightingId);
+    const sighting = await this.sightings.findOne(sightingId, true);
     if (!sighting) throw new SightingNotFoundError(sightingId);
     if (
       !sighting.petDescriptionId ||
