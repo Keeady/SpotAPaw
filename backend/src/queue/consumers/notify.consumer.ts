@@ -11,6 +11,10 @@ import {
   AggregatedSightingMessage,
 } from '../queue.constants.js';
 import { NotificationsService } from '../../notifications/notifications.service.js';
+import {
+  NotificationSightingNotFoundError,
+  NotificationSightingNotRetryableError,
+} from '../../notifications/notifications.type.js';
 
 @Injectable()
 export class NotifyConsumer extends BaseQueueConsumer {
@@ -35,31 +39,16 @@ export class NotifyConsumer extends BaseQueueConsumer {
   protected async handle({
     aggregated_sighting_id,
   }: AggregatedSightingMessage): Promise<void> {
-    const { rows } = await this.pgmq.query(
-      'select * from aggregated_sightings where id = $1 and is_active = true',
-      [aggregated_sighting_id],
-    );
-    if (rows.length === 0)
-      throw new NonRetryableError(
-        `sighting ${aggregated_sighting_id} not found`,
-      );
-
-    const s = rows[0];
-    if (s.last_seen_lat == null || s.last_seen_long == null)
-      throw new NonRetryableError(
-        `sighting ${aggregated_sighting_id} has no location`,
-      );
-
-    await this.notifications.notifyNearbySubscribers({
-      id: s.id,
-      lat: s.last_seen_lat,
-      long: s.last_seen_long,
-      species: s.species,
-      name: s.name,
-      colors: s.colors,
-      breed: s.breed,
-      linkedSightingId: s.linked_sighting_id,
-      petId: s.pet_id,
-    });
+    try {
+      await this.notifications.notifyNearbySubscribers(aggregated_sighting_id);
+    } catch (err) {
+      if (
+        err instanceof NotificationSightingNotFoundError ||
+        err instanceof NotificationSightingNotRetryableError
+      ) {
+        throw new NonRetryableError(err.message);
+      }
+      throw err;
+    }
   }
 }
