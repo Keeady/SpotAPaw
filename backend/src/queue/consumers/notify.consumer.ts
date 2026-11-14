@@ -10,6 +10,7 @@ import {
   JobType,
   AggregatedSightingMessage,
 } from '../queue.constants.js';
+import { NotificationsService } from '../../notifications/notifications.service.js';
 
 @Injectable()
 export class NotifyConsumer extends BaseQueueConsumer {
@@ -25,7 +26,8 @@ export class NotifyConsumer extends BaseQueueConsumer {
 
   constructor(
     pgmq: QueueService,
-    tracker: JobTrackerService /*, private push: PushService */,
+    tracker: JobTrackerService,
+    private readonly notifications: NotificationsService,
   ) {
     super(pgmq, tracker);
   }
@@ -42,15 +44,22 @@ export class NotifyConsumer extends BaseQueueConsumer {
         `sighting ${aggregated_sighting_id} not found`,
       );
 
-    // TODO: resolve recipients (owners of nearby lost-pet reports, followers...).
-    // For each recipient, claim the send first so retries never double-notify:
-    //
-    //   insert into notifications_sent (sighting_id, user_id, type)
-    //   values ($1, $2, 'new_sighting')
-    //   on conflict do nothing
-    //   returning 1
-    //
-    // Only call the push provider when a row was returned. If the push then fails,
-    // delete the claim row (or use a status column) so the retry can send again.
+    const s = rows[0];
+    if (s.last_seen_lat == null || s.last_seen_long == null)
+      throw new NonRetryableError(
+        `sighting ${aggregated_sighting_id} has no location`,
+      );
+
+    await this.notifications.notifyNearbySubscribers({
+      id: s.id,
+      lat: s.last_seen_lat,
+      long: s.last_seen_long,
+      species: s.species,
+      name: s.name,
+      colors: s.colors,
+      breed: s.breed,
+      linkedSightingId: s.linked_sighting_id,
+      petId: s.pet_id,
+    });
   }
 }

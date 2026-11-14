@@ -1,4 +1,8 @@
-import { BeforeApplicationShutdown, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  BeforeApplicationShutdown,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { JobTrackerService } from './job-tracker.service.js';
 import { QueueService } from './queue.service.js';
 import {
@@ -34,7 +38,7 @@ export class HandlerTimeoutError extends Error {}
  * and other cancellable calls. A handler that ignores it keeps running in the background,
  * which is why handlers must be idempotent.
  */
-export abstract class BaseQueueConsumer implements OnApplicationBootstrap, BeforeApplicationShutdown {
+export abstract class BaseQueueConsumer /*implements OnApplicationBootstrap, BeforeApplicationShutdown*/ {
   protected abstract readonly jobType: JobType;
   protected readonly options: ConsumerOptions = DEFAULT_CONSUMER_OPTIONS;
   protected readonly logger = new Logger(this.constructor.name);
@@ -61,50 +65,35 @@ export abstract class BaseQueueConsumer implements OnApplicationBootstrap, Befor
 
   /** Must stay below the visibility timeout, or another worker can claim the message mid-run. */
   private get handlerTimeoutMs() {
-    return this.options.handlerTimeoutMs ?? Math.floor(this.options.visibilityTimeoutSec * 1000 * 0.8);
+    return (
+      this.options.handlerTimeoutMs ??
+      Math.floor(this.options.visibilityTimeoutSec * 1000 * 0.8)
+    );
   }
 
-  onApplicationBootstrap() {
+  async start() {
     this.stopping = false;
     this.logger.log(
       `Consuming ${this.queue} (batch=${this.options.batchSize} vt=${this.options.visibilityTimeoutSec}s ` +
         `handlerTimeout=${this.handlerTimeoutMs}ms poll=${this.options.pollIntervalMs}ms)`,
     );
-    this.loop = this.poll();
-  }
-
-  /**
-   * Runs before onApplicationShutdown, so the DB pool (closed in PgmqService's
-   * onApplicationShutdown) is still open while in-flight messages finish.
-   */
-  async beforeApplicationShutdown() {
-    this.stopping = true;
-    this.wake?.(); // cut a sleep short
-    await this.loop;
+    return this.poll();
   }
 
   private async poll() {
-    while (!this.stopping) {
-      let messages: QueueMessage<AggregatedSightingMessage>[];
-      try {
-        messages = await this.pgmq.read<AggregatedSightingMessage>(
-          this.queue,
-          this.options.visibilityTimeoutSec,
-          this.options.batchSize,
-        );
-      } catch (err) {
-        this.logger.error(`read failed: ${(err as Error).message}`);
-        await this.sleep(this.options.pollIntervalMs * 5);
-        continue;
+    let messages: QueueMessage<AggregatedSightingMessage>[];
+    try {
+      messages = await this.pgmq.read<AggregatedSightingMessage>(
+        this.queue,
+        this.options.visibilityTimeoutSec,
+        this.options.batchSize,
+      );
+      if (messages.length > 0) {
+        return Promise.resolve();
       }
-
-      if (messages.length === 0) {
-        await this.sleep(this.options.pollIntervalMs);
-        continue;
-      }
-
-      // process() handles its own errors; a full batch means read again right away.
-      await Promise.allSettled(messages.map((m) => this.process(m)));
+      return Promise.allSettled(messages.map((m) => this.process(m)));
+    } catch (err) {
+      this.logger.error(`read failed: ${(err as Error).message}`);
     }
   }
 
@@ -161,26 +150,41 @@ export abstract class BaseQueueConsumer implements OnApplicationBootstrap, Befor
     }
   }
 
-  private async onError(msg: QueueMessage<AggregatedSightingMessage>, sightingId: string, err: Error) {
+  private async onError(
+    msg: QueueMessage<AggregatedSightingMessage>,
+    sightingId: string,
+    err: Error,
+  ) {
     const reason = err.message || String(err);
     this.logger.warn(
       `sighting=${sightingId} attempt=${msg.read_ct}/${this.options.maxAttempts} failed: ${reason}`,
     );
 
     try {
-      if (err instanceof NonRetryableError || msg.read_ct >= this.options.maxAttempts) {
+      if (
+        err instanceof NonRetryableError ||
+        msg.read_ct >= this.options.maxAttempts
+      ) {
         await this.deadLetter(msg, sightingId, reason);
         return;
       }
       await this.tracker.markFailed(sightingId, this.jobType, reason);
-      await this.pgmq.setVisibility(this.queue, msg.msg_id, this.backoffSec(msg.read_ct));
+      await this.pgmq.setVisibility(
+        this.queue,
+        msg.msg_id,
+        this.backoffSec(msg.read_ct),
+      );
     } catch (inner) {
       // If bookkeeping fails, the visibility timeout still brings the message back.
       this.logger.error(`error handling failed: ${(inner as Error).message}`);
     }
   }
 
-  private async deadLetter(msg: QueueMessage<AggregatedSightingMessage>, sightingId: string, reason: string) {
+  private async deadLetter(
+    msg: QueueMessage<AggregatedSightingMessage>,
+    sightingId: string,
+    reason: string,
+  ) {
     this.logger.error(`sighting=${sightingId} dead-lettered: ${reason}`);
     await this.tracker.markDead(sightingId, this.jobType, reason);
     try {
@@ -204,19 +208,5 @@ export abstract class BaseQueueConsumer implements OnApplicationBootstrap, Befor
     const { backoffBaseSec, backoffMaxSec } = this.options;
     const exp = Math.min(backoffBaseSec * 2 ** (attempt - 1), backoffMaxSec);
     return Math.round(exp * (0.8 + Math.random() * 0.4)); // +/-20% jitter
-  }
-
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        this.wake = undefined;
-        resolve();
-      }, ms);
-      this.wake = () => {
-        clearTimeout(timer);
-        this.wake = undefined;
-        resolve();
-      };
-    });
   }
 }

@@ -17,7 +17,7 @@ import { JobType, QUEUES, dlqName } from './queue.constants.js';
  */
 @Injectable()
 export class QueueMaintenanceService
-  implements OnApplicationBootstrap, BeforeApplicationShutdown
+  /*implements OnApplicationBootstrap, BeforeApplicationShutdown*/
 {
   private readonly logger = new Logger(QueueMaintenanceService.name);
   private readonly timers: NodeJS.Timeout[] = [];
@@ -37,7 +37,7 @@ export class QueueMaintenanceService
     );
   }
 
-  onApplicationBootstrap() {
+  start() {
     this.logger.log(
       `maintenance started: sweep every ${this.sweepEveryMs}ms, metrics every ${this.metricsEveryMs}ms`,
     );
@@ -46,7 +46,7 @@ export class QueueMaintenanceService
     void this.reportMetrics(); // one right away, so startup shows queue state and DB connectivity
   }
 
-  beforeApplicationShutdown() {
+  end() {
     this.stopped = true;
     this.timers.forEach(clearInterval);
   }

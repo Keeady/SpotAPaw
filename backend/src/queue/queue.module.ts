@@ -7,9 +7,16 @@ import { PosterConsumer } from './consumers/poster-data.consumer.js';
 import { JobTrackerService } from './job-tracker.service.js';
 import { QueueMaintenanceService } from './queue-maintenance.service.js';
 import { QueueService } from './queue.service.js';
+import { SightingMatchesModule } from '../sighting-matches/sighting-matches.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 @Module({
-  imports: [ConfigModule, PosterModule],
+  imports: [
+    ConfigModule,
+    PosterModule,
+    SightingMatchesModule,
+    NotificationsModule,
+  ],
   providers: [
     QueueService,
     JobTrackerService,
@@ -18,6 +25,15 @@ import { QueueService } from './queue.service.js';
     NotifyConsumer,
     QueueMaintenanceService,
   ],
-  exports: [QueueService, JobTrackerService],
+  exports: [
+    QueueService,
+    JobTrackerService,
+    PosterConsumer,
+    JobTrackerService,
+    MatchingConsumer,
+    PosterConsumer,
+    QueueMaintenanceService,
+    NotifyConsumer
+  ],
 })
 export class QueueModule {}
