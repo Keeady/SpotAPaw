@@ -29,14 +29,12 @@ export async function getAggregatedSightingById({
   try {
     const res = await fetch(url);
     if (!res.ok) {
-      console.log(await res.text());
       return {
         data: undefined,
         error: "Failed to fetch aggregated sighting detail",
       };
     }
     const data = await res.json();
-    console.log(data);
 
     return { data, error: undefined };
   } catch (error) {
