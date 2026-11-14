@@ -81,7 +81,6 @@ export abstract class BaseQueueConsumer /*implements OnApplicationBootstrap, Bef
   }
 
   private async poll() {
-    // while (!this.stopping) {
     let messages: QueueMessage<AggregatedSightingMessage>[];
     try {
       messages = await this.pgmq.read<AggregatedSightingMessage>(
@@ -92,22 +91,10 @@ export abstract class BaseQueueConsumer /*implements OnApplicationBootstrap, Bef
       if (messages.length > 0) {
         return Promise.resolve();
       }
-      // process() handles its own errors; a full batch means read again right away.
       return Promise.allSettled(messages.map((m) => this.process(m)));
     } catch (err) {
       this.logger.error(`read failed: ${(err as Error).message}`);
-      // await this.sleep(this.options.pollIntervalMs * 5);
-      // continue;
     }
-
-    // if (messages.length === 0) {
-    //await this.sleep(this.options.pollIntervalMs);
-    // continue;
-    // }
-
-    // process() handles its own errors; a full batch means read again right away.
-    // await Promise.allSettled(messages.map((m) => this.process(m)));
-    // }
   }
 
   private async process(msg: QueueMessage<AggregatedSightingMessage>) {
