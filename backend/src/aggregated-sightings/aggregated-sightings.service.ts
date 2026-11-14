@@ -45,12 +45,20 @@ export class AggregatedSightingsService {
     return toPublicSightings(data);
   }
 
-  async findOne(id: string) {
-    const data = await this.aggregatedSightingsRepository
-      .createQueryBuilder('aggregated_sightings')
-      .where('aggregated_sightings.id = :id', { id })
-      .andWhere('aggregated_sightings.is_active = true')
-      .getOneOrFail();
+  async findOne(id: string, isActive?: boolean) {
+    let data;
+    if (isActive === undefined) {
+      data = await this.aggregatedSightingsRepository
+        .createQueryBuilder('aggregated_sightings')
+        .where('aggregated_sightings.id = :id', { id })
+        .getOneOrFail();
+    } else {
+      data = await this.aggregatedSightingsRepository
+        .createQueryBuilder('aggregated_sightings')
+        .where('aggregated_sightings.id = :id', { id })
+        .andWhere('aggregated_sightings.is_active = :isActive', { isActive })
+        .getOneOrFail();
+    }
     return toPublicSighting(data);
   }
 

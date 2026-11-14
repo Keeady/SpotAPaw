@@ -2,6 +2,7 @@ import { AggregatedSighting, Sighting } from "../models/sighting";
 import {
   AggregatedSightingResponse,
   ISightingRepository,
+  Match,
   SightingFilters,
 } from "./base-sighting-repository";
 import { ApiSightingRepository } from "./api/sighting-repository";
@@ -16,7 +17,7 @@ export class SightingRepository implements ISightingRepository {
       return repository.getAggregatedSightingById(aggregatedSightingId, linkedSightingId)
     }
 
-  getMatchingSightings(id: string): Promise<AggregatedSighting[]> {
+  getMatchingSightings(id: string): Promise<Match[]> {
     const repository = new ApiSightingRepository(publicApiClient);
     return repository.getMatchingSightings(id);
   }

@@ -49,7 +49,7 @@ export async function GET(request, { params }) {
   }
 
   const status = data.is_active ? "Active" : "Found";
-  const title = `SpotAPaw Lost Pet: ${data.name} - [${status}]`;
+  const title = `SpotAPaw Lost Pet: ${data.name ?? "Unknown"} - [${status}]`;
   const description = `Help reunite this pet: ${data.gender} ${data.breed} ${data.species}. Features: ${data.features}`;
   const image = data.photos?.length
     ? data.photos[0]

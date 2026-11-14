@@ -16,9 +16,7 @@ import { JobType, QUEUES, dlqName } from './queue.constants.js';
  * Env (optional): QUEUE_SWEEP_INTERVAL_MS, QUEUE_METRICS_INTERVAL_MS
  */
 @Injectable()
-export class QueueMaintenanceService
-  /*implements OnApplicationBootstrap, BeforeApplicationShutdown*/
-{
+export class QueueMaintenanceService {
   private readonly logger = new Logger(QueueMaintenanceService.name);
   private readonly timers: NodeJS.Timeout[] = [];
   private readonly sweepEveryMs: number;
@@ -49,6 +47,7 @@ export class QueueMaintenanceService
   end() {
     this.stopped = true;
     this.timers.forEach(clearInterval);
+    this.logger.log(`maintenance stopped`);
   }
 
   /** Interval that never overlaps itself and never throws. */

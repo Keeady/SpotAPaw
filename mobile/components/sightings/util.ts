@@ -74,3 +74,9 @@ export function getLastSeenLocationURLMap(
 
   return "";
 }
+
+export function toPercent(score: number | null | undefined): number | null {
+  if (score == null || Number.isNaN(score)) return null;
+  const pct = score <= 1 ? score * 100 : score;
+  return Math.round(pct);
+}

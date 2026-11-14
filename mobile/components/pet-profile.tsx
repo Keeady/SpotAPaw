@@ -56,7 +56,13 @@ function Detail({
   );
 }
 
-export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
+export function RenderSightingProfile({
+  pet,
+  onSelect,
+}: {
+  pet: AggregatedSighting;
+  onSelect?: () => void;
+}) {
   const { t } = useTranslation(["petprofile", "translation"]);
   const theme = useTheme();
   const { width } = useWindowDimensions();
@@ -82,10 +88,16 @@ export function RenderSightingProfile({ pet }: { pet: AggregatedSighting }) {
     <Card
       mode="outlined"
       style={[styles.card, { backgroundColor: theme.colors.surface }]}
+      onPress={onSelect}
     >
       <View style={[styles.content, isWide && styles.contentWide]}>
         {/* Photos (left on tablets, top on phones) */}
-        <View style={[styles.photoWrap, isWide ? styles.photoWide : styles.photoNarrow]}>
+        <View
+          style={[
+            styles.photoWrap,
+            isWide ? styles.photoWide : styles.photoNarrow,
+          ]}
+        >
           {hasPhotos ? (
             <SightingGallery
               images={pet.photos!.map((photo) => ({ uri: photo }))}
