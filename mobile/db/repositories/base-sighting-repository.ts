@@ -29,6 +29,14 @@ export interface SightingFilters {
   paginationEnd: number;
 }
 
+export interface Match {
+  id: string;
+  score: number;
+  createdAt: string;
+  updatedAt: string;
+  sighting: AggregatedSighting | null;
+};
+
 export class BaseSightingRepository implements ISightingRepository {
   getAggregatedSightingById(
     _aggregatedSightingId: string,

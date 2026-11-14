@@ -1,8 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Text } from "react-native-paper";
-import { AggregatedSighting } from "@/db/models/sighting";
-import { SightingSelection } from "../sightings/sighting-selection";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import { useRouter } from "expo-router";
 import { AuthContext } from "../Provider/auth-provider";
@@ -11,15 +9,13 @@ import { log } from "../logs";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useTranslation } from "react-i18next";
 import { WizardHeader } from "../wizard/wizard-header";
+import { Match } from "@/db/repositories/base-sighting-repository";
+import { MatchCard } from "./match-card";
 
-export function ShowMatches({
-  sightingId,
-}: {
-  sightingId: string;
-}) {
+export function ShowMatches({ sightingId }: { sightingId: string }) {
   const { t } = useTranslation("wizard");
   const [loading, setLoading] = useState(false);
-  const [matchResults, setMatchResults] = useState<AggregatedSighting[]>([]);
+  const [matchResults, setMatchResults] = useState<Match[]>([]);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const sightingRoute = user ? "my-sightings" : "sightings";
@@ -74,28 +70,28 @@ export function ShowMatches({
       return;
     }
 
-    const index = matchResults.findIndex((s) => s.id === id);
+    const index = matchResults.findIndex((m) => m.id === id);
 
     if (index === -1) {
       return;
     }
 
-    const sighting = matchResults[index];
-    if (sighting.linkedSightingId && sighting.petId) {
+    const sighting = matchResults[index].sighting;
+    if (sighting?.linkedSightingId && sighting.petId) {
       router.push(
-        `/${sightingRoute}/${id}?linkedSightingId=${sighting.linkedSightingId}&petId=${sighting.petId}`,
+        `/${sightingRoute}/${sighting.id}?linkedSightingId=${sighting.linkedSightingId}&petId=${sighting.petId}`,
       );
       return;
     }
 
-    if (sighting.linkedSightingId) {
+    if (sighting?.linkedSightingId) {
       router.push(
-        `/${sightingRoute}/${id}?linkedSightingId=${sighting.linkedSightingId}`,
+        `/${sightingRoute}/${sighting.id}?linkedSightingId=${sighting.linkedSightingId}`,
       );
       return;
     }
 
-    router.push(`/${sightingRoute}/${id}`);
+    router.push(`/${sightingRoute}/${sighting?.id}`);
   };
 
   const title =
@@ -148,13 +144,11 @@ export function ShowMatches({
         </View>
       )}
 
-      {!loading && matchResults.length > 0 && (
-        <SightingSelection
-          setSelectedSightingId={onSightingSelect}
-          selectedSightingId={sightingId}
-          sightings={matchResults}
-        />
-      )}
+      {!loading &&
+        matchResults.length > 0 &&
+        matchResults.map((m) => (
+          <MatchCard match={m} onSelect={() => onSightingSelect(m.id)} />
+        ))}
     </View>
   );
 }

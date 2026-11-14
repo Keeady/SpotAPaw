@@ -2,6 +2,7 @@ import { AggregatedSighting, Sighting } from "@/db/models/sighting";
 import {
   AggregatedSightingResponse,
   BaseSightingRepository,
+  Match,
   SightingFilters,
   SightingRepositoryResponse,
 } from "../base-sighting-repository";
@@ -174,7 +175,7 @@ export class ApiSightingRepository extends BaseSightingRepository {
     return this.apiClient.get(`sightings/my`);
   }
 
-  async getMatchingSightings(id: string): Promise<AggregatedSighting[]> {
+  async getMatchingSightings(id: string): Promise<Match[]> {
     if (!this.apiClient) {
       throw new Error("Undefined api client");
     }
