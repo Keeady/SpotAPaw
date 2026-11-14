@@ -16,7 +16,7 @@ import { JobType, QUEUES, dlqName } from './queue.constants.js';
  * Env (optional): QUEUE_SWEEP_INTERVAL_MS, QUEUE_METRICS_INTERVAL_MS
  */
 @Injectable()
-export class QueueMaintenanceService {
+export class QueueMaintenanceService implements OnApplicationBootstrap, BeforeApplicationShutdown {
   private readonly logger = new Logger(QueueMaintenanceService.name);
   private readonly timers: NodeJS.Timeout[] = [];
   private readonly sweepEveryMs: number;
@@ -35,7 +35,7 @@ export class QueueMaintenanceService {
     );
   }
 
-  start() {
+  onApplicationBootstrap() {
     this.logger.log(
       `maintenance started: sweep every ${this.sweepEveryMs}ms, metrics every ${this.metricsEveryMs}ms`,
     );
@@ -44,7 +44,7 @@ export class QueueMaintenanceService {
     void this.reportMetrics(); // one right away, so startup shows queue state and DB connectivity
   }
 
-  end() {
+  beforeApplicationShutdown() {
     this.stopped = true;
     this.timers.forEach(clearInterval);
     this.logger.log(`maintenance stopped`);
@@ -73,7 +73,7 @@ export class QueueMaintenanceService {
    * message in its queue (lost, or archived after a crash mid-bookkeeping) gets re-enqueued.
    * Handlers are idempotent and markRunning skips succeeded jobs, so a spurious re-enqueue is safe.
    */
-  async sweepStuck(olderThanMinutes = 15): Promise<{ requeued: number }> {
+  async sweepStuck(olderThanMinutes = 120): Promise<{ requeued: number }> {
     const { rows } = await this.pgmq.query<{
       aggregated_sighting_id: string;
       job_type: JobType;

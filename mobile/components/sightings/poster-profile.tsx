@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   header: {
-    backgroundColor: "#0F6E56",
+    backgroundColor: "#f1581c",
     alignItems: "center",
     paddingHorizontal: 4,
     paddingVertical: 4,

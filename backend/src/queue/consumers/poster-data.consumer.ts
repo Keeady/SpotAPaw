@@ -22,7 +22,7 @@ export class PosterConsumer extends BaseQueueConsumer {
     ...DEFAULT_CONSUMER_OPTIONS,
     visibilityTimeoutSec: 180,
     batchSize: 1,
-    maxAttempts: 4,
+    maxAttempts: 3,
     backoffBaseSec: 15,
   };
 
