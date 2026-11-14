@@ -23,17 +23,20 @@ export async function getAggregatedSightingById({
     return { error: "Invalid parameter.", data: undefined };
   }
 
+  const url = linkedSightingId
+    ? `${host}/aggregated-sightings/${aggregatedSightingId}/details?linkedSightingId=${linkedSightingId}`
+    : `${host}/aggregated-sightings/${aggregatedSightingId}`;
   try {
-    const res = await fetch(
-      `${host}/aggregated-sightings/${aggregatedSightingId}?linked_sighting_id=${linkedSightingId}`,
-    );
+    const res = await fetch(url);
     if (!res.ok) {
+      console.log(await res.text());
       return {
         data: undefined,
         error: "Failed to fetch aggregated sighting detail",
       };
     }
     const data = await res.json();
+    console.log(data);
 
     return { data, error: undefined };
   } catch (error) {

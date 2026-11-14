@@ -27,24 +27,23 @@ export default function SightingDetail({
   isOwner,
 }: SightingDetailProps) {
   const route = useRouter();
-  const noop = () => void 0;
   const onViewPoster = useCallback(() => {
-    if (!summary.posterId && !summary.id) {
+    if (summary && !summary.posterId && !summary.id) {
       return;
     }
 
     route.push(
       `/posters/?posterId=${summary.posterId}&sightingId=${summary.id}`,
     );
-  }, [summary.posterId]);
+  }, [summary?.posterId]);
 
   const onViewMatches = useCallback(() => {
-    if (!summary.id) {
+    if (summary && !summary.id) {
       return;
     }
 
     route.push(`/matches/?sightingId=${summary.id}`);
-  }, [summary.id]);
+  }, [summary?.id]);
 
   return (
     <SightingDetailRenderer

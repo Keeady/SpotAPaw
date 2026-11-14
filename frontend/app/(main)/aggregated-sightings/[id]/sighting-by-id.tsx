@@ -26,7 +26,7 @@ export default async function SightingById({
   return (
     <div className="flex w-full flex-col gap-6">
       <SightingDetail
-        sightings={data.sightings}
+        sightings={data.sightings || []}
         summary={data.summary}
         currentLocation={currentLocation}
         isOwner={isOwner}

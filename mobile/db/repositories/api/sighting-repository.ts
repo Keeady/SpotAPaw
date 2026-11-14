@@ -60,6 +60,10 @@ export class ApiSightingRepository extends BaseSightingRepository {
       `/aggregated-sightings/${aggregatedSightingId}`,
     );
 
+    if ("summary" in response && response["summary"]) {
+      return response.summary as AggregatedSighting;
+    }
+
     return response;
   }
 
