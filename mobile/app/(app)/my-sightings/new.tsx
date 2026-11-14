@@ -53,7 +53,7 @@ export default function MyNewSighting() {
         setInitialData((prev) => ({
           ...prev,
           ...data,
-          linkedSightingId: sightingId,
+          sightingId
         }));
       }
     });
@@ -68,7 +68,7 @@ export default function MyNewSighting() {
       .getPet(petId)
       .then((data) => {
         if (data) {
-          setInitialData((prev) => ({ ...prev, ...data, id: petId }));
+          setInitialData((prev) => ({ ...prev, ...data, petId }));
         }
       })
       .catch((error) => {
@@ -98,7 +98,7 @@ export default function MyNewSighting() {
         ),
         nextActionName: () => t("continue", "Continue"),
         onComplete: () => undefined,
-        skip: (data) => data.reportType === "found_stray" || !!data.id,
+        skip: (data) => data.reportType === "found_stray" || !!data.petId,
       },
       {
         id: "upload_photo",
@@ -113,7 +113,7 @@ export default function MyNewSighting() {
             return await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
-              data.id ?? null,
+              data.petId ?? null,
               null,
             );
           }

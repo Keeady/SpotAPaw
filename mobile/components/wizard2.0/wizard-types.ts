@@ -33,6 +33,7 @@ export type SightingFormData = Partial<SightingPet> & {
   contactPhoneCountryCode?: string;
 
   sightingId?: string;
+  petId?: string;
 };
 
 /** One entry in the wizard configuration. */

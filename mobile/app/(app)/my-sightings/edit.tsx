@@ -3,7 +3,10 @@ import { useAIFeatureContext } from "@/components/Provider/ai-context-provider";
 import { useProContext } from "@/components/Provider/pro-context-provider";
 import { SightingWizard } from "@/components/wizard2.0/wizard";
 import { PET_FIELDS_CLEARED } from "@/components/wizard2.0/wizard-constants";
-import { SightingFormData, WizardConfig } from "@/components/wizard2.0/wizard-types";
+import {
+  SightingFormData,
+  WizardConfig,
+} from "@/components/wizard2.0/wizard-types";
 import { PetRepository } from "@/db/repositories/pet-repository";
 import { SightingRepository } from "@/db/repositories/sighting-repository";
 import handlePhotoUploadAnalyze from "@/lib/photo-analysis/photo-upload-handler";
@@ -50,7 +53,11 @@ export default function EditPetSighting() {
     const repository = new SightingRepository();
     repository.getSighting(sightingId).then((data) => {
       if (data) {
-        setInitialData((prev) => ({ ...prev, ...data }));
+        setInitialData((prev) => ({
+          ...prev,
+          ...data,
+          sightingId: sightingId,
+        }));
       }
     });
   }, [sightingId]);
@@ -64,7 +71,7 @@ export default function EditPetSighting() {
       .getPet(petId)
       .then((data) => {
         if (data) {
-          setInitialData((prev) => ({ ...prev, ...data }));
+          setInitialData((prev) => ({ ...prev, ...data, id: "", petId }));
         }
       })
       .catch((error) => {
@@ -109,7 +116,7 @@ export default function EditPetSighting() {
             return await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
-              data.id ?? null,
+              data.petId ?? null,
               data.sightingId ?? null,
             );
           }

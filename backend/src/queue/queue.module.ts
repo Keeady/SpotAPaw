@@ -9,6 +9,7 @@ import { QueueMaintenanceService } from './queue-maintenance.service.js';
 import { QueueService } from './queue.service.js';
 import { SightingMatchesModule } from '../sighting-matches/sighting-matches.module.js';
 import { NotificationsModule } from '../notifications/notifications.module.js';
+import { PosterGenConsumer } from './consumers/poster-gen.consumer.js';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { NotificationsModule } from '../notifications/notifications.module.js';
     PosterConsumer,
     NotifyConsumer,
     QueueMaintenanceService,
+    PosterGenConsumer
   ],
   exports: [
     QueueService,
@@ -33,7 +35,8 @@ import { NotificationsModule } from '../notifications/notifications.module.js';
     MatchingConsumer,
     PosterConsumer,
     QueueMaintenanceService,
-    NotifyConsumer
+    NotifyConsumer,
+    PosterGenConsumer
   ],
 })
 export class QueueModule {}

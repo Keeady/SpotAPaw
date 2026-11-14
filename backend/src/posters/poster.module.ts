@@ -5,10 +5,10 @@ import { AggregatedSighting } from '../aggregated-sightings/entities/aggregated-
 import { Poster } from './entities/poster.entity.js';
 import { PosterAiService } from './poster-ai.service.js';
 import { PosterDataService } from './poster-data.service.js';
-import { PosterGeneratorService } from './poster-generator.service.js';
 import { PosterController } from './poster.controller.js';
 import { PosterService } from './poster.service.js';
 import { AuthModule } from '../auth/auth.module.js';
+import { PosterPuppeteerGeneratorService } from './poster-puppeteer-generator.service.js';
 
 @Module({
   imports: [
@@ -20,10 +20,10 @@ import { AuthModule } from '../auth/auth.module.js';
   providers: [
     PosterAiService,
     PosterDataService,
-    PosterGeneratorService,
     PosterService,
+    PosterPuppeteerGeneratorService
   ],
-  exports: [PosterDataService, PosterGeneratorService],
+  exports: [PosterDataService, PosterPuppeteerGeneratorService],
   controllers: [PosterController],
 })
 export class PosterModule {}

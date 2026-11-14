@@ -22,7 +22,7 @@ export default async function handlePetCreation(
       });
       return {
         ...data,
-        id: petId,
+        petId,
       };
     }
   } catch (error) {

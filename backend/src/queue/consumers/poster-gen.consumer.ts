@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import {
-  PosterGeneratorService,
-  PosterNotFoundError,
-} from '../../posters/poster-generator.service.js';
-import {
   BaseQueueConsumer,
   NonRetryableError,
 } from '../base-queue.consumer.js';
@@ -14,6 +10,7 @@ import {
   JobType,
 } from '../queue.constants.js';
 import { QueueService } from '../queue.service.js';
+import { PosterNotFoundError, PosterPuppeteerGeneratorService } from '../../posters/poster-puppeteer-generator.service.js';
 
 @Injectable()
 export class PosterGenConsumer extends BaseQueueConsumer {
@@ -31,7 +28,7 @@ export class PosterGenConsumer extends BaseQueueConsumer {
   constructor(
     pgmq: QueueService,
     tracker: JobTrackerService,
-    private readonly generator: PosterGeneratorService,
+    private readonly generator: PosterPuppeteerGeneratorService,
   ) {
     super(pgmq, tracker);
   }
