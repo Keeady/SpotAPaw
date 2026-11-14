@@ -4,7 +4,6 @@ import { In, Repository } from 'typeorm';
 import { SightingSubscription } from './entities/notification.entity.js';
 
 export interface Recipient {
-  userId: string | null;
   pushToken: string;
 }
 
@@ -21,12 +20,11 @@ export class SubscriberFinderService {
   async findNearby(long: number, lat: number): Promise<Recipient[]> {
     const rows = await this.subscriptions
       .createQueryBuilder('s')
-      .select('s.notificationPushToken', 'pushToken')
-      .addSelect('s.userId', 'userId')
-      .distinctOn(['s.notificationPushToken'])
+      .select('s.notification_push_token', 'pushToken')
+      .distinctOn(['s.notification_push_token'])
       .where('s.enabled = true')
-      .andWhere('s.notificationPushToken IS NOT NULL')
-      .andWhere("s.notificationPushToken <> ''")
+      .andWhere('s.notification_push_token IS NOT NULL')
+      .andWhere("s.notification_Push_token <> ''")
       .andWhere(
         `ST_DWithin(
            s.center,
@@ -35,7 +33,7 @@ export class SubscriberFinderService {
          )`,
         { long, lat },
       )
-      .orderBy('s.notificationPushToken')
+      .orderBy('s.notification_push_token')
       .getRawMany<Recipient>();
 
     return rows;

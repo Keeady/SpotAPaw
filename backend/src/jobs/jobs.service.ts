@@ -7,25 +7,13 @@ import { PosterGenConsumer } from '../queue/consumers/poster-gen.consumer.js';
 
 @Injectable()
 export class JobsService {
-  posterConsumer: PosterConsumer;
-  queueMaintenance: QueueMaintenanceService;
-  matchingConsumer: MatchingConsumer;
-  notifyConsumer: NotifyConsumer;
-  posterGenConsumer: PosterGenConsumer
-
   constructor(
-    posterConsumer: PosterConsumer,
-    matchingConsumer: MatchingConsumer,
-    notifyConsumer: NotifyConsumer,
-    posterGenConsumer: PosterGenConsumer,
-    queueMaintenance: QueueMaintenanceService,
-  ) {
-    posterConsumer = posterConsumer;
-    queueMaintenance = queueMaintenance;
-    matchingConsumer = matchingConsumer;
-    notifyConsumer = notifyConsumer;
-    posterGenConsumer = posterGenConsumer;
-  }
+    private readonly posterConsumer: PosterConsumer,
+    private readonly matchingConsumer: MatchingConsumer,
+    private readonly notifyConsumer: NotifyConsumer,
+    private readonly posterGenConsumer: PosterGenConsumer,
+    private readonly queueMaintenance: QueueMaintenanceService,
+  ) {}
 
   async findAll() {
     const promises = [

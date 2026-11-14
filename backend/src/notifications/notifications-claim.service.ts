@@ -32,9 +32,9 @@ export class NotificationClaimService {
     const rows: { push_token: string }[] = await this.sent.query(
       `
       insert into notifications_sent
-        (sighting_id, user_id, push_token, type, status, claimed_at)
-      select $1, r.user_id, r.push_token, $2, 'pending', now()
-      from unnest($3::uuid[], $4::text[]) as r(user_id, push_token)
+        (sighting_id, push_token, type, status, claimed_at)
+      select $1, r.push_token, $2, 'pending', now()
+      from unnest($4::text[]) as r(push_token)
       on conflict (sighting_id, push_token, type) do update
         set claimed_at = now()
         where notifications_sent.status = 'pending'
@@ -44,7 +44,6 @@ export class NotificationClaimService {
       [
         sightingId,
         type,
-        recipients.map((r) => r.userId),
         recipients.map((r) => r.pushToken),
         STALE_CLAIM_MINUTES,
       ],

@@ -21,7 +21,7 @@ export class PosterConsumer extends BaseQueueConsumer {
   protected readonly options = {
     ...DEFAULT_CONSUMER_OPTIONS,
     visibilityTimeoutSec: 180,
-    batchSize: 2,
+    batchSize: 1,
     maxAttempts: 4,
     backoffBaseSec: 15,
   };
