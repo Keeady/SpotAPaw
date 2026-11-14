@@ -77,7 +77,7 @@ export abstract class BaseQueueConsumer /*implements OnApplicationBootstrap, Bef
       `Consuming ${this.queue} (batch=${this.options.batchSize} vt=${this.options.visibilityTimeoutSec}s ` +
         `handlerTimeout=${this.handlerTimeoutMs}ms poll=${this.options.pollIntervalMs}ms)`,
     );
-    return this.poll();
+    return await this.poll();
   }
 
   private async poll() {
@@ -88,7 +88,8 @@ export abstract class BaseQueueConsumer /*implements OnApplicationBootstrap, Bef
         this.options.visibilityTimeoutSec,
         this.options.batchSize,
       );
-      if (messages.length > 0) {
+      if (messages.length < 0) {
+        this.logger.log("messages empty");
         return Promise.resolve();
       }
       return Promise.allSettled(messages.map((m) => this.process(m)));
