@@ -51,6 +51,7 @@ export default function EditPet() {
             ...prev,
             ...data,
             isLost: Boolean(isPetLost),
+            petId
           }));
         }
       })
@@ -94,14 +95,14 @@ export default function EditPet() {
         onComplete: async (data) => {
           if (
             data.images &&
-            data.id &&
+            data.petId &&
             aiPhotoAnalysisAllowed &&
             isAiFeatureEnabled
           ) {
             return await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
-              data.id,
+              data.petId,
               null,
             );
           }
@@ -136,13 +137,13 @@ export default function EditPet() {
         onComplete: async (data) => {
           console.log("edit complete2", data)
           let petData = data;
-          if (data.id) {
+          if (data.petId) {
             if (data.images) {
               const response = await handlePetImageUpload(
                 t,
                 uploadMultiplePetImages,
                 data,
-                data.id,
+                data.petId,
                 data.images,
               );
 
@@ -151,7 +152,7 @@ export default function EditPet() {
               }
             }
             // TODO check if data changed
-            await handlePetUpdate(t, data.id, petData);
+            await handlePetUpdate(t, data.petId, petData);
 
             return {
               ...petData,

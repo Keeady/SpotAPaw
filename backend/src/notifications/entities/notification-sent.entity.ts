@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 export type NotificationType = 'new_sighting';
 export type NotificationStatus = 'pending' | 'sent';
@@ -6,14 +6,11 @@ export type NotificationStatus = 'pending' | 'sent';
 @Entity('notifications_sent')
 @Unique(['sightingId', 'pushToken', 'type'])
 export class NotificationSent {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-  id!: string;
+  @PrimaryColumn()
+  id!: number;
 
   @Column({ name: 'sighting_id', type: 'uuid' })
   sightingId!: string;
-
-  @Column({ name: 'user_id', type: 'uuid', nullable: true })
-  userId!: string | null;
 
   @Column({ name: 'push_token', type: 'text' })
   pushToken!: string;

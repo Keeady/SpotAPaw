@@ -49,6 +49,7 @@ export class AggregatedSightingsService {
     const data = await this.aggregatedSightingsRepository
       .createQueryBuilder('aggregated_sightings')
       .where('aggregated_sightings.id = :id', { id })
+      .andWhere('aggregated_sightings.is_active = true')
       .getOneOrFail();
     return toPublicSighting(data);
   }

@@ -42,7 +42,7 @@ export class PosterDataService {
     if (existing) return existing;
 
     const sighting = await this.sightingRepo.findOne({
-      where: { id: sightingId },
+      where: { id: sightingId, isActive: true },
     });
     if (!sighting) throw new PosterSightingNotFoundError(sightingId);
 

@@ -26,7 +26,7 @@ export function ChoosePetStep({
   const { user } = useContext(AuthContext);
   const router = useRouter();
   const [pets, setPets] = useState<SightingPet[]>([]);
-  const [selectedPetId, setSelectedPetId] = useState<string>(formData.id ?? "");
+  const [selectedPetId, setSelectedPetId] = useState<string>(formData.petId ?? "");
   const [hasErrors, setHasErrors] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMountedRef = useRef(true);

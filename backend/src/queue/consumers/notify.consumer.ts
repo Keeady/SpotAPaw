@@ -36,7 +36,7 @@ export class NotifyConsumer extends BaseQueueConsumer {
     aggregated_sighting_id,
   }: AggregatedSightingMessage): Promise<void> {
     const { rows } = await this.pgmq.query(
-      'select * from aggregated_sightings where id = $1',
+      'select * from aggregated_sightings where id = $1 and is_active = true',
       [aggregated_sighting_id],
     );
     if (rows.length === 0)

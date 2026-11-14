@@ -23,7 +23,6 @@ export default function NewSighting() {
     ...PET_FIELDS_CLEARED,
     reportType: undefined,
     isLost: true,
-    linkedSightingId: sightingId,
   });
   const { t } = useTranslation("wizard");
   const router = useRouter();
@@ -43,7 +42,6 @@ export default function NewSighting() {
         setInitialData((prev) => ({
           ...prev,
           ...data,
-          linkedSightingId: sightingId,
         }));
       }
     });
@@ -87,7 +85,7 @@ export default function NewSighting() {
             return await handlePhotoUploadAnalyze(
               onPhotoAnalyze,
               data.images,
-              data.id ?? null,
+              data.petId ?? null,
               null,
             );
           }

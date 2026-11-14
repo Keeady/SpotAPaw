@@ -11,15 +11,15 @@ export default async function handleSightingUpdate(
   try {
     const repository = new SightingRepository();
     await repository.updateSighting(sightingId, data);
-   showMessage({
-               message: t(
-                 "successfullyUpdatedPetSighting",
-                 "Successfully updated pet sighting.",
-               ),
-               type: "success",
-               icon: "success",
-               statusBarHeight: 50,
-             });
+    showMessage({
+      message: t(
+        "successfullyUpdatedPetSighting",
+        "Successfully updated pet sighting.",
+      ),
+      type: "success",
+      icon: "success",
+      statusBarHeight: 50,
+    });
   } catch (error) {
     console.log(error);
 
