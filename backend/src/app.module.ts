@@ -24,9 +24,19 @@ import { Petclaim } from './petclaims/entities/petclaim.entity.js';
 import { JobsModule } from './jobs/jobs.module.js';
 import { QueueModule } from './queue/queue.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -66,10 +76,16 @@ import { NotificationsModule } from './notifications/notifications.module.js';
     PetclaimsModule,
     JobsModule,
     QueueModule,
-    NotificationsModule
+    NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
