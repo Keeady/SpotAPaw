@@ -337,6 +337,11 @@
   dependencies:
     tslib "2.8.1"
 
+"@nestjs/throttler@^6.8.0":
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/throttler/-/throttler-6.8.0.tgz#38e6f49826f6b0fd959067e4b84df1e967da136c"
+  integrity sha512-kApHI/Ycxu3cxz7mcEhth7eeR9+L2GGb2CKpaBU+uAWz6DF4XRK68VWXFDKDA1aVwCdOf7HjYiafvQVG+eD2Gw==
+
 "@nestjs/typeorm@^12.0.2":
   version "12.0.2"
   resolved "https://registry.yarnpkg.com/@nestjs/typeorm/-/typeorm-12.0.2.tgz#d938ad43066cff4e5e386803807b55ca4221429c"
