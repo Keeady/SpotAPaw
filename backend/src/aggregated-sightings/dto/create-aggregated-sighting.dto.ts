@@ -100,4 +100,8 @@ export class CreateAggregatedSightingDto {
   @IsString()
   @IsOptional()
   behavior?: string;
+
+  @IsOptional()
+  @IsInt()
+  petDescriptionId?: number;
 }

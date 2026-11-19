@@ -198,6 +198,10 @@ export class AggregatedSightingsService {
       changes.behavior = updateAggregatedSightingDto.behavior;
     }
 
+    if (updateAggregatedSightingDto.petDescriptionId) {
+      changes.petDescriptionId = updateAggregatedSightingDto.petDescriptionId;
+    }
+
     if (Object.keys(changes).length === 0) {
       throw new BadRequestException('Provide at least one editable field.');
     }
